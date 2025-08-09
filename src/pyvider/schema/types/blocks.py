@@ -1,0 +1,29 @@
+#
+# pyvider/schema/types/blocks.py
+#
+from typing import TYPE_CHECKING
+
+from attrs import define, field
+
+# UNIFICATION FIX: Import the canonical NestingMode enum.
+from .enums import NestingMode
+
+if TYPE_CHECKING:
+    from .object import PvsObjectType
+
+
+@define(frozen=True, kw_only=True)
+class PvsNestedBlock:
+    """
+    Defines a nested block type within a schema.
+    """
+
+    type_name: str = field()
+    block: "PvsObjectType" = field()
+    nesting: NestingMode = field(default=NestingMode.LIST)
+    description: str | None = field(default=None)
+    min_items: int | None = field(default=None)
+    max_items: int | None = field(default=None)
+
+
+# 🐍🏗️📄🪄

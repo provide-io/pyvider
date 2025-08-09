@@ -1,0 +1,43 @@
+#
+# pyvider/resources/protocol.py
+#
+from typing import Protocol, runtime_checkable
+
+from pyvider.common.types import ConfigType, StateType
+from pyvider.resources.context import ResourceContext
+from pyvider.resources.types import ResourceType
+
+
+@runtime_checkable
+class ResourceProtocol(Protocol[ResourceType, StateType, ConfigType]):
+    """Protocol defining resource lifecycle operations."""
+
+    async def validate(self, config: ConfigType) -> None:
+        """Validate resource configuration."""
+        ...
+
+    async def read(self, ctx: ResourceContext[ConfigType, StateType]) -> StateType:
+        """Read resource state."""
+        ...
+
+    async def plan(
+        self, ctx: ResourceContext[ConfigType, StateType]
+    ) -> tuple[StateType, bytes]:
+        """Plan resource changes."""
+        ...
+
+    async def apply(
+        self, ctx: ResourceContext[ConfigType, StateType]
+    ) -> tuple[StateType, bytes]:
+        """Apply resource changes."""
+        ...
+
+    async def delete(self, ctx: ResourceContext[ConfigType, StateType]) -> None:
+        """Delete the resource."""
+        ...
+
+
+# 🐍🏗️
+
+
+# 🐍🏗️📄🪄

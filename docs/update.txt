@@ -1,0 +1,2 @@
+An "update" is triggered when a user modifies a non-computed attribute of an existing resource in their .tf configuration and runs terraform apply.
+
