@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/plan_resource_change.py
-#
-# pyvider/protocols/tfprotov6/handlers/plan_resource_change.py
-#
-# pyvider/protocols/tfprotov6/handlers/plan_resource_change.py
-#
-
 from typing import Any
 
 import attrs
@@ -53,6 +45,9 @@ async def _unmarshal_request_data(
     return config_cty, prior_state_cty, proposed_new_state_cty
 
 
+
+
+
 async def _process_private_state(
     resource_class: Any, prior_private: bytes
 ) -> Any | None:
@@ -67,9 +62,7 @@ async def _process_private_state(
             decrypted_bytes = decrypt(prior_private)
             private_data = msgpack.unpackb(decrypted_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
-            logger.debug(
-                f"Successfully deserialized prior private state: {private_state_instance}"
-            )
+            logger.debug(f"Successfully deserialized prior private state: {private_state_instance}")
         except Exception as e:
             logger.warning(
                 f"Could not deserialize prior private state for {resource_class.__name__}: {e}",
@@ -193,9 +186,7 @@ async def PlanResourceChangeHandler(
                 attrs.asdict(planned_private_state_attrs), use_bin_type=True
             )
             response.planned_private = encrypt(serialized_private_bytes)
-            logger.debug(
-                f"Setting response.planned_private: {response.planned_private}"
-            )
+            logger.debug(f"Setting response.planned_private: {response.planned_private}")
 
     except (CtyValidationError, PyviderError) as e:
         diag = await create_diagnostic_from_exception(e)
@@ -205,6 +196,3 @@ async def PlanResourceChangeHandler(
         response.diagnostics.append(diag)
 
     return response
-
-
-# 🐍🏗️📄🪄

@@ -1,6 +1,3 @@
-#
-# pyvider/cli/components_commands.py
-#
 import asyncio
 import sys
 
@@ -172,6 +169,3 @@ def show_diagnostics(ctx: PyviderContext) -> None:
             click.echo(f"  - {comp_type}: {count}")
     except Exception as e:
         click.secho(f"❌ Failed to get diagnostics: {e}", fg="red")
-
-
-# 🐍🏗️📄🪄

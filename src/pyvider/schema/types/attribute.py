@@ -1,6 +1,4 @@
-#
 # pyvider/schema/types/attribute.py
-#
 from typing import Any
 
 from attrs import define, field
@@ -62,6 +60,3 @@ class PvsAttribute:
             raise ValueError(
                 f"Attribute '{self.name}' must be Optional, Required, or Computed."
             )
-
-
-# 🐍🏗️📄🪄

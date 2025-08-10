@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/__init__.py
-#
 """Pyvider Framework Custom Exceptions"""
 
 from .base import (
@@ -109,6 +107,3 @@ __all__ = [
 ]
 
 # 🐍🏗️
-
-
-# 🐍🏗️🚀🪄

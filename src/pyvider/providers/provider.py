@@ -1,6 +1,3 @@
-#
-# pyvider/providers/provider.py
-#
 from typing import ClassVar
 
 from pyvider.capabilities import BaseCapability
@@ -53,6 +50,3 @@ class PyviderProvider(BaseProvider):
                 raise FrameworkConfigurationError(
                     f"Component '{name}' is associated with capability '{parent_cap_name}', but that capability is not registered."
                 )
-
-
-# 🐍🏗️📄🪄

@@ -1,10 +1,6 @@
 #
 # pyvider/protocols/tfprotov6/handlers/upgrade_resource_state.py
 #
-# pyvider/protocols/tfprotov6/handlers/upgrade_resource_state.py
-#
-# pyvider/protocols/tfprotov6/handlers/upgrade_resource_state.py
-#
 
 import json
 from typing import Any
@@ -55,6 +51,3 @@ async def UpgradeResourceStateHandler(
                 )
             ]
         )
-
-
-# 🐍🏗️📄🪄

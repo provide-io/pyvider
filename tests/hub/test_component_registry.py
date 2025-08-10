@@ -49,6 +49,3 @@ class TestComponentRegistry:
             for call in mock_logger.debug.call_args_list
         )
         assert found_log, "Expected 'Skipping redundant registration' debug log not found"
-
-
-# 🐍🏗️🧪🪄

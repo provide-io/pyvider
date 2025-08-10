@@ -58,6 +58,3 @@ async def test_read_data_source_integration_avoids_recursion():
         assert not response.diagnostics
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
-
-
-# 🐍🏗️🧪🪄

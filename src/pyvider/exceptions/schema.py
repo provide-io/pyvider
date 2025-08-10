@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/schema.py
-#
 from typing import Any
 
 from .base import ConversionError, PyviderError, PyviderValueError
@@ -53,6 +51,3 @@ class SchemaConversionError(ConversionError):
         if schema_name:
             message = f"Schema '{schema_name}' conversion failed: {message}"
         super().__init__(message, source_value=source_value, target_type=target_type)
-
-
-# 🐍🏗️📊🪄

@@ -36,6 +36,3 @@ def test_pvs_object_type_conversion_handles_nested_blocks():
 
     # AND the element types of those collections must be CtyObjects
     assert isinstance(cty_type.attribute_types["users"].element_type, CtyObject)
-
-
-# 🐍🏗️🧪🪄

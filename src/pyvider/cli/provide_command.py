@@ -1,6 +1,3 @@
-#
-# pyvider/cli/provide_command.py
-#
 import asyncio
 import os
 import pathlib
@@ -70,16 +67,12 @@ async def _run_provider_server(magic_cookie: str) -> None:
     try:
         config = PyviderConfig()
         _configure_telemetry(config)
-
+        
         # Log launch context information
         from pyvider.common.launch_context import log_launch_context
-
         launch_context = log_launch_context(logger.info)
-        logger.info(
-            f"Provider initialized with launch method: {launch_context.method.value}",
-            domain="system",
-        )
-
+        logger.info(f"Provider initialized with launch method: {launch_context.method.value}", domain="system")
+        
         await _discover_components_once()
         provider_instance = PyviderProvider()
         await provider_instance.setup()
@@ -144,7 +137,6 @@ def provide_cmd(ctx: click.Context, force: bool) -> None:
 
         # Show launch context in interactive mode
         from pyvider.common.launch_context import detect_launch_context
-
         launch_context = detect_launch_context()
 
         click.secho("\n" + "─" * 70, fg="cyan")
@@ -155,19 +147,17 @@ def provide_cmd(ctx: click.Context, force: bool) -> None:
             "Terraform, so it has entered interactive CLI mode.",
             fg="white",
         )
-
+        
         # Display launch context
         click.secho(f"\n🚀 Launch Context:", fg="green", bold=True)
         click.secho(f"   Method: {launch_context.method.value}", fg="white")
         click.secho(f"   Executable: {launch_context.executable_path}", fg="white")
         click.secho(f"   Python: {launch_context.python_executable}", fg="white")
-
+        
         if launch_context.details:
-            for key, value in list(launch_context.details.items())[
-                :3
-            ]:  # Show first 3 details
+            for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
                 click.secho(f"   {key}: {value}", fg="white")
-
+        
         click.secho(
             "\nYou can use the commands below to inspect the provider's components.",
             fg="white",
@@ -199,6 +189,3 @@ def provide_cmd(ctx: click.Context, force: bool) -> None:
     except KeyboardInterrupt:
         click.echo("\n🚦 Provider service interrupted by user.")
         sys.exit(0)
-
-
-# 🐍🏗️📄🪄

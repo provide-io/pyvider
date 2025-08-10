@@ -1,10 +1,6 @@
 #
 # pyvider/protocols/tfprotov6/handlers/move_resource_state.py
 #
-# pyvider/protocols/tfprotov6/handlers/move_resource_state.py
-#
-# pyvider/protocols/tfprotov6/handlers/move_resource_state.py
-#
 
 from typing import Any
 
@@ -20,6 +16,3 @@ async def MoveResourceStateHandler(
 
 
 # 🐍🏗⛮️
-
-
-# 🐍🏗️📄🪄

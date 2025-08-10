@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/serialization.py
-#
 from typing import Any
 
 from .base import ConversionError
@@ -38,6 +36,3 @@ class DeserializationError(ConversionError):
         super().__init__(full_message, source_value=source_value, target_type=type_name)
         self.type_name = type_name
         self.detail = detail
-
-
-# 🐍🏗️📄🪄

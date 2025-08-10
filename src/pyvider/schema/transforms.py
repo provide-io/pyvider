@@ -1,6 +1,4 @@
-#
 # pyvider/schema/transforms.py
-#
 import attrs
 
 from pyvider.schema.types.attribute import PvsAttribute
@@ -51,6 +49,3 @@ class PvsSchemaTransformer:
             description=description,
         )
         return PvsSchema(version=1, block=new_block)
-
-
-# 🐍🏗️📄🪄

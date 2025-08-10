@@ -1,6 +1,3 @@
-#
-# pyvider/cli/utils.py
-#
 """Internal utilities for the Pyvider CLI tool."""
 
 import datetime
@@ -15,7 +12,7 @@ from .context import PyviderContext
 def _run_command(
     command: list[str] | str,
     cwd: str | None = None,
-    env: dict[str, str] | None = None,
+            env: dict[str, str] | None = None,
     check: bool = True,
     title: str = "",
 ) -> str:
@@ -137,6 +134,3 @@ exec pyvider "$@"
             bold=True,
         )
         raise
-
-
-# 🐍🏗️🛠️🪄

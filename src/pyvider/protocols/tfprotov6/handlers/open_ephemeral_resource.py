@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/open_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/open_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/open_ephemeral_resource.py
-#
-
 from typing import Any
 
 import attrs
@@ -72,6 +64,3 @@ async def OpenEphemeralResourceHandler(
         f"EPHEMERAL 📖 Open for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
     )
     return response
-
-
-# 🐍🏗️📄🪄

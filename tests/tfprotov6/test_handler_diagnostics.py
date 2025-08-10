@@ -87,6 +87,3 @@ async def test_create_diagnostic_from_generic_ctyvalidationerror():
     assert diag.summary == "🐍🏗️ ⚠️ A generic validation error."
     assert diag.detail == "A configuration validation error occurred."
     assert not diag.attribute.steps
-
-
-# 🐍🏗️🧪🪄

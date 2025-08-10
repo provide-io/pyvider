@@ -14,6 +14,3 @@ class DiscoveredExternalResource(BaseResource):
     async def delete(self, ctx): pass
     @staticmethod
     def get_schema(): return s_resource({"id": a_str()})
-
-
-# 🐍🏗️📄🪄

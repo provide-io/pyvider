@@ -1,6 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/utils.py
-#
 import inspect
 import re
 from typing import Any
@@ -283,6 +280,3 @@ def cty_to_attrs_instance(
         raise TypeError("Internal validation error: Passed object must be a class.")
 
     return BaseResource.from_cty(cty_val, attrs_cls)
-
-
-# 🐍🏗️🛠️🪄

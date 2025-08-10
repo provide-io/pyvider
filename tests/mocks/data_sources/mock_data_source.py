@@ -26,6 +26,3 @@ class MockDataSource:
             "identifier": identifier,
             "value": f"Mock value for {identifier}"
         }
-
-
-# 🐍🏗️📄🪄

@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/get_functions.py
-#
-# pyvider/protocols/tfprotov6/handlers/get_functions.py
-#
-# pyvider/protocols/tfprotov6/handlers/get_functions.py
-#
-
 """
 GetFunctions handler implementation for Terraform protocol v6.
 This handler uses a multi-layer approach to convert domain function objects
@@ -94,6 +86,3 @@ async def GetFunctionsHandler(
                 )
             ]
         )
-
-
-# 🐍🏗️📄🪄

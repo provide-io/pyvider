@@ -1,6 +1,3 @@
-#
-# pyvider/schema/types/enums.py
-#
 from enum import Enum
 
 
@@ -19,6 +16,3 @@ class NestingMode(str, Enum):
     SET = "SET"
     MAP = "MAP"
     GROUP = "GROUP"
-
-
-# 🐍🏗️📄🪄

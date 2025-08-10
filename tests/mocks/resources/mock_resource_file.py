@@ -5,6 +5,3 @@ from pyvider.hub import register_resource
 class MockResource:
     def __init__(self):
         pass
-
-
-# 🐍🏗️📄🪄

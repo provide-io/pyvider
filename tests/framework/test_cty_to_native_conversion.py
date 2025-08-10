@@ -71,5 +71,3 @@ class TestCtyToNativeConversion:
         assert isinstance(native_result["sub_items"][0], dict)
         assert isinstance(native_result["sub_items"][0]["id"], str)
 
-
-# 🐍🏗️🧪🪄

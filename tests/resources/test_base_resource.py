@@ -54,6 +54,3 @@ def test_from_cty_with_nested_objects():
     assert len(result.items) == 2
     assert isinstance(result.items[0], NestedConfig)
     assert result.items[0].setting == "item1"
-
-
-# 🐍🏗️🧪🪄

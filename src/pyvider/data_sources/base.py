@@ -1,6 +1,3 @@
-#
-# pyvider/data_sources/base.py
-#
 from abc import ABC, abstractmethod
 from typing import Any, TypeVar
 
@@ -46,6 +43,3 @@ class BaseDataSource[DataSourceType, StateType, ConfigType](ABC):
 
     @abstractmethod
     async def read(self, ctx: ResourceContext) -> StateType | None: ...
-
-
-# 🐍🏗️🏛️🪄

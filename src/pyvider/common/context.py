@@ -1,6 +1,4 @@
-#
 # pyvider/common/context.py
-#
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -92,6 +90,3 @@ class BaseContext:
         self._add_diagnostic(
             pb.Diagnostic.WARNING, summary, detail, path=attribute_path
         )
-
-
-# 🐍🏗️📄🪄

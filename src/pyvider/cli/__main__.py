@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-#
-# pyvider/cli/__main__.py
-#
 """
 The canonical entry point for the Pyvider CLI application.
 """
@@ -19,6 +15,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
-
-# 🐍🏗️🖥️🪄

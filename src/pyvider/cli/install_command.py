@@ -1,6 +1,3 @@
-#
-# pyvider/cli/install_command.py
-#
 import pathlib
 import shutil
 import sys
@@ -101,6 +98,3 @@ def install_command(ctx: click.Context) -> None:
                 bold=True,
             )
             raise click.Abort() from e
-
-
-# 🐍🏗️📄🪄

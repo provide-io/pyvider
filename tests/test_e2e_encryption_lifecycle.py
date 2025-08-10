@@ -41,6 +41,3 @@ async def test_private_state_verifier_lifecycle(encryption_key_env, provider_in_
         assert final_state.value["decrypted_token"].value == "SECRET_FOR_TEST-RUN"
     finally:
         hub.unregister("resource", resource_name)
-
-
-# 🐍🏗️🧪🪄

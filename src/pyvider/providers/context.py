@@ -1,6 +1,3 @@
-#
-# pyvider/providers/context.py
-#
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -28,6 +25,3 @@ class ProviderContext(BaseContext):
         logger.info(
             "ProviderContext initialized", config_type=type(self.config).__name__
         )
-
-
-# 🐍🏗️📄🪄

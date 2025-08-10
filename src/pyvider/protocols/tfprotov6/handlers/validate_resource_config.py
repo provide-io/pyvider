@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/validate_resource_config.py
-#
-# pyvider/protocols/tfprotov6/handlers/validate_resource_config.py
-#
-# pyvider/protocols/tfprotov6/handlers/validate_resource_config.py
-#
-
 from typing import Any
 
 from pyvider.conversion import unmarshal
@@ -45,6 +37,3 @@ async def ValidateResourceConfigHandler(
         response.diagnostics.append(diag)
 
     return response
-
-
-# 🐍🏗️⚙️🪄

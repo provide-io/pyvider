@@ -342,6 +342,3 @@ def test_inheritance_structure():
 
     assert issubclass(pyvider_exceptions_module.ValidationError, pyvider_exceptions_module.PyviderValueError)
     assert issubclass(pyvider_exceptions_module.AttributeValidationError, pyvider_exceptions_module.ValidationError)
-
-
-# 🐍🏗️🧪🪄

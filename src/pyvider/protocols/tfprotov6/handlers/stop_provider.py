@@ -1,10 +1,7 @@
 #
-# pyvider/protocols/tfprotov6/handlers/stop_provider.py
+# pyvider/src/pyvider/protocols/tfprotov6/handlers/stop_provider.py
 #
-# pyvider/protocols/tfprotov6/handlers/stop_provider.py
-#
-# pyvider/protocols/tfprotov6/handlers/stop_provider.py
-#
+
 
 from typing import Any
 
@@ -59,6 +56,3 @@ async def StopProviderHandler(
 
 
 # 🐍🏗⛮️
-
-
-# 🐍🏗️📄🪄

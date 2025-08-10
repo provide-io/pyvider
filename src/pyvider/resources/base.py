@@ -1,6 +1,3 @@
-#
-# pyvider/resources/base.py
-#
 from abc import ABC, abstractmethod
 from types import UnionType
 from typing import Any, TypeVar, get_args, get_origin
@@ -78,7 +75,9 @@ class BaseResource[ResourceType, StateType, ConfigType](ABC):
         for name, field_def in target_fields.items():
             if name in data and field_def.init:
                 raw_value = data[name]
-                converted_value = cls._cty_to_attrs_recursive(raw_value, field_def.type)
+                converted_value = cls._cty_to_attrs_recursive(
+                    raw_value, field_def.type
+                )
                 if converted_value is not None:
                     kwargs[name] = converted_value
 
@@ -211,6 +210,3 @@ class BaseResource[ResourceType, StateType, ConfigType](ABC):
 
     @abstractmethod
     async def _delete_apply(self, ctx: ResourceContext) -> None: ...
-
-
-# 🐍🏗️🏛️🪄

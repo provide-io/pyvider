@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/close_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/close_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/close_ephemeral_resource.py
-#
-
 from typing import Any
 
 import msgpack
@@ -58,6 +50,3 @@ async def CloseEphemeralResourceHandler(
         f"EPHEMERAL 🔒 Close for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
     )
     return response
-
-
-# 🐍🏗️📄🪄

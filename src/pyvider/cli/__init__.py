@@ -1,6 +1,3 @@
-#
-# pyvider/cli/__init__.py
-#
 """
 Pyvider CLI Package
 ==================
@@ -27,6 +24,3 @@ cli.add_command(provide_cmd)
 
 # 4. Expose the fully assembled 'cli' object for the entry point.
 __all__ = ["cli"]
-
-
-# 🐍🏗️🚀🪄

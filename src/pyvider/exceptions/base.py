@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/base.py
-#
 from typing import Any
 
 
@@ -109,6 +107,3 @@ class ComponentConfigurationError(FrameworkConfigurationError):
 
 
 # 🐍🏗️
-
-
-# 🐍🏗️🏛️🪄

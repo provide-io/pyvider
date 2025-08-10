@@ -1,6 +1,3 @@
-#
-# pyvider/cli/prep_commands.py
-#
 import pathlib
 import subprocess
 import sys
@@ -186,6 +183,3 @@ def prep_all(click_ctx: click.Context) -> None:
     click.secho(
         "\n🎉 All preparation steps completed successfully!", fg="green", bold=True
     )
-
-
-# 🐍🏗️📄🪄

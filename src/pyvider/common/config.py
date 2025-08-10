@@ -1,6 +1,3 @@
-#
-# pyvider/common/config.py
-#
 """
 Unified, layered configuration system for the Pyvider framework.
 """
@@ -97,6 +94,3 @@ class PyviderConfig:
     @property
     def loaded_file_path(self) -> Path | None:
         return self._loaded_from_path
-
-
-# 🐍🏗️⚙️🪄

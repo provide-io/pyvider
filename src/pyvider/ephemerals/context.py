@@ -1,6 +1,3 @@
-#
-# pyvider/ephemerals/context.py
-#
 from typing import TypeVar
 
 from attrs import define
@@ -20,6 +17,3 @@ class EphemeralResourceContext[ConfigType, PrivateStateType](BaseContext):
 
     config: ConfigType | None = None
     private_state: PrivateStateType | None = None
-
-
-# 🐍🏗️📄🪄

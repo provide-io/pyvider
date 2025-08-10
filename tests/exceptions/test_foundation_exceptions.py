@@ -37,6 +37,3 @@ class TestFoundationExceptions:
 
         err_custom = UnsupportedTypeError(type_name="MyType")
         assert str(err_custom) == "Unsupported type encountered: 'MyType'."
-
-
-# 🐍🏗️🧪🪄

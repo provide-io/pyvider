@@ -1,6 +1,5 @@
-#
 # pyvider/exceptions/validation.py
-#
+
 from .base import PyviderValueError
 
 
@@ -30,6 +29,3 @@ class AttributeValidationError(ValidationError):
         self.attribute_name = attribute_name
         full_message = f"Attribute '{attribute_name}' validation failed: {message}"
         super().__init__(full_message, context=context, detail=detail)
-
-
-# 🐍🏗️📄🪄

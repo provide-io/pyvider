@@ -368,6 +368,3 @@ class DummyMapType(CtyType[CtyMap]):
 
     def __str__(self):
         return f"DummyMapType(key_type={self.key_type}, value_type={self.value_type})"
-
-
-# 🐍🏗️📄🪄

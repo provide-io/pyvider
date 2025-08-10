@@ -1,6 +1,5 @@
-#
 # pyvider/exceptions/function.py
-#
+
 from typing import Any
 
 from .base import PluginError, PyviderValueError
@@ -59,6 +58,3 @@ class FunctionValidationError(FunctionError, PyviderValueError):
             )
         elif argument_name:
             self.args = (f"Argument '{argument_name}' validation error: {message}",)
-
-
-# 🐍🏗️📄🪄

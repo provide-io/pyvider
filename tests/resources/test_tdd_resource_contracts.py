@@ -166,6 +166,3 @@ class TestResourceContracts:
 
         assert ctx_arg.planned_state is planned_state_from_plan
         assert ctx_arg.state is prior_state
-
-
-# 🐍🏗️🧪🪄

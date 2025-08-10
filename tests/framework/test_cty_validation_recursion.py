@@ -36,6 +36,3 @@ class TestCtyValidationRecursion:
 
         except RecursionError:
             pytest.fail("CtyDynamic.validate() caused a RecursionError.")
-
-
-# 🐍🏗️🧪🪄

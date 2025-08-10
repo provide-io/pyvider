@@ -1,6 +1,5 @@
-#
 # pyvider/common/utils/availability.py
-#
+
 from pyvider.telemetry import logger
 
 try:
@@ -16,6 +15,3 @@ try:
 except Exception as e:
     HAS_MSGPACK = False
     logger.error(f"❌ Error checking msgpack availability: {e}")
-
-
-# 🐍🏗️📄🪄

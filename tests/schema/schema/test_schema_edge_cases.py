@@ -19,6 +19,3 @@ async def test_null_values():
 
     with pytest.raises(CtyValidationError, match="Attribute cannot be null"):
         schema.validate_config(invalid_config)
-
-
-# 🐍🏗️🧪🪄

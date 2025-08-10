@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-#
-# pyvider/cli/main.py
-#
 import click
 
 from .context import PyviderContext
@@ -36,6 +32,3 @@ def cli(ctx: click.Context) -> None:
 
 # This decorator is for our custom context object, which is correct for subcommands.
 pass_ctx = click.make_pass_decorator(PyviderContext, ensure=True)
-
-
-# 🐍🏗️📄🪄

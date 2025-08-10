@@ -19,5 +19,3 @@ def _append_path():
 
 _append_path()
 
-
-# 🐍🏗️📄🪄

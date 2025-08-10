@@ -1,6 +1,3 @@
-#
-# pyvider/common/encryption.py
-#
 import os
 
 from cryptography.hazmat.primitives import hashes
@@ -80,6 +77,3 @@ def decrypt(ciphertext: bytes) -> bytes:
         raise ValueError(
             "🔐 Private state decryption failed. This can happen if the shared secret has changed."
         ) from e
-
-
-# 🐍🏗️📄🪄

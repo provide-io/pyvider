@@ -1,6 +1,8 @@
 #
 # pyvider/exceptions/foundation.py
 #
+
+
 class PyviderError(Exception):
     """Base class for all Pyvider errors."""
 
@@ -46,6 +48,3 @@ class UnsupportedTypeError(PyviderError):
 
 
 # 🐍🏗
-
-
-# 🐍🏗️📄🪄

@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/grpc.py
-#
 from .base import PluginError
 
 
@@ -26,6 +24,3 @@ class RateLimitError(GRPCError):
     """Raised when a gRPC operation is rate-limited."""
 
     pass
-
-
-# 🐍🏗️📄🪄

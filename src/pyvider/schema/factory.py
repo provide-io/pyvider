@@ -1,6 +1,3 @@
-#
-# pyvider/schema/factory.py
-#
 from typing import Any
 
 import attrs
@@ -209,6 +206,3 @@ def a_null(schema_builder: PvsAttribute | PvsSchema) -> CtyValue:
             "a_null() expects a schema builder instance like a_str() or s_resource()"
         )
     return CtyValue.null(target_type)
-
-
-# 🐍🏗️📄🪄

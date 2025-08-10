@@ -1,6 +1,3 @@
-#
-# pyvider/common/utils/attrs_factory.py
-#
 from typing import Any
 
 import attrs
@@ -81,6 +78,3 @@ def create_attrs_class_from_schema(
 
     # Use attrs.make_class to programmatically create the class
     return attrs.make_class(class_name, attrs_fields, frozen=True)
-
-
-# 🐍🏗️📄🪄

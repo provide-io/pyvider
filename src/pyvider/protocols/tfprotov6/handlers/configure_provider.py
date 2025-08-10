@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/configure_provider.py
-#
-# pyvider/protocols/tfprotov6/handlers/configure_provider.py
-#
-# pyvider/protocols/tfprotov6/handlers/configure_provider.py
-#
-
 from typing import Any
 
 from pyvider.conversion import unmarshal
@@ -68,6 +60,3 @@ async def ConfigureProviderHandler(
         response.diagnostics.append(diag)
 
     return response
-
-
-# 🐍🏗️⚙️🪄

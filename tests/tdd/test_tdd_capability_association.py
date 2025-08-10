@@ -35,6 +35,3 @@ class TestTddCapabilityAssociation:
             await provider.setup()
         except FrameworkConfigurationError:
             pytest.fail("Provider setup failed for a valid provider component.")
-
-
-# 🐍🏗️🧪🪄

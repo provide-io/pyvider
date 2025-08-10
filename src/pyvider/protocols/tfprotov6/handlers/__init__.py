@@ -1,6 +1,7 @@
 #
 # pyvider/protocols/tfprotov6/handlers/__init__.py
 #
+
 from .apply_resource_change import ApplyResourceChangeHandler
 from .call_function import CallFunctionHandler
 from .close_ephemeral_resource import CloseEphemeralResourceHandler
@@ -46,6 +47,3 @@ __all__ = [
 ]
 
 # 🐍🏗⛮️
-
-
-# 🐍🏗️🚀🪄

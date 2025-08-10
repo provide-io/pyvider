@@ -1,6 +1,5 @@
-#
-# pyvider/providers/__init__.py
-#
+# pyvider/src/pyvider/providers/__init__.py
+
 from .base import BaseProvider
 from .context import ProviderContext
 from .decorators import register_provider
@@ -14,6 +13,3 @@ __all__ = [
 ]
 
 # 🐍🏗️
-
-
-# 🐍🏗️🚀🪄

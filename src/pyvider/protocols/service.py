@@ -1,6 +1,7 @@
 #
 # pyvider/protocols/service.py
 #
+
 import asyncio
 from collections.abc import AsyncGenerator
 from typing import Any
@@ -119,6 +120,3 @@ class ProtocolService:
             except Exception as e:
                 logger.error(f"Heartbeat error: {e}")
                 break
-
-
-# 🐍🏗️📄🪄

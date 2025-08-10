@@ -89,6 +89,3 @@ class TestResourceUpdateLifecycle:
         final_state_cty = unmarshal(apply_response.new_state, schema=schema.block)
         assert final_state_cty.value["permissions"].value == "0o777"
         assert oct(temp_dir_with_initial_state.stat().st_mode & 0o777) == "0o777"
-
-
-# 🐍🏗️🧪🪄

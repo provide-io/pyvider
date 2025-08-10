@@ -1,6 +1,3 @@
-#
-# pyvider/ephemerals/base.py
-#
 from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import TypeVar
@@ -88,6 +85,3 @@ class BaseEphemeralResource[ResultType, PrivateStateType, ConfigType](ABC):
             ctx: The context containing the final private state.
         """
         ...
-
-
-# 🐍🏗️🏛️🪄

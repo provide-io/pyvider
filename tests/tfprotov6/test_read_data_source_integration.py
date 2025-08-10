@@ -40,6 +40,3 @@ async def test_read_data_source_with_dynamic_output():
         assert response.state.msgpack is not None
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
-
-
-# 🐍🏗️🧪🪄

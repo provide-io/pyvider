@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/validate_ephemeral_resource_config.py
-#
-# pyvider/protocols/tfprotov6/handlers/validate_ephemeral_resource_config.py
-#
-# pyvider/protocols/tfprotov6/handlers/validate_ephemeral_resource_config.py
-#
-
 from typing import Any
 
 from pyvider.conversion import unmarshal
@@ -61,6 +53,3 @@ async def ValidateEphemeralResourceConfigHandler(
         f"EPHEMERAL 🔎 Validation for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
     )
     return response
-
-
-# 🐍🏗️⚙️🪄

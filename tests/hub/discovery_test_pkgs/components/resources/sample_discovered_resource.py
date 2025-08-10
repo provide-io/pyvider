@@ -12,6 +12,3 @@ class ActualDiscoveredResource(BaseResource):
     async def delete(self, ctx): pass
     @staticmethod
     def get_schema(): return s_resource({"name": a_str()})
-
-
-# 🐍🏗️📄🪄

@@ -1,6 +1,7 @@
 #
 # pyvider/resources/exceptions.py
 #
+
 from pyvider.exceptions import PyviderError
 
 
@@ -25,6 +26,3 @@ class ResourceStateError(ResourceError):
 
 
 # 🐍🏗️
-
-
-# 🐍🏗️⚠️🪄

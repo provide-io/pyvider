@@ -1,6 +1,3 @@
-#
-# pyvider/cli/context.py
-#
 import pathlib
 import platform
 import sys
@@ -77,6 +74,3 @@ class PyviderContext:
 
 
 pass_ctx = click.make_pass_decorator(PyviderContext, ensure=True)
-
-
-# 🐍🏗️📄🪄

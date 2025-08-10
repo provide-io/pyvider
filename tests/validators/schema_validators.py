@@ -50,6 +50,3 @@ def validate_schema_object(schema):
                 raise ValueError(f"Block missing 'name': {block}")
             if not hasattr(block, "nested") or not isinstance(block.nested, bool):
                 raise ValueError(f"Block 'nested' must be a boolean: {block}")
-
-
-# 🐍🏗️📊🪄

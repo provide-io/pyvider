@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/resource.py
-#
 from .base import PluginError, PyviderValueError
 
 
@@ -52,6 +50,3 @@ class ResourceLifecycleContractError(ResourceError):
     def __init__(self, message: str, *, detail: str | None = None) -> None:
         self.detail = detail
         super().__init__(message)
-
-
-# 🐍🏗️📄🪄

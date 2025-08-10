@@ -1,6 +1,3 @@
-#
-# pyvider/capabilities/decorators.py
-#
 import asyncio
 from collections.abc import Callable
 from functools import wraps
@@ -76,6 +73,3 @@ def requires_capability(func: Callable) -> Callable:
             return func(*args, **kwargs)
 
         return sync_wrapper
-
-
-# 🐍🏗️📄🪄

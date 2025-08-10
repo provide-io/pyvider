@@ -1,5 +1,5 @@
 #
-# pyvider/common/types.py
+# pyvider/common_types.py
 #
 """Defines common, primitive type aliases used across the framework."""
 
@@ -13,6 +13,3 @@ type SchemaType = dict[str, Any]
 __all__ = ["ConfigType", "SchemaType", "StateType"]
 
 # 🐍🏗️
-
-
-# 🐍🏗️📄🪄

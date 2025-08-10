@@ -1,6 +1,7 @@
 #
 # pyvider/functions/__init__.py
 #
+
 """
 Pyvider Functions Module
 
@@ -25,6 +26,3 @@ __all__ = [
     "function_to_dict",
     "register_function",
 ]
-
-
-# 🐍🏗️🚀🪄

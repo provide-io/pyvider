@@ -9,6 +9,3 @@ echo "Installing OpenTofu..."
 curl --proto '=https' --tlsv1.2 -fsSL https://get.opentofu.org/install-opentofu.sh -o /tmp/install-opentofu.sh
 sh /tmp/install-opentofu.sh --install-method deb
 rm /tmp/install-opentofu.sh
-
-
-# 🐍🏗️📄🪄

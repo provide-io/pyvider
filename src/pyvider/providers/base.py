@@ -1,6 +1,3 @@
-#
-# pyvider/providers/base.py
-#
 import asyncio
 from typing import Any
 
@@ -68,6 +65,3 @@ class BaseProvider:
                 "Provider schema was requested before the setup() hook was run."
             )
         return self._final_schema
-
-
-# 🐍🏗️🏛️🪄

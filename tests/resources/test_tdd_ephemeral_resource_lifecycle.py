@@ -139,6 +139,3 @@ async def test_ephemeral_resource_full_lifecycle():
 
     finally:
         hub.unregister("ephemeral_resource", resource_name)
-
-
-# 🐍🏗️🧪🪄

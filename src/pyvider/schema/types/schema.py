@@ -1,6 +1,4 @@
-#
 # pyvider/schema/types/schema.py
-#
 from typing import Any
 
 from attrs import define, field
@@ -55,6 +53,3 @@ class PvsSchema:
         Since the block is now a PvsObjectType, this is a direct return.
         """
         return self.block
-
-
-# 🐍🏗️📊🪄

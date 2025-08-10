@@ -1,10 +1,6 @@
 #
 # pyvider/protocols/tfprotov6/handlers/get_metadata.py
 #
-# pyvider/protocols/tfprotov6/handlers/get_metadata.py
-#
-# pyvider/protocols/tfprotov6/handlers/get_metadata.py
-#
 
 from typing import Any
 
@@ -69,6 +65,3 @@ async def GetMetadataHandler(
 
 
 # 🐍🏗⛮️
-
-
-# 🐍🏗️📄🪄

@@ -26,6 +26,3 @@ def test_apply_schema_marks_adds_sensitive_mark():
 
     # THEN the resulting value must have the sensitive mark
     assert marked_value.has_mark(CtyMark("sensitive"))
-
-
-# 🐍🏗️🧪🪄

@@ -131,6 +131,3 @@ async def test_private_state_is_passed_from_plan_to_apply():
     assert final_state is not None
     assert final_state.internal_id == "id-planned"
     assert final_private_state is None
-
-
-# 🐍🏗️🧪🪄

@@ -1,6 +1,4 @@
-#
 # pyvider/common/operation_context.py
-#
 """
 Manages the operational context for CTY type and value processing.
 """
@@ -49,6 +47,3 @@ def operation_context(context: OperationContext) -> None:
         logger.debug(
             f"🧰🔄📊 Popped operation context, restored to: {_current_operation_context.get().name}"
         )
-
-
-# 🐍🏗️📄🪄

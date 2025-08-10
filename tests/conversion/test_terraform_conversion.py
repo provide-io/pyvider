@@ -11,6 +11,3 @@ def simple_schema():
         version=1,
         block=PvsObjectType(attribute_types={"name": CtyString()})
     )
-
-
-# 🐍🏗️🧪🪄

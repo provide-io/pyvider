@@ -20,6 +20,3 @@ if [ ${#install_list[@]} -gt 0 ]; then
     echo "Installing missing dependencies: ${install_list[*]}"
     sudo apt-get install -y -qq "${install_list[@]}"
 fi
-
-
-# 🐍🏗️📄🪄

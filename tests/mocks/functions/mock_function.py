@@ -17,6 +17,3 @@ def mock_function(data: dict) -> bool:
         bool: True if the data contains the required key 'valid', False otherwise.
     """
     return "valid" in data
-
-
-# 🐍🏗️📄🪄

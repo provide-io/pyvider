@@ -14,6 +14,3 @@ def simple_resource_schema():
             optional_attributes=frozenset(["count"])
         )
     )
-
-
-# 🐍🏗️🧪🪄

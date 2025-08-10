@@ -8,6 +8,3 @@ def test_schema_validation():
         "block_types": [{"name": "block1", "nested": True}]
     }
     validate_schema_dict(schema)
-
-
-# 🐍🏗️🧪🪄

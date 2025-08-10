@@ -1,6 +1,4 @@
-#
-# pyvider/conversion/schema_adapter.py
-#
+# pyvider/src/pyvider/conversion/schema_adapter.py
 import json
 
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
@@ -64,6 +62,3 @@ def _pvs_nested_block_to_proto(nb: PvsNestedBlock) -> pb.Schema.NestedBlock:
         min_items=nb.min_items or 0,
         max_items=nb.max_items or 0,
     )
-
-
-# 🐍🏗️📊🪄

@@ -1,10 +1,6 @@
 #
 # pyvider/protocols/tfprotov6/handlers/validate_provider_config.py
 #
-# pyvider/protocols/tfprotov6/handlers/validate_provider_config.py
-#
-# pyvider/protocols/tfprotov6/handlers/validate_provider_config.py
-#
 
 from typing import Any
 
@@ -42,6 +38,3 @@ async def ValidateProviderConfigHandler(
 
 
 # 🐍🏗⛮️
-
-
-# 🐍🏗️⚙️🪄

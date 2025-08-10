@@ -1,6 +1,4 @@
-#
-# pyvider/schema/types/object.py
-#
+# pyvider-schema/src/pyvider/schema/types/object.py
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -60,6 +58,3 @@ class PvsObjectType(PvsType):
             attribute_types=attribute_types,
             optional_attributes=frozenset(optional_attributes),
         )
-
-
-# 🐍🏗️📄🪄

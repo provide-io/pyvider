@@ -69,6 +69,3 @@ async def test_plan_handler_collects_attribute_warnings(provider_in_hub):
         assert diag.attribute.steps[0].attribute_name == "old_name"
     finally:
         hub.unregister("resource", resource_name)
-
-
-# 🐍🏗️🧪🪄

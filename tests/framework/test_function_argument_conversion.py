@@ -25,6 +25,3 @@ class TestFunctionArgumentConversion:
         arg_proto = marshal(cty_val, schema=CtyDynamic())
         result = simulate_unmarshal_and_convert(arg_proto, CtyDynamic())
         assert result == [10, 20, 30.5]
-
-
-# 🐍🏗️🧪🪄

@@ -343,6 +343,3 @@ class TestEncryptionCompatibility:
             encrypted = encrypt(test_data)
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
-
-
-# 🐍🏗️🧪🪄

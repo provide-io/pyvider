@@ -1,6 +1,7 @@
 #
-# pyvider/protocols/tfprotov6/protobuf/__init__.py
+# protocols/tfprotov6/__init__.py
 #
+
 from google.protobuf.empty_pb2 import Empty
 
 from .tfplugin6_pb2 import (  # Core Protobuf Messages; Schema and Attribute Definitions; Capabilities; Functions; Validation Operations; Planning and State Operations; Read Operations; Ephemeral Resource Operations; Provider Configuration
@@ -93,6 +94,3 @@ __all__ = [
 ]
 
 # 🐍🏗️
-
-
-# 🐍🏗️🚀🪄

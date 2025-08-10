@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-#
-# pyvider/__main__.py
-#
 """
 Makes the 'pyvider' package executable using 'python -m pyvider'.
 
@@ -13,6 +9,3 @@ from pyvider.cli.__main__ import main
 
 if __name__ == "__main__":
     main()
-
-
-# 🐍🏗️🖥️🪄

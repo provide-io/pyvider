@@ -7,6 +7,3 @@ if ! command -v brew &> /dev/null; then
 else
     echo "Homebrew is already installed."
 fi
-
-
-# 🐍🏗️📄🪄

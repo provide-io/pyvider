@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/call_function.py
-#
-# pyvider/protocols/tfprotov6/handlers/call_function.py
-#
-# pyvider/protocols/tfprotov6/handlers/call_function.py
-#
-
 import inspect
 from typing import Any
 
@@ -165,6 +157,3 @@ async def CallFunctionHandler(
         response.error.text = f"{diag.summary}: {diag.detail}"
 
     return response
-
-
-# 🐍🏗️📄🪄

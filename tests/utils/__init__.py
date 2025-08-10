@@ -5,6 +5,3 @@ from .dummy_types import DummyType
 __all__ = [
     'DummyType',
 ]
-
-
-# 🐍🏗️🚀🪄

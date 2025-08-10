@@ -1,6 +1,4 @@
-#
 # pyvider/schema/__init__.py
-#
 from .factory import (
     a_bool,
     a_dyn,
@@ -60,6 +58,3 @@ __all__ = [
     "s_provider",
     "s_resource",
 ]
-
-
-# 🐍🏗️🚀🪄

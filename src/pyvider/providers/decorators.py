@@ -1,6 +1,5 @@
-#
-# pyvider/providers/decorators.py
-#
+# pyvider/src/pyvider/providers/decorators.py
+
 from collections.abc import Callable
 
 from pyvider.hub import hub
@@ -21,6 +20,3 @@ def register_provider(name: str) -> Callable[[type], type]:
         return cls
 
     return decorator
-
-
-# 🐍🏗️📄🪄

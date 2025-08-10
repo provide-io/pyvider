@@ -1,6 +1,3 @@
-#
-# pyvider/resources/decorators.py
-#
 from collections.abc import Callable
 from typing import ParamSpec, TypeVar
 
@@ -21,13 +18,10 @@ def register_resource(
         cls._is_registered_resource = True  # type: ignore
         cls._registered_name = name
         if component_of:
-            cls._parent_capability = component_of  # type: ignore
+                            cls._parent_capability = component_of  # type: ignore
         logger.debug(
             f"🔧 Marked resource '{name}' for discovery", capability=component_of
         )
         return cls
 
     return decorator
-
-
-# 🐍🏗️📄🪄

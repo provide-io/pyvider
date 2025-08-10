@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/get_provider_schema.py
-#
-# pyvider/protocols/tfprotov6/handlers/get_provider_schema.py
-#
-# pyvider/protocols/tfprotov6/handlers/get_provider_schema.py
-#
-
 import asyncio
 from typing import Any
 
@@ -165,6 +157,3 @@ async def _set_future_result(future: asyncio.Future) -> None:
             "Catastrophic failure during schema computation task.", exc_info=True
         )
         future.set_exception(e)
-
-
-# 🐍🏗️📊🪄

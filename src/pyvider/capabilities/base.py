@@ -1,6 +1,3 @@
-#
-# pyvider/capabilities/base.py
-#
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -27,6 +24,3 @@ class BaseCapability(ABC):
         provider's configuration schema.
         """
         raise NotImplementedError
-
-
-# 🐍🏗️🏛️🪄

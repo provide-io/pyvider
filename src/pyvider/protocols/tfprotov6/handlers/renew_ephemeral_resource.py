@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/renew_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/renew_ephemeral_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/renew_ephemeral_resource.py
-#
-
 from typing import Any
 
 import attrs
@@ -69,6 +61,3 @@ async def RenewEphemeralResourceHandler(
         f"EPHEMERAL ⏳ Renew for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
     )
     return response
-
-
-# 🐍🏗️📄🪄

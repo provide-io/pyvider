@@ -1,6 +1,4 @@
-#
 # pyvider/schema/types/__init__.py
-#
 from .attribute import PvsAttribute
 from .blocks import PvsNestedBlock
 from .enums import NestingMode, StringKind
@@ -17,6 +15,3 @@ __all__ = [
     "PvsType",
     "StringKind",
 ]
-
-
-# 🐍🏗️🚀🪄

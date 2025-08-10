@@ -23,6 +23,3 @@ def validate_proto(proto):
                 raise ValueError(f"Proto block missing 'name': {block}")
             if not hasattr(block, "nested") or not isinstance(block.nested, bool):
                 raise ValueError(f"Proto block 'nested' must be a boolean: {block}")
-
-
-# 🐍🏗️📄🪄

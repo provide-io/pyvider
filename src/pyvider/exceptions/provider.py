@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/provider.py
-#
 from .base import ComponentConfigurationError, PluginError
 
 
@@ -20,6 +18,3 @@ class ProviderInitializationError(ProviderError):
     """Raised when provider initialization fails."""
 
     pass
-
-
-# 🐍🏗️📄🪄

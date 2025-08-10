@@ -1,6 +1,4 @@
-#
 # pyvider/resources/private_state.py
-#
 from attrs import define
 
 
@@ -13,6 +11,3 @@ class PrivateState:
     """
 
     pass
-
-
-# 🐍🏗️📄🪄

@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/apply_resource_change.py
-#
-# pyvider/protocols/tfprotov6/handlers/apply_resource_change.py
-#
-# pyvider/protocols/tfprotov6/handlers/apply_resource_change.py
-#
-
 from typing import Any
 
 import attrs
@@ -194,6 +186,3 @@ async def ApplyResourceChangeHandler(
         response.diagnostics.extend(resource_context.diagnostics)
 
     return response
-
-
-# 🐍🏗️📄🪄

@@ -36,6 +36,3 @@ class TestSchemaArchitecture:
         invalid_config = {"name": "test", "count": "not-a-number"}
         with pytest.raises(CtyValidationError, match="Cannot represent str value"):
             valid_schema.validate_config(invalid_config)
-
-
-# 🐍🏗️🧪🪄

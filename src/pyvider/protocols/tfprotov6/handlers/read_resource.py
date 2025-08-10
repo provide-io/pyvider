@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/read_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/read_resource.py
-#
-# pyvider/protocols/tfprotov6/handlers/read_resource.py
-#
-
 from typing import Any
 
 import msgpack
@@ -92,6 +84,3 @@ async def ReadResourceHandler(
         response.diagnostics.extend(resource_context.diagnostics)
 
     return response
-
-
-# 🐍🏗️📄🪄

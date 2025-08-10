@@ -81,6 +81,3 @@ class TestFunctionDispatch:
         assert not response.error.text, f"Function call failed unexpectedly: {response.error.text}"
         result_cty = unmarshal(response.result, schema=CtyString())
         assert result_cty.value == "Hello, World!"
-
-
-# 🐍🏗️🧪🪄

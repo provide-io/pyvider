@@ -1,6 +1,3 @@
-#
-# pyvider/data_sources/decorators.py
-#
 from collections.abc import Callable
 
 from pyvider.telemetry import logger
@@ -18,12 +15,7 @@ def register_data_source(
         cls._registered_name = name  # type: ignore
         if component_of:
             cls._parent_capability = component_of  # type: ignore
-        logger.debug(
-            f"📊 Marked data source '{name}' for discovery", capability=component_of
-        )
+        logger.debug(f"📊 Marked data source '{name}' for discovery", capability=component_of)
         return cls
 
     return decorator
-
-
-# 🐍🏗️📄🪄

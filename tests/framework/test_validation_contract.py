@@ -94,6 +94,3 @@ class TestValidationContract:
             assert diag.summary == "Name cannot be 'invalid'."
         finally:
             hub.unregister("resource", resource_name)
-
-
-# 🐍🏗️🧪🪄

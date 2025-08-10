@@ -36,6 +36,3 @@ esac
 rm -f /tmp/install-opentofu.sh
 
 echo "OpenTofu installation complete!"
-
-
-# 🐍🏗️📄🪄

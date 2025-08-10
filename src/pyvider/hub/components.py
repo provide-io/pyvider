@@ -1,6 +1,3 @@
-#
-# pyvider/hub/components.py
-#
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any
@@ -83,6 +80,3 @@ def get_hub_diagnostics() -> dict[str, Any]:
             comp_type: len(comp_dict) for comp_type, comp_dict in components.items()
         },
     }
-
-
-# 🐍🏗️📄🪄

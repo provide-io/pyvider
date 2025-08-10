@@ -1,6 +1,3 @@
-#
-# pyvider/functions/adapters.py
-#
 from collections.abc import Callable
 from decimal import Decimal
 import inspect
@@ -154,6 +151,3 @@ def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
     _extract_docstring_meta(func_obj, base_meta)
 
     return base_meta
-
-
-# 🐍🏗️📄🪄

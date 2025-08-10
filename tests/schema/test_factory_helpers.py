@@ -110,6 +110,3 @@ class TestANullHelper:
     def test_a_null_raises_type_error_for_invalid_input(self, invalid_input):
         with pytest.raises(TypeError, match="a_null.. expects a schema builder instance"):
             a_null(invalid_input)
-
-
-# 🐍🏗️🧪🪄

@@ -1,6 +1,7 @@
 #
 # pyvider/resources/protocol.py
 #
+
 from typing import Protocol, runtime_checkable
 
 from pyvider.common.types import ConfigType, StateType
@@ -38,6 +39,3 @@ class ResourceProtocol(Protocol[ResourceType, StateType, ConfigType]):
 
 
 # 🐍🏗️
-
-
-# 🐍🏗️📄🪄

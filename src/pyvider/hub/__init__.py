@@ -1,6 +1,3 @@
-#
-# pyvider/hub/__init__.py
-#
 """
 Pyvider Component Hub
 =====================
@@ -23,6 +20,3 @@ __all__ = [
     "register_function",
     "register_resource",
 ]
-
-
-# 🐍🏗️🚀🪄

@@ -1,6 +1,3 @@
-#
-# pyvider/functions/decorators.py
-#
 from collections.abc import Callable
 from typing import Any
 
@@ -44,6 +41,3 @@ def register_function(
         return func
 
     return decorator
-
-
-# 🐍🏗️📄🪄

@@ -23,6 +23,3 @@ class TestAttributeFactoriesCoverage:
         cty_obj_type = obj_attr_factory_instance.type
         assert 'description' in cty_obj_type.optional_attributes
         assert 'count' not in cty_obj_type.optional_attributes
-
-
-# 🐍🏗️🧪🪄

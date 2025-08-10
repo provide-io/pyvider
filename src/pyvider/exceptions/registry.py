@@ -1,6 +1,4 @@
-#
 # pyvider/exceptions/registry.py
-#
 from .base import FrameworkConfigurationError
 
 
@@ -14,6 +12,3 @@ class ValidatorRegistrationError(ComponentRegistryError):
     """Raised when a non-callable is registered as a validator, or other validator issues."""
 
     pass
-
-
-# 🐍🏗️📄🪄

@@ -1,11 +1,4 @@
-#
 # pyvider/protocols/tfprotov6/adapters/function_adapter.py
-#
-# pyvider/protocols/tfprotov6/adapters/function_adapter.py
-#
-# pyvider/protocols/tfprotov6/adapters/function_adapter.py
-#
-
 import json
 from typing import Any
 
@@ -85,6 +78,3 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
     except Exception as e:
         logger.error(f"Error converting '{func_name}' to protobuf: {e}", exc_info=True)
         return None
-
-
-# 🐍🏗️📄🪄

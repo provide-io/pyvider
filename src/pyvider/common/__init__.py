@@ -1,6 +1,4 @@
-#
 # pyvider/common/__init__.py
-#
 from .operation_context import (
     OperationContext,
     get_current_operation,
@@ -12,6 +10,3 @@ __all__ = [
     "get_current_operation",
     "operation_context",
 ]
-
-
-# 🐍🏗️🚀🪄

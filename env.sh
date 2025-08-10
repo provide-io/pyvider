@@ -219,5 +219,3 @@ print_header "✅ Environment setup complete!"
 echo -e "The '${COLOR_GREEN}${PROJECT_NAME}${COLOR_NC}' development environment is ready."
 echo "The virtual environment is active in this shell."
 echo "To exit, simply run 'deactivate'."
-
-# 🐍🏗️🌍🪄

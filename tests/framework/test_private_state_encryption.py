@@ -87,6 +87,3 @@ async def test_full_lifecycle_with_encryption(encryption_key_env, provider_in_hu
         assert not apply_response.diagnostics
     finally:
         hub.unregister("resource", resource_name)
-
-
-# 🐍🏗️🧪🪄

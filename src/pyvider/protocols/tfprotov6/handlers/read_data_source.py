@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/read_data_source.py
-#
-# pyvider/protocols/tfprotov6/handlers/read_data_source.py
-#
-# pyvider/protocols/tfprotov6/handlers/read_data_source.py
-#
-
 from typing import Any
 
 from pyvider.conversion import marshal, unmarshal
@@ -94,6 +86,3 @@ async def ReadDataSourceHandler(
         response.diagnostics.extend(resource_context.diagnostics)
 
     return response
-
-
-# 🐍🏗️📄🪄

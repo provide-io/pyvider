@@ -9,6 +9,3 @@ class DiscoveredRes:
 def discovered_func_simple(): pass
 discovered_func_simple._is_registered_function = True # type: ignore
 discovered_func_simple._registered_name = "discovered_func_simple" # type: ignore
-
-
-# 🐍🏗️📄🪄

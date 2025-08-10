@@ -1,6 +1,3 @@
-#
-# pyvider/cli/config_commands.py
-#
 import os
 import tomllib
 
@@ -67,6 +64,3 @@ def show_config(ctx: PyviderContext) -> None:
     click.echo(f"  Detected Terraform Architecture: {ctx.tf_arch}")
     click.echo(f"  Effective Provider Version: {ctx.pyvider_version}")
     click.echo(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")
-
-
-# 🐍🏗️⚙️🪄

@@ -28,6 +28,3 @@ class TestPvsObjectType:
         # This test now correctly checks that the *converted* CtyType can validate
         validated = cty_type.validate({"name": "test"})
         assert validated["name"].value == "test"
-
-
-# 🐍🏗️🧪🪄

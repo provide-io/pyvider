@@ -1,11 +1,3 @@
-#
-# pyvider/protocols/tfprotov6/handlers/utils_timestamp.py
-#
-# pyvider/protocols/tfprotov6/handlers/utils_timestamp.py
-#
-# pyvider/protocols/tfprotov6/handlers/utils_timestamp.py
-#
-
 import datetime
 
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -18,6 +10,3 @@ def datetime_to_proto(dt: datetime.datetime) -> Timestamp:
     ts = Timestamp()
     ts.FromDatetime(dt)
     return ts
-
-
-# 🐍🏗️🛠️🪄

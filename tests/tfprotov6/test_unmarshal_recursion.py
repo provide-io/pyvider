@@ -31,6 +31,3 @@ async def test_unmarshal_captured_payload_avoids_recursion():
         assert not result_cty_val.is_null, "Unmarshalled value should not be null"
     except RecursionError:
         pytest.fail("unmarshal_value caused a RecursionError with the captured payload.")
-
-
-# 🐍🏗️🧪🪄

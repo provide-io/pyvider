@@ -1,6 +1,3 @@
-#
-# pyvider/hub/discovery.py
-#
 import importlib
 import importlib.metadata
 import inspect
@@ -123,6 +120,3 @@ class ComponentDiscovery:
                             module=module.__name__,
                         )
                     break
-
-
-# 🐍🏗️📄🪄

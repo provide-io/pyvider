@@ -1,6 +1,4 @@
-#
-# pyvider/schema/types/types_base.py
-#
+# pyvider-schema/src/pyvider/schema/types/types_base.py
 """Base protocols to prevent circular imports in schema definitions."""
 
 from __future__ import annotations
@@ -22,6 +20,3 @@ class PvsType(Protocol):
     def to_cty_type(self) -> CtyType:
         """Converts the Pyvider Schema type to its equivalent CtyType."""
         ...
-
-
-# 🐍🏗️🏛️🪄

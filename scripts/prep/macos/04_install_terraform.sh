@@ -6,6 +6,3 @@ if ! command -v terraform &> /dev/null; then
     brew install hashicorp/tap/terraform
 fi
 brew upgrade hashicorp/tap/terraform
-
-
-# 🐍🏗️📄🪄
