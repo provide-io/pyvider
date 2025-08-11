@@ -4,7 +4,21 @@
 [workenv.env]
 # Configure sibling package installation
 sibling_patterns = ["pyvider-*"]
-special_siblings = ["tofusoup", "flavor", "wrkenv"]
+
+[[workenv.env.special_siblings]]
+name = "tofusoup"
+var_name = "tofusoup"
+with_deps = false
+
+[[workenv.env.special_siblings]]
+name = "flavor"
+var_name = "flavor"
+with_deps = false
+
+[[workenv.env.special_siblings]]
+name = "wrkenv"
+var_name = "wrkenv"
+with_deps = false
 
 [workenv.tools]
 # Tool versions can be specified here if needed
