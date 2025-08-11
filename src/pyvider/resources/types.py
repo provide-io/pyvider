@@ -4,10 +4,10 @@
 
 """Resource-specific type definitions."""
 
-from typing import TypeVar
+from typing import TypeAlias, TypeVar
 
 ResourceType = TypeVar("ResourceType")
-type ResourceName = str
-type ResourceId = str
+ResourceName: TypeAlias = str
+ResourceId: TypeAlias = str
 
 # 🐍🏗️

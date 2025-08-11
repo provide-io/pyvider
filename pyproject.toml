@@ -6,7 +6,7 @@
 name = "pyvider"
 description = "Python Terraform Provider Framework"
 version = "0.0.711"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "Apache-2.0" }
 authors = [
@@ -21,13 +21,15 @@ classifiers = [
     "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider-telemetry>=0.0.14",
-    "pyvider-rpcplugin>=0.0.14",
-    "pyvider-cty>=0.0.14",
+    "pyvider-telemetry @ file:///Users/tim/code/gh/provide-io/pyvider-telemetry",
+    "pyvider-rpcplugin @ file:///Users/tim/code/gh/provide-io/pyvider-rpcplugin",
+    "pyvider-cty @ file:///Users/tim/code/gh/provide-io/pyvider-cty",
     "attrs>=25.1.0",
     "click>=8.1.8",
     "grpcio>=1.73.0",
@@ -108,7 +110,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.11"
 mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
