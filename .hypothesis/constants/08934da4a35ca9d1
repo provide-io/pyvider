@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/adapters/function_adapter.py
+# hypothesis_version: 6.137.1
+
+['allow_null', 'cty_type', 'deprecation_message', 'description', 'name', 'parameters', 'return', 'summary', 'unknown', 'utf-8']

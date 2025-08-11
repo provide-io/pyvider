@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/resources/local_directory.py
+# hypothesis_version: 6.137.1
+
+[511, '01234567', '0o', '0o755', 'file_count', 'id', 'path', 'permissions']

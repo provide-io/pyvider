@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/grpc_controller_pb2.py
+# hypothesis_version: 6.137.1
+
+[100, '_EMPTY', '_GRPCCONTROLLER', 'grpc_controller_pb2']

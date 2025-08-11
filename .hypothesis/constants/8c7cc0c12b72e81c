@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-telemetry/src/pyvider/telemetry/logger/__init__.py
+# hypothesis_version: 6.137.1
+
+['PRIMARY_EMOJI', 'PyviderLogger', 'SECONDARY_EMOJI', 'TERTIARY_EMOJI', 'logger', 'show_emoji_matrix']

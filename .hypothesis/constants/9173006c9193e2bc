@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/exceptions/validation.py
+# hypothesis_version: 6.137.1
+
+['(root)', 'Boolean', 'List', 'Map', 'Number', 'Object', 'Set', 'String', 'Tuple', 'TypeDefinition']

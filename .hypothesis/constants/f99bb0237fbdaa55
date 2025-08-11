@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/client/base.py
+# hypothesis_version: 6.137.1
+
+[0.0, 0.1, 0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 100, 500, 1000, 1024, 5000, 10000, '/', '//', '1', 'Check plugin logs.', 'PLUGIN_CLIENT_CERT', 'PLUGIN_CLIENT_KEY', 'PYTHONUNBUFFERED', 'RPCPluginClient', 'UNKNOWN', 'broker', 'close', 'code', 'controller', 'details', 'ecdsa', 'env', 'localhost', 'name', 'replace', 'stdio', 'tcp', 'trace', 'true', 'unix', 'unix:', 'utf-8', 'value', '|']

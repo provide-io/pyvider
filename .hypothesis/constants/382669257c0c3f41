@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-telemetry/src/pyvider/telemetry/core.py
+# hypothesis_version: 6.137.1
+
+[5000, 'INFO', 'done', 'error', 'in_progress', 'json', 'key_value', 'stderr', 'sys.stderr']

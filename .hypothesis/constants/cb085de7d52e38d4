@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/call_function.py
+# hypothesis_version: 6.137.1
+
+['_parent_capability', 'capability', 'cty_type', 'function', 'name', 'parameters', 'provider', 'return']

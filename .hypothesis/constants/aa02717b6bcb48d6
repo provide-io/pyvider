@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-telemetry/src/pyvider/telemetry/logger/base.py
+# hypothesis_version: 6.137.1
+
+['DEBUG', '_active_config', '_internal_logger', '_pyvider_level_hint', 'critical', 'debug', 'done', 'error', 'exc_info', 'in_progress', 'info', 'key_value', 'logger_factory', 'pyvider.default', 'pyvider.dynamic_call', 'stderr', 'warning']

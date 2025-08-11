@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-telemetry/src/pyvider/telemetry/logger/custom_processors.py
+# hypothesis_version: 6.137.1
+
+[100, 1000, 'INFO', '_pyvider_level_hint', 'action', 'cache_limit', 'cache_size', 'cache_utilization', 'critical', 'das.test', 'debug', 'default', 'domain', 'emoji.test', 'error', 'event', 'exception', 'formatter.test', 'info', 'json.exc.test', 'level', 'logger_name', 'msg', 'pyvider.default', 'pyvider.dynamic_call', 'pyvider.telemetry', 'service.alpha', 'service.beta', 'service.beta.child', 'service.delta', 'service.name.test', 'simple', 'status', 'test', 'test.basic', 'unknown', 'warn', 'warning', '⚙️', '❓', '➡️', '🃏', '🇦', '🇧', '🇩', '🇬', '🎨', '🎭', '👣', '👶', '💡', '💥', '📄', '📛', '📝', '📦', '🔩', '🔹', '🗣️', '🛠️', '🧪']

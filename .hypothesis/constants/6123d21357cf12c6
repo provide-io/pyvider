@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/resources/file_content.py
+# hypothesis_version: 6.137.1
+
+['content', 'content_hash', 'exists', 'filename', 'pyvider_file_content', 'utf-8']

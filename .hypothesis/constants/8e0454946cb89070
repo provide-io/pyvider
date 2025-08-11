@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/conversion/explicit.py
+# hypothesis_version: 6.137.1
+
+[1024, 'CtyType', 'CtyValue', 'false', 'true']

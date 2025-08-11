@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/provider_config_reader.py
+# hypothesis_version: 6.137.1
+
+['api_endpoint', 'api_headers', 'api_retries', 'api_timeout', 'api_token', 'provider_context', 'singleton']

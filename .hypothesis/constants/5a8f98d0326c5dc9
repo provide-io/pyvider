@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/grpc_stdio_pb2_grpc.py
+# hypothesis_version: 6.137.1
+
+['1.73.0', 'StreamStdio', 'plugin.GRPCStdio']

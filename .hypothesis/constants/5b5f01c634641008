@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/resources/timed_token.py
+# hypothesis_version: 6.137.1
+
+['expires_at', 'id', 'name', 'pyvider_timed_token', 'token']

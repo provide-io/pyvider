@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/functions/datetime_functions.py
+# hypothesis_version: 6.137.1
+
+[3600, '%B', '%H', '%I', '%M', '%S', '%Y', '%Z', '%b', '%d', '%e', '%m', '%p', '%y', '%z', '(\\d+\\.?\\d*)([hms])', '(\\d+\\.?\\d*[hms])+', '+00:00', '01', '02', '03', '04', '05', '06', '15', '2006', 'CtyValue', 'Jan', 'January', 'MST', 'PM', 'Z', 'Z07:00', '_2', 'h', 'm', 's']

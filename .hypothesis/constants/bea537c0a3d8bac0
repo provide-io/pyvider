@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/data_sources/__init__.py
+# hypothesis_version: 6.137.1
+
+['register_data_source']

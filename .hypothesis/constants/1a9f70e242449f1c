@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-telemetry/src/pyvider/telemetry/config.py
+# hypothesis_version: 6.137.1
+
+['%Y-%m-%d %H:%M:%S.%f', ',', ':', 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'OTEL_SERVICE_NAME', 'PYVIDER_LOG_LEVEL', 'PYVIDER_SERVICE_NAME', 'TRACE', 'TelemetryConfig', 'WARNING', 'false', 'isatty', 'json', 'key_value', 'logger_name', 'service_name', 'timestamp', 'true']
