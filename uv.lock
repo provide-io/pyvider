@@ -944,7 +944,7 @@ requires-dist = [
     { name = "click", specifier = ">=8.1.8" },
     { name = "cryptography", specifier = ">=42.0.8" },
     { name = "google", specifier = ">=3.0.0" },
-    { name = "grpcio", specifier = ">=1.72.1" },
+    { name = "grpcio", specifier = ">=1.73.0" },
     { name = "msgpack", specifier = ">=1.1.1" },
     { name = "pyvider-cty", specifier = ">=0.0.14" },
     { name = "pyvider-rpcplugin", specifier = ">=0.0.14" },
