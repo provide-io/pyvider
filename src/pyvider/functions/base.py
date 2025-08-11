@@ -53,7 +53,7 @@ class FunctionParameter:
     """
 
     name: str = field()
-    type: CtyType[Any] = field()
+    type: CtyType = field()
     description: str = field(default="")
     allow_null: bool = field(default=False)
     allow_unknown: bool = field(default=False)
@@ -84,7 +84,7 @@ class FunctionReturnType:
         type: The CTY type constraint for the function's return value.
     """
 
-    type: CtyType[Any] = field()
+    type: CtyType = field()
 
     @type.validator
     def _validate_type(self, attribute: Any, value: CtyType) -> None:
@@ -197,7 +197,7 @@ class FunctionAdapter:
         return CtyDynamic()
 
     @staticmethod
-    def _infer_cty_type_for_hint(hint: Any) -> CtyType[Any]:
+    def _infer_cty_type_for_hint(hint: Any) -> CtyType:
         """Infers the CtyType from a given Python type hint."""
         origin_type = typing.get_origin(hint)
         args = typing.get_args(hint)
