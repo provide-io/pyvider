@@ -183,7 +183,56 @@ Write-Header "🤝 Installing Sibling Packages"
 $ParentDir = Split-Path -Parent (Get-Location)
 $SiblingCount = 0
 
+Get-ChildItem -Path $ParentDir -Directory -Filter "pyvider-*" | ForEach-Object {
+    $SiblingName = $_.Name
+    Write-Host "Installing $SiblingName..." -NoNewline
+    try {
+        & uv pip install --no-deps -e $_.FullName 2>&1 | Out-File -FilePath (Join-Path $LogDir "$SiblingName.log")
+        Write-Success " $SiblingName installed"
+        $SiblingCount++
+    }
+    catch {
+        Write-Warning " Failed to install $SiblingName"
+    }
+}
 
+# Special handling for specific packages
+$tofusoupDir = Join-Path $ParentDir "tofusoup"
+if (Test-Path $tofusoupDir) {
+    Write-Host "Found tofusoup package. Installing in editable mode..." -NoNewline
+    try {
+        & uv pip install --no-deps -e $tofusoupDir
+        Write-Success " tofusoup installed"
+    }
+    catch {
+        Write-Warning " Failed to install tofusoup package from '$tofusoupDir'"
+        Write-Host "Attempting to continue..."
+    }
+}
+$flavorDir = Join-Path $ParentDir "flavor"
+if (Test-Path $flavorDir) {
+    Write-Host "Found flavor package. Installing in editable mode..." -NoNewline
+    try {
+        & uv pip install --no-deps -e $flavorDir
+        Write-Success " flavor installed"
+    }
+    catch {
+        Write-Warning " Failed to install flavor package from '$flavorDir'"
+        Write-Host "Attempting to continue..."
+    }
+}
+$wrkenvDir = Join-Path $ParentDir "wrkenv"
+if (Test-Path $wrkenvDir) {
+    Write-Host "Found wrkenv package. Installing in editable mode..." -NoNewline
+    try {
+        & uv pip install --no-deps -e $wrkenvDir
+        Write-Success " wrkenv installed"
+    }
+    catch {
+        Write-Warning " Failed to install wrkenv package from '$wrkenvDir'"
+        Write-Host "Attempting to continue..."
+    }
+}
 
 if ($SiblingCount -eq 0) {
     Write-Warning "No sibling packages found"

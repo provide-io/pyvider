@@ -163,7 +163,42 @@ print_header "🤝 Installing Sibling Packages"
 PARENT_DIR=$(dirname "$(pwd)")
 SIBLING_COUNT=0
 
+for dir in "${PARENT_DIR}"/pyvider-*; do
+    if [ -d "${dir}" ]; then
+        SIBLING_NAME=$(basename "${dir}")
+        echo -n "Installing ${SIBLING_NAME}..."
+        uv pip install --no-deps -e "${dir}" > /tmp/pyvider_setup/${SIBLING_NAME}.log 2>&1 &
+        spinner $!
+        print_success "${SIBLING_NAME} installed"
+        ((SIBLING_COUNT++))
+    fi
+done
 
+# Special handling for specific packages
+tofusoup_DIR="${PARENT_DIR}/tofusoup"
+if [ -d "${TOFUSOUP_DIR}" ]; then
+    echo "Found tofusoup package. Installing in editable mode..."
+    if ! uv pip install --no-deps -e "${TOFUSOUP_DIR}"; then
+        print_warning "Failed to install tofusoup package from '${TOFUSOUP_DIR}' in editable mode."
+        echo "Attempting to continue..."
+    fi
+fi
+flavor_DIR="${PARENT_DIR}/flavor"
+if [ -d "${FLAVOR_DIR}" ]; then
+    echo "Found flavor package. Installing in editable mode..."
+    if ! uv pip install --no-deps -e "${FLAVOR_DIR}"; then
+        print_warning "Failed to install flavor package from '${FLAVOR_DIR}' in editable mode."
+        echo "Attempting to continue..."
+    fi
+fi
+wrkenv_DIR="${PARENT_DIR}/wrkenv"
+if [ -d "${WRKENV_DIR}" ]; then
+    echo "Found wrkenv package. Installing in editable mode..."
+    if ! uv pip install --no-deps -e "${WRKENV_DIR}"; then
+        print_warning "Failed to install wrkenv package from '${WRKENV_DIR}' in editable mode."
+        echo "Attempting to continue..."
+    fi
+fi
 
 if [ $SIBLING_COUNT -eq 0 ]; then
     print_warning "No sibling packages found"
