@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar, Type
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 import attrs
 from attrs import define, field
@@ -18,7 +18,7 @@ PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
 
 
 @define(frozen=True)
-class ResourceContext[ConfigType, StateType, PrivateStateType](BaseContext):
+class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateType]):
     config: ConfigType | None = None
     state: StateType | None = None
     planned_state: StateType | None = None
@@ -26,17 +26,19 @@ class ResourceContext[ConfigType, StateType, PrivateStateType](BaseContext):
     config_cty: CtyValue | None = None
     planned_state_cty: CtyValue | None = None
     capabilities: dict[str, BaseCapability] = field(factory=dict)
-    
-    def get_private_state(self, private_state_class: Type[PrivateStateType]) -> PrivateStateType | None:
+
+    def get_private_state(
+        self, private_state_class: type[PrivateStateType]
+    ) -> PrivateStateType | None:
         """
         Get typed private state with automatic casting.
-        
+
         Args:
             private_state_class: The private state class type to cast to
-            
+
         Returns:
             Typed private state instance or None if no private state exists
-            
+
         Example:
             private_data = ctx.get_private_state(MyPrivateState)
             if private_data:
@@ -47,15 +49,21 @@ class ResourceContext[ConfigType, StateType, PrivateStateType](BaseContext):
             if isinstance(self.private_state, private_state_class):
                 return self.private_state
             # Otherwise, convert from dict representation
-            if hasattr(self.private_state, '__dict__') or isinstance(self.private_state, dict):
-                state_dict = attrs.asdict(self.private_state) if hasattr(self.private_state, '__dict__') else self.private_state
+            if hasattr(self.private_state, "__dict__") or isinstance(
+                self.private_state, dict
+            ):
+                state_dict = (
+                    attrs.asdict(self.private_state)
+                    if hasattr(self.private_state, "__dict__")
+                    else self.private_state
+                )
                 return private_state_class(**state_dict)
         return None
-    
+
     def has_private_state(self) -> bool:
         """
         Check if private state exists.
-        
+
         Returns:
             True if private state is present, False otherwise
         """

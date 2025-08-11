@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any, TypeVar
+from typing import Any, Generic, TypeVar
 
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema
 
 DataSourceType = TypeVar("DataSourceType")
+StateType = TypeVar("StateType")
+ConfigType = TypeVar("ConfigType")
 
 
-class BaseDataSource[DataSourceType, StateType, ConfigType](ABC):
+class BaseDataSource(ABC, Generic[DataSourceType, StateType, ConfigType]):
     config_class: type[ConfigType] | None = None
     state_class: type[StateType]
 

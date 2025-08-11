@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import TypeVar
+from typing import Generic, TypeVar
 
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
@@ -9,9 +9,10 @@ from .context import EphemeralResourceContext
 
 ResultType = TypeVar("ResultType")
 PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
+ConfigType = TypeVar("ConfigType")
 
 
-class BaseEphemeralResource[ResultType, PrivateStateType, ConfigType](ABC):
+class BaseEphemeralResource(ABC, Generic[ResultType, PrivateStateType, ConfigType]):
     """
     Abstract base class for an ephemeral resource.
 

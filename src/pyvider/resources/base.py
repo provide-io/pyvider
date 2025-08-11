@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from types import UnionType
-from typing import Any, TypeVar, get_args, get_origin
+from typing import Any, Generic, TypeVar, get_args, get_origin
 
 import attrs
 
@@ -20,12 +20,14 @@ from pyvider.telemetry import logger
 from .private_state import PrivateState
 
 ResourceType = TypeVar("ResourceType")
+StateType = TypeVar("StateType")
+ConfigType = TypeVar("ConfigType")
 PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
 
 _UNREFINED_UNKNOWN_SENTINEL = CtyValue.unknown(CtyDynamic()).value
 
 
-class BaseResource[ResourceType, StateType, ConfigType](ABC):
+class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     config_class: type[ConfigType] | None = None
     state_class: type[StateType] | None = None
     private_state_class: type[PrivateStateType] | None = None
@@ -75,9 +77,7 @@ class BaseResource[ResourceType, StateType, ConfigType](ABC):
         for name, field_def in target_fields.items():
             if name in data and field_def.init:
                 raw_value = data[name]
-                converted_value = cls._cty_to_attrs_recursive(
-                    raw_value, field_def.type
-                )
+                converted_value = cls._cty_to_attrs_recursive(raw_value, field_def.type)
                 if converted_value is not None:
                     kwargs[name] = converted_value
 
