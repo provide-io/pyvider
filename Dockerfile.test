@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create working directory
+WORKDIR /workspace
+
+# Copy project files
+COPY . /workspace/pyvider/
+
+# Copy sibling projects
+COPY ../pyvider-* /workspace/
+COPY ../wrkenv /workspace/wrkenv/
+COPY ../tofusoup /workspace/tofusoup/ || true
+COPY ../flavor /workspace/flavor/ || true
+
+# Set working directory to pyvider
+WORKDIR /workspace/pyvider
+
+# Run env.sh to set up environment
+RUN bash -c "source env.sh && pyvider --help && pytest --version"
+
+# Test command
+CMD ["bash", "-c", "source env.sh && pyvider --help && pytest -v --tb=short | tail -50"]
