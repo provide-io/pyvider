@@ -1,0 +1,12 @@
+[workenv]
+# Configuration for wrkenv in the pyvider project
+
+[workenv.env]
+# Configure sibling package installation
+sibling_patterns = ["pyvider-*"]
+special_siblings = ["tofusoup", "flavor", "wrkenv"]
+
+[workenv.tools]
+# Tool versions can be specified here if needed
+# ibmtf = "1.8.5"
+# tofu = "1.10.5"

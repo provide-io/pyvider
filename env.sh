@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# env.sh - wrkenv Development Environment Setup
+# env.sh - pyvider Development Environment Setup
 #
-# This script sets up a clean, isolated development environment for wrkenv
+# This script sets up a clean, isolated development environment for pyvider
 # using 'uv' for high-performance virtual environment and dependency management.
 #
 # Usage: source ./env.sh
@@ -63,7 +63,7 @@ print_success "Cleared Python aliases and PYTHONPATH"
 # --- Project Validation ---
 if [ ! -f "pyproject.toml" ]; then
     print_error "No 'pyproject.toml' found in current directory"
-    echo "Please run this script from the wrkenv root directory"
+    echo "Please run this script from the pyvider root directory"
     return 1 2>/dev/null || exit 1
 fi
 
@@ -104,9 +104,9 @@ case "$TFARCH" in
 esac
 
 # Workenv directory setup
-PROFILE="${WRKENV_PROFILE:-default}"
+PROFILE="${PYVIDER_PROFILE:-default}"
 if [ "$PROFILE" = "default" ]; then
-    VENV_DIR="workenv/wrkenv_${TFOS}_${TFARCH}"
+    VENV_DIR="workenv/pyvider_${TFOS}_${TFARCH}"
 else
     VENV_DIR="workenv/${PROFILE}_${TFOS}_${TFARCH}"
 fi
@@ -139,60 +139,30 @@ export UV_PROJECT_ENVIRONMENT="${VENV_DIR}"
 print_header "📦 Installing Dependencies"
 
 # Create log directory
-mkdir -p /tmp/wrkenv_setup
+mkdir -p /tmp/pyvider_setup
 
 echo -n "Syncing dependencies..."
-uv sync --all-groups > /tmp/wrkenv_setup/sync.log 2>&1 &
+uv sync --all-groups > /tmp/pyvider_setup/sync.log 2>&1 &
 SYNC_PID=$!
 spinner $SYNC_PID
 wait $SYNC_PID
 if [ $? -eq 0 ]; then
     print_success "Dependencies synced"
 else
-    print_error "Dependency sync failed. Check /tmp/wrkenv_setup/sync.log"
+    print_error "Dependency sync failed. Check /tmp/pyvider_setup/sync.log"
     return 1 2>/dev/null || exit 1
 fi
 
-echo -n "Installing wrkenv in editable mode..."
-uv pip install --no-deps -e . > /tmp/wrkenv_setup/install.log 2>&1 &
+echo -n "Installing pyvider in editable mode..."
+uv pip install --no-deps -e . > /tmp/pyvider_setup/install.log 2>&1 &
 spinner $!
-print_success "wrkenv installed"
+print_success "pyvider installed"
 # --- Sibling Packages ---
 print_header "🤝 Installing Sibling Packages"
 
 PARENT_DIR=$(dirname "$(pwd)")
 SIBLING_COUNT=0
 
-for dir in "${PARENT_DIR}"/pyvider*; do
-    if [ -d "${dir}" ]; then
-        SIBLING_NAME=$(basename "${dir}")
-        echo -n "Installing ${SIBLING_NAME}..."
-        uv pip install --no-deps -e "${dir}" > /tmp/wrkenv_setup/${SIBLING_NAME}.log 2>&1 &
-        spinner $!
-        print_success "${SIBLING_NAME} installed"
-        ((SIBLING_COUNT++))
-    fi
-done
-for dir in "${PARENT_DIR}"/tofusoup; do
-    if [ -d "${dir}" ]; then
-        SIBLING_NAME=$(basename "${dir}")
-        echo -n "Installing ${SIBLING_NAME}..."
-        uv pip install --no-deps -e "${dir}" > /tmp/wrkenv_setup/${SIBLING_NAME}.log 2>&1 &
-        spinner $!
-        print_success "${SIBLING_NAME} installed"
-        ((SIBLING_COUNT++))
-    fi
-done
-for dir in "${PARENT_DIR}"/flavor; do
-    if [ -d "${dir}" ]; then
-        SIBLING_NAME=$(basename "${dir}")
-        echo -n "Installing ${SIBLING_NAME}..."
-        uv pip install --no-deps -e "${dir}" > /tmp/wrkenv_setup/${SIBLING_NAME}.log 2>&1 &
-        spinner $!
-        print_success "${SIBLING_NAME} installed"
-        ((SIBLING_COUNT++))
-    fi
-done
 
 
 if [ $SIBLING_COUNT -eq 0 ]; then
@@ -266,11 +236,11 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 # --- Final Summary ---
 print_header "✅ Environment Ready!"
 
-echo -e "\n${COLOR_GREEN}wrkenv development environment activated${COLOR_NC}"
+echo -e "\n${COLOR_GREEN}pyvider development environment activated${COLOR_NC}"
 echo "Virtual environment: ${VENV_DIR}"
 echo "Profile: ${PROFILE}"
 echo -e "\nUseful commands:"
-echo "  wrkenv --help  # wrkenv CLI"
+echo "  pyvider --help  # pyvider CLI"
 echo "  wrkenv status  # Check tool versions"
 echo "  wrkenv container status  # Container status"
 echo "  pytest  # Run tests"
@@ -278,7 +248,7 @@ echo "  deactivate  # Exit environment"
 
 # --- Cleanup ---
 # Remove temporary log files older than 1 day
-find /tmp/wrkenv_setup -name "*.log" -mtime +1 -delete 2>/dev/null
+find /tmp/pyvider_setup -name "*.log" -mtime +1 -delete 2>/dev/null
 
 # Return success
 return 0 2>/dev/null || exit 0
