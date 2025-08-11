@@ -18,7 +18,7 @@ PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
 
 
 @define(frozen=True)
-class ResourceContext[ConfigType, StateType, PrivateStateType](BaseContext):
+class ResourceContext(BaseContext):
     config: ConfigType | None = None
     state: StateType | None = None
     planned_state: StateType | None = None
