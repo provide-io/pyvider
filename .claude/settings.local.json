@@ -1,7 +1,9 @@
 {
   "permissions": {
     "additionalDirectories": [
-      "/Users/tim/code/gh/provide-io"
+      "/Users/tim/code/gh/provide-io",
+      "/Users/tim/.cache",
+      "/Users/tim/.terraform.d"
     ]
   }
 }
