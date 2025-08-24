@@ -35,6 +35,7 @@ dependencies = [
     "google>=3.0.0",
     "cryptography>=42.0.8",
     "tomli-w>=1.0.0",
+    "pyvider-telemetry>=0.0.16",
 ]
 
 [dependency-groups]

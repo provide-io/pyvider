@@ -63,4 +63,4 @@ keys/
 
 # Temporary files
 *.tmp
-*.temp
+*.tempkeys/*
