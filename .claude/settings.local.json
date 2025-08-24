@@ -11,7 +11,9 @@
       "Bash(export FLAVOR_LOG_LEVEL=debug)",
       "Bash(tofu apply:*)",
       "Bash(export FLAVOR_LOG_LEVEL=trace)",
-      "Bash(./dist/terraform-provider-pyvider.psp)"
+      "Bash(./dist/terraform-provider-pyvider.psp)",
+      "Bash(TF_PLUGIN_MAGIC_COOKIE=\"test\" ./terraform-provider-pyvider)",
+      "Bash(TF_PLUGIN_MAGIC_COOKIE=\"d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4e95f7aa66ead0\" ./terraform-provider-pyvider)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
