@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(flavor pack:*)",
-      "Bash(./terraform-provider-pyvider.psp)"
+      "Bash(./terraform-provider-pyvider.psp)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(rm:*)",
+      "Bash(tofu init:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
