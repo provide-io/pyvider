@@ -6,7 +6,10 @@
       "Bash(mv:*)",
       "Bash(cp:*)",
       "Bash(rm:*)",
-      "Bash(tofu init:*)"
+      "Bash(tofu init:*)",
+      "Bash(export TF_LOG=debug)",
+      "Bash(export FLAVOR_LOG_LEVEL=debug)",
+      "Bash(tofu apply:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
