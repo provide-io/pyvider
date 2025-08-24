@@ -28,9 +28,6 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [
-    "pyvider-telemetry",
-    "pyvider-rpcplugin",
-    "pyvider-cty",
     "attrs>=25.1.0",
     "click>=8.1.8",
     "grpcio>=1.73.0",
@@ -151,3 +148,5 @@ exclude_lines = [
     "def __str__",
     "pass",
 ]
+
+[tool.uv.sources]
