@@ -10,7 +10,8 @@
       "Bash(export TF_LOG=debug)",
       "Bash(export FLAVOR_LOG_LEVEL=debug)",
       "Bash(tofu apply:*)",
-      "Bash(export FLAVOR_LOG_LEVEL=trace)"
+      "Bash(export FLAVOR_LOG_LEVEL=trace)",
+      "Bash(./dist/terraform-provider-pyvider.psp)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
