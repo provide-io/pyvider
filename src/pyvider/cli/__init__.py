@@ -22,5 +22,14 @@ cli.add_command(launch_context_cmd)
 cli.add_command(prep)
 cli.add_command(provide_cmd)
 
-# 4. Expose the fully assembled 'cli' object for the entry point.
-__all__ = ["cli"]
+# 4. Create a main function that can be used as an entry point
+def main() -> None:
+    """Main entry point for the Pyvider CLI application.
+    
+    This allows the CLI to be invoked via 'pyvider.cli:main' entry point,
+    in addition to the existing 'pyvider.cli.__main__:main' entry point.
+    """
+    cli()
+
+# 5. Expose the fully assembled 'cli' object and main function for entry points.
+__all__ = ["cli", "main"]
