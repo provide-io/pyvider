@@ -8,6 +8,10 @@ import click
 
 from .main import cli
 
+# Terraform's magic cookie value - this must match what Terraform sends
+# See: https://github.com/hashicorp/go-plugin
+TERRAFORM_PLUGIN_MAGIC_COOKIE = "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2"
+
 
 async def _run_provider_server(magic_cookie: str) -> None:
     """
@@ -80,16 +84,10 @@ async def _run_provider_server(magic_cookie: str) -> None:
         protocol = PyviderProtocol()
         handler = ProviderHandler(provider_instance)
 
-        # THE FIX: The rpcplugin library is ignoring the config dictionary.
-        # The most robust way to ensure it receives the expected cookie value
-        # is to set the environment variable it is likely reading internally,
-        # as hinted by its own error message.
-        os.environ["PLUGIN_MAGIC_COOKIE_VALUE"] = magic_cookie
-
-        # The config dictionary now only needs to specify which key Terraform
-        # uses to provide the cookie.
+        # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
             "PLUGIN_MAGIC_COOKIE_KEY": "TF_PLUGIN_MAGIC_COOKIE",
+            "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie,  # Pass the actual magic cookie value
             "PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN": config.get(
                 "server.timeout_graceful_shutdown", 5
             ),
