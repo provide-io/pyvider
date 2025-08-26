@@ -5,7 +5,7 @@
 [project]
 name = "pyvider"
 description = "Python Terraform Provider Framework"
-version = "0.0.711"
+version = "0.0.21"
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "Apache-2.0" }
