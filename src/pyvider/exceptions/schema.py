@@ -1,6 +1,9 @@
 # pyvider/exceptions/schema.py
 from typing import Any
 
+from provide.foundation.errors import SchemaValidationError as FoundationSchemaValidationError
+from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
+from provide.foundation.errors import ValidationError as FoundationValidationError
 from pyvider.exceptions.base import ConversionError, PyviderError, PyviderValueError
 
 
@@ -13,27 +16,60 @@ class SchemaError(PyviderError):
         super().__init__(f"{prefix} error: {message}")
 
 
-class SchemaValidationError(SchemaError, PyviderValueError):
+class SchemaValidationError(FoundationSchemaValidationError):
     """Raised when schema validation fails against provided data."""
 
     def __init__(
-        self, message: str, schema_name: str | None = None, detail: str | None = None
+        self, message: str, schema_name: str | None = None, detail: str | None = None, **kwargs
     ) -> None:
-        full_message = f"{message}{f': {detail}' if detail else ''}"
-        super().__init__(full_message, schema_name=schema_name)
+        self.schema_name = schema_name
         self.detail = detail
+        prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
+        full_message = f"{prefix} error: {message}{f': {detail}' if detail else ''}"
+        
+        if schema_name:
+            kwargs.setdefault('context', {})['schema.name'] = schema_name
+        if detail:
+            kwargs.setdefault('context', {})['schema.detail'] = detail
+            
+        super().__init__(full_message, **kwargs)
+    
+    def _default_code(self) -> str:
+        return "SCHEMA_VALIDATION_ERROR"
 
 
-class SchemaRegistrationError(SchemaError):
+class SchemaRegistrationError(FoundationConfigurationError):
     """Raised when schema registration fails in the framework."""
 
-    pass
+    def __init__(self, message: str, schema_name: str | None = None, **kwargs) -> None:
+        self.schema_name = schema_name
+        prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
+        full_message = f"{prefix} registration error: {message}"
+        
+        if schema_name:
+            kwargs.setdefault('context', {})['schema.name'] = schema_name
+            
+        super().__init__(full_message, **kwargs)
+    
+    def _default_code(self) -> str:
+        return "SCHEMA_REGISTRATION_ERROR"
 
 
-class SchemaParseError(SchemaError):
+class SchemaParseError(FoundationValidationError):
     """Raised when a schema definition cannot be parsed."""
 
-    pass
+    def __init__(self, message: str, schema_name: str | None = None, **kwargs) -> None:
+        self.schema_name = schema_name
+        prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
+        full_message = f"{prefix} parse error: {message}"
+        
+        if schema_name:
+            kwargs.setdefault('context', {})['schema.name'] = schema_name
+            
+        super().__init__(full_message, **kwargs)
+    
+    def _default_code(self) -> str:
+        return "SCHEMA_PARSE_ERROR"
 
 
 class SchemaConversionError(ConversionError):
