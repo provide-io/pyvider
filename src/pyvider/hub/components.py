@@ -1,65 +1,75 @@
 from collections.abc import Callable
-from dataclasses import dataclass, field
 from typing import Any
 
 from pyvider.exceptions import ComponentRegistryError
 from provide.foundation import logger
+from provide.foundation.registry import Registry
 
 
-@dataclass
 class ComponentRegistry:
     """
     Multi-dimensional registry for managing components by type and name.
+    
+    Uses provide.foundation's Registry for thread-safe operations.
     """
 
-    registry: dict[str, dict[str, Callable]] = field(default_factory=dict)
+    def __init__(self):
+        """Initialize with foundation's Registry."""
+        self._registry = Registry()
 
     def register(self, component_type: str, name: str, component: Callable) -> None:
         """Registers a component under a specific type and name."""
-        if component_type not in self.registry:
-            self.registry[component_type] = {}
-
-        if name in self.registry[component_type]:
-            existing_component = self.registry[component_type][name]
-            if existing_component is component:
-                logger.debug(
-                    f"Skipping redundant registration: {component_type}.{name}"
-                )
-                return
-            else:
-                logger.warning(
-                    f"Component '{name}' under type '{component_type}' is being replaced."
-                )
-
-        self.registry[component_type][name] = component
+        # Check if already registered
+        existing = self._registry.get(name, dimension=component_type)
+        if existing is component:
+            logger.debug(
+                f"Skipping redundant registration: {component_type}.{name}"
+            )
+            return
+        elif existing is not None:
+            logger.warning(
+                f"Component '{name}' under type '{component_type}' is being replaced."
+            )
+        
+        # Register with replace=True to allow overwrites
+        self._registry.register(
+            name=name,
+            value=component,
+            dimension=component_type,
+            replace=True
+        )
         logger.debug(f"Registered component: type='{component_type}', name='{name}'")
 
     def unregister(self, component_type: str, name: str) -> None:
         """Unregisters a component by type and name."""
-        if (
-            component_type not in self.registry
-            or name not in self.registry[component_type]
-        ):
+        if not self._registry.remove(name, dimension=component_type):
             raise ComponentRegistryError(
                 f"Component '{name}' under type '{component_type}' does not exist."
             )
-
-        del self.registry[component_type][name]
-        if not self.registry[component_type]:
-            del self.registry[component_type]
         logger.debug(f"Unregistered component: type='{component_type}', name='{name}'")
 
     def get_component(self, component_type: str, name: str) -> Callable | None:
         """Retrieves a component by type and name."""
-        return self.registry.get(component_type, {}).get(name)
+        return self._registry.get(name, dimension=component_type)
 
     def get_components(self, component_type: str) -> dict[str, Callable]:
         """Get all components of a specific type."""
-        return self.registry.get(component_type, {})
+        component_names = self._registry.list_dimension(component_type)
+        return {
+            name: self._registry.get(name, dimension=component_type)
+            for name in component_names
+        }
 
     def list_components(self) -> dict[str, dict[str, Callable[..., Any]]]:
         """Lists all registered components."""
-        return self.registry
+        all_dimensions = self._registry.list_all()
+        result = {}
+        for dimension, names in all_dimensions.items():
+            result[dimension] = {
+                name: self._registry.get(name, dimension=dimension)
+                for name in names
+            }
+        return result
 
 
 # Singleton instance
