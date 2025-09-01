@@ -1,7 +1,7 @@
 import click
 from provide.foundation.cli.decorators import standard_options
 
-from .context import PyviderContext
+from pyvider.cli.context import PyviderContext
 
 
 @click.group(invoke_without_command=True)

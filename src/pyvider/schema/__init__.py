@@ -1,5 +1,5 @@
 # pyvider/schema/__init__.py
-from .factory import (
+from pyvider.schema.factory import (
     a_bool,
     a_dyn,
     a_list,
@@ -21,7 +21,7 @@ from .factory import (
     s_provider,
     s_resource,
 )
-from .types import (
+from pyvider.schema.types import (
     NestingMode,
     PvsAttribute,
     PvsNestedBlock,

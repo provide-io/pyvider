@@ -1,5 +1,5 @@
 # pyvider/exceptions/grpc.py
-from .base import PluginError
+from pyvider.exceptions.base import PluginError
 
 
 class GRPCError(PluginError):

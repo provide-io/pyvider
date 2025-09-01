@@ -1,7 +1,7 @@
 # pyvider/capabilities/__init__.py
 
-from .base import BaseCapability
-from .decorators import register_capability, requires_capability
+from pyvider.capabilities.base import BaseCapability
+from pyvider.capabilities.decorators import register_capability, requires_capability
 
 __all__ = [
     "BaseCapability",

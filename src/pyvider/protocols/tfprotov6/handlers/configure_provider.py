@@ -8,7 +8,7 @@ from pyvider.providers.context import ProviderContext
 from pyvider.resources.base import BaseResource
 from provide.foundation import logger
 
-from .utils import create_diagnostic_from_exception
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 
 
 async def ConfigureProviderHandler(

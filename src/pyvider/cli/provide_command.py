@@ -6,7 +6,7 @@ from typing import Any
 
 import click
 
-from .main import cli
+from pyvider.cli.main import cli
 
 # Terraform's magic cookie value - this must match what Terraform sends
 # See: https://github.com/hashicorp/go-plugin
@@ -126,7 +126,7 @@ def provide_cmd(ctx: click.Context, force: bool) -> None:
     from pyvider.hub.components import registry
     from pyvider.hub.discovery import ComponentDiscovery
 
-    from .components_commands import _handle_discovery_errors
+    from pyvider.cli.components_commands import _handle_discovery_errors
 
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
     script_name = pathlib.Path(sys.argv[0]).name

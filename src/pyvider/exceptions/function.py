@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from .base import PluginError, PyviderValueError
+from pyvider.exceptions.base import PluginError, PyviderValueError
 
 
 class FunctionError(PluginError):

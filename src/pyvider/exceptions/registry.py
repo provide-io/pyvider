@@ -1,5 +1,5 @@
 # pyvider/exceptions/registry.py
-from .base import FrameworkConfigurationError
+from pyvider.exceptions.base import FrameworkConfigurationError
 
 
 class ComponentRegistryError(FrameworkConfigurationError):

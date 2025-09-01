@@ -1,7 +1,7 @@
 # pyvider/exceptions/__init__.py
 """Pyvider Framework Custom Exceptions"""
 
-from .base import (
+from pyvider.exceptions.base import (
     ComponentConfigurationError,
     ConversionError,
     FrameworkConfigurationError,
@@ -12,27 +12,27 @@ from .base import (
     UnsupportedTypeError,
     WireFormatError,
 )
-from .function import (
+from pyvider.exceptions.function import (
     FunctionError,
     FunctionRegistrationError,
     FunctionValidationError,
 )
-from .grpc import (
+from pyvider.exceptions.grpc import (
     GRPCConnectionError,
     GRPCError,
     NetworkError,
     RateLimitError,
 )
-from .provider import (
+from pyvider.exceptions.provider import (
     ProviderConfigurationError,
     ProviderError,
     ProviderInitializationError,
 )
-from .registry import (
+from pyvider.exceptions.registry import (
     ComponentRegistryError,
     ValidatorRegistrationError,
 )
-from .resource import (
+from pyvider.exceptions.resource import (
     CapabilityError,
     DataSourceError,
     ResourceError,
@@ -41,18 +41,18 @@ from .resource import (
     ResourceOperationError,
     ResourceValidationError,
 )
-from .schema import (
+from pyvider.exceptions.schema import (
     SchemaConversionError,
     SchemaError,
     SchemaParseError,
     SchemaRegistrationError,
     SchemaValidationError,
 )
-from .serialization import (
+from pyvider.exceptions.serialization import (
     DeserializationError,
     SerializationError,
 )
-from .validation import (
+from pyvider.exceptions.validation import (
     AttributeValidationError,
     ValidationError,
 )

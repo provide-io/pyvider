@@ -4,7 +4,7 @@
 
 from google.protobuf.empty_pb2 import Empty
 
-from .tfplugin6_pb2 import (  # Core Protobuf Messages; Schema and Attribute Definitions; Capabilities; Functions; Validation Operations; Planning and State Operations; Read Operations; Ephemeral Resource Operations; Provider Configuration
+from pyvider.protocols.tfprotov6.protobuf.tfplugin6_pb2 import (  # Core Protobuf Messages; Schema and Attribute Definitions; Capabilities; Functions; Validation Operations; Planning and State Operations; Read Operations; Ephemeral Resource Operations; Provider Configuration
     ApplyResourceChange,
     AttributePath,
     CallFunction,
@@ -37,7 +37,7 @@ from .tfplugin6_pb2 import (  # Core Protobuf Messages; Schema and Attribute Def
     ValidateProviderConfig,
     ValidateResourceConfig,
 )
-from .tfplugin6_pb2_grpc import (
+from pyvider.protocols.tfprotov6.protobuf.tfplugin6_pb2_grpc import (
     ProviderServicer,
     ProviderStub,
     add_ProviderServicer_to_server,

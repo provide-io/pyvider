@@ -16,10 +16,12 @@ _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
 
 
 @attrs.define(frozen=True)
-class PyviderConfig:
+class PyviderConfig(BaseConfig):
     """
     Loads and provides access to configuration from all sources.
     Priority: Environment Variable > Config File > Default.
+    
+    Extends provide.foundation's BaseConfig for consistency.
     """
 
     _config_data: dict[str, Any] = attrs.field(factory=dict, init=False)

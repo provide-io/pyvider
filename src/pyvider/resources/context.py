@@ -9,7 +9,7 @@ from pyvider.common.context import BaseContext
 from pyvider.common.types import ConfigType, StateType
 from pyvider.cty import CtyValue
 
-from .private_state import PrivateState
+from pyvider.resources.private_state import PrivateState
 
 if TYPE_CHECKING:
     from pyvider.capabilities import BaseCapability

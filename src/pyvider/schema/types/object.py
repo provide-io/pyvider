@@ -7,12 +7,12 @@ from attrs import define, field
 
 from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet
 
-from .enums import NestingMode
-from .types_base import PvsType
+from pyvider.schema.types.enums import NestingMode
+from pyvider.schema.types.types_base import PvsType
 
 if TYPE_CHECKING:
-    from .attribute import PvsAttribute
-    from .blocks import PvsNestedBlock
+    from pyvider.schema.types.attribute import PvsAttribute
+    from pyvider.schema.types.blocks import PvsNestedBlock
 
 
 @define(frozen=True, kw_only=True)

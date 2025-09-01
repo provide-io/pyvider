@@ -5,8 +5,8 @@ from attrs import define, field
 
 from pyvider.cty import CtyType
 
-from .enums import StringKind  # Import StringKind
-from .object import PvsObjectType
+from pyvider.schema.types.enums import StringKind  # Import StringKind
+from pyvider.schema.types.object import PvsObjectType
 
 
 @define(frozen=True, kw_only=True)

@@ -2,7 +2,7 @@
 The canonical entry point for the Pyvider CLI application.
 """
 
-from . import cli
+from pyvider.cli import cli
 
 
 def main() -> None:

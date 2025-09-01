@@ -5,7 +5,7 @@ CLI command for inspecting Pyvider launch context.
 import click
 import json
 
-from .main import cli
+from pyvider.cli.main import cli
 
 
 @cli.command("launch-context")

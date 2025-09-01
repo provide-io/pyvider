@@ -17,7 +17,7 @@ from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema
 from provide.foundation import logger
 
-from .private_state import PrivateState
+from pyvider.resources.private_state import PrivateState
 
 ResourceType = TypeVar("ResourceType")
 StateType = TypeVar("StateType")

@@ -11,8 +11,8 @@ from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from provide.foundation import logger
 
-from .utils import create_diagnostic_from_exception, cty_to_attrs_instance
-from .utils_timestamp import datetime_to_proto
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+from pyvider.protocols.tfprotov6.handlers.utils_timestamp import datetime_to_proto
 
 
 async def OpenEphemeralResourceHandler(

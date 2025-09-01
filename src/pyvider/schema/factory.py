@@ -15,7 +15,7 @@ from pyvider.cty import (
     CtyValue,
 )
 
-from .types import NestingMode, PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
+from pyvider.schema.types import NestingMode, PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
 
 def _get_cty_type(type_def: Any) -> CtyType:

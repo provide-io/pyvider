@@ -6,7 +6,7 @@ import subprocess
 
 import click
 
-from .context import PyviderContext
+from pyvider.cli.context import PyviderContext
 
 
 def _run_command(

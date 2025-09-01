@@ -3,7 +3,7 @@ import tomllib
 
 import click
 
-from .context import PyviderContext, pass_ctx
+from pyvider.cli.context import PyviderContext, pass_ctx
 
 
 @click.group()

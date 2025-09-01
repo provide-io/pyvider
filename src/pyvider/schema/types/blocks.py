@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 from attrs import define, field
 
 # UNIFICATION FIX: Import the canonical NestingMode enum.
-from .enums import NestingMode
+from pyvider.schema.types.enums import NestingMode
 
 if TYPE_CHECKING:
-    from .object import PvsObjectType
+    from pyvider.schema.types.object import PvsObjectType
 
 
 @define(frozen=True, kw_only=True)

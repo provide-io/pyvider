@@ -1,6 +1,6 @@
 # pyvider/exceptions/validation.py
 
-from .base import PyviderValueError
+from pyvider.exceptions.base import PyviderValueError
 
 
 class ValidationError(PyviderValueError):

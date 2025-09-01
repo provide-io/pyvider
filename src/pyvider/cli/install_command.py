@@ -4,10 +4,10 @@ import sys
 
 import click
 
-from .context import PyviderContext
+from pyvider.cli.context import PyviderContext
 
 # Import the correct command for placing the provider script.
-from .prep_commands import prep_provider
+from pyvider.cli.prep_commands import prep_provider
 
 
 def is_running_as_binary() -> bool:

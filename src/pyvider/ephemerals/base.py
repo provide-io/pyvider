@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
 
-from .context import EphemeralResourceContext
+from pyvider.ephemerals.context import EphemeralResourceContext
 
 ResultType = TypeVar("ResultType")
 PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)

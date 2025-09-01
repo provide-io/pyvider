@@ -9,14 +9,14 @@ This module provides the core infrastructure for implementing and registering
 Terraform functions in Pyvider providers.
 """
 
-from .adapters import function_to_dict
-from .base import (
+from pyvider.functions.adapters import function_to_dict
+from pyvider.functions.base import (
     BaseFunction,
     FunctionAdapter,
     FunctionParameter,
     FunctionReturnType,
 )
-from .decorators import register_function
+from pyvider.functions.decorators import register_function
 
 __all__ = [
     "BaseFunction",

@@ -1,7 +1,7 @@
 # pyvider/exceptions/serialization.py
 from typing import Any
 
-from .base import ConversionError
+from pyvider.exceptions.base import ConversionError
 
 
 class SerializationError(ConversionError):

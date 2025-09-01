@@ -1,5 +1,5 @@
 # pyvider/exceptions/resource.py
-from .base import PluginError, PyviderValueError
+from pyvider.exceptions.base import PluginError, PyviderValueError
 
 
 class ResourceError(PluginError):

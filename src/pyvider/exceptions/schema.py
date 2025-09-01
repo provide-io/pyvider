@@ -1,7 +1,7 @@
 # pyvider/exceptions/schema.py
 from typing import Any
 
-from .base import ConversionError, PyviderError, PyviderValueError
+from pyvider.exceptions.base import ConversionError, PyviderError, PyviderValueError
 
 
 class SchemaError(PyviderError):

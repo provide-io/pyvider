@@ -1,5 +1,5 @@
 # pyvider/exceptions/provider.py
-from .base import ComponentConfigurationError, PluginError
+from pyvider.exceptions.base import ComponentConfigurationError, PluginError
 
 
 class ProviderError(PluginError):

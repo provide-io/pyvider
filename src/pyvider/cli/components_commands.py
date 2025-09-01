@@ -7,7 +7,7 @@ from pyvider.hub.components import get_hub_diagnostics, registry
 from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
-from .main import PyviderContext, cli, pass_ctx
+from pyvider.cli.main import PyviderContext, cli, pass_ctx
 
 
 def _handle_discovery_errors(ctx: PyviderContext) -> None:

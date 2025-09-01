@@ -6,13 +6,13 @@ This module assembles the main CLI application.
 
 # 1. Import the foundational 'cli' group object from main.
 # 2. Import the command objects (groups and commands) from their modules.
-from .components_commands import components
-from .config_commands import config
-from .install_command import install_command
-from .launch_context_command import launch_context_cmd
-from .main import cli
-from .prep_commands import prep
-from .provide_command import provide_cmd
+from pyvider.cli.components_commands import components
+from pyvider.cli.config_commands import config
+from pyvider.cli.install_command import install_command
+from pyvider.cli.launch_context_command import launch_context_cmd
+from pyvider.cli.main import cli
+from pyvider.cli.prep_commands import prep
+from pyvider.cli.provide_command import provide_cmd
 
 # 3. Explicitly attach the commands to the main cli group.
 cli.add_command(components)

@@ -7,7 +7,7 @@ from pyvider.cty import CtyValidationError
 from provide.foundation import logger
 
 # CORRECTED IMPORT: Replace the obsolete PvsBlock with the new PvsObjectType.
-from .object import PvsObjectType
+from pyvider.schema.types.object import PvsObjectType
 
 
 @define(frozen=True, kw_only=True)

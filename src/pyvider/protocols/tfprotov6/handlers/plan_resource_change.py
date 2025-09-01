@@ -16,7 +16,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
 from provide.foundation import logger
 
-from .utils import (
+from pyvider.protocols.tfprotov6.handlers.utils import (
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )

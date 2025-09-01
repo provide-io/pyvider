@@ -4,8 +4,8 @@ import sys
 
 import click
 
-from .context import PyviderContext, pass_ctx
-from .utils import _place_terraform_provider_script, _run_command
+from pyvider.cli.context import PyviderContext, pass_ctx
+from pyvider.cli.utils import _place_terraform_provider_script, _run_command
 
 
 @click.group()
