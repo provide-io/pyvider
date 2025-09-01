@@ -153,24 +153,28 @@ class TestKeyDerivation:
     def test_get_key_from_config_file(self, temp_config_file):
         """Test key derivation from config file"""
         with patch.dict(os.environ, {}, clear=True):  # Clear env vars
-            with patch("pyvider.common.config.PyviderConfig") as mock_config:
-                mock_config_instance = MagicMock()
-                mock_config_instance.get.return_value = "config-file-secret"
-                mock_config.return_value = mock_config_instance
+            with patch.object(PyviderConfig, 'get') as mock_get:
+                mock_get.return_value = "config-file-secret"
+                
+                # Clear the cached key first
+                global _ENCRYPTION_KEY
+                _ENCRYPTION_KEY = None
                 
                 key = _get_key()
                 
                 assert len(key) == 32
                 assert isinstance(key, bytes)
-                mock_config_instance.get.assert_called_once_with("private_state_shared_secret")
+                mock_get.assert_called_once_with("private_state_shared_secret")
 
     def test_get_key_no_secret_fails(self):
         """Test that missing shared secret raises proper error"""
         with patch.dict(os.environ, {}, clear=True):
-            with patch("pyvider.common.config.PyviderConfig") as mock_config:
-                mock_config_instance = MagicMock()
-                mock_config_instance.get.return_value = None
-                mock_config.return_value = mock_config_instance
+            with patch.object(PyviderConfig, 'get') as mock_get:
+                mock_get.return_value = None
+                
+                # Clear the cached key first
+                global _ENCRYPTION_KEY
+                _ENCRYPTION_KEY = None
                 
                 with pytest.raises(FrameworkConfigurationError, match="Private state shared secret not found"):
                     _get_key()
