@@ -1,4 +1,7 @@
 # pyvider/exceptions/resource.py
+from provide.foundation.errors import NotFoundError as FoundationNotFoundError
+from provide.foundation.errors import OperationError as FoundationOperationError
+from provide.foundation.errors import StateError as FoundationStateError
 from pyvider.exceptions.base import PluginError, PyviderValueError
 
 
@@ -28,25 +31,32 @@ class ResourceValidationError(ResourceError, PyviderValueError):
     pass
 
 
-class ResourceNotFoundError(ResourceError):
+class ResourceNotFoundError(FoundationNotFoundError):
     """Raised when a resource cannot be found."""
 
-    pass
+    def _default_code(self) -> str:
+        return "RESOURCE_NOT_FOUND"
 
 
-class ResourceOperationError(ResourceError):
+class ResourceOperationError(FoundationOperationError):
     """Raised for errors during resource lifecycle operations (plan, apply, etc.)."""
 
-    pass
+    def _default_code(self) -> str:
+        return "RESOURCE_OPERATION_ERROR"
 
 
-class ResourceLifecycleContractError(ResourceError):
+class ResourceLifecycleContractError(FoundationStateError):
     """
     Raised when the state returned by apply() differs from the planned state.
     This indicates a bug in the resource implementation where the outcome of an
     apply operation did not match its proposed plan.
     """
 
-    def __init__(self, message: str, *, detail: str | None = None) -> None:
+    def __init__(self, message: str, *, detail: str | None = None, **kwargs) -> None:
         self.detail = detail
-        super().__init__(message)
+        if detail:
+            kwargs.setdefault('context', {})['lifecycle.detail'] = detail
+        super().__init__(message, **kwargs)
+    
+    def _default_code(self) -> str:
+        return "RESOURCE_LIFECYCLE_CONTRACT_ERROR"
