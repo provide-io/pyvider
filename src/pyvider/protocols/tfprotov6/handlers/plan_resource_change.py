@@ -10,7 +10,7 @@ from pyvider.conversion import marshal, unmarshal
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
 from pyvider.cty import CtyObject, CtyValue
 from pyvider.cty.exceptions import CtyValidationError
-from pyvider.exceptions import PyviderError
+from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
@@ -25,7 +25,13 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
 async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any]:
     resource_class = hub.get_component("resource", type_name)
     if not resource_class:
-        raise ValueError(f"Resource type '{type_name}' not registered")
+        err = ResourceError(f"Resource type '{type_name}' not registered")
+        err.add_context("resource.type_name", type_name)
+        err.add_namespace("terraform", {
+            "summary": "Unknown resource type",
+            "detail": f"The resource type '{type_name}' is not registered with this provider."
+        })
+        raise err
 
     provider_instance = hub.get_component("singleton", "provider")
     if not provider_instance:
