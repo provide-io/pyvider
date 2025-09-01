@@ -4,6 +4,7 @@ import sys
 from typing import Any
 
 import click
+from provide.foundation.context import Context
 
 from pyvider.common.config import PyviderConfig
 
@@ -32,8 +33,14 @@ def terraform_os() -> str:
 
 
 # --- Pyvider Context Class ---
-class PyviderContext:
+class PyviderContext(Context):
+    """
+    Pyvider-specific context that extends foundation's Context.
+    
+    Inherits debug, verbose, and quiet flags from foundation Context.
+    """
     def __init__(self) -> None:
+        super().__init__()  # Initialize foundation Context
         self.config = PyviderConfig()
         self.home = pathlib.Path.home()
         self.local_bin_dir = self.home / ".local" / "bin"

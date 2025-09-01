@@ -8,8 +8,8 @@ import tomllib
 from typing import Any
 
 import attrs
-
 from provide.foundation import logger
+from provide.foundation.config import BaseConfig
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME

@@ -1,9 +1,11 @@
 import click
+from provide.foundation.cli.decorators import standard_options
 
 from .context import PyviderContext
 
 
 @click.group(invoke_without_command=True)
+@standard_options  # Add foundation's standard CLI options (--debug, --verbose, --quiet)
 @click.pass_context
 def cli(ctx: click.Context) -> None:
     """
