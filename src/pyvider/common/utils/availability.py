@@ -1,6 +1,6 @@
 # pyvider/common/utils/availability.py
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 try:
     import importlib.util

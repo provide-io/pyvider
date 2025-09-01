@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def register_function(

@@ -1,6 +1,6 @@
 from collections.abc import Callable
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def register_data_source(

@@ -9,7 +9,7 @@ from typing import Any
 
 import attrs
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME

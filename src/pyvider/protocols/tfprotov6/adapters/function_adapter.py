@@ -5,7 +5,7 @@ from typing import Any
 # FIX: Import the type encoder from its new, correct location in pyvider.cty
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:

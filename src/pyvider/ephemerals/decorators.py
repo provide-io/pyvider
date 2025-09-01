@@ -5,7 +5,7 @@
 
 from collections.abc import Callable
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def register_ephemeral_resource(name: str) -> Callable[[type], type]:

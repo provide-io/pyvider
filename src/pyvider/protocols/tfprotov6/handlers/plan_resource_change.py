@@ -3,7 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from pyvider.common.encryption import encrypt, decrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
@@ -14,7 +14,7 @@ from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .utils import (
     create_diagnostic_from_exception,

@@ -15,7 +15,7 @@ from pyvider.cty import (
 from pyvider.cty.conversion import cty_to_native
 from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .private_state import PrivateState
 

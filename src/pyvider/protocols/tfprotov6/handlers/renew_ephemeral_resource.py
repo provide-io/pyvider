@@ -7,7 +7,7 @@ from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .utils import create_diagnostic_from_exception
 from .utils_timestamp import datetime_to_proto

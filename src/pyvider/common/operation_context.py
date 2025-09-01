@@ -7,7 +7,7 @@ import contextlib
 from contextvars import ContextVar
 from enum import Enum, auto
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 class OperationContext(Enum):

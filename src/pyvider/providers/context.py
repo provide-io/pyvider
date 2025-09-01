@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from attrs import define, field
 
 from pyvider.common.context import BaseContext
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 if TYPE_CHECKING:
     from pyvider.providers.base import BaseProvider

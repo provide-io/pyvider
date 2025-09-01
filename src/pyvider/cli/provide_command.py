@@ -28,14 +28,14 @@ async def _run_provider_server(magic_cookie: str) -> None:
     import pyvider.protocols.tfprotov6.protobuf as pb
     from pyvider.providers.provider import PyviderProvider
     from pyvider.rpcplugin import RPCPluginProtocol, RPCPluginServer
-    from pyvider.telemetry import logger, setup_telemetry
+    from provide.foundation import logger, setup_logging
 
     def _configure_telemetry(config: PyviderConfig) -> None:
         log_level = config.get("logging.level", "INFO")
         log_format = config.get("logging.format", "key_value")
         os.environ["PYVIDER_LOG_LEVEL"] = log_level
         os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
-        setup_telemetry()
+        setup_logging()
         logger.info("Telemetry configured for provider server mode.", domain="system")
 
     @define

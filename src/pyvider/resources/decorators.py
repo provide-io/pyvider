@@ -1,7 +1,7 @@
 from collections.abc import Callable
 from typing import ParamSpec, TypeVar
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 P = ParamSpec("P")
 T = TypeVar("T")

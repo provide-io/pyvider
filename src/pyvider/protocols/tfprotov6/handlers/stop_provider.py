@@ -7,7 +7,7 @@ from typing import Any
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.rpcplugin.server import RPCPluginServer
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 async def StopProviderHandler(

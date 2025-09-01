@@ -4,7 +4,7 @@ from typing import Any
 from attrs import define, field
 
 from pyvider.cty import CtyValidationError
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 # CORRECTED IMPORT: Replace the obsolete PvsBlock with the new PvsObjectType.
 from .object import PvsObjectType

@@ -5,7 +5,7 @@
 from collections.abc import Callable
 from typing import Any, ClassVar
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 class Validators:

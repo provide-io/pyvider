@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from pyvider.exceptions import ComponentRegistryError
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 @dataclass

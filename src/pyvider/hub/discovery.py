@@ -5,7 +5,7 @@ import pkgutil
 from typing import Any
 
 from pyvider.hub.components import ComponentRegistry
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 class ComponentDiscovery:

@@ -3,7 +3,7 @@
 from collections.abc import Callable
 
 from pyvider.hub import hub
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def register_provider(name: str) -> Callable[[type], type]:

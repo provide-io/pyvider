@@ -7,7 +7,7 @@ from pyvider.hub import hub
 from pyvider.providers.base import BaseProvider, ProviderMetadata
 from pyvider.providers.decorators import register_provider
 from pyvider.schema import s_provider
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 @register_provider("pyvider")

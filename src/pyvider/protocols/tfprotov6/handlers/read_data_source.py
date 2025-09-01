@@ -34,7 +34,7 @@ async def ReadDataSourceHandler(
         # Auto-inject capabilities based on component_of registration
         read_kwargs = {}
         parent_capability = getattr(ds_class, "_parent_capability", None)
-        from pyvider.telemetry import logger
+        from provide.foundation import logger
 
         logger.debug(
             f"DATA_SOURCE_DISPATCH 🔍 Checking capability injection for '{request.type_name}' parent_capability={parent_capability}"

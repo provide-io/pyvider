@@ -3,7 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from pyvider.common.encryption import encrypt, decrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal

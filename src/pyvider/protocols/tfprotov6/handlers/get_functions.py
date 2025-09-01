@@ -15,7 +15,7 @@ from pyvider.protocols.tfprotov6.protobuf import (
     Function,
     GetFunctions,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 # Module-level cache for the function definitions.
 _cached_functions: dict[str, Function] | None = None

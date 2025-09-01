@@ -10,7 +10,7 @@ from attrs import define, field
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import ProviderServicer
 from pyvider.providers.base import BaseProvider
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 @define

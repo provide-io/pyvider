@@ -8,7 +8,7 @@ from pyvider.exceptions import FunctionError as PyviderFunctionError
 from pyvider.functions.adapters import function_to_dict
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 from .utils import create_diagnostic_from_exception
 

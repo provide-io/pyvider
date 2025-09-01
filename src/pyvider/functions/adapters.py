@@ -14,7 +14,7 @@ from pyvider.cty import (
     CtyType,
     CtyValue,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 def _get_cty_type_for_union(python_type: Any, args: tuple[Any, ...]) -> CtyType:

@@ -8,7 +8,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 async def ValidateProviderConfigHandler(

@@ -9,7 +9,7 @@ from typing import Any
 from pyvider.protocols.tfprotov6.protobuf import (
     Empty,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 class ProtocolService:

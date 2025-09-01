@@ -6,7 +6,7 @@ from attrs import define, field
 from pyvider.cty import CtyType
 from pyvider.exceptions import FrameworkConfigurationError, ProviderError
 from pyvider.schema import PvsSchema
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 @define

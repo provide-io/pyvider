@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from pyvider.common.config import PyviderConfig
 from pyvider.exceptions import FrameworkConfigurationError
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 # This salt is static and public.
 HKDF_SALT = b"pyvider-private-state-encryption-salt"

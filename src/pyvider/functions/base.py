@@ -32,7 +32,7 @@ from pyvider.cty import (
 from pyvider.exceptions import FunctionError
 
 # Pyvider Imports
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 # Type Variables
 T = TypeVar("T")

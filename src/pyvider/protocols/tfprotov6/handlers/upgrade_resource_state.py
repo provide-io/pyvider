@@ -10,7 +10,7 @@ from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
     DynamicValue,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 async def UpgradeResourceStateHandler(
