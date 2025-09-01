@@ -1,9 +1,8 @@
 # pyvider/exceptions/schema.py
 from typing import Any
 
-from provide.foundation.errors import SchemaValidationError as FoundationSchemaValidationError
-from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
 from provide.foundation.errors import ValidationError as FoundationValidationError
+from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
 from pyvider.exceptions.base import ConversionError, PyviderError, PyviderValueError
 
 
@@ -16,7 +15,7 @@ class SchemaError(PyviderError):
         super().__init__(f"{prefix} error: {message}")
 
 
-class SchemaValidationError(FoundationSchemaValidationError):
+class SchemaValidationError(FoundationValidationError):
     """Raised when schema validation fails against provided data."""
 
     def __init__(

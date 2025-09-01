@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/exceptions/validation.py
+# hypothesis_version: 6.138.3
+
+['VALIDATION_ERROR', 'context', 'validation.context', 'validation.detail']

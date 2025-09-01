@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/exceptions/function.py
+# hypothesis_version: 6.138.3
+
+['FUNCTION_ERROR', 'Function', 'argument_index', 'context', 'function.name', 'text']

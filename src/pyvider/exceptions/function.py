@@ -2,13 +2,13 @@
 
 from typing import Any
 
-from provide.foundation.errors import OperationError as FoundationOperationError
+from provide.foundation.errors import RuntimeError as FoundationRuntimeError
 from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
 from provide.foundation.errors import ValidationError as FoundationValidationError
 from pyvider.exceptions.base import PluginError, PyviderValueError
 
 
-class FunctionError(FoundationOperationError):
+class FunctionError(FoundationRuntimeError):
     """Base exception for function-related errors during execution."""
 
     def __init__(

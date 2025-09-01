@@ -1,6 +1,6 @@
 # pyvider/exceptions/provider.py
 from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
-from provide.foundation.errors import InitializationError as FoundationInitializationError
+from provide.foundation.errors import RuntimeError as FoundationRuntimeError
 from pyvider.exceptions.base import ComponentConfigurationError, PluginError
 
 
@@ -17,7 +17,7 @@ class ProviderConfigurationError(ProviderError, ComponentConfigurationError):
     pass
 
 
-class ProviderInitializationError(FoundationInitializationError):
+class ProviderInitializationError(FoundationRuntimeError):
     """Raised when provider initialization fails."""
 
     def _default_code(self) -> str:

@@ -28,7 +28,7 @@ class NetworkError(FoundationNetworkError):
         return "NETWORK_ERROR"
 
 
-class RateLimitError(GRPCError):
+class RateLimitError(NetworkError):
     """Raised when a gRPC operation is rate-limited."""
 
     def _default_code(self) -> str:

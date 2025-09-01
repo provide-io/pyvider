@@ -1,6 +1,6 @@
 # pyvider/exceptions/resource.py
 from provide.foundation.errors import NotFoundError as FoundationNotFoundError
-from provide.foundation.errors import OperationError as FoundationOperationError
+from provide.foundation.errors import RuntimeError as FoundationRuntimeError
 from provide.foundation.errors import StateError as FoundationStateError
 from pyvider.exceptions.base import PluginError, PyviderValueError
 
@@ -38,7 +38,7 @@ class ResourceNotFoundError(FoundationNotFoundError):
         return "RESOURCE_NOT_FOUND"
 
 
-class ResourceOperationError(FoundationOperationError):
+class ResourceOperationError(FoundationRuntimeError):
     """Raised for errors during resource lifecycle operations (plan, apply, etc.)."""
 
     def _default_code(self) -> str:
