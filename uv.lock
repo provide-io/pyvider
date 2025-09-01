@@ -3,6 +3,15 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
+name = "aiofiles"
+version = "24.1.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0b/03/a88171e277e8caa88a4c77808c20ebb04ba74cc4681bf1e9416c862de237/aiofiles-24.1.0.tar.gz", hash = "sha256:22a075c9e5a3810f0c2e48f3008c94d68c65d763b9b03857924c99e57355166c", size = 30247, upload-time = "2024-06-24T11:02:03.584Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a5/45/30bb92d442636f570cb5651bc661f52b610e2eec3f891a5dc3a4c3667db0/aiofiles-24.1.0-py3-none-any.whl", hash = "sha256:b4ec55f4195e3eb5d7abd1bf7e061763e864dd4954231fb8539a0ef8bb8260e5", size = 15896, upload-time = "2024-06-24T11:02:01.529Z" },
+]
+
+[[package]]
 name = "attrs"
 version = "25.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -894,6 +903,46 @@ wheels = [
 ]
 
 [[package]]
+name = "provide-foundation"
+version = "0.0.16"
+source = { editable = "../provide-foundation" }
+dependencies = [
+    { name = "aiofiles" },
+    { name = "attrs" },
+    { name = "structlog" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiofiles", specifier = ">=23.2.1" },
+    { name = "attrs", specifier = ">=23.1.0" },
+    { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
+    { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
+    { name = "opentelemetry-exporter-otlp-proto-http", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
+    { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
+    { name = "structlog", specifier = ">=25.3.0" },
+]
+provides-extras = ["opentelemetry"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "bandit", specifier = ">=1.8.3" },
+    { name = "hypothesis", specifier = ">=6.131.28" },
+    { name = "mypy", specifier = ">=1.8.0" },
+    { name = "psutil", specifier = ">=7.0.0" },
+    { name = "pyrefly", specifier = ">=0.16.2" },
+    { name = "pytest", specifier = ">=7.4.0" },
+    { name = "pytest-asyncio", specifier = ">=0.21.0" },
+    { name = "pytest-cov", specifier = ">=4.1.0" },
+    { name = "pytest-xdist", specifier = ">=3.3.0" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+    { name = "reuse", specifier = ">=1.1.0" },
+    { name = "ruff", specifier = ">=0.1.0" },
+    { name = "twine", specifier = ">=6.1.0" },
+    { name = "ty", specifier = ">=0.0.1a6" },
+]
+
+[[package]]
 name = "psutil"
 version = "7.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1039,9 +1088,9 @@ dependencies = [
     { name = "google" },
     { name = "grpcio" },
     { name = "msgpack" },
+    { name = "provide-foundation" },
     { name = "pyvider-cty" },
     { name = "pyvider-rpcplugin" },
-    { name = "pyvider-telemetry" },
     { name = "tomli-w" },
 ]
 
@@ -1074,9 +1123,9 @@ requires-dist = [
     { name = "google", specifier = ">=3.0.0" },
     { name = "grpcio", specifier = ">=1.73.0" },
     { name = "msgpack", specifier = ">=1.1.1" },
+    { name = "provide-foundation", editable = "../provide-foundation" },
     { name = "pyvider-cty", specifier = ">=0.0.113" },
     { name = "pyvider-rpcplugin", specifier = ">=0.0.112" },
-    { name = "pyvider-telemetry", specifier = ">=0.0.16" },
     { name = "tomli-w", specifier = ">=1.0.0" },
 ]
 
