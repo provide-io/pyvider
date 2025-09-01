@@ -2,6 +2,7 @@ from typing import Any
 
 from pyvider.conversion import unmarshal
 from pyvider.exceptions import ProviderConfigurationError, PyviderError
+from provide.foundation.errors.context import ErrorSeverity
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.providers.context import ProviderContext
@@ -26,7 +27,14 @@ async def ConfigureProviderHandler(
     try:
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:
-            raise ProviderConfigurationError("Provider instance not found in hub.")
+            err = ProviderConfigurationError("Provider instance not found in hub.")
+            err.add_context("hub.dimension", "singleton")
+            err.add_context("hub.component_type", "provider")
+            err.add_namespace("terraform", {
+                "summary": "Provider not registered",
+                "detail": "The provider has not been properly registered with the framework."
+            })
+            raise err
 
         provider_schema = provider_instance.schema
         config_cty = unmarshal(request.config, schema=provider_schema.block)
@@ -42,9 +50,15 @@ async def ConfigureProviderHandler(
         )
 
         if config_instance is None:
-            raise ProviderConfigurationError(
+            err = ProviderConfigurationError(
                 "Failed to instantiate provider configuration."
             )
+            err.add_context("config.schema", str(provider_schema.block) if provider_schema else "None")
+            err.add_namespace("terraform", {
+                "summary": "Invalid provider configuration",
+                "detail": "The provider configuration could not be parsed into the expected format."
+            })
+            raise err
 
         provider_context = ProviderContext(config=config_instance)
         hub.register("singleton", "provider_context", provider_context)
