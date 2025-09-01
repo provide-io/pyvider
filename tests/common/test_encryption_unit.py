@@ -10,7 +10,8 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
-from pyvider.common.encryption import encrypt, decrypt, _get_key, HKDF_SALT, HKDF_INFO
+from pyvider.common.config import PyviderConfig
+from pyvider.common.encryption import encrypt, decrypt, _get_key, HKDF_SALT, HKDF_INFO, _ENCRYPTION_KEY
 from pyvider.exceptions import FrameworkConfigurationError
 
 
