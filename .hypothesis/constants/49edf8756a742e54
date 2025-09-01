@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/exceptions/base.py
+# hypothesis_version: 6.138.3
+
+[100, 'CONVERSION_ERROR', 'INVALID_TYPE', 'PYVIDER_ERROR', 'UNSUPPORTED_TYPE', 'VALUE_ERROR', 'WIRE_FORMAT_ERROR', '__name__', 'context', 'type.actual', 'type.expected', 'type.unsupported', 'unknown', 'wire.format_type', 'wire.operation']

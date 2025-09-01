@@ -17,20 +17,13 @@ class PyviderError(FoundationError):
     - Terraform diagnostic generation support
     """
 
-    def __init__(self, message: str = "", **kwargs: Any) -> None:
-        """Initialize with backward compatibility for simple string messages."""
-        super().__init__(message, **kwargs)
-
     def _default_code(self) -> str:
         """Default error code for pyvider errors."""
         return "PYVIDER_ERROR"
 
 
-class ConversionError(FoundationValidationError):
-    """Base class for data conversion errors within the Pyvider framework.
-    
-    Inherits from ValidationError as conversion errors are validation failures.
-    """
+class ConversionError(PyviderError):
+    """Base class for data conversion errors within the Pyvider framework."""
 
     def __init__(
         self,
@@ -40,8 +33,14 @@ class ConversionError(FoundationValidationError):
         target_type: Any = None,
         **kwargs: Any,
     ) -> None:
-        # Add conversion context
+        self.source_value = source_value
+        self.target_type = target_type
+        
+        # Keep the old behavior of appending type info to message for compatibility
+        context_parts: list[str] = []
         if source_value is not None:
+            context_parts.append(f"source_type={type(source_value).__name__}")
+            # Also add to foundation context
             kwargs.setdefault('context', {})['conversion.source_type'] = type(source_value).__name__
             kwargs.setdefault('context', {})['conversion.source_value'] = str(source_value)[:100]
         if target_type is not None:
@@ -50,21 +49,20 @@ class ConversionError(FoundationValidationError):
                 if hasattr(target_type, "__name__")
                 else str(target_type)
             )
+            context_parts.append(f"target_type={target_name}")
             kwargs.setdefault('context', {})['conversion.target_type'] = target_name
+
+        if context_parts:
+            message = f"{message} ({', '.join(context_parts)})"
         
         super().__init__(message, **kwargs)
-        self.source_value = source_value
-        self.target_type = target_type
     
     def _default_code(self) -> str:
         return "CONVERSION_ERROR"
 
 
-class WireFormatError(FoundationValidationError):
-    """For errors specific to wire format processing.
-    
-    Inherits from SerializationError for wire format issues.
-    """
+class WireFormatError(ConversionError):
+    """For errors specific to wire format processing."""
 
     def __init__(
         self,
@@ -74,6 +72,9 @@ class WireFormatError(FoundationValidationError):
         operation: str | None = None,
         **kwargs: Any,
     ) -> None:
+        self.format_type = format_type
+        self.operation = operation
+        
         # Add wire format context
         if format_type is not None:
             kwargs.setdefault('context', {})['wire.format_type'] = str(format_type)
@@ -81,22 +82,13 @@ class WireFormatError(FoundationValidationError):
             kwargs.setdefault('context', {})['wire.operation'] = operation
         
         super().__init__(message, **kwargs)
-        self.format_type = format_type
-        self.operation = operation
     
     def _default_code(self) -> str:
         return "WIRE_FORMAT_ERROR"
 
 
-class FrameworkConfigurationError(FoundationConfigurationError):
-    """Errors related to the overall framework configuration.
-    
-    Inherits from ConfigurationError for framework config issues.
-    """
-
-    def __init__(self, message: str = "", **kwargs: Any) -> None:
-        """Initialize with backward compatibility for simple string messages."""
-        super().__init__(message, **kwargs)
+class FrameworkConfigurationError(PyviderError):
+    """Errors related to the overall framework configuration."""
 
     def _default_code(self) -> str:
         return "FRAMEWORK_CONFIG_ERROR"
@@ -108,15 +100,8 @@ class PluginError(PyviderError):
     pass
 
 
-class PyviderValueError(FoundationValidationError):
-    """Generic value-related errors within Pyvider.
-    
-    Inherits from ValidationError for value validation issues.
-    """
-
-    def __init__(self, message: str = "", **kwargs: Any) -> None:
-        """Initialize with backward compatibility for simple string messages."""
-        super().__init__(message, **kwargs)
+class PyviderValueError(PyviderError):
+    """Generic value-related errors within Pyvider."""
 
     def _default_code(self) -> str:
         return "VALUE_ERROR"
@@ -170,10 +155,6 @@ class UnsupportedTypeError(PyviderValueError):
 
 class ComponentConfigurationError(FrameworkConfigurationError):
     """Errors specific to component configuration (e.g., resource, provider)."""
-
-    def __init__(self, message: str = "", **kwargs: Any) -> None:
-        """Initialize with backward compatibility for simple string messages."""
-        super().__init__(message, **kwargs)
 
     def _default_code(self) -> str:
         return "COMPONENT_CONFIG_ERROR"

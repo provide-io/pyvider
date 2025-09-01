@@ -5,11 +5,11 @@
 ### Checklist
 
 #### 1. Replace base exceptions in `pyvider/exceptions/`:
-- [ ] Map `PyviderError` → Inherit from `FoundationError`
-- [ ] Map validation errors → Inherit from `ValidationError` 
+- [x] Map `PyviderError` → Inherit from `FoundationError`
+- [x] Map validation errors → Inherit from PyviderError (which inherits from FoundationError)
 - [ ] Map network/gRPC errors → Inherit from `NetworkError`
 - [ ] Map resource errors → Inherit from specific foundation error types
-- [ ] Keep domain-specific exception names but inherit from foundation classes
+- [x] Keep domain-specific exception names but inherit from foundation classes
 
 #### 2. Update exception imports across codebase:
 - [ ] Add `from provide.foundation.errors import *` to exception modules
