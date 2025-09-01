@@ -28,6 +28,8 @@ from pyvider.exceptions import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from provide.foundation import logger
+from provide.foundation.errors import FoundationError
+from provide.foundation.errors.context import ErrorContext, ErrorSeverity
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
 PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
@@ -209,59 +211,92 @@ def cty_path_to_proto_path(cty_path: CtyPath | None) -> pb.AttributePath | None:
 
 
 async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
+    """Create a Terraform diagnostic from an exception.
+    
+    Uses foundation's ErrorContext when available for richer diagnostics.
+    """
     summary = "An unexpected error occurred"
     detail = str(exc)
     attribute_path: CtyPath | None = None
     severity = pb.Diagnostic.ERROR
-
-    specific_validation_errors = (
-        CtyAttributeValidationError,
-        CtyListValidationError,
-        CtySetValidationError,
-        CtyTupleValidationError,
-        CtyMapValidationError,
-        CtyNumberValidationError,
-        CtyStringValidationError,
-        CtyBoolValidationError,
-    )
-
-    if isinstance(exc, ResourceLifecycleContractError):
-        summary = "🐍🏗️ ⚠️ Resource Lifecycle Contract Violation"
+    
+    # Check if this is a foundation error with context
+    if isinstance(exc, FoundationError) and hasattr(exc, 'context'):
+        # Use foundation's error context for richer diagnostics
+        context = exc.context
+        
+        # Map foundation severity to Terraform severity
+        if context.severity in (ErrorSeverity.LOW, ErrorSeverity.MEDIUM):
+            severity = pb.Diagnostic.WARNING
+        else:
+            severity = pb.Diagnostic.ERROR
+        
+        # Get Terraform-specific metadata if available
+        tf_meta = context.get_namespace("terraform")
+        if tf_meta:
+            if "summary" in tf_meta:
+                summary = tf_meta["summary"]
+            if "attribute_path" in tf_meta:
+                attribute_path = tf_meta["attribute_path"]
+        
+        # Build detail from context
         detail = str(exc)
-        if exc.detail:
-            detail += f"\n\nDetails:\n{exc.detail}"
-    elif isinstance(exc, specific_validation_errors):
-        summary = f"🐍🏗️ ⚠️ {exc.message}"
-        detail = f"Validation failed for a value of type '{exc.type_name}'."
-        if hasattr(exc, "value") and exc.value is not None:
-            value_repr = repr(exc.value)
-            if len(value_repr) > 100:
-                value_repr = value_repr[:97] + "..."
-            detail += f" The invalid value provided was {value_repr}."
-        attribute_path = exc.path
-    elif isinstance(exc, CtyValidationError):
-        summary = f"🐍🏗️ ⚠️ {exc.message}"
-        detail = "A configuration validation error occurred."
-        attribute_path = exc.path
-    elif isinstance(exc, FunctionError):
-        summary = "🐍🏗️ ❌ Function Execution Error"
-        detail = str(exc)
-    elif isinstance(exc, ResourceError | DataSourceError):
-        summary = "🐍🏗️ ❌ Provider Operation Error"
-        detail = str(exc)
-    elif isinstance(exc, PyviderError):
-        summary = "🐍🏗️ ❌ Provider Framework Error"
-        detail = str(exc)
+        if context.metadata:
+            detail_parts = [detail]
+            for namespace, data in context.metadata.items():
+                if namespace != "terraform" and data:
+                    detail_parts.append(f"\n{namespace}: {data}")
+            detail = "\n".join(detail_parts)
     else:
-        summary = f"🐍🏗️ 🐛 Internal Provider Error: {type(exc).__name__}"
-        detail = (
-            "The provider encountered an unexpected error. This is likely a bug in the provider."
-            "\nPlease report this issue to the provider developers."
+        # Handle specific exception types
+        specific_validation_errors = (
+            CtyAttributeValidationError,
+            CtyListValidationError,
+            CtySetValidationError,
+            CtyTupleValidationError,
+            CtyMapValidationError,
+            CtyNumberValidationError,
+            CtyStringValidationError,
+            CtyBoolValidationError,
         )
-        logger.error(
-            f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
-            exc_info=True,
-        )
+
+        if isinstance(exc, ResourceLifecycleContractError):
+            summary = "🐍🏗️ ⚠️ Resource Lifecycle Contract Violation"
+            detail = str(exc)
+            if hasattr(exc, 'detail') and exc.detail:
+                detail += f"\n\nDetails:\n{exc.detail}"
+        elif isinstance(exc, specific_validation_errors):
+            summary = f"🐍🏗️ ⚠️ {exc.message}"
+            detail = f"Validation failed for a value of type '{exc.type_name}'."
+            if hasattr(exc, "value") and exc.value is not None:
+                value_repr = repr(exc.value)
+                if len(value_repr) > 100:
+                    value_repr = value_repr[:97] + "..."
+                detail += f" The invalid value provided was {value_repr}."
+            attribute_path = exc.path
+        elif isinstance(exc, CtyValidationError):
+            summary = f"🐍🏗️ ⚠️ {exc.message}"
+            detail = "A configuration validation error occurred."
+            attribute_path = exc.path
+        elif isinstance(exc, FunctionError):
+            summary = "🐍🏗️ ❌ Function Execution Error"
+            detail = str(exc)
+        elif isinstance(exc, ResourceError | DataSourceError):
+            summary = "🐍🏗️ ❌ Provider Operation Error"
+            detail = str(exc)
+        elif isinstance(exc, PyviderError):
+            summary = "🐍🏗️ ❌ Provider Framework Error"
+            detail = str(exc)
+        else:
+            summary = f"🐍🏗️ 🐛 Internal Provider Error: {type(exc).__name__}"
+            detail = (
+                "The provider encountered an unexpected error. This is likely a bug in the provider."
+                "\nPlease report this issue to the provider developers."
+            )
+            logger.error(
+                f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
+                exc_info=True,
+            )
 
     return pb.Diagnostic(
         severity=severity,
