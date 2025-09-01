@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/exceptions.py
+# hypothesis_version: 6.138.3
+
+['.', 'ALREADY_EXISTS_ERROR', 'AUTHZ_ERROR', 'AUTH_ERROR', 'CONCURRENCY_ERROR', 'CONFIG_ERROR', 'FOUNDATION_ERROR', 'FoundationError', 'INTEGRATION_ERROR', 'NETWORK_ERROR', 'NOT_FOUND_ERROR', 'RESOURCE_ERROR', 'RUNTIME_ERROR', 'STATE_ERROR', 'TIMEOUT_ERROR', 'VALIDATION_ERROR', 'auth.method', 'auth.realm', 'authz.actor', 'authz.permission', 'authz.resource', 'concurrency.type', 'config.key', 'config.source', 'context', 'error.cause', 'error.cause_type', 'error.code', 'error.message', 'error.type', 'exists.id', 'exists.type', 'integration.endpoint', 'integration.service', 'network.host', 'network.port', 'notfound.id', 'notfound.type', 'resource.path', 'resource.type', 'runtime.operation', 'state.current', 'state.expected', 'state.transition', 'timeout.elapsed', 'timeout.limit', 'validation.field', 'validation.rule', 'validation.value']

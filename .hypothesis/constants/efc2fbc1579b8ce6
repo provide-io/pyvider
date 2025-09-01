@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/utils/timing.py
+# hypothesis_version: 6.138.3
+
+['FoundationLogger', 'duration_seconds', 'error', 'error_type', 'trace_id']

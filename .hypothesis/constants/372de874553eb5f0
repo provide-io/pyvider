@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/types.py
+# hypothesis_version: 6.138.3
+
+[0.5, 0.75, 1.0, 60.0, 'AUTH_001', 'AUTH_002', 'AUTH_003', 'AUTH_004', 'AUTH_005', 'CFG_001', 'CFG_002', 'CFG_003', 'CFG_004', 'INT_001', 'INT_002', 'INT_003', 'INT_004', 'INT_005', 'RES_001', 'RES_002', 'RES_003', 'RES_004', 'RES_005', 'SYS_001', 'SYS_002', 'SYS_003', 'SYS_004', 'SYS_005', 'VAL_001', 'VAL_002', 'VAL_003', 'VAL_004', 'VAL_005', 'correlation_id', 'details', 'error_code', 'exponential', 'fibonacci', 'fixed', 'help_url', 'linear', 'message', 'metadata', 'request_id', 'retry_after', 'retry_count', 'session_id', 'support_id', 'timestamp', 'user_id']
