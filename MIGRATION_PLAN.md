@@ -1,6 +1,8 @@
 # Pyvider Error System Migration Plan
 
-## Phase 1: Update Exception Hierarchy
+## Status: Phase 1 & 2 Complete ✅
+
+## Phase 1: Update Exception Hierarchy ✅
 
 ### Checklist
 
@@ -77,8 +79,33 @@ FunctionValidationError → ValidationError
 - [x] Document any existing test failures (206 passed, 1 error in test_get_key_from_config_file)
 - [x] Phase 1 Complete: 192 passed, 14 failed (exception hierarchy tests), 1 error (same as baseline)
 
+## Phase 2: Update Exception Usage Patterns ✅
+
+### Completed Tasks:
+1. ✅ **Updated diagnostic generation to use ErrorContext**
+   - Modified `create_diagnostic_from_exception` to check for foundation errors
+   - Added support for ErrorContext metadata and severity mapping
+   - Foundation errors now provide richer diagnostics automatically
+
+2. ✅ **Added error context at key error sites**
+   - Enhanced `configure_provider.py` with context for provider configuration errors
+   - Enhanced `apply_resource_change.py` with context for lifecycle violations
+   - Added Terraform-specific namespaces for better diagnostic messages
+   - Errors now include relevant metadata (resource types, operation names, etc.)
+
+3. ✅ **Retry decorators (N/A)**
+   - Pyvider is a server framework, not a client library
+   - No external network operations that would benefit from retry logic
+   - Foundation's retry decorators are available if needed in future
+
+4. ✅ **Cleaned up deprecated exception code**
+   - Replaced generic `ValueError` with specific pyvider exceptions
+   - Added error context to resource type registration failures
+   - Fixed indentation bug in private state error handling
+
 ### Phase 1 Results
-- Successfully replaced pyvider exception hierarchy with foundation errors
+- Phase 1: Successfully replaced pyvider exception hierarchy with foundation errors
+- Phase 2: Enhanced error handling with context and improved diagnostics
 - Tests failing are primarily hierarchy tests expecting old inheritance structure
 - Core functionality preserved - same baseline error persists
 - Breaking changes documented: Some exceptions now inherit directly from foundation
