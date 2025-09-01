@@ -1,15 +1,32 @@
 # pyvider/exceptions/base.py
 from typing import Any
 
+from provide.foundation.errors import (
+    ConfigurationError as FoundationConfigurationError,
+    FoundationError,
+    ValidationError as FoundationValidationError,
+)
 
-class PyviderError(Exception):
-    """Base class for all Pyvider framework errors."""
 
-    pass
+class PyviderError(FoundationError):
+    """Base class for all Pyvider framework errors.
+    
+    Inherits from FoundationError to gain:
+    - Rich error context with namespace-based metadata
+    - Automatic telemetry integration
+    - Terraform diagnostic generation support
+    """
+
+    def _default_code(self) -> str:
+        """Default error code for pyvider errors."""
+        return "PYVIDER_ERROR"
 
 
-class ConversionError(PyviderError):
-    """Base class for data conversion errors within the Pyvider framework."""
+class ConversionError(FoundationValidationError):
+    """Base class for data conversion errors within the Pyvider framework.
+    
+    Inherits from ValidationError as conversion errors are validation failures.
+    """
 
     def __init__(
         self,
@@ -19,26 +36,31 @@ class ConversionError(PyviderError):
         target_type: Any = None,
         **kwargs: Any,
     ) -> None:
-        self.source_value = source_value
-        self.target_type = target_type
-        context_parts: list[str] = []
+        # Add conversion context
         if source_value is not None:
-            context_parts.append(f"source_type={type(source_value).__name__}")
+            kwargs.setdefault('context', {})['conversion.source_type'] = type(source_value).__name__
+            kwargs.setdefault('context', {})['conversion.source_value'] = str(source_value)[:100]
         if target_type is not None:
             target_name = (
                 target_type.__name__
                 if hasattr(target_type, "__name__")
                 else str(target_type)
             )
-            context_parts.append(f"target_type={target_name}")
+            kwargs.setdefault('context', {})['conversion.target_type'] = target_name
+        
+        super().__init__(message, **kwargs)
+        self.source_value = source_value
+        self.target_type = target_type
+    
+    def _default_code(self) -> str:
+        return "CONVERSION_ERROR"
 
-        if context_parts:
-            message = f"{message} ({', '.join(context_parts)})"
-        super().__init__(message)
 
-
-class WireFormatError(ConversionError):
-    """For errors specific to wire format processing."""
+class WireFormatError(FoundationValidationError):
+    """For errors specific to wire format processing.
+    
+    Inherits from SerializationError for wire format issues.
+    """
 
     def __init__(
         self,
@@ -48,15 +70,28 @@ class WireFormatError(ConversionError):
         operation: str | None = None,
         **kwargs: Any,
     ) -> None:
+        # Add wire format context
+        if format_type is not None:
+            kwargs.setdefault('context', {})['wire.format_type'] = str(format_type)
+        if operation is not None:
+            kwargs.setdefault('context', {})['wire.operation'] = operation
+        
+        super().__init__(message, **kwargs)
         self.format_type = format_type
         self.operation = operation
-        super().__init__(message, **kwargs)
+    
+    def _default_code(self) -> str:
+        return "WIRE_FORMAT_ERROR"
 
 
-class FrameworkConfigurationError(PyviderError):
-    """Errors related to the overall framework configuration."""
+class FrameworkConfigurationError(FoundationConfigurationError):
+    """Errors related to the overall framework configuration.
+    
+    Inherits from ConfigurationError for framework config issues.
+    """
 
-    pass
+    def _default_code(self) -> str:
+        return "FRAMEWORK_CONFIG_ERROR"
 
 
 class PluginError(PyviderError):
@@ -65,10 +100,14 @@ class PluginError(PyviderError):
     pass
 
 
-class PyviderValueError(PyviderError):
-    """Generic value-related errors within Pyvider."""
+class PyviderValueError(FoundationValidationError):
+    """Generic value-related errors within Pyvider.
+    
+    Inherits from ValidationError for value validation issues.
+    """
 
-    pass
+    def _default_code(self) -> str:
+        return "VALUE_ERROR"
 
 
 class InvalidTypeError(PyviderValueError):
@@ -81,11 +120,20 @@ class InvalidTypeError(PyviderValueError):
         message_override: str | None = None,
     ) -> None:
         if message_override:
-            super().__init__(message_override)
+            message = message_override
         else:
-            super().__init__(
-                f"Invalid type: expected '{expected_type}', got '{actual_type}'."
-            )
+            message = f"Invalid type: expected '{expected_type}', got '{actual_type}'."
+        
+        super().__init__(
+            message,
+            context={
+                'type.expected': expected_type,
+                'type.actual': actual_type
+            }
+        )
+    
+    def _default_code(self) -> str:
+        return "INVALID_TYPE"
 
 
 class UnsupportedTypeError(PyviderValueError):
@@ -95,15 +143,24 @@ class UnsupportedTypeError(PyviderValueError):
         self, type_name: str = "unknown", message_override: str | None = None
     ) -> None:
         if message_override:
-            super().__init__(message_override)
+            message = message_override
         else:
-            super().__init__(f"Unsupported type encountered: '{type_name}'.")
+            message = f"Unsupported type encountered: '{type_name}'."
+        
+        super().__init__(
+            message,
+            context={'type.unsupported': type_name}
+        )
+    
+    def _default_code(self) -> str:
+        return "UNSUPPORTED_TYPE"
 
 
 class ComponentConfigurationError(FrameworkConfigurationError):
     """Errors specific to component configuration (e.g., resource, provider)."""
 
-    pass
+    def _default_code(self) -> str:
+        return "COMPONENT_CONFIG_ERROR"
 
 
 # 🐍🏗️
