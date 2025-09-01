@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/providers/provider.py
+# hypothesis_version: 6.138.3
+
+['0.1.0', 'ProviderConfig', '_parent_capability', 'capability', 'data_source', 'function', 'provider', 'provider_context', 'pyvider', 'resource', 'singleton']

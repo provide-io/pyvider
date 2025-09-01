@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/env.py
+# hypothesis_version: 6.138.3
+
+[',', '0', '1', '=', 'T', '_', '__origin__', 'disabled', 'enabled', 'env_parser', 'env_prefix', 'env_var', 'false', 'file://', 'metadata', 'no', 'off', 'on', 'true', 'type', 'yes']

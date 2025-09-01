@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/context.py
+# hypothesis_version: 6.138.3
+
+['.json', '.tml', '.toml', '.yaml', '.yml', '1', 'CRITICAL', 'Context', 'DEBUG', 'ERROR', 'INFO', 'PROVIDE', 'WARNING', '_', '_frozen', 'config_file', 'context', 'debug', 'default', 'json_output', 'log_file', 'log_level', 'on', 'profile', 'true', 'yes']

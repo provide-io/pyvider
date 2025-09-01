@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/renew_ephemeral_resource.py
+# hypothesis_version: 6.138.3
+
+['ephemeral_resource']

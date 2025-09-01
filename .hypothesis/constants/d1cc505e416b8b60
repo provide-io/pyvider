@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/read_data_source.py
+# hypothesis_version: 6.138.3
+
+[b'\xc0', '_parent_capability', 'capability', 'data_source', 'provider']

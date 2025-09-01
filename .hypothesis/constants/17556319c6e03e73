@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/functions/decorators.py
+# hypothesis_version: 6.138.3
+
+['decorator', 'deprecation_message', 'description', 'discovery_method', 'function', 'function_name', 'module', 'name', 'param_descriptions', 'summary', 'type']

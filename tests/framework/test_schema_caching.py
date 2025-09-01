@@ -33,7 +33,7 @@ async def mock_provider_in_hub(mocker: MockerFixture):
     hub.register("singleton", "provider", provider)
     yield
     # Clean up the hub after the test
-    hub.registry["singleton"] = {}
+    hub._registry.clear(dimension="singleton")
 
 
 @pytest.mark.asyncio

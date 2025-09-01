@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/base.py
+# hypothesis_version: 6.138.3
+
+['***SENSITIVE***', 'T', '_', 'description', 'env_prefix', 'env_var', 'sensitive']

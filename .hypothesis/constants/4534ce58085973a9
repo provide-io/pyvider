@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/env.py
+# hypothesis_version: 6.138.3
+
+[',', ':', 'DEBUG', 'FOUNDATION_LOG_LEVEL', 'OTEL_SERVICE_NAME', 'TelemetryConfig', '[]', 'description', 'emoji_sets', 'false', 'field_definitions', 'key_value', 'name', 'priority', 'true', 'unnamed_custom_layer']
