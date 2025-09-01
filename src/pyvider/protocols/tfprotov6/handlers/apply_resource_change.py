@@ -14,6 +14,7 @@ from pyvider.exceptions import (
     ResourceError,
     ResourceLifecycleContractError,
 )
+from provide.foundation.errors.context import ErrorSeverity
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
@@ -64,7 +65,13 @@ async def _process_private_state(
             private_data = msgpack.unpackb(decrypted_private_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
         except Exception as e:
-            raise ResourceError("Failed to deserialize private state from plan.") from e
+            err = ResourceError("Failed to deserialize private state from plan.")
+        err.add_context("private_state.error", str(e))
+        err.add_namespace("terraform", {
+            "summary": "Private state deserialization failed",
+            "detail": "The provider could not deserialize the private state data from the plan."
+        })
+        raise err from e
     return private_state_instance
 
 
@@ -109,10 +116,19 @@ def _handle_apply_result(
         if planned_state_cty is not None:
             is_valid, reason = is_valid_refinement(planned_state_cty, new_state_cty)
             if not is_valid:
-                raise ResourceLifecycleContractError(
+                err = ResourceLifecycleContractError(
                     "The final state returned by the resource's apply method is not a valid refinement of the planned state.",
                     detail=reason,
                 )
+                err.add_context("resource.type", resource_schema.name if hasattr(resource_schema, 'name') else "unknown")
+                err.add_context("lifecycle.operation", "apply")
+                err.add_context("validation.reason", reason)
+                err.add_namespace("terraform", {
+                    "summary": "Resource state contract violation",
+                    "detail": f"The resource implementation violated the Terraform state contract: {reason}"
+                })
+                err.set_severity(ErrorSeverity.HIGH)
+                raise err
 
         marshalled_new_state = marshal(new_state_cty, schema=resource_schema.block)
         response.new_state.msgpack = marshalled_new_state.msgpack
