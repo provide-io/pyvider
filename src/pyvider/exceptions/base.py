@@ -17,6 +17,10 @@ class PyviderError(FoundationError):
     - Terraform diagnostic generation support
     """
 
+    def __init__(self, message: str = "", **kwargs: Any) -> None:
+        """Initialize with backward compatibility for simple string messages."""
+        super().__init__(message, **kwargs)
+
     def _default_code(self) -> str:
         """Default error code for pyvider errors."""
         return "PYVIDER_ERROR"
@@ -90,6 +94,10 @@ class FrameworkConfigurationError(FoundationConfigurationError):
     Inherits from ConfigurationError for framework config issues.
     """
 
+    def __init__(self, message: str = "", **kwargs: Any) -> None:
+        """Initialize with backward compatibility for simple string messages."""
+        super().__init__(message, **kwargs)
+
     def _default_code(self) -> str:
         return "FRAMEWORK_CONFIG_ERROR"
 
@@ -105,6 +113,10 @@ class PyviderValueError(FoundationValidationError):
     
     Inherits from ValidationError for value validation issues.
     """
+
+    def __init__(self, message: str = "", **kwargs: Any) -> None:
+        """Initialize with backward compatibility for simple string messages."""
+        super().__init__(message, **kwargs)
 
     def _default_code(self) -> str:
         return "VALUE_ERROR"
@@ -158,6 +170,10 @@ class UnsupportedTypeError(PyviderValueError):
 
 class ComponentConfigurationError(FrameworkConfigurationError):
     """Errors specific to component configuration (e.g., resource, provider)."""
+
+    def __init__(self, message: str = "", **kwargs: Any) -> None:
+        """Initialize with backward compatibility for simple string messages."""
+        super().__init__(message, **kwargs)
 
     def _default_code(self) -> str:
         return "COMPONENT_CONFIG_ERROR"
