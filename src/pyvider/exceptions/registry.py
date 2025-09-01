@@ -1,14 +1,17 @@
 # pyvider/exceptions/registry.py
+from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
 from pyvider.exceptions.base import FrameworkConfigurationError
 
 
-class ComponentRegistryError(FrameworkConfigurationError):
+class ComponentRegistryError(FoundationConfigurationError):
     """Raised for errors during component registration or retrieval."""
 
-    pass
+    def _default_code(self) -> str:
+        return "COMPONENT_REGISTRY_ERROR"
 
 
-class ValidatorRegistrationError(ComponentRegistryError):
+class ValidatorRegistrationError(FoundationConfigurationError):
     """Raised when a non-callable is registered as a validator, or other validator issues."""
 
-    pass
+    def _default_code(self) -> str:
+        return "VALIDATOR_REGISTRATION_ERROR"
