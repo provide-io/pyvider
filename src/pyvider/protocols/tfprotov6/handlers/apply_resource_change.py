@@ -73,10 +73,8 @@ async def _process_private_state(
         except Exception as e:
             err = ResourceError("Failed to deserialize private state from plan.")
             err.add_context("private_state.error", str(e))
-            err.add_namespace("terraform", {
-                "summary": "Private state deserialization failed",
-                "detail": "The provider could not deserialize the private state data from the plan."
-            })
+            err.add_context("terraform.summary", "Private state deserialization failed")
+            err.add_context("terraform.detail", "The provider could not deserialize the private state data from the plan.")
             raise err from e
     return private_state_instance
 
