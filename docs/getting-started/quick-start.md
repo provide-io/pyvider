@@ -32,22 +32,27 @@ Local File Provider - A simple Terraform provider for managing local files.
 from pathlib import Path
 import hashlib
 import attrs
-from pyvider import provider, resource, data_source
+from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
+from pyvider.resources import register_resource, BaseResource
+from pyvider.data_sources import register_data_source, BaseDataSource
 from pyvider.schema import Attribute
 
 # ============================================
 # PROVIDER DEFINITION
 # ============================================
 
-@provider
-class LocalProvider:
+@register_provider("local")
+class LocalProvider(BaseProvider):
     """Provider for managing local files."""
     
-    metadata = {
-        "name": "local",
-        "version": "0.1.0",
-        "protocol_version": "6"
-    }
+    def __init__(self):
+        super().__init__(
+            metadata=ProviderMetadata(
+                name="local",
+                version="0.1.0",
+                protocol_version="6"
+            )
+        )
     
     @attrs.define
     class Config:
@@ -65,8 +70,8 @@ class LocalProvider:
 # FILE RESOURCE
 # ============================================
 
-@resource
-class File:
+@register_resource("file")
+class File(BaseResource):
     """Manages a local text file."""
     
     @attrs.define
@@ -207,8 +212,8 @@ class File:
 # FILE DATA SOURCE
 # ============================================
 
-@data_source
-class FileContent:
+@register_data_source("file_content")
+class FileContent(BaseDataSource):
     """Reads content from an existing file."""
     
     @attrs.define

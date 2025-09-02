@@ -41,24 +41,27 @@ Building Terraform providers traditionally requires Go expertise and deep knowle
 
 ### 🏗️ Component-Based Architecture
 ```python
-from pyvider import provider, resource, data_source, function
+from pyvider.providers import register_provider
+from pyvider.resources import register_resource
+from pyvider.data_sources import register_data_source
+from pyvider.functions import register_function
 
-@provider
+@register_provider("mycloud")
 class MyCloudProvider:
     """Your cloud provider implementation"""
     pass
 
-@resource  
+@register_resource("virtual_machine")  
 class VirtualMachine:
     """Manages virtual machine lifecycle"""
     pass
 
-@data_source
+@register_data_source("image_catalog")
 class ImageCatalog:
     """Fetches available VM images"""
     pass
 
-@function
+@register_function(name="generate_password")
 class GeneratePassword:
     """Generates secure passwords"""
     pass
@@ -128,18 +131,22 @@ Create your first Terraform provider in under 5 minutes:
 
 ```python
 # my_provider.py
-from pyvider import provider, resource
-from pyvider.schema import Schema, Attribute
+from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
+from pyvider.resources import register_resource, BaseResource
+from pyvider.schema import Attribute
 import attrs
 
-@provider
-class CloudProvider:
+@register_provider("mycloud")
+class CloudProvider(BaseProvider):
     """Example cloud provider"""
     
-    metadata = {
-        "name": "mycloud",
-        "version": "1.0.0"
-    }
+    def __init__(self):
+        super().__init__(
+            metadata=ProviderMetadata(
+                name="mycloud",
+                version="1.0.0"
+            )
+        )
     
     @attrs.define
     class Config:
@@ -153,8 +160,8 @@ class CloudProvider:
             description="Default region"
         )
 
-@resource
-class Instance:
+@register_resource("instance")
+class Instance(BaseResource):
     """Cloud compute instance"""
     
     @attrs.define
@@ -171,7 +178,7 @@ class Instance:
     
     async def create(self, config: Config) -> State:
         # Your cloud API calls here
-        return State(
+        return self.State(
             id=f"i-{config.name}",
             public_ip="203.0.113.42",
             status="running"
