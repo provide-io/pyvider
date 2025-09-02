@@ -7,7 +7,7 @@ from pyvider.cli.context import PyviderContext
 @click.group(invoke_without_command=True)
 @standard_options  # Add foundation's standard CLI options (--debug, --verbose, --quiet)
 @click.pass_context
-def cli(ctx: click.Context) -> None:
+def cli(ctx: click.Context, **kwargs) -> None:
     """
     Pyvider CLI Tool.
 
@@ -19,6 +19,11 @@ def cli(ctx: click.Context) -> None:
     # subcommands via `ctx.obj`.
     if ctx.obj is None:
         ctx.obj = PyviderContext()
+    
+    # Store the standard options in the context for subcommands to access
+    for key, value in kwargs.items():
+        if value is not None:
+            setattr(ctx.obj, key, value)
 
     if ctx.invoked_subcommand is None:
         # This is the default action when no subcommand is given.
