@@ -30,10 +30,8 @@ async def ConfigureProviderHandler(
             err = ProviderConfigurationError("Provider instance not found in hub.")
             err.add_context("hub.dimension", "singleton")
             err.add_context("hub.component_type", "provider")
-            err.add_namespace("terraform", {
-                "summary": "Provider not registered",
-                "detail": "The provider has not been properly registered with the framework."
-            })
+            err.add_context("terraform.summary", "Provider not registered")
+            err.add_context("terraform.detail", "The provider has not been properly registered with the framework.")
             raise err
 
         provider_schema = provider_instance.schema
@@ -54,10 +52,8 @@ async def ConfigureProviderHandler(
                 "Failed to instantiate provider configuration."
             )
             err.add_context("config.schema", str(provider_schema.block) if provider_schema else "None")
-            err.add_namespace("terraform", {
-                "summary": "Invalid provider configuration",
-                "detail": "The provider configuration could not be parsed into the expected format."
-            })
+            err.add_context("terraform.summary", "Invalid provider configuration")
+            err.add_context("terraform.detail", "The provider configuration could not be parsed into the expected format.")
             raise err
 
         provider_context = ProviderContext(config=config_instance)

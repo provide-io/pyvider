@@ -32,10 +32,8 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
     if not resource_class:
         err = ResourceError(f"Resource type '{type_name}' not registered")
         err.add_context("resource.type_name", type_name)
-        err.add_namespace("terraform", {
-            "summary": "Unknown resource type",
-            "detail": f"The resource type '{type_name}' is not registered with this provider."
-        })
+        err.add_context("terraform.summary", "Unknown resource type")
+        err.add_context("terraform.detail", f"The resource type '{type_name}' is not registered with this provider.")
         raise err
 
     provider_instance = hub.get_component("singleton", "provider")
@@ -127,10 +125,8 @@ def _handle_apply_result(
                 err.add_context("resource.type", resource_schema.name if hasattr(resource_schema, 'name') else "unknown")
                 err.add_context("lifecycle.operation", "apply")
                 err.add_context("validation.reason", reason)
-                err.add_namespace("terraform", {
-                    "summary": "Resource state contract violation",
-                    "detail": f"The resource implementation violated the Terraform state contract: {reason}"
-                })
+                err.add_context("terraform.summary", "Resource state contract violation")
+                err.add_context("terraform.detail", f"The resource implementation violated the Terraform state contract: {reason}")
                 err.set_severity(ErrorSeverity.HIGH)
                 raise err
 
