@@ -127,7 +127,7 @@ def _handle_apply_result(
                 err.add_context("validation.reason", reason)
                 err.add_context("terraform.summary", "Resource state contract violation")
                 err.add_context("terraform.detail", f"The resource implementation violated the Terraform state contract: {reason}")
-                err.set_severity(ErrorSeverity.HIGH)
+                # Severity is handled by the error type itself
                 raise err
 
         marshalled_new_state = marshal(new_state_cty, schema=resource_schema.block)
