@@ -225,28 +225,25 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
         # Use foundation's error context for richer diagnostics
         context = exc.context
         
-        # Map foundation severity to Terraform severity
-        if context.severity in (ErrorSeverity.LOW, ErrorSeverity.MEDIUM):
-            severity = pb.Diagnostic.WARNING
-        else:
+        # Check for severity in context dict
+        if isinstance(context, dict):
+            # Default to ERROR severity
             severity = pb.Diagnostic.ERROR
-        
-        # Get Terraform-specific metadata if available
-        tf_meta = context.get_namespace("terraform")
-        if tf_meta:
-            if "summary" in tf_meta:
-                summary = tf_meta["summary"]
-            if "attribute_path" in tf_meta:
-                attribute_path = tf_meta["attribute_path"]
-        
-        # Build detail from context
-        detail = str(exc)
-        if context.metadata:
-            detail_parts = [detail]
-            for namespace, data in context.metadata.items():
-                if namespace != "terraform" and data:
-                    detail_parts.append(f"\n{namespace}: {data}")
-            detail = "\n".join(detail_parts)
+            
+            # Check for Terraform-specific metadata
+            if "terraform.summary" in context:
+                summary = context["terraform.summary"]
+            if "terraform.detail" in context:
+                detail = context["terraform.detail"]
+            elif context:
+                # Build detail from context
+                detail_parts = [str(exc)]
+                for key, value in context.items():
+                    if not key.startswith("terraform.") and value:
+                        detail_parts.append(f"{key}: {value}")
+                detail = "\n".join(detail_parts)
+            else:
+                detail = str(exc)
     else:
         # Handle specific exception types
         specific_validation_errors = (
