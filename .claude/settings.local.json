@@ -16,7 +16,8 @@
       "Bash(TF_PLUGIN_MAGIC_COOKIE=\"d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4e95f7aa66ead0\" ./terraform-provider-pyvider)",
       "Bash(echo $PWD)",
       "Bash(/Users/tim/.local/bin/flavor pack --manifest /Users/tim/code/gh/provide-io/terraform-provider-pyvider/pyproject.toml --output /Users/tim/code/gh/provide-io/terraform-provider-pyvider/dist/terraform-provider-pyvider.psp --launcher-bin /Users/tim/code/gh/provide-io/flavorpack/ingredients/bin/flavor-rs-launcher-darwin_arm64 --key-seed test123)",
-      "Bash(/bin/rm:*)"
+      "Bash(/bin/rm:*)",
+      "Bash(find:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
