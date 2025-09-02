@@ -233,17 +233,18 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
             # Check for Terraform-specific metadata
             if "terraform.summary" in context:
                 summary = context["terraform.summary"]
+            
+            # Build detail including original message and terraform detail
+            detail_parts = [str(exc)]
             if "terraform.detail" in context:
-                detail = context["terraform.detail"]
-            elif context:
-                # Build detail from context
-                detail_parts = [str(exc)]
-                for key, value in context.items():
-                    if not key.startswith("terraform.") and value:
-                        detail_parts.append(f"{key}: {value}")
-                detail = "\n".join(detail_parts)
-            else:
-                detail = str(exc)
+                detail_parts.append(context["terraform.detail"])
+            
+            # Add other context items
+            for key, value in context.items():
+                if not key.startswith("terraform.") and key != "private_state.error" and value:
+                    detail_parts.append(f"{key}: {value}")
+            
+            detail = "\n".join(detail_parts) if detail_parts else str(exc)
     else:
         # Handle specific exception types
         specific_validation_errors = (
