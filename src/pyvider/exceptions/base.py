@@ -1,9 +1,9 @@
 # pyvider/exceptions/base.py
 from typing import Any
 
-from provide.foundation.errors import (
+from provide.foundation.errors.base import FoundationError
+from provide.foundation.errors.config import (
     ConfigurationError as FoundationConfigurationError,
-    FoundationError,
     ValidationError as FoundationValidationError,
 )
 

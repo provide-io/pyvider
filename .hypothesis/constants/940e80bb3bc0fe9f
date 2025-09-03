@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/types/primitives/bool.py
+# hypothesis_version: 6.138.3
+
+['CtyType[Any]', 'CtyValue[bool]', 'bool', 'false', 'true']

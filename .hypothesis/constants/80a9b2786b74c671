@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/exception.py
+# hypothesis_version: 6.138.3
+
+['RPC_CONFIG_ERROR', 'RPC_HANDSHAKE_ERROR', 'RPC_PLUGIN_ERROR', 'RPC_PROTOCOL_ERROR', 'RPC_SECURITY_ERROR', 'RPC_TRANSPORT_ERROR', '[', 'context', 'error_code', 'hint']

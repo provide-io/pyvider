@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/handshake.py
+# hypothesis_version: 6.138.3
+
+[0.1, 0.2, 1.0, 2.0, 10.0, 200, 1024, '...', '=', 'PLUGIN_CORE_VERSION', 'TEMP_DIR', '\\n', '\\r', '_running', 'address', 'config not loaded', 'cookie_key', 'cookie_key_expected', 'error', 'expected', 'grpc', 'network', 'parts', 'received', 'replace', 'server_transports', 'tcp', 'unix', 'utf-8', '|']

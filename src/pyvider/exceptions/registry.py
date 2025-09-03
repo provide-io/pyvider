@@ -1,5 +1,5 @@
 # pyvider/exceptions/registry.py
-from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
+from provide.foundation.errors.config import ConfigurationError as FoundationConfigurationError
 from pyvider.exceptions.base import FrameworkConfigurationError
 
 

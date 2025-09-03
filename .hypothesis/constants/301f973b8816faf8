@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/transport/tcp.py
+# hypothesis_version: 6.138.3
+
+[5.0, 100, '127.0.0.1', ':', 'abort', 'peername', 'tcp', 'transport']

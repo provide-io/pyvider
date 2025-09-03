@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/context.py
+# hypothesis_version: 6.138.3
+
+['.', 'ErrorContext', 'category', 'context', 'critical', 'detail', 'error', 'external', 'high', 'low', 'medium', 'message', 'severity', 'span_id', 'system', 'tags', 'terraform', 'timestamp', 'trace_id', 'type', 'user', 'warning']

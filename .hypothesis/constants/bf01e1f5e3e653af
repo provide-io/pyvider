@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/path/base.py
+# hypothesis_version: 6.138.3
+
+['(root)', 'CtyPath', 'CtyType[Any]', 'CtyValue[Any]', 'T']

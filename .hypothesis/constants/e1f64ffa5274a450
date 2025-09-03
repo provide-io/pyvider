@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/types/capsule.py
+# hypothesis_version: 6.138.3
+
+['CtyType[Any]', 'CtyValue[Any]', 'CtyValue[Any] | None']
