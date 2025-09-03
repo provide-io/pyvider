@@ -75,7 +75,9 @@ def test_exception_instantiation_and_str(exc_class):
         else:
             instance = exc_class("Test message for " + exc_class.__name__)
             assert "Test message for " + exc_class.__name__ in str(instance)
-            assert isinstance(instance, pyvider_exceptions_module.PyviderError)
+            # Some exceptions now inherit from foundation errors instead of PyviderError
+            from provide.foundation.errors import FoundationError
+            assert isinstance(instance, (pyvider_exceptions_module.PyviderError, FoundationError))
             assert isinstance(instance, Exception)
     except TypeError as e:
         print(f"Note: {exc_class.__name__} could not be instantiated generically for str test: {e}")
@@ -327,14 +329,16 @@ def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.CapabilityError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.ResourceError)
     assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.PyviderValueError)
-    assert issubclass(pyvider_exceptions_module.ResourceNotFoundError, pyvider_exceptions_module.ResourceError)
-    assert issubclass(pyvider_exceptions_module.ResourceOperationError, pyvider_exceptions_module.ResourceError)
+    # Resource exceptions inherit from foundation errors
+    from provide.foundation.errors import NotFoundError as FoundationNotFoundError
+    from provide.foundation.errors import StateError as FoundationStateError
+    assert issubclass(pyvider_exceptions_module.ResourceNotFoundError, FoundationNotFoundError)
+    assert issubclass(pyvider_exceptions_module.ResourceOperationError, FoundationRuntimeError)
 
     assert issubclass(pyvider_exceptions_module.SchemaError, pyvider_exceptions_module.PyviderError)
-    assert issubclass(pyvider_exceptions_module.SchemaValidationError, pyvider_exceptions_module.SchemaError)
-    assert issubclass(pyvider_exceptions_module.SchemaValidationError, pyvider_exceptions_module.PyviderValueError)
-    assert issubclass(pyvider_exceptions_module.SchemaRegistrationError, pyvider_exceptions_module.SchemaError)
-    assert issubclass(pyvider_exceptions_module.SchemaParseError, pyvider_exceptions_module.SchemaError)
+    assert issubclass(pyvider_exceptions_module.SchemaValidationError, FoundationValidationError)
+    assert issubclass(pyvider_exceptions_module.SchemaRegistrationError, FoundationConfigurationError)
+    assert issubclass(pyvider_exceptions_module.SchemaParseError, FoundationValidationError)
     assert issubclass(pyvider_exceptions_module.SchemaConversionError, pyvider_exceptions_module.ConversionError)
 
     assert issubclass(pyvider_exceptions_module.SerializationError, pyvider_exceptions_module.ConversionError)
