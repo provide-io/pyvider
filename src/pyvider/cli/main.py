@@ -1,11 +1,12 @@
 import click
-from provide.foundation.cli.decorators import standard_options
+from provide.foundation.cli.decorators import flexible_options, output_options
 
 from pyvider.cli.context import PyviderContext
 
 
 @click.group(invoke_without_command=True)
-@standard_options  # Add foundation's standard CLI options (--debug, --verbose, --quiet)
+@flexible_options  # Add logging and config options at root level
+@output_options    # Add output format options
 @click.pass_context
 def cli(ctx: click.Context, **kwargs) -> None:
     """
@@ -14,13 +15,13 @@ def cli(ctx: click.Context, **kwargs) -> None:
     When run by Terraform (with no subcommands), this will automatically
     default to the 'provide' command.
     """
-    # THE FIX: Ensure the custom context object is created and attached
+    # Ensure the custom context object is created and attached
     # at the top level of the application. This makes it available to all
     # subcommands via `ctx.obj`.
     if ctx.obj is None:
         ctx.obj = PyviderContext()
     
-    # Store the standard options in the context for subcommands to access
+    # Store the CLI options in the context for subcommands to access
     for key, value in kwargs.items():
         if value is not None:
             setattr(ctx.obj, key, value)

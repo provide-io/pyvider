@@ -7,6 +7,7 @@ from pyvider.hub.components import get_hub_diagnostics, registry
 from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
+from provide.foundation.cli.decorators import flexible_options
 from pyvider.cli.main import PyviderContext, cli, pass_ctx
 
 
@@ -86,8 +87,9 @@ def _display_block_content(block: PvsObjectType, indent_level: int) -> None:
 
 # --- Main 'components' Group ---
 @cli.group()
+@flexible_options  # Allow logging control at the component group level
 @pass_ctx
-def components(ctx: PyviderContext) -> None:
+def components(ctx: PyviderContext, **kwargs) -> None:
     """Manage, inspect, and diagnose Pyvider components."""
     # THE FIX: Run discovery and error handling for the entire command group.
     asyncio.run(
