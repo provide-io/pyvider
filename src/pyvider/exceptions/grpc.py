@@ -1,5 +1,5 @@
 # pyvider/exceptions/grpc.py
-from provide.foundation.errors.integration import NetworkError as FoundationNetworkError
+from provide.foundation.errors import NetworkError as FoundationNetworkError
 from pyvider.exceptions.base import PluginError
 
 

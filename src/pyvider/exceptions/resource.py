@@ -1,7 +1,7 @@
 # pyvider/exceptions/resource.py
-from provide.foundation.errors.resources import NotFoundError as FoundationNotFoundError
-from provide.foundation.errors.runtime import RuntimeError as FoundationRuntimeError
-from provide.foundation.errors.runtime import StateError as FoundationStateError
+from provide.foundation.errors import NotFoundError as FoundationNotFoundError
+from provide.foundation.errors import RuntimeError as FoundationRuntimeError
+from provide.foundation.errors import StateError as FoundationStateError
 from pyvider.exceptions.base import PluginError, PyviderValueError
 
 

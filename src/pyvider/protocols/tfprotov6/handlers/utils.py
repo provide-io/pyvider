@@ -28,7 +28,7 @@ from pyvider.exceptions import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from provide.foundation import logger
-from provide.foundation.errors.base import FoundationError
+from provide.foundation.errors import FoundationError
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
 PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
