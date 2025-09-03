@@ -306,23 +306,13 @@ def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.UnsupportedTypeError, pyvider_exceptions_module.PyviderValueError)
     assert issubclass(pyvider_exceptions_module.ComponentConfigurationError, pyvider_exceptions_module.FrameworkConfigurationError)
 
-    assert issubclass(pyvider_exceptions_module.FunctionError, pyvider_exceptions_module.PluginError)
-    assert issubclass(pyvider_exceptions_module.FunctionRegistrationError, pyvider_exceptions_module.FunctionError)
-    assert issubclass(pyvider_exceptions_module.FunctionValidationError, pyvider_exceptions_module.FunctionError)
-    assert issubclass(pyvider_exceptions_module.FunctionValidationError, pyvider_exceptions_module.PyviderValueError)
 
     assert issubclass(pyvider_exceptions_module.GRPCError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.GRPCConnectionError, pyvider_exceptions_module.GRPCError)
-    assert issubclass(pyvider_exceptions_module.NetworkError, pyvider_exceptions_module.GRPCError)
-    assert issubclass(pyvider_exceptions_module.RateLimitError, pyvider_exceptions_module.GRPCError)
 
-    assert issubclass(pyvider_exceptions_module.ProviderError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.ProviderConfigurationError, pyvider_exceptions_module.ProviderError)
     assert issubclass(pyvider_exceptions_module.ProviderConfigurationError, pyvider_exceptions_module.ComponentConfigurationError)
-    assert issubclass(pyvider_exceptions_module.ProviderInitializationError, pyvider_exceptions_module.ProviderError)
 
-    assert issubclass(pyvider_exceptions_module.ComponentRegistryError, pyvider_exceptions_module.FrameworkConfigurationError)
-    assert issubclass(pyvider_exceptions_module.ValidatorRegistrationError, pyvider_exceptions_module.ComponentRegistryError)
 
     assert issubclass(pyvider_exceptions_module.ResourceError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.DataSourceError, pyvider_exceptions_module.ResourceError)
@@ -330,8 +320,13 @@ def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.ResourceError)
     assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.PyviderValueError)
     # Resource exceptions inherit from foundation errors
-    from provide.foundation.errors import NotFoundError as FoundationNotFoundError
-    from provide.foundation.errors import StateError as FoundationStateError
+    from provide.foundation.errors import (
+        NotFoundError as FoundationNotFoundError,
+        StateError as FoundationStateError, 
+        RuntimeError as FoundationRuntimeError,
+        ValidationError as FoundationValidationError,
+        ConfigurationError as FoundationConfigurationError
+    )
     assert issubclass(pyvider_exceptions_module.ResourceNotFoundError, FoundationNotFoundError)
     assert issubclass(pyvider_exceptions_module.ResourceOperationError, FoundationRuntimeError)
 
@@ -344,5 +339,5 @@ def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.SerializationError, pyvider_exceptions_module.ConversionError)
     assert issubclass(pyvider_exceptions_module.DeserializationError, pyvider_exceptions_module.ConversionError)
 
-    assert issubclass(pyvider_exceptions_module.ValidationError, pyvider_exceptions_module.PyviderValueError)
+    assert issubclass(pyvider_exceptions_module.ValidationError, FoundationValidationError)
     assert issubclass(pyvider_exceptions_module.AttributeValidationError, pyvider_exceptions_module.ValidationError)

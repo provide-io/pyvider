@@ -151,7 +151,7 @@ class TestKeyDerivation:
             assert len(key) == 32  # AES-256 key length
             assert isinstance(key, bytes)
 
-    def test_get_key_from_config_file(self, temp_config_file):
+    def test_get_key_from_config_file(self):
         """Test key derivation from config file"""
         import pyvider.common.encryption
         
