@@ -146,7 +146,7 @@ def test_function_error(message, func_name, arg_idx):
 def test_function_registration_error(message, func_name):
     err = pyvider_exceptions_module.FunctionRegistrationError(message, function_name=func_name)
     expected_prefix = f"Function '{func_name}'" if func_name else "Function"
-    assert str(err) == f"{expected_prefix} error: {message}"
+    assert str(err) == f"{expected_prefix} registration error: {message}"
 
 @given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)), arg_name=st.one_of(st.none(), st.text(min_size=1)), arg_idx=st.one_of(st.none(), st.integers(min_value=0)))
 def test_function_validation_error(message, func_name, arg_name, arg_idx):
@@ -158,7 +158,7 @@ def test_function_validation_error(message, func_name, arg_name, arg_idx):
          assert str(err) == f"Argument '{arg_name}' validation error: {base_message_part}"
     else:
         expected_prefix = f"Function '{func_name}'" if func_name else "Function"
-        assert str(err) == f"{expected_prefix} error: {base_message_part}"
+        assert str(err) == f"{expected_prefix} validation error: {base_message_part}"
 
 @given(st.text())
 def test_grpc_error(message):
@@ -207,13 +207,13 @@ def test_schema_validation_error(message, schema_name, detail):
 def test_schema_registration_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaRegistrationError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
-    assert str(err) == f"{expected_prefix} error: {message}"
+    assert str(err) == f"{expected_prefix} registration error: {message}"
 
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_parse_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaParseError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
-    assert str(err) == f"{expected_prefix} error: {message}"
+    assert str(err) == f"{expected_prefix} parse error: {message}"
 
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)), source_val=st.text(), target_type_val=st.just(int))
 def test_schema_conversion_error(message, schema_name, source_val, target_type_val):
