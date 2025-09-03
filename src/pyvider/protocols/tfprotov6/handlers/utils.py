@@ -219,8 +219,33 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
     attribute_path: CtyPath | None = None
     severity = pb.Diagnostic.ERROR
     
+    # First handle specific CTY validation errors
+    specific_validation_errors = (
+        CtyAttributeValidationError,
+        CtyListValidationError,
+        CtySetValidationError,
+        CtyTupleValidationError,
+        CtyMapValidationError,
+        CtyNumberValidationError,
+        CtyStringValidationError,
+        CtyBoolValidationError,
+    )
+    
+    if isinstance(exc, specific_validation_errors):
+        summary = f"🐍🏗️ ⚠️ {exc.message}"
+        detail = f"Validation failed for a value of type '{exc.type_name}'."
+        if hasattr(exc, "value") and exc.value is not None:
+            value_repr = repr(exc.value)
+            if len(value_repr) > 100:
+                value_repr = value_repr[:97] + "..."
+            detail += f" The invalid value provided was {value_repr}."
+        attribute_path = exc.path
+    elif isinstance(exc, CtyValidationError):
+        summary = f"🐍🏗️ ⚠️ {exc.message}"
+        detail = "A configuration validation error occurred."
+        attribute_path = exc.path
     # Check if this is a foundation error with context
-    if isinstance(exc, FoundationError) and hasattr(exc, 'context'):
+    elif isinstance(exc, FoundationError) and hasattr(exc, 'context'):
         # Use foundation's error context for richer diagnostics
         context = exc.context
         
@@ -245,36 +270,12 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
             
             detail = "\n".join(detail_parts) if detail_parts else str(exc)
     else:
-        # Handle specific exception types
-        specific_validation_errors = (
-            CtyAttributeValidationError,
-            CtyListValidationError,
-            CtySetValidationError,
-            CtyTupleValidationError,
-            CtyMapValidationError,
-            CtyNumberValidationError,
-            CtyStringValidationError,
-            CtyBoolValidationError,
-        )
-
+        # Handle other specific exception types
         if isinstance(exc, ResourceLifecycleContractError):
             summary = "🐍🏗️ ⚠️ Resource Lifecycle Contract Violation"
             detail = str(exc)
             if hasattr(exc, 'detail') and exc.detail:
                 detail += f"\n\nDetails:\n{exc.detail}"
-        elif isinstance(exc, specific_validation_errors):
-            summary = f"🐍🏗️ ⚠️ {exc.message}"
-            detail = f"Validation failed for a value of type '{exc.type_name}'."
-            if hasattr(exc, "value") and exc.value is not None:
-                value_repr = repr(exc.value)
-                if len(value_repr) > 100:
-                    value_repr = value_repr[:97] + "..."
-                detail += f" The invalid value provided was {value_repr}."
-            attribute_path = exc.path
-        elif isinstance(exc, CtyValidationError):
-            summary = f"🐍🏗️ ⚠️ {exc.message}"
-            detail = "A configuration validation error occurred."
-            attribute_path = exc.path
         elif isinstance(exc, FunctionError):
             summary = "🐍🏗️ ❌ Function Execution Error"
             detail = str(exc)
