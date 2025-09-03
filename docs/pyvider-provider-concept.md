@@ -98,7 +98,7 @@ from pyvider.hub import register_resource
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema, a_num, a_str, s_resource
-from pyvider.telemetry import logger
+from provide.foundation import logger
 from pyvider.common_types import StateType
 
 @attrs.define(frozen=True)

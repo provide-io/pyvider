@@ -19,7 +19,7 @@ from pyvider.schema import (
     b_map,
     s_resource,
 )
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 
 async def assert_deep_diagnostic(

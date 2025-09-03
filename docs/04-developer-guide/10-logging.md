@@ -11,7 +11,7 @@ This guide explains how to use the logging system in your `pyvider` provider.
 Here is a basic example of how to use the logging system in your provider:
 
 ```python
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 def my_function():
     logger.info("This is my log message.")
@@ -34,7 +34,7 @@ The following log levels are available:
 You can use the `bind` method to add structured data to your logs.
 
 ```python
-from pyvider.telemetry import logger
+from provide.foundation import logger
 
 def my_function():
     log = logger.bind(user_id=123)
