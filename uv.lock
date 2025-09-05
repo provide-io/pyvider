@@ -937,6 +937,7 @@ dev = [
     { name = "pyrefly", specifier = ">=0.16.2" },
     { name = "pytest", specifier = ">=7.4.0" },
     { name = "pytest-asyncio", specifier = ">=0.21.0" },
+    { name = "pytest-benchmark", specifier = ">=4.0.0" },
     { name = "pytest-cov", specifier = ">=4.1.0" },
     { name = "pytest-xdist", specifier = ">=3.3.0" },
     { name = "pyyaml", specifier = ">=6.0.2" },
