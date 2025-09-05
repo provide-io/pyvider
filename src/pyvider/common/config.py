@@ -14,7 +14,7 @@ from provide.foundation.config import (
     field,
     validate_choice,
     validate_positive,
-    ConfigurationError
+    ConfigError as ConfigurationError
 )
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
@@ -53,7 +53,7 @@ class PyviderConfig(BaseConfig):
     
     max_discovery_timeout: int = field(
         default=30,
-        validator=validate_positive(),
+        validator=validate_positive,
         description="Maximum timeout for component discovery in seconds",
         env_var="PYVIDER_MAX_DISCOVERY_TIMEOUT"
     )

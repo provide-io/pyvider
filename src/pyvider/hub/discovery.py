@@ -22,7 +22,7 @@ class ComponentDiscovery:
         self._discovered_modules: set[str] = set()
         self.import_errors: list[tuple[str, Exception]] = []
 
-    @with_error_handling
+    @with_error_handling()
     @retry_on_error(max_attempts=2, delay=1.0)
     async def discover_all(self, strict: bool = False) -> None:
         """
