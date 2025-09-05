@@ -4051,7 +4051,7 @@
 
   # Register different config sources
   hub.add_component(FileConfigLoader, "file", dimension="config_source")
-  hub.add_component(EnvConfigLoader, "env", dimension="config_source")
+  hub.add_component(RuntimeConfigLoader, "env", dimension="config_source")
   hub.add_component(RemoteConfigLoader, "remote", dimension="config_source")
 
   # Load config from multiple sources
@@ -8179,7 +8179,7 @@
      1.1: Create RPCPluginConfig using Foundation BaseConfig
      # New: pyvider/rpcplugin/config_foundation.py
      from attrs import define
-     from provide.foundation.config import BaseConfig, field, ConfigManager, EnvConfig
+     from provide.foundation.config import BaseConfig, field, ConfigManager, RuntimeConfig
 
      @define
      class RPCPluginConfig(BaseConfig):
@@ -8208,7 +8208,7 @@
 
      1.2: Add RPC-specific configuration sources
      # Add specialized loaders for RPC plugin patterns
-     class RPCPluginEnvLoader(EnvConfig):
+     class RPCPluginEnvLoader(RuntimeConfig):
          """Environment loader with RPC plugin conventions."""
          
          def load_file_content(self, value: str) -> str:
@@ -8256,7 +8256,7 @@
      # Multi-source configuration
      def setup_distributed_config():
          """Example: Load from multiple sources with precedence."""
-         config_manager.add_source("env", EnvConfig())
+         config_manager.add_source("env", RuntimeConfig())
          config_manager.add_source("consul", ConsulConfig())
          config_manager.add_source("vault", VaultConfig()) 
 
@@ -8930,7 +8930,7 @@
        35    from provide.foundation import logger
        36 +  from provide.foundation.config import (
        37 +      BaseConfig,
-       38 +      EnvConfig,
+       38 +      RuntimeConfig,
        39 +      field,
        40 +      validate_choice,
        41 +      validate_non_negative,
@@ -9387,7 +9387,7 @@
        104 -  
        105 -  class RPCPluginConfig:
        104 +  @define(slots=True, repr=False)
-       105 +  class RPCPluginConfig(EnvConfig):
+       105 +  class RPCPluginConfig(RuntimeConfig):
        106        """
        107 -      Configuration manager for Pyvider RPC Plugin.
        107 +      Foundation-based configuration for Pyvider RPC Plugin.
@@ -10575,7 +10575,7 @@
   - ✅ Provides all the helper methods (magic_cookie_value(), server_transports(), handshake_timeout())
   - ✅ Supports to_dict() for serialization
   - ✅ Uses Foundation's logging and validation system
-  - ✅ File:// prefix support is built-in through Foundation's EnvConfig
+  - ✅ File:// prefix support is built-in through Foundation's RuntimeConfig
 
   Let me now update the integration checklist with our progress:
 
@@ -10611,7 +10611,7 @@
        15 +    - [x] Verify multi-source configuration support
        16 +  - [x] **1.2** Add file content loading support (`file://` prefix)
        17 +    - [x] ~~Create `FileContentLoader` utility~~ **Already exists in Foundation**
-       18 +    - [x] ~~Add support in env loading~~ **Already built-in to EnvConfig**
+       18 +    - [x] ~~Add support in env loading~~ **Already built-in to RuntimeConfig**
        19 +    - [x] ~~Test certificate/key file loading~~ **Working via Foundation's get_env()**
        20 +  - [x] **1.3** Enhance type conversion utilities
        21 +    - [x] ~~Add list[int] conversion support~~ **Already exists via parse_list()**
@@ -10757,8 +10757,8 @@
   The RPC-specific items like magic_cookie_key(), magic_cookie_value(), transport validation, and protocol version validation are all correctly placed in the pyvider-rpcplugin package, not in Foundation.
 
   This follows the correct architectural pattern:
-  - Foundation: Provides BaseConfig, EnvConfig, field(), generic validators (validate_choice, validate_range)
-  - RPC Plugin: Extends Foundation with RPCPluginConfig(EnvConfig) and RPC-specific validators and helper methods
+  - Foundation: Provides BaseConfig, RuntimeConfig, field(), generic validators (validate_choice, validate_range)
+  - RPC Plugin: Extends Foundation with RPCPluginConfig(RuntimeConfig) and RPC-specific validators and helper methods
 
   The implementation is correctly structured! Let me continue with completing the integration checklist:
 
@@ -10809,7 +10809,7 @@
        52    
        53 -  ### **Specialized Configuration Components**
        54 -  - [ ] **2.4** Create `RPCPluginEnvLoader`
-       55 -    - [ ] Inherit from Foundation `EnvConfig`
+       55 -    - [ ] Inherit from Foundation `RuntimeConfig`
        56 -    - [ ] Add `file://` prefix handling
        57 -    - [ ] Add RPC-specific type conversion
        58 -  - [ ] **2.5** Create `RPCPluginConfigManager`  
@@ -10817,16 +10817,16 @@
        60 -    - [ ] Add RPC-specific configuration sources
        61 -    - [ ] Add singleton access pattern
        53 +  ### **Specialized Configuration Components** ✅ **COMPLETED**
-       54 +  - [x] **2.4** ~~Create `RPCPluginEnvLoader`~~ **Used Foundation's EnvConfig directly**
-       55 +    - [x] ~~Inherit from Foundation `EnvConfig`~~ **RPCPluginConfig(EnvConfig)**
-       56 +    - [x] ~~Add `file://` prefix handling~~ **Built-in to Foundation EnvConfig**
+       54 +  - [x] **2.4** ~~Create `RPCPluginEnvLoader`~~ **Used Foundation's RuntimeConfig directly**
+       55 +    - [x] ~~Inherit from Foundation `RuntimeConfig`~~ **RPCPluginConfig(RuntimeConfig)**
+       56 +    - [x] ~~Add `file://` prefix handling~~ **Built-in to Foundation RuntimeConfig**
        57 +    - [x] ~~Add RPC-specific type conversion~~ **Handled by Foundation parsing**
        58 +  - [x] **2.5** ~~Create `RPCPluginConfigManager`~~ **Used direct singleton pattern**
        59 +    - [x] ~~Inherit from Foundation `ConfigManager`~~ **Simple global singleton**
-       60 +    - [x] ~~Add RPC-specific configuration sources~~ **EnvConfig handles this**
+       60 +    - [x] ~~Add RPC-specific configuration sources~~ **RuntimeConfig handles this**
        61 +    - [x] Add singleton access pattern **rpcplugin_config global instance**
        62    
-       63 +  **Result**: Foundation's EnvConfig provided everything needed! RPC plugin extends it directly with domain-specific fields and validators.
+       63 +  **Result**: Foundation's RuntimeConfig provided everything needed! RPC plugin extends it directly with domain-specific fields and validators.
        64 +  
        65    ---
        66    
@@ -10865,8 +10865,8 @@
         72 +    - [x] Replace with Foundation attrs-based approach **@define(slots=True)**
         73 +    - [x] Migrate all field definitions **30+ fields migrated to attrs fields**
         74 +  - [x] **3.2** Replace environment variable processing
-        75 +    - [x] ~~Remove `fetch_env_variable()` function~~ **Replaced with EnvConfig.from_env()**
-        76 +    - [x] Use Foundation's env loading **Built-in to EnvConfig with file:// support**
+        75 +    - [x] ~~Remove `fetch_env_variable()` function~~ **Replaced with RuntimeConfig.from_env()**
+        76 +    - [x] Use Foundation's env loading **Built-in to RuntimeConfig with file:// support**
         77 +    - [x] Preserve type conversion behavior **Foundation's parsing handles all types**
         78 +  - [x] **3.3** Replace validation logic
         79 +    - [x] ~~Remove `validate_config_value()` function~~ **Replaced with attrs validators**
@@ -10874,7 +10874,7 @@
         81 +    - [x] Preserve error message format **ValidationError with helpful messages**
         82 +  - [x] **3.4** Replace config initialization
         83 +    - [x] ~~Remove `get_config()` function~~ **Replaced with direct config access**
-        84 +    - [x] ~~Use Foundation's config manager~~ **Simple singleton pattern with EnvConfig**
+        84 +    - [x] ~~Use Foundation's config manager~~ **Simple singleton pattern with RuntimeConfig**
         85 +    - [x] Preserve initialization behavior **Same lazy singleton pattern**
         86    
         87 -  ### **API Preservation Layer**
@@ -10933,9 +10933,9 @@
        197 -  | Phase 5: Testing & Validation | 🔄 Not Started | 0% | Quality assurance |
        198 -  | Phase 6: Documentation & Cleanup | 🔄 Not Started | 0% | Finalization |
        193 +  | Phase 1: Foundation Enhancement | ✅ **COMPLETED** | 100% | Foundation had everything needed |  
-       194 +  | Phase 2: RPC Config Classes | ✅ **COMPLETED** | 100% | RPCPluginConfig(EnvConfig) implemented |
+       194 +  | Phase 2: RPC Config Classes | ✅ **COMPLETED** | 100% | RPCPluginConfig(RuntimeConfig) implemented |
        195 +  | Phase 3: Migration Implementation | ✅ **COMPLETED** | 100% | End-state replacement completed |
-       196 +  | Phase 4: Advanced Features | ✅ **COMPLETED** | 100% | Built-in to Foundation EnvConfig |
+       196 +  | Phase 4: Advanced Features | ✅ **COMPLETED** | 100% | Built-in to Foundation RuntimeConfig |
        197 +  | Phase 5: Testing & Validation | 🔄 **PARTIAL** | 75% | Core functionality working, tests updated |
        198 +  | Phase 6: Documentation & Cleanup | ✅ **COMPLETED** | 100% | Integration documented |
        199    
@@ -10963,7 +10963,7 @@
        208 +    - Helper methods preserved: `magic_cookie_value()`, `server_transports()`, etc.
        209 +    - API compatibility maintained: `get()`, `set()`, `configure()` functions work as before
        210 +  - [x] **Performance**: Configuration loading performance maintained or improved ✅
-       211 +    - Foundation's EnvConfig provides optimized environment variable loading
+       211 +    - Foundation's RuntimeConfig provides optimized environment variable loading
        212 +    - Built-in validation happens at field level (more efficient)
        213 +    - Lazy initialization with singleton pattern preserved
        214 +  - [x] **Features**: New Foundation-based features accessible ✅
@@ -10975,7 +10975,7 @@
        220 +  - [x] **Integration**: Foundation integration working ✅
        221 +    - Uses Foundation's logging system (structured logging with emojis)
        222 +    - Leverages Foundation's error handling (ValidationError, ConfigError)
-       223 +    - Built on Foundation's BaseConfig/EnvConfig architecture
+       223 +    - Built on Foundation's BaseConfig/RuntimeConfig architecture
        224 +  - [x] **Documentation**: Updated documentation and examples ✅
        225 +    - Integration checklist completed and documented
        226 +    - Design decisions and architecture documented
@@ -10997,7 +10997,7 @@
        236 -  - Maintain singleton pattern through ConfigManager
        232 +  ### **Key Design Decisions** ✅ **IMPLEMENTED**
        233 +  - **End-state approach**: Direct replacement, no backward compatibility layers
-       234 +  - **Foundation's EnvConfig**: Used directly instead of custom ConfigManager
+       234 +  - **Foundation's RuntimeConfig**: Used directly instead of custom ConfigManager
        235 +  - **Domain separation**: RPC-specific logic stays in rpcplugin, Foundation provides infrastructure
        236 +  - **Modern typing**: Python 3.11+ type annotations throughout (`list[str]`, `dict[str, Any]`)
        237 +  - **Attrs-based**: `@define(slots=True)` for performance and type safety
@@ -11059,7 +11059,7 @@
 
   ✅ Key Achievements
 
-  1. Complete Integration: RPCPluginConfig now extends Foundation's EnvConfig directly
+  1. Complete Integration: RPCPluginConfig now extends Foundation's RuntimeConfig directly
   2. Zero Legacy Code: No backward compatibility layers - clean, end-state implementation
   3. All Features Preserved: Every configuration field and helper method maintained
   4. Enhanced Capabilities:
@@ -11070,8 +11070,8 @@
 
   🏗️ Architecture
 
-  - Foundation: Provides BaseConfig, EnvConfig, field(), generic validators
-  - RPC Plugin: Extends Foundation with RPCPluginConfig(EnvConfig) and domain-specific validators
+  - Foundation: Provides BaseConfig, RuntimeConfig, field(), generic validators
+  - RPC Plugin: Extends Foundation with RPCPluginConfig(RuntimeConfig) and domain-specific validators
   - Clean Separation: RPC-specific logic (like magic cookies) stays in rpcplugin package
 
   🚀 Demonstrated Working Features
@@ -11118,7 +11118,7 @@
 
   2. Environment Variable Loading
 
-  - EnvConfig.from_env() and get_env()/get_env_async() functions
+  - RuntimeConfig.from_env() and get_env()/get_env_async() functions
   - Should consolidate to single approach
 
   3. Validation Patterns
@@ -11962,7 +11962,7 @@
   Looking at the current Foundation-based setup:
 
   # Current approach in config.py - this is correct!
-  class RPCPluginConfig(EnvConfig):
+  class RPCPluginConfig(RuntimeConfig):
       plugin_magic_cookie_value: str = field(
           default="test_cookie_value",
           description="Magic cookie value for plugin authentication",
@@ -12914,7 +12914,7 @@
   - ❌ Complex key-to-attribute mapping logic
 
   Current Clean State:
-  - ✅ Pure Foundation patterns: RPCPluginConfig(EnvConfig) with direct attribute access
+  - ✅ Pure Foundation patterns: RPCPluginConfig(RuntimeConfig) with direct attribute access
   - ✅ Config-settings-as-API: Primary interface is pythonic settings names
   - ✅ Metadata-driven: Environment variables defined in field metadata only
   - ✅ Well-tested: All backward compatibility removal validated with passing tests
@@ -12949,7 +12949,7 @@
 
   What Should Be:
   @define(frozen=True, slots=True, repr=False)
-  class RPCPluginConfig(EnvConfig):
+  class RPCPluginConfig(RuntimeConfig):
       # Immutable configuration with memory efficiency
 
   Current Issue:
@@ -12991,7 +12991,7 @@
 
   ✅ Current Implementation is Actually Correct:
   @define(slots=True, repr=False)  # ✅ Memory efficient, mutable when needed
-  class RPCPluginConfig(EnvConfig):
+  class RPCPluginConfig(RuntimeConfig):
 
   ✅ Immutability Should Be Applied To:
   - Data transfer objects (DTOs)
@@ -13215,7 +13215,7 @@
 ⏺ Search(pattern: "plugin_protocol_versions.*field", path: "../pyvider-rpcplugin/src/pyvider/rpcplugin/config.py", output_mode: "content")
   ⎿  Found 6 lines (ctrl+r to expand)
 
-⏺ The issue is that the plugin_protocol_versions field doesn't have a converter to parse the comma-separated string from the environment variable into a list of integers. Foundation's EnvConfig needs explicit conversion for complex types.
+⏺ The issue is that the plugin_protocol_versions field doesn't have a converter to parse the comma-separated string from the environment variable into a list of integers. Foundation's RuntimeConfig needs explicit conversion for complex types.
 
   Let me check what converter utilities Foundation provides:
 
@@ -13253,7 +13253,7 @@
 ⏺ Update(~/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/config.py)
   ⎿  Updated ../pyvider-rpcplugin/src/pyvider/rpcplugin/config.py with 1 addition
        30        BaseConfig,
-       31        EnvConfig,
+       31        RuntimeConfig,
        32        field,
        33 +      parse_list,
        34        validate_choice,
@@ -13523,12 +13523,12 @@
        181            return parse_dict(value)
        182        elif origin is None:
 
-⏺ Now I need to check how Foundation's EnvConfig uses this parsing functionality. Let me see if it already uses parse_typed_value or if I need to integrate it:
+⏺ Now I need to check how Foundation's RuntimeConfig uses this parsing functionality. Let me see if it already uses parse_typed_value or if I need to integrate it:
 
 ⏺ Search(pattern: "parse_typed_value|auto_parse", path: "src/provide/foundation/config", output_mode: "content")
   ⎿  Found 5 lines (ctrl+r to expand)
 
-⏺ Perfect! Foundation's EnvConfig already uses auto_parse, which delegates to parse_typed_value. My enhancement to parse_typed_value should automatically work for all EnvConfig fields.
+⏺ Perfect! Foundation's RuntimeConfig already uses auto_parse, which delegates to parse_typed_value. My enhancement to parse_typed_value should automatically work for all RuntimeConfig fields.
 
   Let me test this by creating a simple test:
 
@@ -13545,7 +13545,7 @@
 ⏺ Update(~/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/config.py)
   ⎿  Updated ../pyvider-rpcplugin/src/pyvider/rpcplugin/config.py with 1 removal
        30        BaseConfig,
-       31        EnvConfig,
+       31        RuntimeConfig,
        32        field,
        33 -      parse_list,
        33        validate_choice,
