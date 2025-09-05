@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/base.py
+# hypothesis_version: 6.138.3
+
+['INFO', 'critical', 'debug', 'done', 'error', 'exc_info', 'in_progress', 'info', 'json', 'key_value', 'logger_factory', 'pyvider.default', 'pyvider.dynamic_call', 'warning']

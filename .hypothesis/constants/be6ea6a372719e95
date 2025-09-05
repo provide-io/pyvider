@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/base.py
+# hypothesis_version: 6.138.3
+
+['.', 'FoundationError', 'PROVIDE_ERROR', 'error.cause', 'error.cause_type', 'error.code', 'error.message', 'error.type']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/commands.py
+# hypothesis_version: 6.138.3
+
+['CommandInfo', 'build_click_command', 'create_command_group', 'get_command_registry', 'register_command']
