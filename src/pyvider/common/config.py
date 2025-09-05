@@ -14,7 +14,8 @@ from provide.foundation.config import (
     field,
     validate_choice,
     validate_positive,
-    ConfigError as ConfigurationError
+    ConfigError as ConfigurationError,
+    get_env
 )
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
@@ -108,7 +109,7 @@ class PyviderConfig(BaseConfig):
 
         # Fallback to legacy behavior for dynamic keys
         env_var_name = f"PYVIDER_{key.upper()}"
-        if (env_val := os.environ.get(env_var_name)) is not None:
+        if (env_val := get_env(env_var_name)) is not None:
             logger.debug(
                 f"⚙️  Config: Found value for '{key}' in environment variable",
                 source=env_var_name,
@@ -144,17 +145,23 @@ class PyviderConfig(BaseConfig):
         return self._loaded_from_path
     
     def _load_env_overrides(self) -> None:
-        """Load environment variable overrides for typed fields."""
-        # Check for environment variable overrides for typed fields
-        env_secret = os.environ.get("PYVIDER_PRIVATE_STATE_SHARED_SECRET")
+        """Load environment variable overrides for typed fields using foundation's get_env."""
+        # Use foundation's enhanced environment variable loading
+        env_secret = get_env("PYVIDER_PRIVATE_STATE_SHARED_SECRET")
         if env_secret:
             object.__setattr__(self, "private_state_shared_secret", env_secret)
             logger.debug("⚙️  Config: Loaded private_state_shared_secret from environment")
         
-        env_log_level = os.environ.get("PYVIDER_LOG_LEVEL")
+        env_log_level = get_env("PYVIDER_LOG_LEVEL")
         if env_log_level:
-            object.__setattr__(self, "log_level", env_log_level)
+            object.__setattr__(self, "log_level", env_log_level.upper())  # Normalize case
             logger.debug("⚙️  Config: Loaded log_level from environment")
+        
+        # Load other typed fields
+        env_timeout = get_env("PYVIDER_MAX_DISCOVERY_TIMEOUT", convert=int)
+        if env_timeout is not None:
+            object.__setattr__(self, "max_discovery_timeout", env_timeout)
+            logger.debug("⚙️  Config: Loaded max_discovery_timeout from environment")
     
     def validate_required_fields(self) -> None:
         """Validates that all required fields are properly configured."""
