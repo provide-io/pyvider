@@ -17,6 +17,7 @@ from provide.foundation.config import (
     ConfigError as ConfigurationError,
     get_env
 )
+from provide.foundation.file import read_toml, safe_read
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
@@ -73,23 +74,22 @@ class PyviderConfig(BaseConfig):
         )
 
         logger.debug("⚙️  Config: Attempting to load from", path=str(config_path))
-        if config_path.exists() and config_path.is_file():
-            try:
-                with config_path.open("rb") as f:
-                    config_data = tomllib.load(f)
-                    object.__setattr__(self, "_config_data", config_data)
-                    object.__setattr__(self, "_loaded_from_path", config_path)
-                    logger.debug(
-                        "⚙️  Config: Successfully loaded",
-                        path=str(config_path),
-                        keys=list(config_data.keys()),
-                    )
-            except (tomllib.TOMLDecodeError, OSError) as e:
-                logger.warning(
-                    "⚙️  Config: Failed to load config file",
+        try:
+            config_data = read_toml(config_path)
+            if config_data:  # Only set if file exists and has content
+                object.__setattr__(self, "_config_data", config_data)
+                object.__setattr__(self, "_loaded_from_path", config_path)
+                logger.debug(
+                    "⚙️  Config: Successfully loaded",
                     path=str(config_path),
-                    error=e,
+                    keys=list(config_data.keys()),
                 )
+        except Exception as e:
+            logger.warning(
+                "⚙️  Config: Failed to load config file",
+                path=str(config_path),
+                error=e,
+            )
         else:
             logger.debug("⚙️  Config: No config file found", path=str(config_path))
         

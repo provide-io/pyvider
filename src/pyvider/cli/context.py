@@ -1,35 +1,11 @@
 import pathlib
-import platform
-import sys
 from typing import Any
 
 import click
 from provide.foundation.context import Context
+from provide.foundation.platform import get_os_name, get_arch_name
 
 from pyvider.common.config import PyviderConfig
-
-
-# --- Module-level helper functions for Terraform OS/Arch ---
-def terraform_arch() -> str:
-    machine = platform.machine().lower()
-    match machine:
-        case "x86_64":
-            return "amd64"
-        case "aarch64" | "arm64":
-            return "arm64"
-        case _:
-            return "unknown_arch"
-
-
-def terraform_os() -> str:
-    os_name = sys.platform
-    if os_name.startswith("linux"):
-        return "linux"
-    if os_name == "darwin":
-        return "darwin"
-    if os_name in ("win32", "cygwin"):
-        return "windows"
-    return "unknown_os"
 
 
 # --- Pyvider Context Class ---
@@ -44,8 +20,8 @@ class PyviderContext(Context):
         self.config = PyviderConfig()
         self.home = pathlib.Path.home()
         self.local_bin_dir = self.home / ".local" / "bin"
-        self.tf_os = terraform_os()
-        self.tf_arch = terraform_arch()
+        self.tf_os = get_os_name()
+        self.tf_arch = get_arch_name()
         self.pyvider_version = self.config.get("version", "0.1.0")
         self.tf_plugin_dir = (
             self.home

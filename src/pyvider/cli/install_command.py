@@ -3,6 +3,8 @@ import shutil
 import sys
 
 import click
+from provide.foundation.console import perr
+from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
 
@@ -35,12 +37,15 @@ def install_command(ctx: click.Context) -> None:
     if pyvider_toml_path.exists():
         is_pyvider_project = True
     elif pyproject_path.exists():
-        with pyproject_path.open() as f:
-            if "[tool.pyvider]" in f.read():
+        try:
+            content = safe_read_text(pyproject_path)
+            if "[tool.pyvider]" in content:
                 is_pyvider_project = True
+        except Exception:
+            pass  # File doesn't exist or can't be read
 
     if not is_pyvider_project:
-        click.secho(
+        perr(
             "Error: This command must be run from a directory containing a pyvider.toml file or a pyproject.toml file with a [tool.pyvider] section.",
             fg="red",
             bold=True,

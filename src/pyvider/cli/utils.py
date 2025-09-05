@@ -2,9 +2,12 @@
 
 import datetime
 import pathlib
-import subprocess
 
 import click
+from provide.foundation.console import pout
+from provide.foundation.file import ensure_dir, atomic_write_text
+from provide.foundation.process import run_command
+from provide.foundation.utils import timed_block
 
 from pyvider.cli.context import PyviderContext
 
@@ -20,7 +23,7 @@ def _run_command(
     effective_cwd = cwd or pathlib.Path.cwd()
 
     log_dir = pathlib.Path.home() / ".pyvider" / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
+    ensure_dir(log_dir)  # Foundation's safe directory creation
     log_file_path = log_dir / "prep.log"
 
     timestamp = datetime.datetime.now().isoformat()
@@ -29,47 +32,60 @@ def _run_command(
     log_entry_cwd = f"CWD: {effective_cwd}\n"
 
     step_title = title or cmd_str
-    click.secho(f"⏳ {step_title}...", fg="cyan", nl=False)
+    pout(f"⏳ {step_title}...", style="cyan", end="")
 
     try:
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=effective_cwd,
-            env=env,
-        )
-        stdout_str, stderr_str = process.communicate()
-        return_code = process.returncode
+        with timed_block() as timer:
+            # Use foundation's process runner with better error handling
+            result = run_command(
+                command,
+                cwd=effective_cwd,
+                env=env,
+                check=False  # We handle return codes ourselves
+            )
+        stdout_str, stderr_str = result.stdout, result.stderr
+        return_code = result.returncode
 
-        with log_file_path.open("a", encoding="utf-8") as f:
-            f.write(log_entry_header)
-            f.write(log_entry_cmd)
-            f.write(log_entry_cwd)
-            f.write(f"STDOUT:\n{stdout_str}\n")
-            f.write(f"STDERR:\n{stderr_str}\n")
-            f.write(f"Return Code: {return_code}\n---\n\n")
+        # Use foundation's safe file operations for atomic logging
+        log_content = (
+            f"{log_entry_header}"
+            f"{log_entry_cmd}"
+            f"{log_entry_cwd}"
+            f"Duration: {timer.elapsed:.2f}s\n"
+            f"STDOUT:\n{stdout_str}\n"
+            f"STDERR:\n{stderr_str}\n"
+            f"Return Code: {return_code}\n---\n\n"
+        )
+        
+        # Append to existing log file safely
+        existing_content = ""
+        if log_file_path.exists():
+            existing_content = log_file_path.read_text(encoding="utf-8")
+        
+        atomic_write_text(log_file_path, existing_content + log_content)
 
         if check and return_code != 0:
-            click.secho(" ❌ FAILED", fg="red")
+            pout(" ❌ FAILED", style="red")
             error_message = f"Command failed with exit code {return_code}. Details in {log_file_path}"
-            click.secho(error_message, fg="red")
-            raise subprocess.CalledProcessError(
-                return_code, command, output=stdout_str, stderr=stderr_str
+            pout(error_message, style="red")
+            from provide.foundation.process import ProcessError
+            raise ProcessError(
+                f"Command failed with exit code {return_code}",
+                exit_code=return_code,
+                command=command,
+                stdout=stdout_str,
+                stderr=stderr_str
             )
         else:
-            click.secho(" ✅ Done", fg="green")
+            pout(f" ✅ Done ({timer.elapsed:.2f}s)", style="green")
         return stdout_str
 
-    except subprocess.CalledProcessError:
-        raise
     except Exception as e:
-        click.secho(" ❌ ERROR", fg="red")
+        pout(" ❌ ERROR", style="red")
         error_message = (
             f"Failed to run command '{cmd_str}': {e}. Details may be in {log_file_path}"
         )
-        click.secho(error_message, fg="red")
+        pout(error_message, style="red")
         raise
 
 
@@ -124,13 +140,13 @@ export PLUGIN_MAGIC_COOKIE_VALUE="$TF_PLUGIN_MAGIC_COOKIE"
 exec pyvider "$@"
 """
 
-        target_provider_path.write_text(script_content)
+        atomic_write_text(target_provider_path, script_content)
         target_provider_path.chmod(target_provider_path.stat().st_mode | 0o111)
 
     except Exception as e:
-        click.secho(
+        pout(
             f"An unexpected error occurred placing provider script: {e}",
-            fg="red",
+            style="red",
             bold=True,
         )
         raise
