@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/console/__init__.py
+# hypothesis_version: 6.138.14
+
+['apin', 'apin_lines', 'apin_stream', 'perr', 'pin', 'pin_lines', 'pin_stream', 'pout']

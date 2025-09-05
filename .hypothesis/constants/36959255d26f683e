@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/platform/__init__.py
+# hypothesis_version: 6.138.14
+
+['PlatformError', 'SystemInfo', 'get_arch_name', 'get_cpu_type', 'get_os_name', 'get_os_version', 'get_platform_string', 'get_system_info', 'is_64bit', 'is_arm', 'is_linux', 'is_macos', 'is_windows']

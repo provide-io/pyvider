@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/console/output.py
+# hypothesis_version: 6.138.14
+
+['bold', 'color', 'ctx', 'data', 'dim', 'error', 'isatty', 'json_key', 'newline', 'nl', 'obj', 'prefix']

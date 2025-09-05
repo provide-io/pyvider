@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/click_builder.py
+# hypothesis_version: 6.138.14
+
+['.', '__click_params__', 'auto_created', 'build_click_command', 'cli', 'cls', 'command', 'create_command_group', 'ctx', 'description', 'ensure_parent_groups', 'info', 'is_group', 'parent', 'self']

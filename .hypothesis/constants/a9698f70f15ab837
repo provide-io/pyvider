@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/capabilities/decorators.py
+# hypothesis_version: 6.138.14
+
+['_parent_capability', 'capability', 'provider', 'singleton']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/common/launch_context.py
+# hypothesis_version: 6.138.14
+
+['   Details:', '-m', '.cache', '.py', '.pyz', '.venv', '/.cache/pspf/', '/cache/bin/python', '/pspf_', '<access_denied>', 'PSPF_', '__main__.py', 'anaconda', 'argv', 'cache', 'cache_root', 'cache_structure', 'conda', 'contents', 'editable_install', 'executable_analysis', 'executable_path', 'exists', 'is_development_mode', 'is_file', 'is_symlink', 'launch_command', 'metadata', 'metadata_path', 'module_name', 'name', 'parent', 'path_entries', 'platform', 'pspf', 'pspf_env_vars', 'pspf_package', 'python', 'python_bin_dir', 'python_cache_path', 'python_version', 'pyvider', 'pyvider_import_error', 'pyvider_location', 'reason', 'script_direct', 'script_module', 'script_path', 'src', 'suffix', 'temp', 'terraform-provider-', 'unknown', 'venv']

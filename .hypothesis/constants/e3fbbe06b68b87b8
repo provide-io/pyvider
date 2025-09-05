@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/launch_context_command.py
+# hypothesis_version: 6.138.14
+
+[100, '--format', '--verbose', '<complex_value>', 'argv', 'blue', 'cyan', 'details', 'editable_install', 'environment_info', 'executable_path', 'green', 'human', 'is_terraform_invoked', 'json', 'launch-context', 'method', 'pspf_env_vars', 'pspf_package', 'python_executable', 'red', 'script_direct', 'script_module', 'unknown', 'white', 'working_directory', 'yellow', '─']

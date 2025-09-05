@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/exceptions/__init__.py
+# hypothesis_version: 6.138.14
+
+['CapabilityError', 'ConversionError', 'DataSourceError', 'DeserializationError', 'FunctionError', 'GRPCConnectionError', 'GRPCError', 'InvalidTypeError', 'NetworkError', 'PluginError', 'ProviderError', 'PyviderError', 'PyviderValueError', 'RateLimitError', 'ResourceError', 'SchemaError', 'SchemaParseError', 'SerializationError', 'UnsupportedTypeError', 'ValidationError', 'WireFormatError']

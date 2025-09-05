@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/config.py
+# hypothesis_version: 6.138.14
+
+[100, ',', '...', '1', ':', 'DEBUG', 'FOUNDATION_LOG_LEVEL', 'INFO', 'LoggingConfig', 'OTEL_SERVICE_NAME', 'PROVIDE_LOG_FILE', 'PROVIDE_LOG_LEVEL', 'PROVIDE_SERVICE_NAME', 'Path to log file', 'TelemetryConfig', 'console_formatter', 'custom_emoji_sets', 'default_level', 'enabled_emoji_sets', 'file', 'globally_disabled', 'key_value', 'log_file', 'logger_factory', 'logging', 'module_levels', 'omit_timestamp', 'processors', 'service_name', 'show_emoji_matrix', 'true', 'wrapper_class', 'yes']

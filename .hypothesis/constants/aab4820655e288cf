@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/__init__.py
+# hypothesis_version: 6.138.14
+
+['AlreadyExistsError', 'AuthenticationError', 'AuthorizationError', 'CommandNotFoundError', 'ConcurrencyError', 'ConfigurationError', 'ErrorCategory', 'ErrorCode', 'ErrorContext', 'ErrorHandler', 'ErrorMetadata', 'ErrorSeverity', 'FoundationError', 'IntegrationError', 'NetworkError', 'NotFoundError', 'ProcessError', 'ProcessTimeoutError', 'ResourceError', 'RetryPolicy', 'RuntimeError', 'StateError', 'TimeoutError', 'ValidationError', 'error_boundary', 'fallback_on_error', 'handle_error', 'retry_on_error', 'suppress_and_log', 'transactional', 'with_error_handling']

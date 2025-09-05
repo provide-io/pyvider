@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/platform.py
+# hypothesis_version: 6.138.14
+
+['PLATFORM_ERROR', 'context', 'platform.name', 'platform.operation']

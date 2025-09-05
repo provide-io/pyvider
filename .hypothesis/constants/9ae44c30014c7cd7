@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/manager.py
+# hypothesis_version: 6.138.14
+
+['-', 'Added command to hub', 'HUB_COMPONENT_EXISTS', '_', '__doc__', 'add_component', 'aliases', 'author', 'category', 'cleanup', 'cli', 'click_command', 'command', 'component', 'description', 'hidden', 'hub', 'info', 'initialize', 'tags', 'version']
