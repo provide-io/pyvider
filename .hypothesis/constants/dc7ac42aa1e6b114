@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/install_command.py
+# hypothesis_version: 6.138.3
+
+['[tool.pyvider]', 'cyan', 'frozen', 'green', 'install', 'pyproject.toml', 'pyvider.toml', 'red', 'yellow']

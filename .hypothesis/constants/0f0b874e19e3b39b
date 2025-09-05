@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/file/atomic.py
+# hypothesis_version: 6.138.3
+
+[438, '.bak', '.tmp', 'Created backup', 'atomic_replace', 'atomic_write', 'atomic_write_text', 'utf-8', 'wb']
