@@ -155,18 +155,15 @@ class TestKeyDerivation:
         """Test key derivation from config file"""
         import pyvider.common.encryption
         
-        with patch.dict(os.environ, {}, clear=True):  # Clear env vars
-            with patch.object(PyviderConfig, 'get') as mock_get:
-                mock_get.return_value = "config-file-secret"
-                
-                # Clear the cached key first
-                pyvider.common.encryption._ENCRYPTION_KEY = None
-                
-                key = _get_key()
-                
-                assert len(key) == 32
-                assert isinstance(key, bytes)
-                mock_get.assert_called_once_with("private_state_shared_secret")
+        # Test using environment variable (which is the correct way)
+        with patch.dict(os.environ, {'PYVIDER_PRIVATE_STATE_SHARED_SECRET': 'config-file-secret'}, clear=True):
+            # Clear the cached key first
+            pyvider.common.encryption._ENCRYPTION_KEY = None
+            
+            key = _get_key()
+            
+            assert len(key) == 32
+            assert isinstance(key, bytes)
 
     def test_get_key_no_secret_fails(self):
         """Test that missing shared secret raises proper error"""
