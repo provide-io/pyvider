@@ -940,12 +940,15 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=0.21.0" },
     { name = "pytest-benchmark", specifier = ">=4.0.0" },
     { name = "pytest-cov", specifier = ">=4.1.0" },
+    { name = "pytest-mock", specifier = ">=3.15.0" },
     { name = "pytest-xdist", specifier = ">=3.3.0" },
     { name = "pyyaml", specifier = ">=6.0.2" },
     { name = "reuse", specifier = ">=1.1.0" },
     { name = "ruff", specifier = ">=0.1.0" },
     { name = "twine", specifier = ">=6.1.0" },
     { name = "ty", specifier = ">=0.0.1a6" },
+    { name = "types-cryptography", specifier = ">=3.3.23.2" },
+    { name = "types-toml", specifier = ">=0.10.8.20240310" },
 ]
 docs = [
     { name = "mike", specifier = ">=2.0.0" },
@@ -1094,7 +1097,6 @@ wheels = [
 
 [[package]]
 name = "pyvider"
-version = "0.0.0.post0"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
