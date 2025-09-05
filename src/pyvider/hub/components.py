@@ -3,7 +3,7 @@ from typing import Any
 
 from pyvider.exceptions import ComponentRegistryError
 from provide.foundation import logger
-from provide.foundation.registry import Registry
+from provide.foundation import Registry
 
 
 class ComponentRegistry:
