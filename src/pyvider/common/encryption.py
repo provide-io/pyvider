@@ -26,15 +26,15 @@ def _get_key() -> bytes:
         return _ENCRYPTION_KEY
 
     config = PyviderConfig()
-    shared_secret = config.get(CONFIG_KEY_NAME)
-
-    if not shared_secret:
+    try:
+        config.validate_required_fields()
+        shared_secret = config.private_state_shared_secret
+    except Exception as e:
         raise FrameworkConfigurationError(
             f"🔐 Private state shared secret not found. Please set the "
-            f"PYVIDER_{CONFIG_KEY_NAME.upper()} environment variable, or define "
-            f"'{CONFIG_KEY_NAME}' in a 'pyvider.toml' file (which can be "
-            f"specified with the PYVIDER_CONFIG_FILE environment variable)."
-        )
+            f"PYVIDER_PRIVATE_STATE_SHARED_SECRET environment variable, or define "
+            f"'private_state_shared_secret' in a 'pyvider.toml' file."
+        ) from e
 
     logger.debug("🔒 Using shared secret for private state encryption.")
     key_material = str(shared_secret).encode("utf-8")

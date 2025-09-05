@@ -9,7 +9,13 @@ from typing import Any
 
 import attrs
 from provide.foundation import logger
-from provide.foundation.config import BaseConfig
+from provide.foundation.config import (
+    BaseConfig,
+    field,
+    validate_choice,
+    validate_positive,
+    ConfigurationError
+)
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
@@ -18,12 +24,41 @@ _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
 @attrs.define(frozen=True)
 class PyviderConfig(BaseConfig):
     """
-    Loads and provides access to configuration from all sources.
+    Enhanced configuration system with validation and type safety.
     Priority: Environment Variable > Config File > Default.
     
-    Extends provide.foundation's BaseConfig for consistency.
+    Uses provide.foundation's advanced configuration features.
     """
 
+    # Core configuration fields with validation
+    log_level: str = field(
+        default="INFO",
+        validator=validate_choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
+        description="Logging level for the application",
+        env_var="PYVIDER_LOG_LEVEL"
+    )
+    
+    config_file_path: str = field(
+        default="pyvider.toml",
+        description="Path to the configuration file",
+        env_var="PYVIDER_CONFIG_FILE"
+    )
+    
+    private_state_shared_secret: str = field(
+        default="",
+        description="Shared secret for private state encryption",
+        env_var="PYVIDER_PRIVATE_STATE_SHARED_SECRET",
+        sensitive=True
+    )
+    
+    max_discovery_timeout: int = field(
+        default=30,
+        validator=validate_positive(),
+        description="Maximum timeout for component discovery in seconds",
+        env_var="PYVIDER_MAX_DISCOVERY_TIMEOUT"
+    )
+    
+    # Legacy support for the custom loading logic
     _config_data: dict[str, Any] = attrs.field(factory=dict, init=False)
     _loaded_from_path: Path | None = attrs.field(default=None, init=False)
 
@@ -60,7 +95,15 @@ class PyviderConfig(BaseConfig):
     def get(self, key: str, default: Any = None) -> Any:
         """Gets a configuration value from the highest priority source."""
         logger.debug(f"⚙️  Config: Requesting key '{key}'")
+        
+        # First check if this is a typed field
+        for field in attrs.fields(type(self)):
+            if field.name == key and not field.name.startswith("_"):
+                value = getattr(self, key)
+                logger.debug(f"⚙️  Config: Found typed field '{key}'", value=value)
+                return value
 
+        # Fallback to legacy behavior for dynamic keys
         env_var_name = f"PYVIDER_{key.upper()}"
         if (env_val := os.environ.get(env_var_name)) is not None:
             logger.debug(
@@ -96,3 +139,13 @@ class PyviderConfig(BaseConfig):
     @property
     def loaded_file_path(self) -> Path | None:
         return self._loaded_from_path
+    
+    def validate_required_fields(self) -> None:
+        """Validates that all required fields are properly configured."""
+        if not self.private_state_shared_secret:
+            raise ConfigurationError(
+                "Private state shared secret is required. Set PYVIDER_PRIVATE_STATE_SHARED_SECRET "
+                "environment variable or define 'private_state_shared_secret' in your config file."
+            )
+        
+        logger.debug("⚙️  Config: All required fields validated successfully")
