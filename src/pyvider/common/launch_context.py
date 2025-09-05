@@ -257,7 +257,7 @@ def _get_editable_install_details(executable_path: str) -> Dict[str, Any]:
     
     try:
         import pyvider
-        details["pyvider_location"] = str(pathlib.Path(pyvider.__file__).parent.parent)
+        details["pyvider_location"] = str(Path(pyvider.__file__).parent.parent)
         details["is_development_mode"] = "src" in str(pyvider.__path__[0])
     except (ImportError, AttributeError):
         details["pyvider_import_error"] = "Could not import pyvider"
@@ -266,7 +266,7 @@ def _get_editable_install_details(executable_path: str) -> Dict[str, Any]:
 
 def _analyze_executable(executable_path: str) -> Dict[str, Any]:
     """Analyze the executable for debugging unknown launch methods."""
-    exe_path = pathlib.Path(executable_path)
+    exe_path = Path(executable_path)
     
     return {
         "exists": exe_path.exists(),

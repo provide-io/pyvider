@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 import shutil
 import sys
 
@@ -31,8 +31,8 @@ def install_command(ctx: click.Context) -> None:
     pyvider_ctx: PyviderContext = ctx.obj
 
     # Guard: Check for pyvider.toml or pyproject.toml with [tool.pyvider]
-    pyproject_path = pathlib.Path.cwd() / "pyproject.toml"
-    pyvider_toml_path = pathlib.Path.cwd() / "pyvider.toml"
+    pyproject_path = Path.cwd() / "pyproject.toml"
+    pyvider_toml_path = Path.cwd() / "pyvider.toml"
     is_pyvider_project = False
     if pyvider_toml_path.exists():
         is_pyvider_project = True
@@ -55,7 +55,7 @@ def install_command(ctx: click.Context) -> None:
     if is_running_as_binary():
         click.secho("📦 Running in Binary Mode.", fg="cyan")
         try:
-            source_binary_path = pathlib.Path(sys.executable).resolve()
+            source_binary_path = Path(sys.executable).resolve()
             target_dir = pyvider_ctx.tf_plugin_dir
             target_binary_path = target_dir / source_binary_path.name
 

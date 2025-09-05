@@ -1,7 +1,7 @@
 """Internal utilities for the Pyvider CLI tool."""
 
 import datetime
-import pathlib
+from pathlib import Path
 
 import click
 from provide.foundation.console import pout
@@ -20,9 +20,9 @@ def _run_command(
     title: str = "",
 ) -> str:
     cmd_str = " ".join(command)
-    effective_cwd = cwd or pathlib.Path.cwd()
+    effective_cwd = cwd or Path.cwd()
 
-    log_dir = pathlib.Path.home() / ".pyvider" / "logs"
+    log_dir = Path.home() / ".pyvider" / "logs"
     ensure_dir(log_dir)  # Foundation's safe directory creation
     log_file_path = log_dir / "prep.log"
 
@@ -99,7 +99,7 @@ def _place_terraform_provider_script(ctx: PyviderContext) -> None:
 
         target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
 
-        install_dir = pathlib.Path.cwd()
+        install_dir = Path.cwd()
 
         script_content = f"""#!/bin/bash
 # Pyvider Terraform Provider Wrapper Script (Development Mode)

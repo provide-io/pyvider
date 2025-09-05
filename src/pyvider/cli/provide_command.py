@@ -1,7 +1,7 @@
 import asyncio
 import os
-import pathlib
 import sys
+from pathlib import Path
 from typing import Any
 
 import click
@@ -129,7 +129,7 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
     from pyvider.cli.components_commands import _handle_discovery_errors
 
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
-    script_name = pathlib.Path(sys.argv[0]).name
+    script_name = Path(sys.argv[0]).name
     
     # Check if Terraform is trying to launch us but we can't detect it properly
     if magic_cookie and not force:

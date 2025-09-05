@@ -141,7 +141,7 @@ def prep_dev(ctx: PyviderContext) -> None:
     click.secho(
         "🛠️  Setting up Python development environment...", fg="green", bold=True
     )
-    project_root = pathlib.Path.cwd()
+    project_root = Path.cwd()
 
     if not (project_root / "pyproject.toml").exists():
         click.secho(

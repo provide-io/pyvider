@@ -1,4 +1,4 @@
-import pathlib
+from pathlib import Path
 from typing import Any
 
 import click
@@ -18,7 +18,7 @@ class PyviderContext(Context):
     def __init__(self) -> None:
         super().__init__()  # Initialize foundation Context
         self.config = PyviderConfig()
-        self.home = pathlib.Path.home()
+        self.home = Path.home()
         self.local_bin_dir = self.home / ".local" / "bin"
         self.tf_os = get_os_name()
         self.tf_arch = get_arch_name()
