@@ -4,6 +4,7 @@ import attrs
 import msgpack
 
 from provide.foundation import logger
+from provide.foundation.errors import with_error_handling
 from pyvider.common.encryption import encrypt, decrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
@@ -144,6 +145,7 @@ def _handle_apply_result(
         logger.debug(f"Serialized private bytes: {serialized_bytes}")
 
 
+@with_error_handling()
 async def ApplyResourceChangeHandler(
     request: pb.ApplyResourceChange.Request, context: Any
 ) -> pb.ApplyResourceChange.Response:

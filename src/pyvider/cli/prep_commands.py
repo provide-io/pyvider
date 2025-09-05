@@ -1,9 +1,11 @@
-import pathlib
 import subprocess
 import sys
+from pathlib import Path
 
 import click
 
+from provide.foundation.file import atomic_write
+from provide.foundation.console import pout, perr
 from pyvider.cli.context import PyviderContext, pass_ctx
 from pyvider.cli.utils import _place_terraform_provider_script, _run_command
 
@@ -18,16 +20,15 @@ def prep() -> None:
 @pass_ctx
 def prep_os(ctx: PyviderContext) -> None:
     """Prepares the operating system with common dependencies."""
-    click.secho(f"🚀 Preparing OS: {ctx.tf_os}", fg="cyan", bold=True)
+    pout(f"🚀 Preparing OS: {ctx.tf_os}", style="cyan bold")
 
-    project_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
     script_dir = project_root / "scripts" / "prep" / ctx.tf_os
 
-    if not script_dir.is_dir():
-        click.secho(
+    if not script_dir.exists() or not script_dir.is_dir():
+        perr(
             f"Error: OS preparation scripts for '{ctx.tf_os}' not found at {script_dir}",
-            fg="red",
-            bold=True,
+            style="red bold"
         )
         sys.exit(1)
 
@@ -37,23 +38,22 @@ def prep_os(ctx: PyviderContext) -> None:
         try:
             _run_command(["bash", str(script)], check=True, title=title)
         except subprocess.CalledProcessError:
-            click.secho(
+            perr(
                 f"❌ Failed to execute script: {script.name}. Aborting.",
-                fg="red",
-                bold=True,
+                style="red bold"
             )
             sys.exit(1)
 
-    click.secho("✅ OS preparation successfully completed.", fg="green", bold=True)
+    pout("✅ OS preparation successfully completed.", style="green bold")
 
 
 @prep.command(name="terraform")
 @pass_ctx
 def prep_terraform(ctx: PyviderContext) -> None:
     """Installs Terraform using the appropriate OS-specific script."""
-    click.secho("🚀 Installing Terraform...", fg="cyan", bold=True)
+    pout("🚀 Installing Terraform...", style="cyan bold")
 
-    project_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
 
     if ctx.tf_os == "linux":
         script_path = (
@@ -64,12 +64,12 @@ def prep_terraform(ctx: PyviderContext) -> None:
             project_root / "scripts" / "prep" / "macos" / "04_install_terraform.sh"
         )
     else:
-        click.secho(f"❌ Unsupported OS: {ctx.tf_os}", fg="red", bold=True)
+        perr(f"❌ Unsupported OS: {ctx.tf_os}", style="red bold")
         sys.exit(1)
 
     if not script_path.exists():
-        click.secho(
-            f"❌ Terraform install script not found: {script_path}", fg="red", bold=True
+        perr(
+            f"❌ Terraform install script not found: {script_path}", style="red bold"
         )
         sys.exit(1)
 
@@ -79,9 +79,9 @@ def prep_terraform(ctx: PyviderContext) -> None:
             check=True,
             title=f"Installing Terraform for {ctx.tf_os}",
         )
-        click.secho("✅ Terraform installation complete.", fg="green", bold=True)
+        pout("✅ Terraform installation complete.", style="green bold")
     except subprocess.CalledProcessError:
-        click.secho("❌ Failed to install Terraform. Aborting.", fg="red", bold=True)
+        perr("❌ Failed to install Terraform. Aborting.", style="red bold")
         sys.exit(1)
 
 
@@ -89,21 +89,21 @@ def prep_terraform(ctx: PyviderContext) -> None:
 @pass_ctx
 def prep_tofu(ctx: PyviderContext) -> None:
     """Installs OpenTofu using the appropriate OS-specific script."""
-    click.secho("🚀 Installing OpenTofu...", fg="cyan", bold=True)
+    pout("🚀 Installing OpenTofu...", style="cyan bold")
 
-    project_root = pathlib.Path(__file__).resolve().parent.parent.parent.parent
+    project_root = Path(__file__).resolve().parent.parent.parent.parent
 
     if ctx.tf_os == "linux":
         script_path = project_root / "scripts" / "prep" / "linux" / "04_install_tofu.sh"
     elif ctx.tf_os == "darwin":
         script_path = project_root / "scripts" / "prep" / "macos" / "05_install_tofu.sh"
     else:
-        click.secho(f"❌ Unsupported OS: {ctx.tf_os}", fg="red", bold=True)
+        perr(f"❌ Unsupported OS: {ctx.tf_os}", style="red bold")
         sys.exit(1)
 
     if not script_path.exists():
-        click.secho(
-            f"❌ OpenTofu install script not found: {script_path}", fg="red", bold=True
+        perr(
+            f"❌ OpenTofu install script not found: {script_path}", style="red bold"
         )
         sys.exit(1)
 
@@ -113,9 +113,9 @@ def prep_tofu(ctx: PyviderContext) -> None:
             check=True,
             title=f"Installing OpenTofu for {ctx.tf_os}",
         )
-        click.secho("✅ OpenTofu installation complete.", fg="green", bold=True)
+        pout("✅ OpenTofu installation complete.", style="green bold")
     except subprocess.CalledProcessError:
-        click.secho("❌ Failed to install OpenTofu. Aborting.", fg="red", bold=True)
+        perr("❌ Failed to install OpenTofu. Aborting.", style="red bold")
         sys.exit(1)
 
 

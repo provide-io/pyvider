@@ -4,6 +4,7 @@ import attrs
 import msgpack
 
 from provide.foundation import logger
+from provide.foundation.errors import with_error_handling
 from pyvider.common.encryption import encrypt, decrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
@@ -136,6 +137,7 @@ def _handle_planned_state_dict(
     response.planned_state.msgpack = marshalled_planned_state.msgpack
 
 
+@with_error_handling()
 async def PlanResourceChangeHandler(
     request: pb.PlanResourceChange.Request, context: Any
 ) -> pb.PlanResourceChange.Response:

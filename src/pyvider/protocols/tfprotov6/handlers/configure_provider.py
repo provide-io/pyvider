@@ -3,6 +3,7 @@ from typing import Any
 from pyvider.conversion import unmarshal
 from pyvider.exceptions import ProviderConfigurationError, PyviderError
 from provide.foundation.errors.context import ErrorSeverity
+from provide.foundation.errors import with_error_handling
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.providers.context import ProviderContext
@@ -12,6 +13,7 @@ from provide.foundation import logger
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 
 
+@with_error_handling()
 async def ConfigureProviderHandler(
     request: pb.ConfigureProvider.Request, context: Any
 ) -> pb.ConfigureProvider.Response:

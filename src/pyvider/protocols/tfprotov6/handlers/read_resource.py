@@ -2,6 +2,7 @@ from typing import Any
 
 import msgpack
 
+from provide.foundation.errors import with_error_handling
 from pyvider.common.encryption import decrypt
 from pyvider.conversion import marshal, unmarshal
 from pyvider.exceptions import PyviderError, ResourceError
@@ -16,6 +17,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
 )
 
 
+@with_error_handling()
 async def ReadResourceHandler(
     request: pb.ReadResource.Request, context: Any
 ) -> pb.ReadResource.Response:

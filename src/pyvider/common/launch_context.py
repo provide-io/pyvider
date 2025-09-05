@@ -7,10 +7,13 @@ about the execution environment.
 
 import os
 import sys
-import pathlib
 from typing import Optional, Dict, Any
 from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
+
+from provide.foundation.file import safe_read_text
+from provide.foundation.errors import with_error_handling
 
 class LaunchMethod(Enum):
     """Different ways Pyvider can be launched."""
@@ -145,7 +148,7 @@ def _is_pspf_launch(executable_path: str, python_executable: str) -> bool:
     # Check if executable path suggests PSPF
     if any(indicator in executable_path.lower() for indicator in ["terraform-provider-", "pspf"]):
         # Additional check: see if we're in a temporary/cache directory structure
-        python_path = pathlib.Path(python_executable)
+        python_path = Path(python_executable)
         if any(part in str(python_path) for part in [".cache", "cache", "temp"]):
             return True
     
@@ -175,7 +178,7 @@ def _is_module_launch() -> bool:
 
 def _is_editable_install(executable_path: str) -> bool:
     """Check if we're running from an editable install."""
-    exe_path = pathlib.Path(executable_path)
+    exe_path = Path(executable_path)
     
     # Look for .egg-link files or site-packages with -e installs
     try:
@@ -185,7 +188,7 @@ def _is_editable_install(executable_path: str) -> bool:
             
         # Check if we can find pyvider in development mode
         import pyvider
-        pyvider_path = pathlib.Path(pyvider.__file__).parent.parent.parent
+        pyvider_path = Path(pyvider.__file__).parent.parent.parent
         if pyvider_path.name == "src":  # typical editable install structure
             return True
             
@@ -203,7 +206,7 @@ def _get_pspf_details() -> Dict[str, Any]:
     details = {}
     
     # Try to find PSPF cache information
-    python_path = pathlib.Path(sys.executable)
+    python_path = Path(sys.executable)
     details["python_cache_path"] = str(python_path.parent.parent)
     details["cache_structure"] = _analyze_cache_structure(python_path)
     
@@ -230,7 +233,7 @@ def _get_module_name() -> str:
         if "__main__.py" in argv0:
             # Try to extract module name from path
             # e.g., /path/to/pyvider/src/pyvider/__main__.py -> pyvider
-            path_parts = pathlib.Path(argv0).parts
+            path_parts = Path(argv0).parts
             for i, part in enumerate(reversed(path_parts)):
                 if part == "__main__.py" and i + 1 < len(path_parts):
                     module_name = path_parts[-(i + 2)]  # Get the parent directory
@@ -274,7 +277,7 @@ def _analyze_executable(executable_path: str) -> Dict[str, Any]:
         "name": exe_path.name,
     }
 
-def _analyze_cache_structure(python_path: pathlib.Path) -> Dict[str, Any]:
+def _analyze_cache_structure(python_path: Path) -> Dict[str, Any]:
     """Analyze the cache directory structure for PSPF packages."""
     cache_dir = python_path.parent.parent
     

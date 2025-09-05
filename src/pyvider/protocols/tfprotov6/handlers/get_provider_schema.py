@@ -7,6 +7,7 @@ from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
+from provide.foundation.errors import with_error_handling
 import pyvider.protocols.tfprotov6.protobuf as pb
 from provide.foundation import logger
 
@@ -120,6 +121,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
         )
 
 
+@with_error_handling()
 async def GetProviderSchemaHandler(
     request: pb.GetProviderSchema.Request, context: Any
 ) -> pb.GetProviderSchema.Response:

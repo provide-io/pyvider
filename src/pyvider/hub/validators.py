@@ -6,6 +6,8 @@ from collections.abc import Callable
 from typing import Any, ClassVar
 
 from provide.foundation import logger
+from provide.foundation.config import ConfigValidationError
+from provide.foundation.errors import with_error_handling
 
 
 class Validators:
@@ -25,11 +27,12 @@ class Validators:
         return decorator
 
     @classmethod
+    @with_error_handling()
     def attach(cls, metadata: Any, *validator_names: str) -> None:
         """Attach validators to AttributeMetadata by name."""
         for name in validator_names:
             if name not in cls._registry:
-                raise ValueError(f"Validator '{name}' not registered.")
+                raise ConfigValidationError(f"Validator '{name}' not registered.")
 
             validator = cls._registry[name]
 
@@ -47,12 +50,16 @@ class Validators:
             )
 
     @classmethod
+    @with_error_handling()
     def validate(cls, validator_name: str, value: Any, metadata: Any) -> None:
         """Apply a specific validator at runtime."""
         if validator_name not in cls._registry:
-            raise ValueError(f"Validator '{validator_name}' not registered.")
+            raise ConfigValidationError(f"Validator '{validator_name}' not registered.")
 
-        cls._registry[validator_name](value, metadata)
+        try:
+            cls._registry[validator_name](value, metadata)
+        except Exception as e:
+            raise ConfigValidationError(f"Validation failed for '{validator_name}': {str(e)}") from e
 
 
 # 🐍🏗️
