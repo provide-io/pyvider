@@ -9,6 +9,7 @@ from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchem
 
 from provide.foundation.cli.decorators import flexible_options
 from provide.foundation.console import perr, pout
+from provide.foundation.utils import format_table, timed_block
 from pyvider.cli.main import PyviderContext, cli, pass_ctx
 
 
@@ -130,45 +131,66 @@ def show_component(
     comp_type_lower = component_type.lower()
     component = registry.get_component(comp_type_lower, component_name)
     if not component:
-        click.secho(
-            f"Component '{component_name}' of type '{comp_type_lower}' not found.",
-            fg="red",
+        perr(
+            f"Component '{component_name}' of type '{comp_type_lower}' not found."
         )
         return
-    click.secho(
-        f"\nSchema for {comp_type_lower}: {click.style(component_name, bold=True, fg='bright_white')}"
+    pout(
+        f"\n📋 Schema for {comp_type_lower}: {component_name}", style="bold bright_white"
     )
-    click.echo("=" * (20 + len(comp_type_lower) + len(component_name)))
+    pout("=" * (20 + len(comp_type_lower) + len(component_name)))
     if comp_type_lower == "singleton" and hasattr(component, "schema"):
         schema = component.schema
     elif hasattr(component, "get_schema"):
         schema = component.get_schema()
     else:
-        click.secho("This component does not expose a schema.", fg="yellow")
+        pout("This component does not expose a schema.", style="yellow")
         return
     if not isinstance(schema, PvsSchema):
-        click.secho(
-            "Component's schema method did not return a PvsSchema object.", fg="red"
+        perr(
+            "Component's schema method did not return a PvsSchema object."
         )
         return
     if schema.block.description:
-        click.secho(f"\n{schema.block.description}\n", italic=True)
+        pout(f"\n{schema.block.description}\n", style="italic")
     _display_block_content(schema.block, 0)
-    click.echo()
+    pout("")
 
 
 @components.command(name="diagnostics")
 @pass_ctx
 def show_diagnostics(ctx: PyviderContext) -> None:
     """Shows detailed autodiscovery diagnostics from the component hub."""
-    click.secho("📊 Hub Diagnostics", bold=True)
-    click.echo("=" * 30)
+    pout("📊 Hub Diagnostics", style="bold")
+    pout("=" * 30)
+    
     try:
-        diagnostics = get_hub_diagnostics()
-        click.echo(f"🔢 Total component types: {diagnostics['total_component_types']}")
-        click.echo(f"🔢 Total components: {diagnostics['total_components']}")
-        click.echo("\n📋 Component breakdown:")
+        with timed_block() as timer:
+            diagnostics = get_hub_diagnostics()
+        
+        # Summary stats
+        pout(f"🔢 Total component types: {diagnostics['total_component_types']}")
+        pout(f"🔢 Total components: {diagnostics['total_components']}")
+        pout(f"⏱️  Discovery time: {timer.elapsed:.3f}s")
+        
+        # Component breakdown table
+        pout("\n📋 Component Breakdown:")
+        
+        # Prepare table data
+        table_data = []
         for comp_type, count in diagnostics["component_breakdown"].items():
-            click.echo(f"  - {comp_type}: {count}")
+            table_data.append([comp_type.title(), str(count)])
+        
+        if table_data:
+            # Use foundation's table formatter
+            table = format_table(
+                table_data,
+                headers=["Component Type", "Count"],
+                title="Components by Type"
+            )
+            pout(table)
+        else:
+            pout("  No components discovered")
+            
     except Exception as e:
-        click.secho(f"❌ Failed to get diagnostics: {e}", fg="red")
+        perr(f"❌ Failed to get diagnostics: {e}")

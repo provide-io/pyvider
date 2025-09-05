@@ -158,10 +158,14 @@ class PyviderConfig(BaseConfig):
             logger.debug("⚙️  Config: Loaded log_level from environment")
         
         # Load other typed fields
-        env_timeout = get_env("PYVIDER_MAX_DISCOVERY_TIMEOUT", convert=int)
+        env_timeout = get_env("PYVIDER_MAX_DISCOVERY_TIMEOUT")
         if env_timeout is not None:
-            object.__setattr__(self, "max_discovery_timeout", env_timeout)
-            logger.debug("⚙️  Config: Loaded max_discovery_timeout from environment")
+            try:
+                timeout_val = int(env_timeout)
+                object.__setattr__(self, "max_discovery_timeout", timeout_val)
+                logger.debug("⚙️  Config: Loaded max_discovery_timeout from environment")
+            except ValueError:
+                logger.warning("⚙️  Config: Invalid max_discovery_timeout value, using default")
     
     def validate_required_fields(self) -> None:
         """Validates that all required fields are properly configured."""
