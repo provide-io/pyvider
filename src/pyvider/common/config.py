@@ -91,6 +91,9 @@ class PyviderConfig(BaseConfig):
                 )
         else:
             logger.debug("⚙️  Config: No config file found", path=str(config_path))
+        
+        # Override typed fields with environment variables if present
+        self._load_env_overrides()
 
     def get(self, key: str, default: Any = None) -> Any:
         """Gets a configuration value from the highest priority source."""
@@ -139,6 +142,19 @@ class PyviderConfig(BaseConfig):
     @property
     def loaded_file_path(self) -> Path | None:
         return self._loaded_from_path
+    
+    def _load_env_overrides(self) -> None:
+        """Load environment variable overrides for typed fields."""
+        # Check for environment variable overrides for typed fields
+        env_secret = os.environ.get("PYVIDER_PRIVATE_STATE_SHARED_SECRET")
+        if env_secret:
+            object.__setattr__(self, "private_state_shared_secret", env_secret)
+            logger.debug("⚙️  Config: Loaded private_state_shared_secret from environment")
+        
+        env_log_level = os.environ.get("PYVIDER_LOG_LEVEL")
+        if env_log_level:
+            object.__setattr__(self, "log_level", env_log_level)
+            logger.debug("⚙️  Config: Loaded log_level from environment")
     
     def validate_required_fields(self) -> None:
         """Validates that all required fields are properly configured."""

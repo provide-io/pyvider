@@ -2,6 +2,7 @@
 The canonical entry point for the Pyvider CLI application.
 """
 
+import asyncio
 from provide.foundation import setup_telemetry, shutdown_foundation_telemetry
 from pyvider.cli import cli
 
@@ -18,7 +19,7 @@ def main() -> None:
         cli()
     finally:
         # Ensure proper cleanup of telemetry resources
-        shutdown_foundation_telemetry()
+        asyncio.run(shutdown_foundation_telemetry())
 
 
 if __name__ == "__main__":
