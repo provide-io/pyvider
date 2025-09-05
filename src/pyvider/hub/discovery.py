@@ -6,6 +6,7 @@ from typing import Any
 
 from pyvider.hub.components import ComponentRegistry
 from provide.foundation import logger
+from provide.foundation.errors import with_error_handling, retry_on_error
 
 
 class ComponentDiscovery:
@@ -21,9 +22,12 @@ class ComponentDiscovery:
         self._discovered_modules: set[str] = set()
         self.import_errors: list[tuple[str, Exception]] = []
 
+    @with_error_handling
+    @retry_on_error(max_attempts=2, delay=1.0)
     async def discover_all(self, strict: bool = False) -> None:
         """
         Discovers all components. In strict mode, it re-raises import errors.
+        Enhanced with error handling and retry logic.
         """
         self.import_errors = []
         logger.debug("🛰️🔍🔄 Starting component discovery", group=self.ENTRY_POINT_GROUP)

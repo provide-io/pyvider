@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from pyvider.common.config import PyviderConfig
 from pyvider.exceptions import FrameworkConfigurationError
 from provide.foundation import logger
+from provide.foundation.errors import with_error_handling
 
 # This salt is static and public.
 HKDF_SALT = b"pyvider-private-state-encryption-salt"
@@ -16,6 +17,7 @@ CONFIG_KEY_NAME = "private_state_shared_secret"
 _ENCRYPTION_KEY: bytes | None = None
 
 
+@with_error_handling
 def _get_key() -> bytes:
     """
     Retrieves and derives a cryptographically strong encryption key.
@@ -49,6 +51,7 @@ def _get_key() -> bytes:
     return _ENCRYPTION_KEY
 
 
+@with_error_handling
 def encrypt(plaintext: bytes) -> bytes:
     """Encrypts plaintext using AES-256-GCM with the derived key."""
     if not plaintext:
@@ -60,6 +63,7 @@ def encrypt(plaintext: bytes) -> bytes:
     return nonce + ciphertext
 
 
+@with_error_handling
 def decrypt(ciphertext: bytes) -> bytes:
     """Decrypts ciphertext using AES-256-GCM with the derived key."""
     if not ciphertext:
