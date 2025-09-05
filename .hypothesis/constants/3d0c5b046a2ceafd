@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/platform/info.py
-# hypothesis_version: 6.138.3
-
-['/', '/tmp', 'TEMP', 'TMPDIR', 'USER', 'USERNAME', 'free', 'total', 'used', '~']

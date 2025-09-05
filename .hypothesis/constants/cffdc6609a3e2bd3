@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/validation/recursion.py
-# hypothesis_version: 6.138.3
-
-[0.001, 100, 500, 1000, 30000, ' -> ', 'CTY object revisited', 'current_path', 'elapsed_ms', 'max_depth_reached', 'objects_in_graph', 'recursion_context', 'total_validations']

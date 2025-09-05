@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/utils/env.py
-# hypothesis_version: 6.138.3
-
-[1024, 3600, 86400, '(\\d+)([dhms])', ',', '-', '.', '=', 'B', 'EnvPrefix', 'G', 'GB', 'K', 'KB', 'M', 'MB', 'T', 'TB', '_', 'boolean', 'd', 'duration', 'duration_unit', 'float', 'get_bool', 'get_dict', 'get_float', 'get_int', 'get_list', 'get_path', 'get_str', 'h', 'integer', 'm', 'parse_duration', 'parse_size', 'require', 'required', 's', 'size', 'size_unit']

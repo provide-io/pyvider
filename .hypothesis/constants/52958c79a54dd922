@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/plan_resource_change.py
-# hypothesis_version: 6.138.3
-
-['detail', 'private_state_class', 'provider', 'resource', 'resource.type_name', 'singleton', 'summary', 'terraform']

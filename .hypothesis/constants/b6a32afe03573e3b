@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/types/__init__.py
-# hypothesis_version: 6.137.1
-
-['BytesCapsule', 'CtyBool', 'CtyCapsule', 'CtyCapsuleWithOps', 'CtyDynamic', 'CtyList', 'CtyMap', 'CtyNumber', 'CtyObject', 'CtySet', 'CtyString', 'CtyTuple', 'CtyType']

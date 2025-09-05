@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/context.py
-# hypothesis_version: 6.138.3
-
-['.local', '.terraform.d', '0.1.0', 'bin', 'discovery_runner', 'local', 'plugins', 'providers', 'pyvider', 'version']

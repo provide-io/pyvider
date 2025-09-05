@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/get_metadata.py
-# hypothesis_version: 6.137.1
-
-['GetMetadata called', 'GetMetadata error', 'data_source', 'function', 'resource']

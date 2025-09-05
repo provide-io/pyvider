@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/codec.py
-# hypothesis_version: 6.138.3
-
-[',', ':', 'CtyType[Any]', 'CtyValue[Any]', '__iter__', 'is_known_null', 'number_lower_bound', 'number_upper_bound', 'string_prefix', 'utf-8']

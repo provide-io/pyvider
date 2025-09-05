@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/file/safe.py
-# hypothesis_version: 6.138.3
-
-['Copied file', 'Deleted file', 'Failed to copy file', 'Failed to move file', 'Failed to read file', 'File already absent', 'Moved file', 'safe_copy', 'safe_delete', 'safe_move', 'safe_read', 'safe_read_text', 'utf-8']

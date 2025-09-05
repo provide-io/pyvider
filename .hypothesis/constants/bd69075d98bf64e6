@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/env_variables.py
-# hypothesis_version: 6.137.1
-
-['all_environment', 'all_values', 'case_sensitive', 'exclude_empty', 'keys', 'lower', 'prefix', 'regex', 'sensitive_keys', 'sensitive_values', 'transform_keys', 'transform_values', 'upper', 'values']

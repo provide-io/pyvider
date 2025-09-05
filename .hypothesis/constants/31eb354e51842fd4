@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/protocol/service.py
-# hypothesis_version: 6.137.1
-
-[0.05, 0.1, 'Channel not found', 'StdioDoneWait', 'StdioGetMessage', 'getpid', 'incoming', 'kill', 'service_id', 'trace']

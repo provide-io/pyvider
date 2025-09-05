@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/components_commands.py
-# hypothesis_version: 6.138.3
-
-['\nFailed Modules:', '=', 'Action Required:', 'Component Type', 'Components by Type', 'Computed', 'Count', 'No components found.', 'Optional', 'Required', 'Sensitive', 'bold', 'bold bright_white', 'bright_blue', 'bright_cyan', 'bright_red', 'bright_yellow', 'component_breakdown', 'component_name', 'component_type', 'diagnostics', 'get_schema', 'green', 'italic', 'list', 'magenta', 'schema', 'show', 'singleton', 'yellow', 'yellow bold', '─', '📊 Hub Diagnostics']

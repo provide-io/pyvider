@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-cty/src/pyvider/cty/functions/__init__.py
-# hypothesis_version: 6.137.1
-
-['abs_fn', 'add', 'byteslen', 'bytesslice', 'ceil_fn', 'chomp', 'chunklist', 'coalesce', 'coalescelist', 'compact', 'concat', 'contains', 'csvdecode', 'distinct', 'divide', 'element', 'equal', 'flatten', 'floor_fn', 'formatdate', 'greater_than', 'hasindex', 'indent', 'index', 'int_fn', 'join', 'jsondecode', 'jsonencode', 'keys', 'length', 'less_than', 'log_fn', 'lookup', 'lower', 'max_fn', 'merge', 'min_fn', 'modulo', 'multiply', 'negate', 'not_equal', 'parseint_fn', 'pow_fn', 'regex', 'regexall', 'regexreplace', 'replace', 'reverse', 'setproduct', 'signum_fn', 'slice', 'sort', 'split', 'strrev', 'substr', 'subtract', 'timeadd', 'title', 'to_bool', 'to_number', 'to_string', 'trim', 'trimprefix', 'trimspace', 'trimsuffix', 'upper', 'values', 'zipmap']

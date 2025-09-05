@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/types.py
-# hypothesis_version: 6.138.3
-
-['CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'TRACE', 'WARNING', 'default', 'json', 'key_value', 'trace']

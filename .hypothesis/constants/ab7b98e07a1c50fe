@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/config.py
-# hypothesis_version: 6.137.1
-
-[10.0, 30.0, 100.0, 200.0, 100, 500, 5000, ',', '1', 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'Invalid value format', 'PLUGIN_', 'PLUGIN_AUTO_MTLS', 'PLUGIN_CLIENT_CERT', 'PLUGIN_CLIENT_KEY', 'PLUGIN_CORE_VERSION', 'PLUGIN_LOG_LEVEL', 'PLUGIN_MAGIC_COOKIE', 'PLUGIN_SERVER_CERT', 'PLUGIN_SERVER_KEY', 'RPCPluginConfig', 'WARNING', 'bool', 'default', 'description', 'error', 'false', 'file://', 'float', 'int', 'list_int', 'list_str', 'on', 'required', 'str', 'supported', 'tcp', 'test_cookie_value', 'true', 'type', 'unix', 'utf-8', 'valid', 'valid_values', 'yes', '⚙️📝 Set client key', '⚙️📝 Set server key']

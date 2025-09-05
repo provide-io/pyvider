@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/apply_resource_change.py
-# hypothesis_version: 6.137.1
-
-[b'\xc0', 'private_state_class', 'provider', 'resource', 'singleton']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-rpcplugin/src/pyvider/rpcplugin/crypto/certificate.py
-# hypothesis_version: 6.137.1
-
-[365, 2048, 65537, '-----BEGIN', '/', '//', 'Certificate', 'HashiCorp', 'IssuerNotInitialized', 'PartiallyInitialized', 'Unknown', '_base', '_cert', 'alt_names', 'common_name', 'curve', 'ecdsa', 'error', 'file://', 'file:///', 'key_size', 'key_type', 'localhost', 'not_valid_after', 'not_valid_before', 'nt', 'organization', 'r', 'rsa', 'secp384r1', 'trace', 'utf-8']

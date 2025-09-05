@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/configure_provider.py
-# hypothesis_version: 6.138.3
-
-['None', 'config.schema', 'hub.component_type', 'hub.dimension', 'provider', 'provider_context', 'singleton', 'terraform.detail', 'terraform.summary']

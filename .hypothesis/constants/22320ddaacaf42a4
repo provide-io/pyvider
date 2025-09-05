@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/providers/__init__.py
-# hypothesis_version: 6.138.3
-
-['BaseProvider', 'ProviderContext', 'PyviderProvider', 'register_provider']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/config_commands.py
-# hypothesis_version: 6.138.3
-
-['PYVIDER_', 'PYVIDER_CONFIG_FILE', 'SECRET', 'TOKEN', 'bold', 'cyan', 'green', 'magenta', 'rb', 'red', 'secret', 'show', 'token', 'yellow']
