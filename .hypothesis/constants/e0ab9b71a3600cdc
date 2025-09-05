@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/prep_commands.py
+# hypothesis_version: 6.138.3
+
+['*.sh', '--all-groups', '--dev', '-e', '.', '04_install_tofu.sh', '05_install_tofu.sh', 'Syncing dependencies', 'all', 'bash', 'cyan', 'cyan bold', 'darwin', 'dev', 'green', 'green bold', 'install', 'linux', 'macos', 'os', 'pip', 'prep', 'provider', 'pyproject.toml', 'red', 'red bold', 'scripts', 'sync', 'terraform', 'tofu', 'uv', 'venv', 'yellow']
