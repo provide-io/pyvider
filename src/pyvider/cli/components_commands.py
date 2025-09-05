@@ -8,36 +8,37 @@ from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
 from provide.foundation.cli.decorators import flexible_options
+from provide.foundation.console import perr, pout
 from pyvider.cli.main import PyviderContext, cli, pass_ctx
 
 
 def _handle_discovery_errors(ctx: PyviderContext) -> None:
     """Checks for and reports critical discovery errors, then exits."""
     if ctx.discovery_errors:
-        click.secho("\n" + "─" * 70, fg="red")
-        click.secho(
-            " ❌ Critical Error: Component Discovery Failed", fg="red", bold=True
+        perr("\n" + "─" * 70)
+        perr(
+            " ❌ Critical Error: Component Discovery Failed", style="bold"
         )
-        click.secho("─" * 70, fg="red")
-        click.echo(
+        perr("─" * 70)
+        perr(
             "\nOne or more component modules could not be imported. This usually indicates\n"
             "a missing dependency or a packaging problem."
         )
-        click.echo("\nFailed Modules:")
+        perr("\nFailed Modules:")
         for module_name, error in ctx.discovery_errors:
-            click.secho(f"  - Module: {module_name}", fg="yellow")
-            click.secho(f"    Error: {error}", fg="white")
+            perr(f"  - Module: {module_name}", style="yellow")
+            perr(f"    Error: {error}")
 
-        click.secho("\n" + "─" * 70, fg="red")
-        click.secho("Action Required:", fg="yellow", bold=True)
-        click.echo(
+        perr("\n" + "─" * 70)
+        perr("Action Required:", style="yellow bold")
+        perr(
             "  1. Ensure all dependencies listed in 'pyproject.toml' are installed."
         )
-        click.echo(
+        perr(
             "  2. If developing locally, run 'uv pip install -e .[dev]' to install\n"
             "     the project in editable mode with all development dependencies."
         )
-        click.echo(
+        perr(
             "  3. Verify that all local component packages are correctly structured."
         )
         sys.exit(1)
@@ -56,23 +57,23 @@ def _display_attribute(attr: PvsAttribute, indent_level: int) -> None:
     if attr.sensitive:
         flags.append(click.style("Sensitive", fg="magenta"))
     flag_str = f" ({', '.join(flags)})" if flags else ""
-    click.echo(f"{indent}Attribute: {click.style(attr.name, fg='yellow')}{flag_str}")
+    pout(f"{indent}Attribute: {attr.name}{flag_str}", style="yellow")
     type_str = str(attr.type)
-    click.echo(f"{indent}  - Type: {click.style(type_str, fg='green')}")
+    pout(f"{indent}  - Type: {type_str}", style="green")
     if attr.description:
-        click.echo(f"{indent}  - Description: {attr.description}")
+        pout(f"{indent}  - Description: {attr.description}")
     if attr.default is not None:
-        click.echo(f"{indent}  - Default: {attr.default}")
+        pout(f"{indent}  - Default: {attr.default}")
 
 
 def _display_block_type(block_def: PvsNestedBlock, indent_level: int) -> None:
     indent = "  " * indent_level
     nesting_str = f"({block_def.nesting.name})"
-    click.echo(
-        f"{indent}Block: {click.style(block_def.type_name, fg='bright_yellow')} {nesting_str}"
+    pout(
+        f"{indent}Block: {block_def.type_name} {nesting_str}", style="bright_yellow"
     )
     if block_def.description:
-        click.echo(f"{indent}  - Description: {block_def.description}")
+        pout(f"{indent}  - Description: {block_def.description}")
     _display_block_content(block_def.block, indent_level + 1)
 
 

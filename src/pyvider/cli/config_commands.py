@@ -4,6 +4,7 @@ import tomllib
 import click
 
 from provide.foundation.cli.decorators import flexible_options
+from provide.foundation.console import pout
 from pyvider.cli.context import PyviderContext, pass_ctx
 
 
@@ -19,21 +20,21 @@ def config(ctx: PyviderContext, **kwargs) -> None:
 @pass_ctx
 def show_config(ctx: PyviderContext) -> None:
     """Displays the current Pyvider configuration from all sources."""
-    click.secho("Pyvider Configuration:", bold=True)
+    pout("🛠️  Pyvider Configuration:", style="bold")
 
     # --- File Configuration Section ---
-    click.secho("\nTOML Configuration File:", fg="cyan")
+    pout("\n📋 TOML Configuration File:", style="cyan")
     config_override = os.environ.get("PYVIDER_CONFIG_FILE")
     if config_override:
-        click.secho("  Source: PYVIDER_CONFIG_FILE environment variable", fg="magenta")
-        click.echo(f"  Path:   {config_override}")
+        pout("  Source: PYVIDER_CONFIG_FILE environment variable", style="magenta")
+        pout(f"  Path:   {config_override}")
     else:
-        click.echo("  Source: Default search path")
-        click.echo("  Path:   ./pyvider.toml")
+        pout("  Source: Default search path")
+        pout("  Path:   ./pyvider.toml")
 
     loaded_path = ctx.config.loaded_file_path
     if loaded_path:
-        click.secho("  Status: Found and Loaded", fg="green")
+        pout("  Status: ✅ Found and Loaded", style="green")
         try:
             with loaded_path.open("rb") as f:
                 data = tomllib.load(f)
@@ -41,14 +42,14 @@ def show_config(ctx: PyviderContext) -> None:
                     display_val = f"'{value}'" if isinstance(value, str) else value
                     if "secret" in key or "token" in key:
                         display_val = "'********' (sensitive)"
-                    click.echo(f"    - {key} = {display_val}")
+                    pout(f"    - {key} = {display_val}")
         except Exception as e:
-            click.secho(f"    Error reading file: {e}", fg="red")
+            pout(f"    ❌ Error reading file: {e}", style="red")
     else:
-        click.secho("  Status: Not Found", fg="yellow")
+        pout("  Status: ⚠️  Not Found", style="yellow")
 
     # --- Environment Variable Section ---
-    click.secho("\nEnvironment Variables (PYVIDER_*):", fg="cyan")
+    pout("\n🌍 Environment Variables (PYVIDER_*):", style="cyan")
     found_env_var = False
     for key, value in sorted(os.environ.items()):
         if key.startswith("PYVIDER_"):
@@ -56,13 +57,13 @@ def show_config(ctx: PyviderContext) -> None:
             display_value = value
             if "SECRET" in key or "TOKEN" in key:
                 display_value = f"******** (Set, length: {len(value)})"
-            click.echo(f"  {key}: {display_value}")
+            pout(f"  {key}: {display_value}")
     if not found_env_var:
-        click.echo("  (No PYVIDER_* environment variables set)")
+        pout("  (No PYVIDER_* environment variables set)")
 
     # --- Derived Settings Section ---
-    click.secho("\nDerived Settings:", fg="cyan")
-    click.echo(f"  Detected Terraform OS: {ctx.tf_os}")
-    click.echo(f"  Detected Terraform Architecture: {ctx.tf_arch}")
-    click.echo(f"  Effective Provider Version: {ctx.pyvider_version}")
-    click.echo(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")
+    pout("\n⚙️  Derived Settings:", style="cyan")
+    pout(f"  Detected Terraform OS: {ctx.tf_os}")
+    pout(f"  Detected Terraform Architecture: {ctx.tf_arch}")
+    pout(f"  Effective Provider Version: {ctx.pyvider_version}")
+    pout(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")

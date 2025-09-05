@@ -1,5 +1,6 @@
 import click
 from provide.foundation.cli.decorators import flexible_options, output_options
+from provide.foundation.console import perr
 
 from pyvider.cli.context import PyviderContext
 
@@ -34,7 +35,7 @@ def cli(ctx: click.Context, **kwargs) -> None:
             ctx.invoke(provide_command)
         else:
             # This case should not happen if the CLI is assembled correctly.
-            click.secho("Error: Default command 'provide' not found.", fg="red")
+            perr("Error: Default command 'provide' not found.")
             click.echo(cli.get_help(ctx))
 
 
