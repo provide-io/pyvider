@@ -904,7 +904,6 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.0.16"
 source = { editable = "../provide-foundation" }
 dependencies = [
     { name = "aiofiles" },
