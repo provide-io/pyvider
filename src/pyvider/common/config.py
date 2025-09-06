@@ -7,7 +7,7 @@ from pathlib import Path
 import tomllib
 from typing import Any
 
-import attrs
+from attrs import define, field as attrs_field
 from provide.foundation import logger
 from provide.foundation.config import (
     BaseConfig,
@@ -23,7 +23,7 @@ _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
 
 
-@attrs.define(frozen=True)
+@define(frozen=True)
 class PyviderConfig(BaseConfig):
     """
     Enhanced configuration system with validation and type safety.
@@ -61,8 +61,8 @@ class PyviderConfig(BaseConfig):
     )
     
     # Legacy support for the custom loading logic
-    _config_data: dict[str, Any] = attrs.field(factory=dict, init=False)
-    _loaded_from_path: Path | None = attrs.field(default=None, init=False)
+    _config_data: dict[str, Any] = attrs_field(factory=dict, init=False)
+    _loaded_from_path: Path | None = attrs_field(default=None, init=False)
 
     def __attrs_post_init__(self) -> None:
         logger.debug("⚙️  Config: Initializing configuration loader...")
@@ -101,7 +101,8 @@ class PyviderConfig(BaseConfig):
         logger.debug(f"⚙️  Config: Requesting key '{key}'")
         
         # First check if this is a typed field
-        for field in attrs.fields(type(self)):
+        from attrs import fields
+        for field in fields(type(self)):
             if field.name == key and not field.name.startswith("_"):
                 value = getattr(self, key)
                 logger.debug(f"⚙️  Config: Found typed field '{key}'", value=value)
