@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/cli/utils.py
+# hypothesis_version: 6.138.3
+
+['error', 'green', 'info', 'json', 'red', 'success', 'warning', 'yellow']

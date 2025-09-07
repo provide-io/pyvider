@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/config/base.py
+# hypothesis_version: 6.138.3
+
+['processors', 'stderr', 'wrapper_class']

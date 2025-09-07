@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/_version.py
+# hypothesis_version: 6.138.3
+
+['0.0.0-dev', 'VERSION', 'pyvider']

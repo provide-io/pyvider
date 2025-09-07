@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/processors/main.py
+# hypothesis_version: 6.138.3
+
+['%Y-%m-%d %H:%M:%S.%f', 'CRITICAL', 'DEBUG', 'ERROR', 'INFO', 'NOTSET', 'ResolvedEmojiConfig', 'TRACE', 'WARNING', '[❓]', 'action', 'default', 'domain', 'event', 'isatty', 'json', 'key_value', 'logger_name', 'service_name', 'status', 'timestamp', '❓']

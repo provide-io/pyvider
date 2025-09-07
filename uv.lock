@@ -918,19 +918,22 @@ requires-dist = [
     { name = "attrs", specifier = ">=23.1.0" },
     { name = "click", marker = "extra == 'cli'", specifier = ">=8.1.7" },
     { name = "cryptography", marker = "extra == 'crypto'", specifier = ">=45.0.7" },
+    { name = "httpx", marker = "extra == 'transport'", specifier = ">=0.27.0" },
     { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "opentelemetry-exporter-otlp-proto-grpc", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "opentelemetry-exporter-otlp-proto-http", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
-    { name = "provide-foundation", extras = ["cli", "crypto", "opentelemetry"], marker = "extra == 'all'" },
+    { name = "provide-foundation", extras = ["cli", "crypto", "opentelemetry", "transport"], marker = "extra == 'all'" },
     { name = "structlog", specifier = ">=25.3.0" },
     { name = "tomli-w", specifier = ">=1.0.0" },
 ]
-provides-extras = ["cli", "crypto", "opentelemetry", "all"]
+provides-extras = ["cli", "crypto", "transport", "opentelemetry", "all"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "bandit", specifier = ">=1.8.3" },
+    { name = "cryptography", specifier = ">=45.0.7" },
+    { name = "h2", specifier = ">=4.3.0" },
     { name = "hypothesis", specifier = ">=6.131.28" },
     { name = "mypy", specifier = ">=1.8.0" },
     { name = "psutil", specifier = ">=7.0.0" },
@@ -939,6 +942,7 @@ dev = [
     { name = "pytest-asyncio", specifier = ">=0.21.0" },
     { name = "pytest-benchmark", specifier = ">=4.0.0" },
     { name = "pytest-cov", specifier = ">=4.1.0" },
+    { name = "pytest-httpx", specifier = ">=0.35.0" },
     { name = "pytest-mock", specifier = ">=3.15.0" },
     { name = "pytest-xdist", specifier = ">=3.3.0" },
     { name = "pyyaml", specifier = ">=6.0.2" },

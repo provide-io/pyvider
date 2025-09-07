@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/config/logging.py
+# hypothesis_version: 6.138.3
+
+[5.0, 100, 1000, ',', '...', '1', ':', 'DEBUG', 'FOUNDATION_LOG_LEVEL', 'INFO', 'LoggingConfig', 'PROVIDE_LOG_FILE', 'PROVIDE_LOG_LEVEL', 'Path to log file', 'block', 'console_formatter', 'custom_emoji_sets', 'default_level', 'drop_newest', 'drop_oldest', 'enabled_emoji_sets', 'key_value', 'log_file', 'main', 'module_levels', 'omit_timestamp', 'rate_limit_enabled', 'rate_limit_global', 'show_emoji_matrix', 'stderr', 'stdout', 'true', 'yes']

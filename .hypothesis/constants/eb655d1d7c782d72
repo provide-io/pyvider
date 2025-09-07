@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/config/telemetry.py
+# hypothesis_version: 6.138.3
+
+[1.0, ',', '=', 'OPENOBSERVE_ORG', 'OPENOBSERVE_PASSWORD', 'OPENOBSERVE_STREAM', 'OPENOBSERVE_URL', 'OPENOBSERVE_USER', 'OTEL_METRICS_ENABLED', 'OTEL_SERVICE_NAME', 'OTEL_SERVICE_VERSION', 'OTEL_TRACING_ENABLED', 'PROVIDE_SERVICE_NAME', 'TelemetryConfig', 'default', 'globally_disabled', 'http/protobuf', 'logging', 'metrics_enabled', 'openobserve_org', 'openobserve_password', 'openobserve_stream', 'openobserve_url', 'openobserve_user', 'otlp_endpoint', 'otlp_headers', 'otlp_protocol', 'otlp_traces_endpoint', 'service_name', 'service_version', 'trace_sample_rate', 'tracing_enabled', 'true']
