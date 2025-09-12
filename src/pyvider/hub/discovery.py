@@ -23,7 +23,7 @@ class ComponentDiscovery:
         self.import_errors: list[tuple[str, Exception]] = []
 
     @with_error_handling()
-    @retry_on_error(max_attempts=2, delay=1.0)
+    @retry_on_error(max_attempts=2, base_delay=1.0)
     async def discover_all(self, strict: bool = False) -> None:
         """
         Discovers all components. In strict mode, it re-raises import errors.
