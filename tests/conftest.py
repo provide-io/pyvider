@@ -8,18 +8,28 @@ from pyvider.hub.discovery import ComponentDiscovery
 
 # Import testkit fixtures with fallback
 try:
-    from provide.testkit import clean_event_loop
-except ImportError:
-    # Fallback to the original implementation if testkit is not available
+    from provide.testkit import clean_event_loop as _clean_event_loop
+    # Create a session-scoped version for pyvider's needs
     @pytest.fixture(scope="session")
-    def clean_event_loop():
+    def event_loop():
         """Create an instance of the default event loop for the session."""
         loop = asyncio.get_event_loop_policy().new_event_loop()
         yield loop
         loop.close()
-
-# Use testkit's clean_event_loop as event_loop for backward compatibility
-event_loop = clean_event_loop
+        
+    # Also provide function-scoped version for tests that need it
+    clean_event_loop = _clean_event_loop
+except ImportError:
+    # Fallback to the original implementation if testkit is not available
+    @pytest.fixture(scope="session")
+    def event_loop():
+        """Create an instance of the default event loop for the session."""
+        loop = asyncio.get_event_loop_policy().new_event_loop()
+        yield loop
+        loop.close()
+        
+    # Alias for compatibility
+    clean_event_loop = event_loop
 
 
 @pytest.fixture(scope="session", autouse=True)
