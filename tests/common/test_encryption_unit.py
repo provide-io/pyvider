@@ -5,7 +5,6 @@ Tests the core encryption functionality independently of the Terraform protocol
 to ensure cryptographic security and proper error handling.
 """
 import os
-import tempfile
 from unittest.mock import patch, MagicMock
 
 import pytest
@@ -13,6 +12,19 @@ import pytest
 from pyvider.common.config import PyviderConfig
 from pyvider.common.encryption import encrypt, decrypt, _get_key, HKDF_SALT, HKDF_INFO, _ENCRYPTION_KEY
 from pyvider.exceptions import FrameworkConfigurationError
+
+# Import testkit fixtures with fallback
+try:
+    from provide.testkit import temp_file
+except ImportError:
+    import tempfile
+    
+    @pytest.fixture
+    def temp_file():
+        """Fallback temp_file fixture."""
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            yield f.name
+        os.unlink(f.name)
 
 
 class TestEncryptionCore:
@@ -28,16 +40,17 @@ class TestEncryptionCore:
         pyvider.common.encryption._ENCRYPTION_KEY = original_key
 
     @pytest.fixture
-    def temp_config_file(self):
+    def temp_config_file(self, temp_file):
         """Create a temporary config file for testing"""
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.toml', delete=False) as f:
+        config_path = str(temp_file) + '.toml'
+        with open(config_path, 'w') as f:
             f.write('[pyvider]\nprivate_state_shared_secret = "config-file-secret"\n')
-            temp_path = f.name
         
-        yield temp_path
+        yield config_path
         
         # Cleanup
-        os.unlink(temp_path)
+        if os.path.exists(config_path):
+            os.unlink(config_path)
 
     def test_encrypt_decrypt_roundtrip(self, encryption_key_env):
         """Test that data can be encrypted and decrypted successfully"""

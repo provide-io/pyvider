@@ -47,6 +47,7 @@ dev = [
     "grpcio-tools>=1.70.0",
     "hypothesis>=6.131.0",
     "mypy>=1.9.0",
+    "provide-testkit",
     "psutil>=7.0.0",
     "pyright>=1.1.401",
     "pytest>=8.3.0",
@@ -157,3 +158,4 @@ exclude_lines = [
 
 [tool.uv.sources]
 provide-foundation = { path = "../provide-foundation", editable = true }
+provide-testkit = { path = "../provide-testkit", editable = true }

@@ -2,13 +2,25 @@
 
 import json
 from pathlib import Path
-import tempfile
 
 import click
 from click.testing import CliRunner
 import pytest
 
 from pyvider.cli import cli
+
+# Import testkit fixtures with fallback
+try:
+    from provide.testkit import temp_file
+except ImportError:
+    import tempfile
+    
+    @pytest.fixture
+    def temp_file():
+        """Fallback temp_file fixture."""
+        with tempfile.NamedTemporaryFile(delete=False) as f:
+            yield f.name
+        Path(f.name).unlink(missing_ok=True)
 
 
 class TestPyviderCLI:
@@ -33,17 +45,13 @@ class TestPyviderCLI:
         result = runner.invoke(cli, ["--log-format", "json", "--help"])
         assert result.exit_code == 0
 
-    def test_cli_accepts_log_file_option(self):
+    def test_cli_accepts_log_file_option(self, temp_file):
         """Test that --log-file option is accepted."""
-        with tempfile.NamedTemporaryFile(suffix=".log", delete=False) as f:
-            log_file = f.name
+        log_file = str(temp_file) + ".log"
         
-        try:
-            runner = CliRunner()
-            result = runner.invoke(cli, ["--log-file", log_file, "--help"])
-            assert result.exit_code == 0
-        finally:
-            Path(log_file).unlink(missing_ok=True)
+        runner = CliRunner()
+        result = runner.invoke(cli, ["--log-file", log_file, "--help"])
+        assert result.exit_code == 0
 
     def test_cli_accepts_output_options(self):
         """Test that output options are accepted."""
