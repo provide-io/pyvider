@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/components.py
+# hypothesis_version: 6.138.15
+
+[100, 'ComponentCategory', 'ComponentInfo', 'ComponentLifecycle', 'bootstrap_foundation', 'component', 'config_schema', 'config_source', 'discover_components', 'error', 'error_handler', 'eventset', 'filter', 'formatter', 'function', 'get_config_chain', 'health_check', 'hub.components', 'load_all_configs', 'module', 'no_health_check', 'not_found', 'pre_format', 'priority', 'processor', 'resolve_config_value', 'stage', 'status', 'timestamp', 'transport', 'transport.auth', 'transport.cache', 'transport.middleware', 'unknown']

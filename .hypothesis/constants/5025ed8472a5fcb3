@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/defaults.py
+# hypothesis_version: 6.138.15
+
+[1.0, 2.0, 5.0, 7.0, 10.0, 60.0, 130, 420, 493, 1000, 'INFO', 'WARNING', 'drop_oldest', 'http/protobuf', 'key_value', 'provide_', 'stderr', 'utf-8']

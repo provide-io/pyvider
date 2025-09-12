@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/setup/coordinator.py
+# hypothesis_version: 6.138.15
+
+['%Y-%m-%dT%H:%M:%S', 'CRITICAL', 'DEBUG', 'ERROR', 'FOUNDATION_LOG_LEVEL', 'INFO', 'NOTSET', 'WARNING', 'done', 'error', 'in_progress', 'iso', 'stderr', 'stdout']

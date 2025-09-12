@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/parsers/structured.py
+# hypothesis_version: 6.138.15
+
+[',', ':', '=', 'LogLevelStr', 'parse_headers', 'parse_module_levels', 'parse_rate_limits']

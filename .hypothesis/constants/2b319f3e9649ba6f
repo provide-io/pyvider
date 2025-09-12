@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/process/async_runner.py
+# hypothesis_version: 6.138.15
+
+[1.0, 'PROCESS_ASYNC_FAILED', 'close_fds', 'creationflags', 'cwd', 'encoding', 'env', 'errors', 'executable', 'extra_groups', 'group', 'pass_fds', 'preexec_fn', 'replace', 'restore_signals', 'shell', 'start_new_session', 'startupinfo', 'stderr', 'stdin', 'stdout', 'text', 'true', 'umask', 'universal_newlines', 'user']

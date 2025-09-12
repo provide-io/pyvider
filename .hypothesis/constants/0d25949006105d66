@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/validators.py
+# hypothesis_version: 6.138.15
+
+[0.0, 1.0, 65535, 'must be non-negative', 'must be positive', 'validate_choice', 'validate_log_level', 'validate_port', 'validate_positive', 'validate_range', 'validate_sample_rate']

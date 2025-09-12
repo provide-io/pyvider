@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-testkit/src/provide/testkit/file/__init__.py
+# hypothesis_version: 6.138.15
+
+['binary_file', 'empty_directory', 'readonly_file', 'temp_binary_file', 'temp_csv_file', 'temp_directory', 'temp_executable_file', 'temp_file', 'temp_json_file', 'temp_named_file', 'temp_symlink', 'test_files_structure']

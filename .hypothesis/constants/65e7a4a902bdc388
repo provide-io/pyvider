@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/loader.py
+# hypothesis_version: 6.138.15
+
+['"', '#', "'", '=', 'CONFIG_LOAD_ERROR', 'CONFIG_READ_ERROR', 'DEFAULT', 'FileLoader', 'T', '_', 'loader', 'utf-8']

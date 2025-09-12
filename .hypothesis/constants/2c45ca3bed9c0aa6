@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/resilience/fallback.py
+# hypothesis_version: 6.138.15
+
+['Fallback failed', 'Fallback succeeded', 'T', '__name__', 'anonymous']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-testkit/src/provide/testkit/file/directory_fixtures.py
+# hypothesis_version: 6.138.15
+
+['Content 1', 'Content 2', 'Content 3', 'Deep file', 'Level 1 file', 'Level 2 file', 'deep_file.txt', 'empty_directory', 'file1.txt', 'file2.txt', 'file3.txt', 'file_l1.txt', 'file_l2.txt', 'level1', 'level2', 'level3', 'source', 'subdir', 'temp_directory', 'test_files_structure']
