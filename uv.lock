@@ -936,6 +936,7 @@ dev = [
     { name = "h2", specifier = ">=4.3.0" },
     { name = "hypothesis", specifier = ">=6.131.28" },
     { name = "mypy", specifier = ">=1.8.0" },
+    { name = "provide-testkit" },
     { name = "psutil", specifier = ">=7.0.0" },
     { name = "pyrefly", specifier = ">=0.16.2" },
     { name = "pytest", specifier = ">=7.4.0" },
@@ -962,6 +963,7 @@ docs = [
     { name = "mkdocs-section-index", specifier = ">=0.3.0" },
     { name = "mkdocstrings", extras = ["python"], specifier = ">=0.24.0" },
 ]
+protobuf = [{ name = "protobuf", specifier = ">=6.32.0" }]
 
 [[package]]
 name = "psutil"
