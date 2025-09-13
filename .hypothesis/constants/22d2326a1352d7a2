@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/core.py
+# hypothesis_version: 6.138.15
+
+['TelemetryConfig', '_', '_logger', 'critical', 'debug', 'done', 'error', 'exc_info', 'in_progress', 'info', 'logger_factory', 'pyvider.default', 'pyvider.dynamic_call', 'singleton', 'trace', 'warning']
