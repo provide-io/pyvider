@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/foundation.py
+# hypothesis_version: 6.138.15
+
+['HubWrapper', 'PYTEST_CURRENT_TEST', '_component_registry', '_foundation_config', 'environment', 'explicit', 'explicit_config', 'fallback', 'foundation.config', 'initialized', 'locked', 'singleton']
