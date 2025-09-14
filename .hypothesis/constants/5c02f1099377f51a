@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/transport/middleware.py
+# hypothesis_version: 6.138.15
+
+[0.5, 100, 200, 300, 400, 500, 502, 503, 504, 600, 'LoggingMiddleware', 'MetricsMiddleware', 'Middleware', 'MiddlewarePipeline', 'Request body', 'Response body', 'RetryMiddleware', 'category', 'class_name', 'errors', 'headers', 'logging', 'metrics', 'priority', 'register_middleware', 'requests', 'retry', 'seconds', 'start_time', 'transport.middleware', '↩️', '⚠️', '✅', '❌', '❓']

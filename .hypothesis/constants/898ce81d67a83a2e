@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/nested_data_test_suite.py
+# hypothesis_version: 6.138.15
+
+['1.0.0', '2025-06-24T20:30:00Z', 'Mixed type map input', 'Processed mixed map', 'Processed string map', 'analyze', 'config_hash', 'config_name', 'configuration', 'created_at', 'data_hash', 'enabled', 'error', 'exists', 'generated_config', 'has_metadata', 'input_data', 'level', 'main_config', 'metadata', 'mode', 'name', 'nested_configs', 'nested_count', 'nested_info', 'numeric_settings', 'original_data', 'port', 'processed_data', 'protocol', 'received_type', 'resource_id', 'resource_name', 'service', 'settings', 'ssl_enabled', 'summary', 'total_keys', 'version']

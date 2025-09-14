@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/transport/errors.py
+# hypothesis_version: 6.138.15
+
+['HTTPResponseError', 'Request | None', 'Response', 'TransportError']

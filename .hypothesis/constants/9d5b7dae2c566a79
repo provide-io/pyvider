@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/capabilities/lens.py
+# hypothesis_version: 6.138.15
+
+['lens', 'lens_enabled', 'lens_jq_path']

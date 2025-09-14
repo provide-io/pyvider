@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/lens_jq.py
+# hypothesis_version: 6.138.15
+
+['json_input', 'lens', 'pyvider_lens_jq', 'query', 'result']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/transport/config.py
+# hypothesis_version: 6.138.15
+
+[0.0, 0.5, 30.0, 100, 'HTTPConfig', 'PROVIDE_HTTP', 'PROVIDE_TRANSPORT', 'TransportConfig', 'follow_redirects', 'http2', 'max_redirects', 'max_retries', 'pool_connections', 'pool_maxsize', 'retry_backoff_factor', 'timeout', 'transport', 'transport.http', 'verify_ssl']

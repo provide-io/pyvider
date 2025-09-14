@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/transport/registry.py
+# hypothesis_version: 6.138.15
+
+['://', 'class', 'class_name', 'get_transport', 'get_transport_info', 'metadata', 'name', 'register_transport', 'schemes', 'transport_type']
