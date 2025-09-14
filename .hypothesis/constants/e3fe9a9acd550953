@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/parsers/telemetry.py
+# hypothesis_version: 6.138.15
+
+['ConsoleFormatterStr', 'LogLevelStr', 'console_formatter', 'log_level', 'main', 'parse_log_level', 'stderr', 'stdout']

@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/platform/detection.py
+# hypothesis_version: 6.138.15
+
+['(M\\d+\\w*)', '.', 'AMD', 'Apple', 'Apple Silicon', 'Core', 'Core\\(TM\\)\\s+(\\w+)', 'Darwin', 'Detected platform', 'Failed to detect OS', 'Intel', 'Linux', 'M1', 'M2', 'M3', 'Ryzen', 'Ryzen\\s+(\\d+)', 'Windows', 'aarch64', 'amd64', 'arm64', 'darwin', 'i386', 'i486', 'i586', 'i686', 'linux', 'macos', 'win32', 'windows', 'x86', 'x86_64']

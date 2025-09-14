@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/process/lifecycle.py
+# hypothesis_version: 6.138.15
+
+[0.01, 0.1, 1.0, 2.0, 100, 200, 1024, 'COVERAGE', 'COV_CORE', 'ManagedProcess', 'Process exited', 'replace', 'utf-8']

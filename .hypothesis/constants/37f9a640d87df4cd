@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/resilience/decorators.py
+# hypothesis_version: 6.138.15
+
+['F', 'backoff', 'base_delay', 'jitter', 'max_attempts', 'max_delay', 'retryable_errors']

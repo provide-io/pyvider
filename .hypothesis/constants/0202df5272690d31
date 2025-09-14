@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/resilience/retry.py
+# hypothesis_version: 6.138.15
+
+[0.5, 0.75, 1.0, 60.0, 'T', 'status']

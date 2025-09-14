@@ -1,0 +1,4 @@
+# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/metrics/otel.py
+# hypothesis_version: 6.138.15
+
+[60000, 'MagicMock', 'Mock', 'NoOpMeterProvider', 'ProxyMeterProvider', 'get_meter', 'grpc', 'service.name', 'service.version', 'shutdown', 'unittest.mock']
