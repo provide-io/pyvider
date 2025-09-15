@@ -157,5 +157,5 @@ exclude_lines = [
 ]
 
 [tool.uv.sources]
-provide-foundation = { path = "../provide-foundation", editable = true }
-provide-testkit = { path = "../provide-testkit", editable = true }
+provide-foundation = { workspace = true }
+provide-testkit = { workspace = true }
