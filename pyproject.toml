@@ -95,8 +95,9 @@ norecursedirs = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 111
 indent-width = 4
+target-version = "py311"
 exclude = ["**/*pb2*.py"]
 
 [tool.ruff.lint]
