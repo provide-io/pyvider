@@ -2,12 +2,17 @@
 # For a full reference, see https://www.mkdocs.org/user-guide/configuration/
 # For Material theme options, see https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
 
-site_name: provide.foundation
-site_description: 'Beautiful, Performant, Structured Logging for Python'
-site_author: Provide
+site_name: PyVider Documentation
+site_description: 'Python framework for building Terraform providers'
+site_author: provide.io
+site_url: https://foundry.provide.io/pyvider/
 
-repo_url: https://github.com/provide-io/provide-foundation
-repo_name: provide-io/provide-foundation
+repo_url: https://github.com/provide-io/pyvider
+repo_name: provide-io/pyvider
+edit_uri: edit/main/docs/
+
+# Standalone mode settings
+docs_dir: docs
 
 # Copyright
 copyright: 'Copyright &copy; 2017 - 2025 Provide'
