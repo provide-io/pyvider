@@ -115,7 +115,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.11"
 mypy_path = "src"
 namespace_packages = true
 explicit_package_bases = true
