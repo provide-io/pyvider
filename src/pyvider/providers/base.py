@@ -2,11 +2,11 @@ import asyncio
 from typing import Any
 
 from attrs import define, field
+from provide.foundation import logger
 
 from pyvider.cty import CtyType
 from pyvider.exceptions import FrameworkConfigurationError, ProviderError
 from pyvider.schema import PvsSchema
-from provide.foundation import logger
 
 
 @define
@@ -61,7 +61,5 @@ class BaseProvider:
     def schema(self) -> PvsSchema:
         """Get the provider schema."""
         if self._final_schema is None:
-            raise FrameworkConfigurationError(
-                "Provider schema was requested before the setup() hook was run."
-            )
+            raise FrameworkConfigurationError("Provider schema was requested before the setup() hook was run.")
         return self._final_schema

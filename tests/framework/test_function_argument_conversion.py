@@ -11,6 +11,7 @@ def simulate_unmarshal_and_convert(arg_proto: pb.DynamicValue, param_cty_type: "
     native_arg = cty_to_native(decoded_cty_val)
     return native_arg
 
+
 class TestFunctionArgumentConversion:
     def test_list_of_strings_conversion(self):
         native_list = ["Terraform", "100"]

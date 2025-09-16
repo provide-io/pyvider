@@ -8,7 +8,6 @@ from attrs import define, field
 from pyvider.common.context import BaseContext
 from pyvider.common.types import ConfigType, StateType
 from pyvider.cty import CtyValue
-
 from pyvider.resources.private_state import PrivateState
 
 if TYPE_CHECKING:
@@ -27,9 +26,7 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
     planned_state_cty: CtyValue | None = None
     capabilities: dict[str, BaseCapability] = field(factory=dict)
 
-    def get_private_state(
-        self, private_state_class: type[PrivateStateType]
-    ) -> PrivateStateType | None:
+    def get_private_state(self, private_state_class: type[PrivateStateType]) -> PrivateStateType | None:
         """
         Get typed private state with automatic casting.
 
@@ -49,9 +46,7 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
             if isinstance(self.private_state, private_state_class):
                 return self.private_state
             # Otherwise, convert from dict representation
-            if hasattr(self.private_state, "__dict__") or isinstance(
-                self.private_state, dict
-            ):
+            if hasattr(self.private_state, "__dict__") or isinstance(self.private_state, dict):
                 state_dict = (
                     attrs.asdict(self.private_state)
                     if hasattr(self.private_state, "__dict__")

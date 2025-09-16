@@ -4,9 +4,10 @@ import inspect
 import pkgutil
 from typing import Any
 
-from pyvider.hub.components import ComponentRegistry
 from provide.foundation import logger
-from provide.foundation.errors import with_error_handling, retry_on_error
+from provide.foundation.errors import retry_on_error, with_error_handling
+
+from pyvider.hub.components import ComponentRegistry
 
 
 class ComponentDiscovery:
@@ -35,20 +36,14 @@ class ComponentDiscovery:
         try:
             entry_points = importlib.metadata.entry_points(group=self.ENTRY_POINT_GROUP)
         except Exception as e:
-            logger.error(
-                "🛰️🔍❌ Failed to query for entry points", error=e, exc_info=True
-            )
+            logger.error("🛰️🔍❌ Failed to query for entry points", error=e, exc_info=True)
             return
 
         if not entry_points:
-            logger.info(
-                " i No packages found declaring the 'pyvider.components' entry point."
-            )
+            logger.info(" i No packages found declaring the 'pyvider.components' entry point.")
             logger.info(" i Manually discovering built-in component packages.")
             await self._discover_package("pyvider.components", strict=strict)
-            await self._discover_package(
-                "pyvider.providers.capabilities", strict=strict
-            )
+            await self._discover_package("pyvider.providers.capabilities", strict=strict)
         else:
             for entry_point in entry_points:
                 logger.debug(
@@ -72,9 +67,7 @@ class ComponentDiscovery:
             await self._process_module(package)
 
             if hasattr(package, "__path__"):
-                for module_info in pkgutil.walk_packages(
-                    package.__path__, package.__name__ + "."
-                ):
+                for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
                     if module_info.name not in self._discovered_modules:
                         await self._discover_package(module_info.name, strict=strict)
 

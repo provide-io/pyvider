@@ -9,9 +9,7 @@ try:
     if HAS_MSGPACK:
         logger.info("📦 msgpack library loaded successfully.")
     else:
-        logger.warning(
-            "⚠️ msgpack library not found. msgpack features will be unavailable."
-        )
+        logger.warning("⚠️ msgpack library not found. msgpack features will be unavailable.")
 except Exception as e:
     HAS_MSGPACK = False
     logger.error(f"❌ Error checking msgpack availability: {e}")

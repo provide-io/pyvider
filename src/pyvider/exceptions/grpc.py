@@ -1,5 +1,6 @@
 # pyvider/exceptions/grpc.py
 from provide.foundation.errors import NetworkError as FoundationNetworkError
+
 from pyvider.exceptions.base import PluginError
 
 
@@ -19,7 +20,7 @@ class GRPCConnectionError(GRPCError):
 
 class NetworkError(FoundationNetworkError):
     """Raised for general gRPC network issues.
-    
+
     Inherits directly from foundation's NetworkError for
     automatic retry and circuit breaker support.
     """

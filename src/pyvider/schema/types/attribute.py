@@ -4,7 +4,6 @@ from typing import Any
 from attrs import define, field
 
 from pyvider.cty import CtyType
-
 from pyvider.schema.types.enums import StringKind  # Import StringKind
 from pyvider.schema.types.object import PvsObjectType
 
@@ -50,13 +49,9 @@ class PvsAttribute:
 
         # Rule 3: An attribute can't be both Required and Computed.
         if is_req and is_comp:
-            raise ValueError(
-                f"Attribute '{self.name}' cannot be both Required and Computed."
-            )
+            raise ValueError(f"Attribute '{self.name}' cannot be both Required and Computed.")
 
         # Rule 4: Check that at least one flag is set after defaulting.
         # This check is now implicitly handled by the default-to-optional logic above.
         if not self.required and not self.optional and not self.computed:
-            raise ValueError(
-                f"Attribute '{self.name}' must be Optional, Required, or Computed."
-            )
+            raise ValueError(f"Attribute '{self.name}' must be Optional, Required, or Computed.")

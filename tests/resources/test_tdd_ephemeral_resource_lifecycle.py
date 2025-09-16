@@ -25,23 +25,30 @@ from pyvider.schema import a_str, s_resource
 
 # --- Test Resource Definitions ---
 
+
 @attrs.define(frozen=True)
 class MockConnectionConfig:
     """Config for our mock ephemeral resource."""
+
     host: str
+
 
 @attrs.define(frozen=True)
 class MockConnectionResult:
     """The 'result' data returned to Terraform by OpenEphemeralResource."""
+
     connection_id: str
     host: str
+
 
 @attrs.define(frozen=True)
 class MockConnectionPrivateState(PrivateState):
     """The private state used to manage the connection."""
+
     connection_id: str
     session_token: str
     version: int
+
 
 @register_ephemeral_resource("mock_connection")
 class MockConnectionResource(BaseEphemeralResource):
@@ -51,10 +58,12 @@ class MockConnectionResource(BaseEphemeralResource):
 
     @classmethod
     def get_schema(cls):
-        return s_resource({
-            "host": a_str(required=True),
-            "connection_id": a_str(computed=True),
-        })
+        return s_resource(
+            {
+                "host": a_str(required=True),
+                "connection_id": a_str(computed=True),
+            }
+        )
 
     async def validate(self, config: MockConnectionConfig) -> list[str]:
         if "localhost" not in config.host:
@@ -64,7 +73,9 @@ class MockConnectionResource(BaseEphemeralResource):
     async def open(self, ctx: EphemeralResourceContext) -> tuple[Any, Any, datetime.datetime]:
         # Simulate opening a connection and getting a result and private state
         result = self.result_class(connection_id="conn-123", host=ctx.config.host)
-        private_state = self.private_state_class(connection_id="conn-123", session_token="token-abc", version=1)
+        private_state = self.private_state_class(
+            connection_id="conn-123", session_token="token-abc", version=1
+        )
         renew_at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=5)
         return result, private_state, renew_at
 
@@ -76,7 +87,7 @@ class MockConnectionResource(BaseEphemeralResource):
         new_private_state = self.private_state_class(
             connection_id=ctx.private_state.connection_id,
             session_token="token-def-renewed",
-            version=ctx.private_state.version + 1
+            version=ctx.private_state.version + 1,
         )
         new_renew_at = datetime.datetime.now(datetime.UTC) + datetime.timedelta(minutes=10)
         return new_private_state, new_renew_at
@@ -87,6 +98,7 @@ class MockConnectionResource(BaseEphemeralResource):
             raise ResourceError("Close called with invalid private state.")
         # In a real implementation, this is where you'd call something like `connection.close()`
         pass
+
 
 @pytest.mark.asyncio
 async def test_ephemeral_resource_full_lifecycle():

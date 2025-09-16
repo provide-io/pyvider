@@ -1,7 +1,10 @@
 # pyvider/exceptions/resource.py
-from provide.foundation.errors import NotFoundError as FoundationNotFoundError
-from provide.foundation.errors import RuntimeError as FoundationRuntimeError
-from provide.foundation.errors import StateError as FoundationStateError
+from provide.foundation.errors import (
+    NotFoundError as FoundationNotFoundError,
+    RuntimeError as FoundationRuntimeError,
+    StateError as FoundationStateError,
+)
+
 from pyvider.exceptions.base import PluginError, PyviderValueError
 
 
@@ -17,9 +20,7 @@ class DataSourceError(ResourceError):
     pass
 
 
-class CapabilityError(
-    PluginError
-):  # Or could be ResourceError if capabilities are tied to resources
+class CapabilityError(PluginError):  # Or could be ResourceError if capabilities are tied to resources
     """Errors related to component capabilities."""
 
     pass
@@ -55,8 +56,8 @@ class ResourceLifecycleContractError(FoundationStateError):
     def __init__(self, message: str, *, detail: str | None = None, **kwargs) -> None:
         self.detail = detail
         if detail:
-            kwargs.setdefault('context', {})['lifecycle.detail'] = detail
+            kwargs.setdefault("context", {})["lifecycle.detail"] = detail
         super().__init__(message, **kwargs)
-    
+
     def _default_code(self) -> str:
         return "RESOURCE_LIFECYCLE_CONTRACT_ERROR"

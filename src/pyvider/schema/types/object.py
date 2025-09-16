@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from attrs import define, field
 
 from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet
-
 from pyvider.schema.types.enums import NestingMode
 from pyvider.schema.types.types_base import PvsType
 
@@ -35,9 +34,7 @@ class PvsObjectType(PvsType):
         """
         attribute_types = {name: attr.type for name, attr in self.attributes.items()}
         optional_attributes = {
-            name
-            for name, attr in self.attributes.items()
-            if attr.optional or attr.computed
+            name for name, attr in self.attributes.items() if attr.optional or attr.computed
         }
 
         # FIX: Add types for nested blocks so the CtyObject is complete.

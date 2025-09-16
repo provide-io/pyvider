@@ -2,10 +2,10 @@ from typing import Any
 
 import attrs
 import msgpack
-
 from provide.foundation import logger
 from provide.foundation.errors import with_error_handling
-from pyvider.common.encryption import encrypt, decrypt
+
+from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
@@ -13,14 +13,12 @@ from pyvider.cty import CtyObject, CtyValue
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.resources.context import ResourceContext
-from provide.foundation import logger
-
 from pyvider.protocols.tfprotov6.handlers.utils import (
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.resources.context import ResourceContext
 
 
 async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any]:
@@ -29,7 +27,9 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
         err = ResourceError(f"Resource type '{type_name}' not registered")
         err.add_context("resource.type_name", type_name)
         err.add_context("terraform.summary", "Unknown resource type")
-        err.add_context("terraform.detail", f"The resource type '{type_name}' is not registered with this provider.")
+        err.add_context(
+            "terraform.detail", f"The resource type '{type_name}' is not registered with this provider."
+        )
         raise err
 
     provider_instance = hub.get_component("singleton", "provider")
@@ -44,24 +44,13 @@ async def _unmarshal_request_data(
     with operation_context(OperationContext.PLAN):
         config_cty = unmarshal(request.config, schema=resource_schema.block)
         prior_state_cty = unmarshal(request.prior_state, schema=resource_schema.block)
-        proposed_new_state_cty = unmarshal(
-            request.proposed_new_state, schema=resource_schema.block
-        )
+        proposed_new_state_cty = unmarshal(request.proposed_new_state, schema=resource_schema.block)
     return config_cty, prior_state_cty, proposed_new_state_cty
 
 
-
-
-
-async def _process_private_state(
-    resource_class: Any, prior_private: bytes
-) -> Any | None:
+async def _process_private_state(resource_class: Any, prior_private: bytes) -> Any | None:
     private_state_instance = None
-    if (
-        hasattr(resource_class, "private_state_class")
-        and resource_class.private_state_class
-        and prior_private
-    ):
+    if hasattr(resource_class, "private_state_class") and resource_class.private_state_class and prior_private:
         try:
             logger.debug(f"Attempting to decrypt prior_private: {prior_private}")
             decrypted_bytes = decrypt(prior_private)
@@ -85,15 +74,9 @@ def _create_resource_context(
     resource_class: Any,
     provider_instance: Any,
 ) -> ResourceContext:
-    config_instance = cty_to_attrs_instance(
-        config_cty_marked, resource_class.config_class
-    )
-    prior_state_instance = cty_to_attrs_instance(
-        prior_state_cty, resource_class.state_class
-    )
-    proposed_new_state_instance = cty_to_attrs_instance(
-        proposed_new_state_cty, resource_class.state_class
-    )
+    config_instance = cty_to_attrs_instance(config_cty_marked, resource_class.config_class)
+    prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
+    proposed_new_state_instance = cty_to_attrs_instance(proposed_new_state_cty, resource_class.state_class)
 
     return ResourceContext(
         config=config_instance,
@@ -131,9 +114,7 @@ def _handle_planned_state_dict(
             final_value_map[key] = CtyValue.unknown(validator_type.attribute_types[key])
 
     planned_state_cty_final = CtyValue(validator_type, final_value_map)
-    marshalled_planned_state = marshal(
-        planned_state_cty_final, schema=resource_schema.block
-    )
+    marshalled_planned_state = marshal(planned_state_cty_final, schema=resource_schema.block)
     response.planned_state.msgpack = marshalled_planned_state.msgpack
 
 
@@ -144,9 +125,7 @@ async def PlanResourceChangeHandler(
     response = pb.PlanResourceChange.Response()
     resource_context = None
     try:
-        resource_class, provider_instance = await _get_resource_and_provider_instances(
-            request.type_name
-        )
+        resource_class, provider_instance = await _get_resource_and_provider_instances(request.type_name)
         resource_schema = resource_class.get_schema()
         resource_handler = resource_class()
 
@@ -156,13 +135,9 @@ async def PlanResourceChangeHandler(
             proposed_new_state_cty,
         ) = await _unmarshal_request_data(request, resource_schema)
 
-        config_cty_marked = _apply_schema_marks_iterative(
-            config_cty, resource_schema.block
-        )
+        config_cty_marked = _apply_schema_marks_iterative(config_cty, resource_schema.block)
 
-        private_state_instance = await _process_private_state(
-            resource_class, request.prior_private
-        )
+        private_state_instance = await _process_private_state(resource_class, request.prior_private)
 
         resource_context = _create_resource_context(
             config_cty_marked,
@@ -173,15 +148,11 @@ async def PlanResourceChangeHandler(
             provider_instance,
         )
 
-        planned_state_dict, planned_private_state_attrs = await resource_handler.plan(
-            resource_context
-        )
+        planned_state_dict, planned_private_state_attrs = await resource_handler.plan(resource_context)
 
         if resource_context.diagnostics:
             response.diagnostics.extend(resource_context.diagnostics)
-            if any(
-                d.severity == pb.Diagnostic.ERROR for d in resource_context.diagnostics
-            ):
+            if any(d.severity == pb.Diagnostic.ERROR for d in resource_context.diagnostics):
                 return response
 
         if planned_state_dict:

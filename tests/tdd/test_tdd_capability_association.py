@@ -13,11 +13,21 @@ from pyvider.schema import PvsSchema, a_str, s_resource
 @register_resource("orphan_resource")
 class OrphanResource(BaseResource):
     @classmethod
-    def get_schema(cls) -> PvsSchema: return s_resource({"name": a_str()})
-    async def _validate_config(self, config: Any) -> list[str]: return []
-    async def read(self, ctx: Any): pass
-    async def _create(self, ctx: Any, base_plan: dict): return base_plan, None
-    async def _delete_apply(self, ctx: Any) -> None: pass
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({"name": a_str()})
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
+    async def read(self, ctx: Any):
+        pass
+
+    async def _create(self, ctx: Any, base_plan: dict):
+        return base_plan, None
+
+    async def _delete_apply(self, ctx: Any) -> None:
+        pass
+
 
 @pytest.mark.asyncio
 class TestTddCapabilityAssociation:

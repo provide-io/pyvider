@@ -1,7 +1,10 @@
 # pyvider/exceptions/provider.py
-from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
-from provide.foundation.errors import RuntimeError as FoundationRuntimeError
-from pyvider.exceptions.base import ComponentConfigurationError, PluginError
+from provide.foundation.errors import (
+    ConfigurationError as FoundationConfigurationError,
+    RuntimeError as FoundationRuntimeError,
+)
+
+from pyvider.exceptions.base import ComponentConfigurationError
 
 
 class ProviderError(FoundationConfigurationError):

@@ -2,15 +2,13 @@
 from typing import Any
 
 from provide.foundation.errors import (
-    ConfigurationError as FoundationConfigurationError,
     FoundationError,
-    ValidationError as FoundationValidationError,
 )
 
 
 class PyviderError(FoundationError):
     """Base class for all Pyvider framework errors.
-    
+
     Inherits from FoundationError to gain:
     - Rich error context with namespace-based metadata
     - Automatic telemetry integration
@@ -35,28 +33,24 @@ class ConversionError(PyviderError):
     ) -> None:
         self.source_value = source_value
         self.target_type = target_type
-        
+
         # Keep the old behavior of appending type info to message for compatibility
         context_parts: list[str] = []
         if source_value is not None:
             context_parts.append(f"source_type={type(source_value).__name__}")
             # Also add to foundation context
-            kwargs.setdefault('context', {})['conversion.source_type'] = type(source_value).__name__
-            kwargs.setdefault('context', {})['conversion.source_value'] = str(source_value)[:100]
+            kwargs.setdefault("context", {})["conversion.source_type"] = type(source_value).__name__
+            kwargs.setdefault("context", {})["conversion.source_value"] = str(source_value)[:100]
         if target_type is not None:
-            target_name = (
-                target_type.__name__
-                if hasattr(target_type, "__name__")
-                else str(target_type)
-            )
+            target_name = target_type.__name__ if hasattr(target_type, "__name__") else str(target_type)
             context_parts.append(f"target_type={target_name}")
-            kwargs.setdefault('context', {})['conversion.target_type'] = target_name
+            kwargs.setdefault("context", {})["conversion.target_type"] = target_name
 
         if context_parts:
             message = f"{message} ({', '.join(context_parts)})"
-        
+
         super().__init__(message, **kwargs)
-    
+
     def _default_code(self) -> str:
         return "CONVERSION_ERROR"
 
@@ -74,15 +68,15 @@ class WireFormatError(ConversionError):
     ) -> None:
         self.format_type = format_type
         self.operation = operation
-        
+
         # Add wire format context
         if format_type is not None:
-            kwargs.setdefault('context', {})['wire.format_type'] = str(format_type)
+            kwargs.setdefault("context", {})["wire.format_type"] = str(format_type)
         if operation is not None:
-            kwargs.setdefault('context', {})['wire.operation'] = operation
-        
+            kwargs.setdefault("context", {})["wire.operation"] = operation
+
         super().__init__(message, **kwargs)
-    
+
     def _default_code(self) -> str:
         return "WIRE_FORMAT_ERROR"
 
@@ -120,15 +114,9 @@ class InvalidTypeError(PyviderValueError):
             message = message_override
         else:
             message = f"Invalid type: expected '{expected_type}', got '{actual_type}'."
-        
-        super().__init__(
-            message,
-            context={
-                'type.expected': expected_type,
-                'type.actual': actual_type
-            }
-        )
-    
+
+        super().__init__(message, context={"type.expected": expected_type, "type.actual": actual_type})
+
     def _default_code(self) -> str:
         return "INVALID_TYPE"
 
@@ -136,19 +124,14 @@ class InvalidTypeError(PyviderValueError):
 class UnsupportedTypeError(PyviderValueError):
     """Raised when an unsupported type is encountered."""
 
-    def __init__(
-        self, type_name: str = "unknown", message_override: str | None = None
-    ) -> None:
+    def __init__(self, type_name: str = "unknown", message_override: str | None = None) -> None:
         if message_override:
             message = message_override
         else:
             message = f"Unsupported type encountered: '{type_name}'."
-        
-        super().__init__(
-            message,
-            context={'type.unsupported': type_name}
-        )
-    
+
+        super().__init__(message, context={"type.unsupported": type_name})
+
     def _default_code(self) -> str:
         return "UNSUPPORTED_TYPE"
 

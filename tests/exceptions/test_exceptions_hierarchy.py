@@ -8,7 +8,7 @@ import pyvider.exceptions as pyvider_exceptions_module
 
 # Helper to get all defined exceptions from the __all__ list
 # Ensure pyvider.exceptions.__all__ is correctly populated and accessible
-if not hasattr(pyvider_exceptions_module, '__all__') or not pyvider_exceptions_module.__all__:
+if not hasattr(pyvider_exceptions_module, "__all__") or not pyvider_exceptions_module.__all__:
     raise ImportError(
         "The pyvider.exceptions module does not define __all__ or it's empty. "
         "Cannot dynamically discover exceptions to test."
@@ -39,6 +39,7 @@ if not ALL_PYVIDER_EXCEPTIONS:
         "Please check the exceptions module and its __all__ definition."
     )
 
+
 @pytest.mark.parametrize("exc_class", ALL_PYVIDER_EXCEPTIONS)
 def test_exception_instantiation_and_str(exc_class):
     """Tests basic instantiation and string conversion of all exceptions."""
@@ -62,57 +63,74 @@ def test_exception_instantiation_and_str(exc_class):
 
         if exc_class in exceptions_with_specific_constructors:
             try:
-                instance = exc_class() # type: ignore
-                assert (exc_class.__name__ in str(instance) or
-                        "PyviderError" in str(instance) or
-                        "unknown" in str(instance) or
-                        "error" in str(instance).lower()
-                       ), f"Default str representation for {exc_class.__name__} seems off: {instance!s}"
+                instance = exc_class()  # type: ignore
+                assert (
+                    exc_class.__name__ in str(instance)
+                    or "PyviderError" in str(instance)
+                    or "unknown" in str(instance)
+                    or "error" in str(instance).lower()
+                ), f"Default str representation for {exc_class.__name__} seems off: {instance!s}"
             except TypeError:
-                pass # Covered by specific hypothesis tests
+                pass  # Covered by specific hypothesis tests
             except AttributeError:
-                pass # Covered by specific hypothesis tests
+                pass  # Covered by specific hypothesis tests
         else:
             instance = exc_class("Test message for " + exc_class.__name__)
             assert "Test message for " + exc_class.__name__ in str(instance)
             # Some exceptions now inherit from foundation errors instead of PyviderError
             from provide.foundation.errors import FoundationError
+
             assert isinstance(instance, (pyvider_exceptions_module.PyviderError, FoundationError))
             assert isinstance(instance, Exception)
     except TypeError as e:
         print(f"Note: {exc_class.__name__} could not be instantiated generically for str test: {e}")
         pass
 
+
 @given(st.text(min_size=1, max_size=100))
 def test_pyvider_error_with_message(message):
     err = pyvider_exceptions_module.PyviderError(message)
     assert str(err) == message
 
-@given(message=st.text(), source_val=st.one_of(st.integers(), st.text(), st.none()), target_type_val=st.one_of(st.just(int), st.just(str), st.none()))
+
+@given(
+    message=st.text(),
+    source_val=st.one_of(st.integers(), st.text(), st.none()),
+    target_type_val=st.one_of(st.just(int), st.just(str), st.none()),
+)
 def test_conversion_error(message, source_val, target_type_val):
-    err = pyvider_exceptions_module.ConversionError(message, source_value=source_val, target_type=target_type_val)
+    err = pyvider_exceptions_module.ConversionError(
+        message, source_value=source_val, target_type=target_type_val
+    )
     assert message in str(err)
     assert err.source_value == source_val
     assert err.target_type == target_type_val
     if source_val is not None:
         assert f"source_type={type(source_val).__name__}" in str(err)
     if target_type_val is not None:
-        assert f"target_type={target_type_val.__name__ if hasattr(target_type_val, '__name__') else str(target_type_val)}" in str(err)
+        assert (
+            f"target_type={target_type_val.__name__ if hasattr(target_type_val, '__name__') else str(target_type_val)}"
+            in str(err)
+        )
+
 
 @given(st.text())
 def test_framework_configuration_error(message):
     err = pyvider_exceptions_module.FrameworkConfigurationError(message)
     assert str(err) == message
 
+
 @given(st.text())
 def test_plugin_error(message):
     err = pyvider_exceptions_module.PluginError(message)
     assert str(err) == message
 
+
 @given(st.text())
 def test_pyvider_value_error(message):
     err = pyvider_exceptions_module.PyviderValueError(message)
     assert str(err) == message
+
 
 @given(expected=st.text(min_size=1), actual=st.text(min_size=1))
 def test_invalid_type_error(expected, actual):
@@ -121,6 +139,7 @@ def test_invalid_type_error(expected, actual):
     err_override = pyvider_exceptions_module.InvalidTypeError(message_override="Custom message")
     assert str(err_override) == "Custom message"
 
+
 @given(type_name=st.text(min_size=1))
 def test_unsupported_type_error(type_name):
     err = pyvider_exceptions_module.UnsupportedTypeError(type_name=type_name)
@@ -128,12 +147,18 @@ def test_unsupported_type_error(type_name):
     err_override = pyvider_exceptions_module.UnsupportedTypeError(message_override="Custom message")
     assert str(err_override) == "Custom message"
 
+
 @given(st.text())
 def test_component_configuration_error(message):
     err = pyvider_exceptions_module.ComponentConfigurationError(message)
     assert str(err) == message
 
-@given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)), arg_idx=st.one_of(st.none(), st.integers(min_value=0)))
+
+@given(
+    message=st.text(),
+    func_name=st.one_of(st.none(), st.text(min_size=1)),
+    arg_idx=st.one_of(st.none(), st.integers(min_value=0)),
+)
 def test_function_error(message, func_name, arg_idx):
     err = pyvider_exceptions_module.FunctionError(message, function_name=func_name, argument_index=arg_idx)
     expected_prefix = f"Function '{func_name}'" if func_name else "Function"
@@ -144,23 +169,36 @@ def test_function_error(message, func_name, arg_idx):
     assert proto_like["text"] == str(err)
     assert proto_like["argument_index"] == arg_idx
 
+
 @given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_function_registration_error(message, func_name):
     err = pyvider_exceptions_module.FunctionRegistrationError(message, function_name=func_name)
     expected_prefix = f"Function '{func_name}'" if func_name else "Function"
     assert str(err) == f"{expected_prefix} registration error: {message}"
 
-@given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)), arg_name=st.one_of(st.none(), st.text(min_size=1)), arg_idx=st.one_of(st.none(), st.integers(min_value=0)))
+
+@given(
+    message=st.text(),
+    func_name=st.one_of(st.none(), st.text(min_size=1)),
+    arg_name=st.one_of(st.none(), st.text(min_size=1)),
+    arg_idx=st.one_of(st.none(), st.integers(min_value=0)),
+)
 def test_function_validation_error(message, func_name, arg_name, arg_idx):
-    err = pyvider_exceptions_module.FunctionValidationError(message, function_name=func_name, argument_name=arg_name, argument_index=arg_idx)
+    err = pyvider_exceptions_module.FunctionValidationError(
+        message, function_name=func_name, argument_name=arg_name, argument_index=arg_idx
+    )
     base_message_part = message
     if arg_name and func_name:
-        assert str(err) == f"Function '{func_name}' validation error for argument '{arg_name}': {base_message_part}"
+        assert (
+            str(err)
+            == f"Function '{func_name}' validation error for argument '{arg_name}': {base_message_part}"
+        )
     elif arg_name:
-         assert str(err) == f"Argument '{arg_name}' validation error: {base_message_part}"
+        assert str(err) == f"Argument '{arg_name}' validation error: {base_message_part}"
     else:
         expected_prefix = f"Function '{func_name}'" if func_name else "Function"
         assert str(err) == f"{expected_prefix} validation error: {base_message_part}"
+
 
 @given(st.text())
 def test_grpc_error(message):
@@ -169,16 +207,19 @@ def test_grpc_error(message):
     assert str(pyvider_exceptions_module.NetworkError(message)) == message
     assert str(pyvider_exceptions_module.RateLimitError(message)) == message
 
+
 @given(st.text())
 def test_provider_error(message):
     assert str(pyvider_exceptions_module.ProviderError(message)) == message
     assert str(pyvider_exceptions_module.ProviderConfigurationError(message)) == message
     assert str(pyvider_exceptions_module.ProviderInitializationError(message)) == message
 
+
 @given(st.text())
 def test_registry_error(message):
     assert str(pyvider_exceptions_module.ComponentRegistryError(message)) == message
     assert str(pyvider_exceptions_module.ValidatorRegistrationError(message)) == message
+
 
 @given(st.text())
 def test_resource_error(message):
@@ -189,13 +230,19 @@ def test_resource_error(message):
     assert str(pyvider_exceptions_module.ResourceNotFoundError(message)) == message
     assert str(pyvider_exceptions_module.ResourceOperationError(message)) == message
 
+
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} error: {message}"
 
-@given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)), detail=st.one_of(st.none(), st.text()))
+
+@given(
+    message=st.text(),
+    schema_name=st.one_of(st.none(), st.text(min_size=1)),
+    detail=st.one_of(st.none(), st.text()),
+)
 def test_schema_validation_error(message, schema_name, detail):
     err = pyvider_exceptions_module.SchemaValidationError(message, schema_name=schema_name, detail=detail)
     # The constructor for SchemaValidationError in schema.py now builds the full message.
@@ -205,11 +252,13 @@ def test_schema_validation_error(message, schema_name, detail):
     if schema_name:
         assert f"Schema '{schema_name}'" in str(err)
 
+
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_registration_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaRegistrationError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} registration error: {message}"
+
 
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_parse_error(message, schema_name):
@@ -217,9 +266,17 @@ def test_schema_parse_error(message, schema_name):
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} parse error: {message}"
 
-@given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)), source_val=st.text(), target_type_val=st.just(int))
+
+@given(
+    message=st.text(),
+    schema_name=st.one_of(st.none(), st.text(min_size=1)),
+    source_val=st.text(),
+    target_type_val=st.just(int),
+)
 def test_schema_conversion_error(message, schema_name, source_val, target_type_val):
-    err = pyvider_exceptions_module.SchemaConversionError(message, schema_name=schema_name, source_value=source_val, target_type=target_type_val)
+    err = pyvider_exceptions_module.SchemaConversionError(
+        message, schema_name=schema_name, source_value=source_val, target_type=target_type_val
+    )
     base_message = message
     if schema_name:
         assert f"Schema '{schema_name}' conversion failed: {base_message}" in str(err)
@@ -228,13 +285,18 @@ def test_schema_conversion_error(message, schema_name, source_val, target_type_v
     assert f"source_type={type(source_val).__name__}" in str(err)
     assert "target_type=int" in str(err)
 
-@given(message=st.text(),
-       type_name=st.one_of(st.none(), st.text(min_size=1)),
-       source_val=st.one_of(st.none(), st.text(), st.integers()),
-       detail=st.one_of(st.none(), st.text()))
+
+@given(
+    message=st.text(),
+    type_name=st.one_of(st.none(), st.text(min_size=1)),
+    source_val=st.one_of(st.none(), st.text(), st.integers()),
+    detail=st.one_of(st.none(), st.text()),
+)
 def test_serialization_error(message, type_name, source_val, detail):
-    err = pyvider_exceptions_module.SerializationError(message, type_name=type_name, source_value=source_val, detail=detail)
-    expected_type_name_in_msg = type_name or 'unknown'
+    err = pyvider_exceptions_module.SerializationError(
+        message, type_name=type_name, source_value=source_val, detail=detail
+    )
+    expected_type_name_in_msg = type_name or "unknown"
     base_constructed_message = f"Serialization failed for type '{expected_type_name_in_msg}': {message}"
     if detail:
         base_constructed_message += f" - Detail: {detail}"
@@ -255,13 +317,18 @@ def test_serialization_error(message, type_name, source_val, detail):
     assert err.source_value == source_val
     assert err.target_type == type_name
 
-@given(message=st.text(),
-       type_name=st.one_of(st.none(), st.text(min_size=1)),
-       source_val=st.one_of(st.none(), st.text(), st.integers()),
-       detail=st.one_of(st.none(), st.text()))
+
+@given(
+    message=st.text(),
+    type_name=st.one_of(st.none(), st.text(min_size=1)),
+    source_val=st.one_of(st.none(), st.text(), st.integers()),
+    detail=st.one_of(st.none(), st.text()),
+)
 def test_deserialization_error(message, type_name, source_val, detail):
-    err = pyvider_exceptions_module.DeserializationError(message, type_name=type_name, source_value=source_val, detail=detail)
-    expected_type_name_in_msg = type_name or 'unknown'
+    err = pyvider_exceptions_module.DeserializationError(
+        message, type_name=type_name, source_value=source_val, detail=detail
+    )
+    expected_type_name_in_msg = type_name or "unknown"
     base_constructed_message = f"Deserialization failed for type '{expected_type_name_in_msg}': {message}"
     if detail:
         base_constructed_message += f" - Detail: {detail}"
@@ -282,51 +349,79 @@ def test_deserialization_error(message, type_name, source_val, detail):
     assert err.source_value == source_val
     assert err.target_type == type_name
 
-@given(message=st.text(), context=st.one_of(st.none(), st.text(min_size=1)), detail=st.one_of(st.none(), st.text()))
+
+@given(
+    message=st.text(),
+    context=st.one_of(st.none(), st.text(min_size=1)),
+    detail=st.one_of(st.none(), st.text()),
+)
 def test_validation_error(message, context, detail):
     err = pyvider_exceptions_module.ValidationError(message, context=context, detail=detail)
     expected_context_str = f"Context: {context} - " if context else ""
     expected_detail_str = f" - Detail: {detail}" if detail else ""
     assert str(err) == f"{expected_context_str}{message}{expected_detail_str}"
 
-@given(message=st.text(), attr_name=st.text(min_size=1), context=st.one_of(st.none(), st.text(min_size=1)), detail=st.one_of(st.none(), st.text()))
+
+@given(
+    message=st.text(),
+    attr_name=st.text(min_size=1),
+    context=st.one_of(st.none(), st.text(min_size=1)),
+    detail=st.one_of(st.none(), st.text()),
+)
 def test_attribute_validation_error(message, attr_name, context, detail):
-    err = pyvider_exceptions_module.AttributeValidationError(message, attribute_name=attr_name, context=context, detail=detail)
+    err = pyvider_exceptions_module.AttributeValidationError(
+        message, attribute_name=attr_name, context=context, detail=detail
+    )
     base_message = f"Attribute '{attr_name}' validation failed: {message}"
     expected_context_str = f"Context: {context} - " if context else ""
     expected_detail_str = f" - Detail: {detail}" if detail else ""
     assert str(err) == f"{expected_context_str}{base_message}{expected_detail_str}"
 
+
 def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.ConversionError, pyvider_exceptions_module.PyviderError)
-    assert issubclass(pyvider_exceptions_module.FrameworkConfigurationError, pyvider_exceptions_module.PyviderError)
+    assert issubclass(
+        pyvider_exceptions_module.FrameworkConfigurationError, pyvider_exceptions_module.PyviderError
+    )
     assert issubclass(pyvider_exceptions_module.PluginError, pyvider_exceptions_module.PyviderError)
     assert issubclass(pyvider_exceptions_module.PyviderValueError, pyvider_exceptions_module.PyviderError)
     assert issubclass(pyvider_exceptions_module.InvalidTypeError, pyvider_exceptions_module.PyviderValueError)
-    assert issubclass(pyvider_exceptions_module.UnsupportedTypeError, pyvider_exceptions_module.PyviderValueError)
-    assert issubclass(pyvider_exceptions_module.ComponentConfigurationError, pyvider_exceptions_module.FrameworkConfigurationError)
-
+    assert issubclass(
+        pyvider_exceptions_module.UnsupportedTypeError, pyvider_exceptions_module.PyviderValueError
+    )
+    assert issubclass(
+        pyvider_exceptions_module.ComponentConfigurationError,
+        pyvider_exceptions_module.FrameworkConfigurationError,
+    )
 
     assert issubclass(pyvider_exceptions_module.GRPCError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.GRPCConnectionError, pyvider_exceptions_module.GRPCError)
 
-    assert issubclass(pyvider_exceptions_module.ProviderConfigurationError, pyvider_exceptions_module.ProviderError)
-    assert issubclass(pyvider_exceptions_module.ProviderConfigurationError, pyvider_exceptions_module.ComponentConfigurationError)
-
+    assert issubclass(
+        pyvider_exceptions_module.ProviderConfigurationError, pyvider_exceptions_module.ProviderError
+    )
+    assert issubclass(
+        pyvider_exceptions_module.ProviderConfigurationError,
+        pyvider_exceptions_module.ComponentConfigurationError,
+    )
 
     assert issubclass(pyvider_exceptions_module.ResourceError, pyvider_exceptions_module.PluginError)
     assert issubclass(pyvider_exceptions_module.DataSourceError, pyvider_exceptions_module.ResourceError)
     assert issubclass(pyvider_exceptions_module.CapabilityError, pyvider_exceptions_module.PluginError)
-    assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.ResourceError)
-    assert issubclass(pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.PyviderValueError)
+    assert issubclass(
+        pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.ResourceError
+    )
+    assert issubclass(
+        pyvider_exceptions_module.ResourceValidationError, pyvider_exceptions_module.PyviderValueError
+    )
     # Resource exceptions inherit from foundation errors
     from provide.foundation.errors import (
+        ConfigurationError as FoundationConfigurationError,
         NotFoundError as FoundationNotFoundError,
-        StateError as FoundationStateError, 
         RuntimeError as FoundationRuntimeError,
         ValidationError as FoundationValidationError,
-        ConfigurationError as FoundationConfigurationError
     )
+
     assert issubclass(pyvider_exceptions_module.ResourceNotFoundError, FoundationNotFoundError)
     assert issubclass(pyvider_exceptions_module.ResourceOperationError, FoundationRuntimeError)
 
@@ -334,10 +429,16 @@ def test_inheritance_structure():
     assert issubclass(pyvider_exceptions_module.SchemaValidationError, FoundationValidationError)
     assert issubclass(pyvider_exceptions_module.SchemaRegistrationError, FoundationConfigurationError)
     assert issubclass(pyvider_exceptions_module.SchemaParseError, FoundationValidationError)
-    assert issubclass(pyvider_exceptions_module.SchemaConversionError, pyvider_exceptions_module.ConversionError)
+    assert issubclass(
+        pyvider_exceptions_module.SchemaConversionError, pyvider_exceptions_module.ConversionError
+    )
 
     assert issubclass(pyvider_exceptions_module.SerializationError, pyvider_exceptions_module.ConversionError)
-    assert issubclass(pyvider_exceptions_module.DeserializationError, pyvider_exceptions_module.ConversionError)
+    assert issubclass(
+        pyvider_exceptions_module.DeserializationError, pyvider_exceptions_module.ConversionError
+    )
 
     assert issubclass(pyvider_exceptions_module.ValidationError, FoundationValidationError)
-    assert issubclass(pyvider_exceptions_module.AttributeValidationError, pyvider_exceptions_module.ValidationError)
+    assert issubclass(
+        pyvider_exceptions_module.AttributeValidationError, pyvider_exceptions_module.ValidationError
+    )

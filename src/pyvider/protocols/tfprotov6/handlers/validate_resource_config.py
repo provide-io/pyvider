@@ -4,9 +4,8 @@ from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 async def ValidateResourceConfigHandler(

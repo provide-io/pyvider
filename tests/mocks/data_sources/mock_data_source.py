@@ -2,9 +2,7 @@ from pyvider.hub.components import register_data_source
 
 
 @register_data_source(
-    category="test_category",
-    name="mock_data_source",
-    description="A mock data source for testing"
+    category="test_category", name="mock_data_source", description="A mock data source for testing"
 )
 class MockDataSource:
     """
@@ -22,7 +20,4 @@ class MockDataSource:
         Returns:
             dict: Mock data associated with the identifier.
         """
-        return {
-            "identifier": identifier,
-            "value": f"Mock value for {identifier}"
-        }
+        return {"identifier": identifier, "value": f"Mock value for {identifier}"}

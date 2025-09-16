@@ -9,6 +9,7 @@ from pyvider.hub.discovery import ComponentDiscovery
 # Import testkit fixtures with fallback
 try:
     from provide.testkit import clean_event_loop as _clean_event_loop
+
     # Create a session-scoped version for pyvider's needs
     @pytest.fixture(scope="session")
     def event_loop():
@@ -16,7 +17,7 @@ try:
         loop = asyncio.get_event_loop_policy().new_event_loop()
         yield loop
         loop.close()
-        
+
     # Also provide function-scoped version for tests that need it
     clean_event_loop = _clean_event_loop
 except ImportError:
@@ -27,7 +28,7 @@ except ImportError:
         loop = asyncio.get_event_loop_policy().new_event_loop()
         yield loop
         loop.close()
-        
+
     # Alias for compatibility
     clean_event_loop = event_loop
 
@@ -84,6 +85,7 @@ def encryption_key_env(monkeypatch):
     monkeypatch.setenv(env_var_name, secret_key)
 
     from pyvider.common import encryption
+
     encryption._ENCRYPTION_KEY = None
     yield
     monkeypatch.delenv(env_var_name, raising=False)

@@ -2,8 +2,9 @@
 
 from collections.abc import Callable
 
-from pyvider.hub import hub
 from provide.foundation import logger
+
+from pyvider.hub import hub
 
 
 def register_provider(name: str) -> Callable[[type], type]:

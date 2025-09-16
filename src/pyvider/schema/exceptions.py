@@ -7,9 +7,7 @@ class PyviderSchemaError(Exception):
 class SchemaConversionError(PyviderSchemaError):
     """Error during schema conversion processes."""
 
-    def __init__(
-        self, message: str, schema_name: str | None = None, detail: str | None = None
-    ) -> None:
+    def __init__(self, message: str, schema_name: str | None = None, detail: str | None = None) -> None:
         super().__init__(message)
         self.schema_name = schema_name
         self.detail = detail

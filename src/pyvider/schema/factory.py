@@ -14,7 +14,6 @@ from pyvider.cty import (
     CtyType,
     CtyValue,
 )
-
 from pyvider.schema.types import NestingMode, PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
 
@@ -24,9 +23,7 @@ def _get_cty_type(type_def: Any) -> CtyType:
         return type_def.type
     if isinstance(type_def, CtyType):
         return type_def
-    raise TypeError(
-        f"Invalid type definition for attribute element: got {type(type_def).__name__}"
-    )
+    raise TypeError(f"Invalid type definition for attribute element: got {type(type_def).__name__}")
 
 
 # --- Attribute Factories (a_*) ---
@@ -70,9 +67,7 @@ def a_set(element_type_def: Any, description: str = "", **kwargs: Any) -> PvsAtt
     )
 
 
-def a_tuple(
-    element_type_defs: list[Any], description: str = "", **kwargs: Any
-) -> PvsAttribute:
+def a_tuple(element_type_defs: list[Any], description: str = "", **kwargs: Any) -> PvsAttribute:
     return PvsAttribute(
         type=CtyTuple(element_types=tuple(_get_cty_type(v) for v in element_type_defs)),
         description=description,
@@ -80,9 +75,7 @@ def a_tuple(
     )
 
 
-def a_obj(
-    attributes: dict[str, PvsAttribute], description: str = "", **kwargs: Any
-) -> PvsAttribute:
+def a_obj(attributes: dict[str, PvsAttribute], description: str = "", **kwargs: Any) -> PvsAttribute:
     obj_type_def = PvsObjectType(attributes=attributes, description=description)
     return PvsAttribute(
         type=obj_type_def.to_cty_type(),
@@ -109,9 +102,7 @@ def b_main(
     )
 
 
-def _nested_block_factory(
-    type_name: str, nesting: NestingMode, **kwargs: Any
-) -> PvsNestedBlock:
+def _nested_block_factory(type_name: str, nesting: NestingMode, **kwargs: Any) -> PvsNestedBlock:
     attributes = kwargs.pop("attributes", {})
     block_types = kwargs.pop("block_types", None)
     block_content = b_main(
@@ -119,9 +110,7 @@ def _nested_block_factory(
         block_types=block_types,
         description=kwargs.get("description", ""),
     )
-    return PvsNestedBlock(
-        type_name=type_name, nesting=nesting, block=block_content, **kwargs
-    )
+    return PvsNestedBlock(type_name=type_name, nesting=nesting, block=block_content, **kwargs)
 
 
 def b_list(type_name: str, **kwargs: Any) -> PvsNestedBlock:
@@ -187,9 +176,7 @@ def a_unknown(schema_builder: PvsAttribute | PvsSchema) -> CtyValue:
         target_type = schema_builder.block.to_cty_type()
 
     if target_type is None:
-        raise TypeError(
-            "a_unknown() expects a schema builder instance like a_str() or s_resource()"
-        )
+        raise TypeError("a_unknown() expects a schema builder instance like a_str() or s_resource()")
     return CtyValue.unknown(target_type)
 
 
@@ -202,7 +189,5 @@ def a_null(schema_builder: PvsAttribute | PvsSchema) -> CtyValue:
         target_type = schema_builder.block.to_cty_type()
 
     if target_type is None:
-        raise TypeError(
-            "a_null() expects a schema builder instance like a_str() or s_resource()"
-        )
+        raise TypeError("a_null() expects a schema builder instance like a_str() or s_resource()")
     return CtyValue.null(target_type)

@@ -28,9 +28,7 @@ class DynamicValue(_message.Message):
     JSON_FIELD_NUMBER: _ClassVar[int]
     msgpack: bytes
     json: bytes
-    def __init__(
-        self, msgpack: bytes | None = ..., json: bytes | None = ...
-    ) -> None: ...
+    def __init__(self, msgpack: bytes | None = ..., json: bytes | None = ...) -> None: ...
 
 class Diagnostic(_message.Message):
     __slots__ = ("attribute", "detail", "severity", "summary")
@@ -65,9 +63,7 @@ class FunctionError(_message.Message):
     FUNCTION_ARGUMENT_FIELD_NUMBER: _ClassVar[int]
     text: str
     function_argument: int
-    def __init__(
-        self, text: str | None = ..., function_argument: int | None = ...
-    ) -> None: ...
+    def __init__(self, text: str | None = ..., function_argument: int | None = ...) -> None: ...
 
 class AttributePath(_message.Message):
     __slots__ = ("steps",)
@@ -88,9 +84,7 @@ class AttributePath(_message.Message):
 
     STEPS_FIELD_NUMBER: _ClassVar[int]
     steps: _containers.RepeatedCompositeFieldContainer[AttributePath.Step]
-    def __init__(
-        self, steps: _Iterable[AttributePath.Step | _Mapping] | None = ...
-    ) -> None: ...
+    def __init__(self, steps: _Iterable[AttributePath.Step | _Mapping] | None = ...) -> None: ...
 
 class StopProvider(_message.Message):
     __slots__ = ()
@@ -120,9 +114,7 @@ class RawState(_message.Message):
     FLATMAP_FIELD_NUMBER: _ClassVar[int]
     json: bytes
     flatmap: _containers.ScalarMap[str, str]
-    def __init__(
-        self, json: bytes | None = ..., flatmap: _Mapping[str, str] | None = ...
-    ) -> None: ...
+    def __init__(self, json: bytes | None = ..., flatmap: _Mapping[str, str] | None = ...) -> None: ...
 
 class ResourceIdentitySchema(_message.Message):
     __slots__ = ("identity_attributes", "version")
@@ -156,16 +148,11 @@ class ResourceIdentitySchema(_message.Message):
     VERSION_FIELD_NUMBER: _ClassVar[int]
     IDENTITY_ATTRIBUTES_FIELD_NUMBER: _ClassVar[int]
     version: int
-    identity_attributes: _containers.RepeatedCompositeFieldContainer[
-        ResourceIdentitySchema.IdentityAttribute
-    ]
+    identity_attributes: _containers.RepeatedCompositeFieldContainer[ResourceIdentitySchema.IdentityAttribute]
     def __init__(
         self,
         version: int | None = ...,
-        identity_attributes: _Iterable[
-            ResourceIdentitySchema.IdentityAttribute | _Mapping
-        ]
-        | None = ...,
+        identity_attributes: _Iterable[ResourceIdentitySchema.IdentityAttribute | _Mapping] | None = ...,
     ) -> None: ...
 
 class ResourceIdentityData(_message.Message):
@@ -329,9 +316,7 @@ class Schema(_message.Message):
     BLOCK_FIELD_NUMBER: _ClassVar[int]
     version: int
     block: Schema.Block
-    def __init__(
-        self, version: int | None = ..., block: Schema.Block | _Mapping | None = ...
-    ) -> None: ...
+    def __init__(self, version: int | None = ..., block: Schema.Block | _Mapping | None = ...) -> None: ...
 
 class Function(_message.Message):
     __slots__ = (
@@ -424,9 +409,7 @@ class ClientCapabilities(_message.Message):
     WRITE_ONLY_ATTRIBUTES_ALLOWED_FIELD_NUMBER: _ClassVar[int]
     deferral_allowed: bool
     write_only_attributes_allowed: bool
-    def __init__(
-        self, deferral_allowed: bool = ..., write_only_attributes_allowed: bool = ...
-    ) -> None: ...
+    def __init__(self, deferral_allowed: bool = ..., write_only_attributes_allowed: bool = ...) -> None: ...
 
 class Deferred(_message.Message):
     __slots__ = ("reason",)
@@ -468,28 +451,18 @@ class GetMetadata(_message.Message):
         EPHEMERAL_RESOURCES_FIELD_NUMBER: _ClassVar[int]
         server_capabilities: ServerCapabilities
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        data_sources: _containers.RepeatedCompositeFieldContainer[
-            GetMetadata.DataSourceMetadata
-        ]
-        resources: _containers.RepeatedCompositeFieldContainer[
-            GetMetadata.ResourceMetadata
-        ]
-        functions: _containers.RepeatedCompositeFieldContainer[
-            GetMetadata.FunctionMetadata
-        ]
-        ephemeral_resources: _containers.RepeatedCompositeFieldContainer[
-            GetMetadata.EphemeralMetadata
-        ]
+        data_sources: _containers.RepeatedCompositeFieldContainer[GetMetadata.DataSourceMetadata]
+        resources: _containers.RepeatedCompositeFieldContainer[GetMetadata.ResourceMetadata]
+        functions: _containers.RepeatedCompositeFieldContainer[GetMetadata.FunctionMetadata]
+        ephemeral_resources: _containers.RepeatedCompositeFieldContainer[GetMetadata.EphemeralMetadata]
         def __init__(
             self,
             server_capabilities: ServerCapabilities | _Mapping | None = ...,
             diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...,
-            data_sources: _Iterable[GetMetadata.DataSourceMetadata | _Mapping]
-            | None = ...,
+            data_sources: _Iterable[GetMetadata.DataSourceMetadata | _Mapping] | None = ...,
             resources: _Iterable[GetMetadata.ResourceMetadata | _Mapping] | None = ...,
             functions: _Iterable[GetMetadata.FunctionMetadata | _Mapping] | None = ...,
-            ephemeral_resources: _Iterable[GetMetadata.EphemeralMetadata | _Mapping]
-            | None = ...,
+            ephemeral_resources: _Iterable[GetMetadata.EphemeralMetadata | _Mapping] | None = ...,
         ) -> None: ...
 
     class EphemeralMetadata(_message.Message):
@@ -541,9 +514,7 @@ class GetProviderSchema(_message.Message):
             VALUE_FIELD_NUMBER: _ClassVar[int]
             key: str
             value: Schema
-            def __init__(
-                self, key: str | None = ..., value: Schema | _Mapping | None = ...
-            ) -> None: ...
+            def __init__(self, key: str | None = ..., value: Schema | _Mapping | None = ...) -> None: ...
 
         class DataSourceSchemasEntry(_message.Message):
             __slots__ = ("key", "value")
@@ -551,9 +522,7 @@ class GetProviderSchema(_message.Message):
             VALUE_FIELD_NUMBER: _ClassVar[int]
             key: str
             value: Schema
-            def __init__(
-                self, key: str | None = ..., value: Schema | _Mapping | None = ...
-            ) -> None: ...
+            def __init__(self, key: str | None = ..., value: Schema | _Mapping | None = ...) -> None: ...
 
         class FunctionsEntry(_message.Message):
             __slots__ = ("key", "value")
@@ -561,9 +530,7 @@ class GetProviderSchema(_message.Message):
             VALUE_FIELD_NUMBER: _ClassVar[int]
             key: str
             value: Function
-            def __init__(
-                self, key: str | None = ..., value: Function | _Mapping | None = ...
-            ) -> None: ...
+            def __init__(self, key: str | None = ..., value: Function | _Mapping | None = ...) -> None: ...
 
         class EphemeralResourceSchemasEntry(_message.Message):
             __slots__ = ("key", "value")
@@ -571,9 +538,7 @@ class GetProviderSchema(_message.Message):
             VALUE_FIELD_NUMBER: _ClassVar[int]
             key: str
             value: Schema
-            def __init__(
-                self, key: str | None = ..., value: Schema | _Mapping | None = ...
-            ) -> None: ...
+            def __init__(self, key: str | None = ..., value: Schema | _Mapping | None = ...) -> None: ...
 
         PROVIDER_FIELD_NUMBER: _ClassVar[int]
         RESOURCE_SCHEMAS_FIELD_NUMBER: _ClassVar[int]
@@ -617,9 +582,7 @@ class ValidateProviderConfig(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -738,9 +701,7 @@ class ValidateResourceConfig(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -762,9 +723,7 @@ class ValidateDataResourceConfig(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -786,9 +745,7 @@ class ValidateEphemeralResourceConfig(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -813,9 +770,7 @@ class ConfigureProvider(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -1062,17 +1017,12 @@ class ImportResourceState(_message.Message):
         IMPORTED_RESOURCES_FIELD_NUMBER: _ClassVar[int]
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         DEFERRED_FIELD_NUMBER: _ClassVar[int]
-        imported_resources: _containers.RepeatedCompositeFieldContainer[
-            ImportResourceState.ImportedResource
-        ]
+        imported_resources: _containers.RepeatedCompositeFieldContainer[ImportResourceState.ImportedResource]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
         deferred: Deferred
         def __init__(
             self,
-            imported_resources: _Iterable[
-                ImportResourceState.ImportedResource | _Mapping
-            ]
-            | None = ...,
+            imported_resources: _Iterable[ImportResourceState.ImportedResource | _Mapping] | None = ...,
             diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...,
             deferred: Deferred | _Mapping | None = ...,
         ) -> None: ...
@@ -1209,10 +1159,7 @@ class OpenEphemeralResource(_message.Message):
         def __init__(
             self,
             diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...,
-            renew_at: datetime.datetime
-            | _timestamp_pb2.Timestamp
-            | _Mapping
-            | None = ...,
+            renew_at: datetime.datetime | _timestamp_pb2.Timestamp | _Mapping | None = ...,
             result: DynamicValue | _Mapping | None = ...,
             private: bytes | None = ...,
             deferred: Deferred | _Mapping | None = ...,
@@ -1228,9 +1175,7 @@ class RenewEphemeralResource(_message.Message):
         PRIVATE_FIELD_NUMBER: _ClassVar[int]
         type_name: str
         private: bytes
-        def __init__(
-            self, type_name: str | None = ..., private: bytes | None = ...
-        ) -> None: ...
+        def __init__(self, type_name: str | None = ..., private: bytes | None = ...) -> None: ...
 
     class Response(_message.Message):
         __slots__ = ("diagnostics", "private", "renew_at")
@@ -1243,10 +1188,7 @@ class RenewEphemeralResource(_message.Message):
         def __init__(
             self,
             diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...,
-            renew_at: datetime.datetime
-            | _timestamp_pb2.Timestamp
-            | _Mapping
-            | None = ...,
+            renew_at: datetime.datetime | _timestamp_pb2.Timestamp | _Mapping | None = ...,
             private: bytes | None = ...,
         ) -> None: ...
 
@@ -1260,17 +1202,13 @@ class CloseEphemeralResource(_message.Message):
         PRIVATE_FIELD_NUMBER: _ClassVar[int]
         type_name: str
         private: bytes
-        def __init__(
-            self, type_name: str | None = ..., private: bytes | None = ...
-        ) -> None: ...
+        def __init__(self, type_name: str | None = ..., private: bytes | None = ...) -> None: ...
 
     class Response(_message.Message):
         __slots__ = ("diagnostics",)
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]
         diagnostics: _containers.RepeatedCompositeFieldContainer[Diagnostic]
-        def __init__(
-            self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...
-        ) -> None: ...
+        def __init__(self, diagnostics: _Iterable[Diagnostic | _Mapping] | None = ...) -> None: ...
 
     def __init__(self) -> None: ...
 
@@ -1288,9 +1226,7 @@ class GetFunctions(_message.Message):
             VALUE_FIELD_NUMBER: _ClassVar[int]
             key: str
             value: Function
-            def __init__(
-                self, key: str | None = ..., value: Function | _Mapping | None = ...
-            ) -> None: ...
+            def __init__(self, key: str | None = ..., value: Function | _Mapping | None = ...) -> None: ...
 
         FUNCTIONS_FIELD_NUMBER: _ClassVar[int]
         DIAGNOSTICS_FIELD_NUMBER: _ClassVar[int]

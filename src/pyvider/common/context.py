@@ -87,6 +87,4 @@ class BaseContext:
         """
         from pyvider.protocols.tfprotov6 import protobuf as pb
 
-        self._add_diagnostic(
-            pb.Diagnostic.WARNING, summary, detail, path=attribute_path
-        )
+        self._add_diagnostic(pb.Diagnostic.WARNING, summary, detail, path=attribute_path)

@@ -3,5 +3,5 @@
 from .schema_mock import MockSchema
 
 __all__ = [
-'MockSchema',
+    "MockSchema",
 ]

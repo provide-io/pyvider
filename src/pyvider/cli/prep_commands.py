@@ -1,11 +1,10 @@
+from pathlib import Path
 import subprocess
 import sys
-from pathlib import Path
 
 import click
+from provide.foundation.console import perr, pout
 
-from provide.foundation.file import atomic_write
-from provide.foundation.console import pout, perr
 from pyvider.cli.context import PyviderContext, pass_ctx
 from pyvider.cli.utils import _place_terraform_provider_script, _run_command
 
@@ -26,10 +25,7 @@ def prep_os(ctx: PyviderContext) -> None:
     script_dir = project_root / "scripts" / "prep" / ctx.tf_os
 
     if not script_dir.exists() or not script_dir.is_dir():
-        perr(
-            f"Error: OS preparation scripts for '{ctx.tf_os}' not found at {script_dir}",
-            style="red bold"
-        )
+        perr(f"Error: OS preparation scripts for '{ctx.tf_os}' not found at {script_dir}", style="red bold")
         sys.exit(1)
 
     scripts = sorted(script_dir.glob("*.sh"))
@@ -38,10 +34,7 @@ def prep_os(ctx: PyviderContext) -> None:
         try:
             _run_command(["bash", str(script)], check=True, title=title)
         except subprocess.CalledProcessError:
-            perr(
-                f"❌ Failed to execute script: {script.name}. Aborting.",
-                style="red bold"
-            )
+            perr(f"❌ Failed to execute script: {script.name}. Aborting.", style="red bold")
             sys.exit(1)
 
     pout("✅ OS preparation successfully completed.", style="green bold")
@@ -56,21 +49,15 @@ def prep_terraform(ctx: PyviderContext) -> None:
     project_root = Path(__file__).resolve().parent.parent.parent.parent
 
     if ctx.tf_os == "linux":
-        script_path = (
-            project_root / "scripts" / "prep" / "linux" / "03_install_terraform.sh"
-        )
+        script_path = project_root / "scripts" / "prep" / "linux" / "03_install_terraform.sh"
     elif ctx.tf_os == "darwin":
-        script_path = (
-            project_root / "scripts" / "prep" / "macos" / "04_install_terraform.sh"
-        )
+        script_path = project_root / "scripts" / "prep" / "macos" / "04_install_terraform.sh"
     else:
         perr(f"❌ Unsupported OS: {ctx.tf_os}", style="red bold")
         sys.exit(1)
 
     if not script_path.exists():
-        perr(
-            f"❌ Terraform install script not found: {script_path}", style="red bold"
-        )
+        perr(f"❌ Terraform install script not found: {script_path}", style="red bold")
         sys.exit(1)
 
     try:
@@ -102,9 +89,7 @@ def prep_tofu(ctx: PyviderContext) -> None:
         sys.exit(1)
 
     if not script_path.exists():
-        perr(
-            f"❌ OpenTofu install script not found: {script_path}", style="red bold"
-        )
+        perr(f"❌ OpenTofu install script not found: {script_path}", style="red bold")
         sys.exit(1)
 
     try:
@@ -128,9 +113,7 @@ def prep_provider(ctx: PyviderContext) -> None:
         _place_terraform_provider_script(ctx)
         click.secho("✅ Terraform provider script placement complete.", fg="green")
     except Exception as e:
-        click.secho(
-            f"❌ Failed to place Terraform provider script: {e}", fg="red", bold=True
-        )
+        click.secho(f"❌ Failed to place Terraform provider script: {e}", fg="red", bold=True)
         sys.exit(1)
 
 
@@ -138,21 +121,15 @@ def prep_provider(ctx: PyviderContext) -> None:
 @pass_ctx
 def prep_dev(ctx: PyviderContext) -> None:
     """Sets up a Python virtual environment in the current directory for development."""
-    click.secho(
-        "🛠️  Setting up Python development environment...", fg="green", bold=True
-    )
+    click.secho("🛠️  Setting up Python development environment...", fg="green", bold=True)
     project_root = Path.cwd()
 
     if not (project_root / "pyproject.toml").exists():
-        click.secho(
-            f"Error: No 'pyproject.toml' found in {project_root}.", fg="red", bold=True
-        )
+        click.secho(f"Error: No 'pyproject.toml' found in {project_root}.", fg="red", bold=True)
         sys.exit(1)
 
     try:
-        _run_command(
-            ["uv", "venv"], cwd=project_root, title="Creating virtual environment"
-        )
+        _run_command(["uv", "venv"], cwd=project_root, title="Creating virtual environment")
         _run_command(
             ["uv", "sync", "--all-groups", "--dev"],
             cwd=project_root,
@@ -163,9 +140,7 @@ def prep_dev(ctx: PyviderContext) -> None:
             cwd=str(project_root),
             title="Installing project in editable mode",
         )
-        click.secho(
-            "\n✅ Development environment setup complete.", fg="green", bold=True
-        )
+        click.secho("\n✅ Development environment setup complete.", fg="green", bold=True)
         click.secho("   Run 'source .venv/bin/activate' to activate it.", fg="yellow")
     except Exception as e:
         click.secho(f"❌ Failed during development setup: {e}", fg="red", bold=True)
@@ -180,6 +155,4 @@ def prep_all(click_ctx: click.Context) -> None:
     click_ctx.invoke(prep_os)
     click.echo("\n--- 🔗 Step 2: Preparing Terraform Provider ---")
     click_ctx.invoke(prep_terraform)
-    click.secho(
-        "\n🎉 All preparation steps completed successfully!", fg="green", bold=True
-    )
+    click.secho("\n🎉 All preparation steps completed successfully!", fg="green", bold=True)

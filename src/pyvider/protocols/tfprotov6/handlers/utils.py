@@ -3,6 +3,8 @@ import re
 from typing import Any
 
 import attrs
+from provide.foundation import logger
+from provide.foundation.errors import FoundationError
 
 from pyvider.cty import CtyList, CtyObject, CtyTuple, CtyValue
 from pyvider.cty.exceptions import (
@@ -27,8 +29,6 @@ from pyvider.exceptions import (
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
-from provide.foundation import logger
-from provide.foundation.errors import FoundationError
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
 PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
@@ -61,10 +61,7 @@ def _process_instance(instance: Any, _visited: set[int]) -> Any:
         else:
             return instance
     finally:
-        if (
-            not isinstance(instance, str | int | float | bool | type(None))
-            and obj_id in _visited
-        ):
+        if not isinstance(instance, str | int | float | bool | type(None)) and obj_id in _visited:
             _visited.remove(obj_id)
 
 
@@ -122,9 +119,7 @@ def _check_object_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, st
         )
 
     for attr_name in plan.value:
-        is_valid, reason = is_valid_refinement(
-            plan.value[attr_name], result.value[attr_name]
-        )
+        is_valid, reason = is_valid_refinement(plan.value[attr_name], result.value[attr_name])
         if not is_valid:
             return False, f"Attribute '{attr_name}': {reason}"
     return True, ""
@@ -211,14 +206,14 @@ def cty_path_to_proto_path(cty_path: CtyPath | None) -> pb.AttributePath | None:
 
 async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
     """Create a Terraform diagnostic from an exception.
-    
+
     Uses foundation's ErrorContext when available for richer diagnostics.
     """
     summary = "An unexpected error occurred"
     detail = str(exc)
     attribute_path: CtyPath | None = None
     severity = pb.Diagnostic.ERROR
-    
+
     # First handle specific CTY validation errors
     specific_validation_errors = (
         CtyAttributeValidationError,
@@ -230,7 +225,7 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
         CtyStringValidationError,
         CtyBoolValidationError,
     )
-    
+
     if isinstance(exc, specific_validation_errors):
         summary = f"🐍🏗️ ⚠️ {exc.message}"
         detail = f"Validation failed for a value of type '{exc.type_name}'."
@@ -245,36 +240,36 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
         detail = "A configuration validation error occurred."
         attribute_path = exc.path
     # Check if this is a foundation error with context
-    elif isinstance(exc, FoundationError) and hasattr(exc, 'context'):
+    elif isinstance(exc, FoundationError) and hasattr(exc, "context"):
         # Use foundation's error context for richer diagnostics
         context = exc.context
-        
+
         # Check for severity in context dict
         if isinstance(context, dict):
             # Default to ERROR severity
             severity = pb.Diagnostic.ERROR
-            
+
             # Check for Terraform-specific metadata
             if "terraform.summary" in context:
                 summary = context["terraform.summary"]
-            
+
             # Build detail including original message and terraform detail
             detail_parts = [str(exc)]
             if "terraform.detail" in context:
                 detail_parts.append(context["terraform.detail"])
-            
+
             # Add other context items
             for key, value in context.items():
                 if not key.startswith("terraform.") and key != "private_state.error" and value:
                     detail_parts.append(f"{key}: {value}")
-            
+
             detail = "\n".join(detail_parts) if detail_parts else str(exc)
     else:
         # Handle other specific exception types
         if isinstance(exc, ResourceLifecycleContractError):
             summary = "🐍🏗️ ⚠️ Resource Lifecycle Contract Violation"
             detail = str(exc)
-            if hasattr(exc, 'detail') and exc.detail:
+            if hasattr(exc, "detail") and exc.detail:
                 detail += f"\n\nDetails:\n{exc.detail}"
         elif isinstance(exc, FunctionError):
             summary = "🐍🏗️ ❌ Function Execution Error"
@@ -304,9 +299,7 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
     )
 
 
-def cty_to_attrs_instance(
-    cty_val: CtyValue | None, attrs_cls: type[Any] | None
-) -> Any | None:
+def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None) -> Any | None:
     if attrs_cls is None:
         return None
     if not inspect.isclass(attrs_cls):

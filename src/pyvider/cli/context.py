@@ -3,7 +3,7 @@ from typing import Any
 
 import click
 from provide.foundation.context import Context
-from provide.foundation.platform import get_os_name, get_arch_name
+from provide.foundation.platform import get_arch_name, get_os_name
 
 from pyvider.common.config import PyviderConfig
 
@@ -12,9 +12,10 @@ from pyvider.common.config import PyviderConfig
 class PyviderContext(Context):
     """
     Pyvider-specific context that extends foundation's Context.
-    
+
     Inherits debug, verbose, and quiet flags from foundation Context.
     """
+
     def __init__(self) -> None:
         super().__init__()  # Initialize foundation Context
         self.config = PyviderConfig()

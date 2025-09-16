@@ -10,10 +10,12 @@ async def test_null_values():
     Tests that providing a null value for a required attribute fails
     validation as expected.
     """
-    schema = s_resource(attributes={
-        "name": a_str(required=True),
-        "optional_object": a_obj(attributes={"field": a_str()}, optional=True)
-    })
+    schema = s_resource(
+        attributes={
+            "name": a_str(required=True),
+            "optional_object": a_obj(attributes={"field": a_str()}, optional=True),
+        }
+    )
 
     invalid_config = {"name": None}
 

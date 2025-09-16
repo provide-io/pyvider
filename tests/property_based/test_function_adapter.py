@@ -28,12 +28,13 @@ TYPE_HINT_TEST_CASES = [
     (dict, CtyMap),
     (dict[str, int], CtyMap),
     # Complex Unions
-    (str | int, CtyDynamic), # Should resolve to dynamic
+    (str | int, CtyDynamic),  # Should resolve to dynamic
     (int | str, CtyDynamic),
-    (int | float | None, CtyNumber), # Should resolve to number
+    (int | float | None, CtyNumber),  # Should resolve to number
     # Nested Collections
     (list[dict[str, bool]], CtyList),
 ]
+
 
 @pytest.mark.parametrize("py_type, expected_cty_class", TYPE_HINT_TEST_CASES)
 def test_function_adapter_type_inference(py_type, expected_cty_class):
@@ -41,6 +42,7 @@ def test_function_adapter_type_inference(py_type, expected_cty_class):
     Verifies that the function adapter correctly infers the CtyType
     from a wide range of Python type hints.
     """
+
     # Dynamically create a dummy function with the type hint to test
     def dummy_func(param: py_type):
         pass
@@ -50,8 +52,9 @@ def test_function_adapter_type_inference(py_type, expected_cty_class):
     assert len(meta["parameters"]) == 1
     inferred_param_type = meta["parameters"][0]["cty_type"]
 
-    assert isinstance(inferred_param_type, expected_cty_class), \
+    assert isinstance(inferred_param_type, expected_cty_class), (
         f"For hint '{py_type}', expected {expected_cty_class}, but got {type(inferred_param_type)}"
+    )
 
     # Specific checks for collection element types
     if expected_cty_class is CtyList and py_type is list[dict[str, bool]]:

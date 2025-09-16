@@ -1,5 +1,7 @@
 from typing import ClassVar
 
+from provide.foundation import logger
+
 from pyvider.capabilities import BaseCapability
 from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
 from pyvider.exceptions import FrameworkConfigurationError
@@ -7,7 +9,6 @@ from pyvider.hub import hub
 from pyvider.providers.base import BaseProvider, ProviderMetadata
 from pyvider.providers.decorators import register_provider
 from pyvider.schema import s_provider
-from provide.foundation import logger
 
 
 @register_provider("pyvider")

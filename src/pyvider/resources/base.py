@@ -3,6 +3,7 @@ from types import UnionType
 from typing import Any, Generic, TypeVar, get_args, get_origin
 
 import attrs
+from provide.foundation import logger
 
 from pyvider.cty import (
     CtyDynamic,
@@ -14,10 +15,8 @@ from pyvider.cty import (
 )
 from pyvider.cty.conversion import cty_to_native
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import PvsSchema
-from provide.foundation import logger
-
 from pyvider.resources.private_state import PrivateState
+from pyvider.schema import PvsSchema
 
 ResourceType = TypeVar("ResourceType")
 StateType = TypeVar("StateType")
@@ -46,9 +45,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _handle_cty_value(cls, cty_value: CtyValue, target_cls: type) -> Any | None:
         if cty_value.is_null:
             return None
-        if cty_value.is_unknown and not isinstance(
-            cty_value.type, CtyObject | CtyList | CtySet | CtyTuple
-        ):
+        if cty_value.is_unknown and not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
             return None
         return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
 
@@ -84,9 +81,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         try:
             return target_cls(**kwargs)
         except TypeError as e:
-            raise TypeError(
-                f"Could not create '{target_cls.__name__}' from data: {e}"
-            ) from e
+            raise TypeError(f"Could not create '{target_cls.__name__}' from data: {e}") from e
 
     @classmethod
     def _cty_to_attrs_recursive(cls, data: Any, target_cls: type) -> Any | None:
@@ -106,9 +101,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             pass
 
         if is_union:
-            non_none_args = [
-                arg for arg in get_args(target_cls) if arg is not type(None)
-            ]
+            non_none_args = [arg for arg in get_args(target_cls) if arg is not type(None)]
             if len(non_none_args) == 1:
                 target_cls = non_none_args[0]
                 origin = get_origin(target_cls)
@@ -134,9 +127,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     @abstractmethod
     async def _validate_config(self, config: ConfigType) -> list[str]: ...
 
-    async def plan(
-        self, ctx: ResourceContext
-    ) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
+    async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         validation_errors = await self.validate(ctx.config)
         if validation_errors:
             for err in validation_errors:
@@ -164,9 +155,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             logger.debug(f"Plan _update returned private_state: {private_state}")
             return planned_state, private_state
 
-    async def apply(
-        self, ctx: ResourceContext
-    ) -> tuple[StateType | None, PrivateStateType | None]:
+    async def apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         is_create = ctx.state is None
         is_delete = ctx.planned_state is None
 
@@ -198,14 +187,10 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     ) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         return None, None
 
-    async def _create_apply(
-        self, ctx: ResourceContext
-    ) -> tuple[StateType | None, PrivateStateType | None]:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         return ctx.planned_state, ctx.private_state
 
-    async def _update_apply(
-        self, ctx: ResourceContext
-    ) -> tuple[StateType | None, PrivateStateType | None]:
+    async def _update_apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         return ctx.planned_state, ctx.private_state
 
     @abstractmethod

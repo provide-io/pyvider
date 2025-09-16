@@ -27,9 +27,7 @@ def requires_capability(func: Callable) -> Callable:
     @wraps(func)
     async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
         component_instance = args[0]
-        parent_capability_name = getattr(
-            component_instance.__class__, "_parent_capability", "provider"
-        )
+        parent_capability_name = getattr(component_instance.__class__, "_parent_capability", "provider")
 
         # ctx = next((arg for arg in args if isinstance(arg, ResourceContext)), None)
         provider = hub.get_component("singleton", "provider")
@@ -41,9 +39,7 @@ def requires_capability(func: Callable) -> Callable:
 
         capability_instance = hub.get_component("capability", parent_capability_name)
         if not capability_instance:
-            raise ResourceError(
-                f"Required parent capability '{parent_capability_name}' not found in context."
-            )
+            raise ResourceError(f"Required parent capability '{parent_capability_name}' not found in context.")
 
         kwargs[parent_capability_name] = capability_instance
         return await func(*args, **kwargs)
@@ -65,9 +61,7 @@ def requires_capability(func: Callable) -> Callable:
 
             capability_instance = hub.get_component("capability", parent_cap_name)
             if not capability_instance:
-                raise ResourceError(
-                    f"Required parent capability '{parent_cap_name}' not found in context."
-                )
+                raise ResourceError(f"Required parent capability '{parent_cap_name}' not found in context.")
 
             kwargs[parent_cap_name] = capability_instance
             return func(*args, **kwargs)

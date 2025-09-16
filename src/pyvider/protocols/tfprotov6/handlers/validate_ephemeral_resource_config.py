@@ -1,13 +1,13 @@
 from typing import Any
 
+from provide.foundation import logger
+
 from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from provide.foundation import logger
-
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 async def ValidateEphemeralResourceConfigHandler(
@@ -19,9 +19,7 @@ async def ValidateEphemeralResourceConfigHandler(
     try:
         resource_class = hub.get_component("ephemeral_resource", request.type_name)
         if not resource_class:
-            raise ValueError(
-                f"Ephemeral resource type '{request.type_name}' not found."
-            )
+            raise ValueError(f"Ephemeral resource type '{request.type_name}' not found.")
 
         schema = resource_class.get_schema()
         config_cty = unmarshal(request.config, schema=schema.block)

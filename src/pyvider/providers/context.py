@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from attrs import define, field
+from provide.foundation import logger
 
 from pyvider.common.context import BaseContext
-from provide.foundation import logger
 
 if TYPE_CHECKING:
     from pyvider.providers.base import BaseProvider
@@ -22,6 +22,4 @@ class ProviderContext(BaseContext):
     provider: BaseProvider | None = field(default=None, init=False)
 
     def __attrs_post_init__(self) -> None:
-        logger.info(
-            "ProviderContext initialized", config_type=type(self.config).__name__
-        )
+        logger.info("ProviderContext initialized", config_type=type(self.config).__name__)

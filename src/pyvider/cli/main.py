@@ -7,7 +7,7 @@ from pyvider.cli.context import PyviderContext
 
 @click.group(invoke_without_command=True)
 @flexible_options  # Add logging and config options at root level
-@output_options    # Add output format options
+@output_options  # Add output format options
 @click.pass_context
 def cli(ctx: click.Context, **kwargs) -> None:
     """
@@ -21,7 +21,7 @@ def cli(ctx: click.Context, **kwargs) -> None:
     # subcommands via `ctx.obj`.
     if ctx.obj is None:
         ctx.obj = PyviderContext()
-    
+
     # Store the CLI options in the context for subcommands to access
     for key, value in kwargs.items():
         if value is not None:

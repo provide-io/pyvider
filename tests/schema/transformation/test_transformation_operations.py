@@ -13,11 +13,10 @@ from pyvider.schema.transforms import PvsSchemaTransformer
 
 @pytest.fixture
 def base_schema() -> PvsSchema:
-    return s_resource({
-        "name": a_str(required=True),
-        "description": a_str(optional=True),
-        "count": a_num(default=0)
-    })
+    return s_resource(
+        {"name": a_str(required=True), "description": a_str(optional=True), "count": a_num(default=0)}
+    )
+
 
 class TestSchemaTransforms:
     def test_add_attribute(self, base_schema):

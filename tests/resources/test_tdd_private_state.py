@@ -16,18 +16,29 @@ class MyPrivateState(PrivateState):
     internal_id: str
     version: int
 
+
 class ResourceWithPrivateState(BaseResource):
     private_state_class = MyPrivateState
+
     # Other required abstract methods...
     @classmethod
-    def get_schema(cls): return s_resource({"name": a_str()})
-    async def _validate_config(self, config: Any) -> list[str]: return []
-    async def read(self, ctx): pass
+    def get_schema(cls):
+        return s_resource({"name": a_str()})
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
+    async def read(self, ctx):
+        pass
+
     async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]):
         # WHEN the plan operation returns a private state object
         private_state = MyPrivateState(internal_id="uuid-1234", version=1)
         return base_plan, private_state
-    async def _delete_apply(self, ctx: ResourceContext) -> None: pass
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        pass
+
 
 @pytest.mark.asyncio
 async def test_private_state_roundtrip():
@@ -37,7 +48,7 @@ async def test_private_state_roundtrip():
     into a typed object by another.
     """
     resource = ResourceWithPrivateState()
-    ctx = ResourceContext() # Dummy context for plan
+    ctx = ResourceContext()  # Dummy context for plan
 
     # 1. Simulate the Plan handler's work
     _, planned_private_state_obj = await resource._create(ctx, {})

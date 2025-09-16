@@ -1,7 +1,7 @@
 import asyncio
 import os
-import sys
 from pathlib import Path
+import sys
 from typing import Any
 
 import click
@@ -21,6 +21,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
     """
     # --- Deferred Imports for Provider Mode ---
     from attrs import define, field
+    from provide.foundation import logger, setup_logging
 
     from pyvider.common.config import PyviderConfig
     from pyvider.handler import ProviderHandler
@@ -28,7 +29,6 @@ async def _run_provider_server(magic_cookie: str) -> None:
     import pyvider.protocols.tfprotov6.protobuf as pb
     from pyvider.providers.provider import PyviderProvider
     from pyvider.rpcplugin import RPCPluginProtocol, RPCPluginServer
-    from provide.foundation import logger, setup_logging
 
     def _configure_telemetry(config: PyviderConfig) -> None:
         log_level = config.get("logging.level", "INFO")
@@ -71,12 +71,13 @@ async def _run_provider_server(magic_cookie: str) -> None:
     try:
         config = PyviderConfig()
         _configure_telemetry(config)
-        
+
         # Log launch context information
         from pyvider.common.launch_context import log_launch_context
+
         launch_context = log_launch_context(logger.info)
         logger.info(f"Provider initialized with launch method: {launch_context.method.value}", domain="system")
-        
+
         await _discover_components_once()
         provider_instance = PyviderProvider()
         await provider_instance.setup()
@@ -88,14 +89,10 @@ async def _run_provider_server(magic_cookie: str) -> None:
         server_config = {
             "PLUGIN_MAGIC_COOKIE_KEY": "TF_PLUGIN_MAGIC_COOKIE",
             "PLUGIN_MAGIC_COOKIE_VALUE": magic_cookie,  # Pass the actual magic cookie value
-            "PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN": config.get(
-                "server.timeout_graceful_shutdown", 5
-            ),
+            "PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN": config.get("server.timeout_graceful_shutdown", 5),
         }
 
-        server = RPCPluginServer(
-            protocol=protocol, handler=handler, config=server_config
-        )
+        server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
         await server.serve()
         logger.info("Provider server has shut down gracefully.", domain="system")
     except Exception as e:
@@ -103,9 +100,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         logging.basicConfig()
         local_logger = logging.getLogger("pyvider.critical")
-        local_logger.error(
-            f"Provider server failed to start or crashed: {e}", exc_info=True
-        )
+        local_logger.error(f"Provider server failed to start or crashed: {e}", exc_info=True)
         sys.exit(1)
 
 
@@ -123,14 +118,13 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
     action when run by Terraform or when the binary is run with no arguments).
     """
     # --- FIX: Import discovery and error handling utilities ---
+    from pyvider.cli.components_commands import _handle_discovery_errors
     from pyvider.hub.components import registry
     from pyvider.hub.discovery import ComponentDiscovery
 
-    from pyvider.cli.components_commands import _handle_discovery_errors
-
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
     script_name = Path(sys.argv[0]).name
-    
+
     # Check if Terraform is trying to launch us but we can't detect it properly
     if magic_cookie and not force:
         # Terraform set the magic cookie, but let's check if the binary name is correct
@@ -155,10 +149,7 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
                 "  2. The PSPF package was built with an incorrect command configuration",
                 fg="white",
             )
-            click.secho(
-                "\nTo fix this:",
-                fg="cyan", bold=True
-            )
+            click.secho("\nTo fix this:", fg="cyan", bold=True)
             click.secho(
                 f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
                 fg="cyan",
@@ -172,27 +163,16 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
                 fg="cyan",
             )
             click.secho("─" * 70, fg="red")
-            click.secho(
-                f"\nDebug Info:",
-                fg="white", dim=True
-            )
-            click.secho(
-                f"  sys.argv[0]: {sys.argv[0]}",
-                fg="white", dim=True
-            )
-            click.secho(
-                f"  script_name: {script_name}",
-                fg="white", dim=True
-            )
-            click.secho(
-                f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...",
-                fg="white", dim=True
-            )
+            click.secho("\nDebug Info:", fg="white", dim=True)
+            click.secho(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
+            click.secho(f"  script_name: {script_name}", fg="white", dim=True)
+            click.secho(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
             sys.exit(1)
 
     if not magic_cookie and not force:
         # Show launch context in interactive mode
         from pyvider.common.launch_context import detect_launch_context
+
         launch_context = detect_launch_context()
 
         click.secho("\n" + "─" * 70, fg="cyan")
@@ -203,17 +183,17 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
             "Terraform, so it has entered interactive CLI mode.",
             fg="white",
         )
-        
+
         # Display launch context
-        click.secho(f"\n🚀 Launch Context:", fg="green", bold=True)
+        click.secho("\n🚀 Launch Context:", fg="green", bold=True)
         click.secho(f"   Method: {launch_context.method.value}", fg="white")
         click.secho(f"   Executable: {launch_context.executable_path}", fg="white")
         click.secho(f"   Python: {launch_context.python_executable}", fg="white")
-        
+
         if launch_context.details:
             for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
                 click.secho(f"   {key}: {value}", fg="white")
-        
+
         click.secho(
             "\nYou can use the commands below to inspect the provider's components.",
             fg="white",
@@ -231,9 +211,7 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
     # --- FIX: Run discovery and handle errors before starting the server ---
     pyvider_ctx = ctx.obj
     asyncio.run(
-        pyvider_ctx._ensure_components_discovered(
-            registry, ComponentDiscovery, click.echo, click.secho
-        )
+        pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, click.secho)
     )
     _handle_discovery_errors(pyvider_ctx)
 

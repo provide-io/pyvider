@@ -26,9 +26,7 @@ class PvsSchemaTransformer:
         new_block = attrs.evolve(block, attributes=new_attrs)
         return attrs.evolve(schema, block=new_block)
 
-    def merge_schemas(
-        self, schemas: list[PvsSchema], description: str = ""
-    ) -> PvsSchema:
+    def merge_schemas(self, schemas: list[PvsSchema], description: str = "") -> PvsSchema:
         all_attrs = {}
         all_block_types = []
         block_type_names = set()

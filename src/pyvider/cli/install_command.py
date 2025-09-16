@@ -85,9 +85,7 @@ def install_command(ctx: click.Context) -> None:
             )
 
         except Exception as e:
-            click.secho(
-                f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True
-            )
+            click.secho(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
             raise click.Abort() from e
     else:
         click.secho("📝 Running in Development Mode.", fg="yellow")

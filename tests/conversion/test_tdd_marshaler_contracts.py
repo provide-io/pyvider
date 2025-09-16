@@ -12,9 +12,7 @@ def test_apply_schema_marks_adds_sensitive_mark():
     adds a 'sensitive' mark to a value when the schema dictates it.
     """
     # GIVEN a schema with a sensitive attribute
-    schema = s_resource({
-        "api_key": a_str(sensitive=True)
-    })
+    schema = s_resource({"api_key": a_str(sensitive=True)})
 
     # AND an unmarked CtyValue corresponding to that attribute
     unmarked_value = CtyString().validate("my-secret")

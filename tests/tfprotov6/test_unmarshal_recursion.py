@@ -10,6 +10,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 # This makes the test a perfect replication of the real-world failure.
 DEBUG_DUMP_FILE = Path("/tmp/pyvider_debug_dump.msgpack")
 
+
 @pytest.mark.skipif(not DEBUG_DUMP_FILE.exists(), reason="Debug dump file not found")
 @pytest.mark.asyncio
 async def test_unmarshal_captured_payload_avoids_recursion():

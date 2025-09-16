@@ -10,21 +10,36 @@ from pyvider.resources.base import BaseResource
 class NestedConfig:
     setting: str
 
+
 @attrs.define(frozen=True)
 class TopLevelConfig:
     name: str
     nested: NestedConfig
     items: list[NestedConfig]
 
+
 class DummyResource(BaseResource):
     config_class = TopLevelConfig
-    state_class = None # Not needed for this test
-    def get_schema(self): pass
-    async def _validate_config(self, config: Any) -> list[str]: return []
-    async def read(self, ctx): pass
-    async def plan(self, ctx): pass
-    async def apply(self, ctx): pass
-    async def delete(self, ctx): pass
+    state_class = None  # Not needed for this test
+
+    def get_schema(self):
+        pass
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
+    async def read(self, ctx):
+        pass
+
+    async def plan(self, ctx):
+        pass
+
+    async def apply(self, ctx):
+        pass
+
+    async def delete(self, ctx):
+        pass
+
 
 def test_from_cty_with_nested_objects():
     """
@@ -32,17 +47,17 @@ def test_from_cty_with_nested_objects():
     deserializes nested CtyObjects into nested attrs classes.
     """
     nested_schema = CtyObject({"setting": CtyString()})
-    top_level_schema = CtyObject({
-        "name": CtyString(),
-        "nested": nested_schema,
-        "items": CtyList(element_type=nested_schema)
-    })
+    top_level_schema = CtyObject(
+        {"name": CtyString(), "nested": nested_schema, "items": CtyList(element_type=nested_schema)}
+    )
 
-    cty_value = top_level_schema.validate({
-        "name": "test-resource",
-        "nested": {"setting": "enabled"},
-        "items": [{"setting": "item1"}, {"setting": "item2"}]
-    })
+    cty_value = top_level_schema.validate(
+        {
+            "name": "test-resource",
+            "nested": {"setting": "enabled"},
+            "items": [{"setting": "item1"}, {"setting": "item2"}],
+        }
+    )
 
     result = DummyResource.from_cty(cty_value, TopLevelConfig)
 

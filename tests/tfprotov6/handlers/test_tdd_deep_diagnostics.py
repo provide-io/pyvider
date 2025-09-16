@@ -1,5 +1,6 @@
 from typing import Any
 
+from provide.foundation import logger
 import pytest
 
 from pyvider.cty.exceptions import CtyValidationError
@@ -19,7 +20,6 @@ from pyvider.schema import (
     b_map,
     s_resource,
 )
-from provide.foundation import logger
 
 
 async def assert_deep_diagnostic(
@@ -59,9 +59,9 @@ async def assert_deep_diagnostic(
 
     actual_path_str = "".join(actual_path_parts)
 
-    assert (
-        actual_path_str == expected_path_str
-    ), f"Path mismatch: expected '{expected_path_str}', got '{actual_path_str}'"
+    assert actual_path_str == expected_path_str, (
+        f"Path mismatch: expected '{expected_path_str}', got '{actual_path_str}'"
+    )
     logger.info(f"✅ Successfully validated diagnostic for path: {actual_path_str}")
 
 
@@ -75,11 +75,7 @@ class TestDeepDiagnosticPaths:
     async def test_error_in_nested_object(self):
         """TDD: Verifies pathing for an object nested within another object."""
         schema = s_resource(
-            attributes={
-                "config": a_obj(
-                    attributes={"retries": a_num(required=True)}, required=True
-                )
-            }
+            attributes={"config": a_obj(attributes={"retries": a_num(required=True)}, required=True)}
         )
         invalid_config = {"config": {"retries": "five"}}
         await assert_deep_diagnostic(
@@ -92,11 +88,7 @@ class TestDeepDiagnosticPaths:
     async def test_error_in_list_of_objects(self):
         """TDD: Verifies pathing for an error in the nth element of a list of objects."""
         schema = s_resource(
-            attributes={
-                "users": a_list(
-                    a_obj(attributes={"name": a_str(required=True)}), required=True
-                )
-            }
+            attributes={"users": a_list(a_obj(attributes={"name": a_str(required=True)}), required=True)}
         )
         invalid_config = {"users": [{"name": "Alice"}, {"name": 123}]}
         await assert_deep_diagnostic(
@@ -109,11 +101,7 @@ class TestDeepDiagnosticPaths:
     async def test_error_in_map_of_objects(self):
         """TDD: Verifies pathing for an error in an object inside a map."""
         schema = s_resource(
-            attributes={
-                "services": a_map(
-                    a_obj(attributes={"port": a_num(required=True)}), required=True
-                )
-            }
+            attributes={"services": a_map(a_obj(attributes={"port": a_num(required=True)}), required=True)}
         )
         invalid_config = {"services": {"api": {"port": 80}, "db": {"port": "invalid"}}}
         await assert_deep_diagnostic(
@@ -126,11 +114,7 @@ class TestDeepDiagnosticPaths:
     async def test_error_in_tuple_with_nested_list(self):
         """TDD: Verifies pathing for an error in a list inside a tuple."""
         schema = s_resource(
-            attributes={
-                "endpoint": a_tuple(
-                    [a_str(), a_list(a_num(required=True))], required=True
-                )
-            }
+            attributes={"endpoint": a_tuple([a_str(), a_list(a_num(required=True))], required=True)}
         )
         invalid_config = {"endpoint": ("host.com", [80, 443, "not-a-port"])}
         await assert_deep_diagnostic(

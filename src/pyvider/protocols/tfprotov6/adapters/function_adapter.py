@@ -2,10 +2,11 @@
 import json
 from typing import Any
 
+from provide.foundation import logger
+
 # FIX: Import the type encoder from its new, correct location in pyvider.cty
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
 import pyvider.protocols.tfprotov6.protobuf as pb
-from provide.foundation import logger
 
 
 def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
@@ -23,9 +24,7 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
 
                 cty_type_obj = CtyDynamic()
 
-            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode(
-                "utf-8"
-            )
+            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode("utf-8")
 
             parameters.append(
                 pb.Function.Parameter(
@@ -48,9 +47,7 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
 
                 cty_type_obj = CtyDynamic()
 
-            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode(
-                "utf-8"
-            )
+            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode("utf-8")
             return_value_obj = pb.Function.Return(type=type_bytes)
         else:
             logger.warning(
@@ -59,9 +56,7 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
             from pyvider.cty import CtyDynamic
 
             cty_type_obj = CtyDynamic()
-            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode(
-                "utf-8"
-            )
+            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode("utf-8")
             return_value_obj = pb.Function.Return(type=type_bytes)
 
         constructor_kwargs = {

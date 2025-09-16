@@ -17,11 +17,7 @@ def _process_single_item(
         marked_value = marked_value.mark(CtyMark("sensitive"))
 
     children_to_process = []
-    if (
-        isinstance(schema, PvsObjectType)
-        and isinstance(val.type, CtyObject)
-        and val.value
-    ):
+    if isinstance(schema, PvsObjectType) and isinstance(val.type, CtyObject) and val.value:
         processing.add(id(val))
         for attr_name, attr_value in val.value.items():
             if attr_name in schema.attributes:
@@ -35,15 +31,11 @@ def _finalize_container(
     made_change: bool,
 ) -> CtyValue:
     if made_change:
-        return attrs.evolve(container_val, value=new_inner_value).mark(
-            CtyMark("sensitive")
-        )
+        return attrs.evolve(container_val, value=new_inner_value).mark(CtyMark("sensitive"))
     return container_val
 
 
-def _apply_schema_marks_iterative(
-    root_value: CtyValue, root_schema: PvsType | CtyType
-) -> CtyValue:
+def _apply_schema_marks_iterative(root_value: CtyValue, root_schema: PvsType | CtyType) -> CtyValue:
     """
     A dedicated, iterative function to apply marks from a schema to an
     already validated CtyValue, avoiding recursion limits.
@@ -75,9 +67,7 @@ def _apply_schema_marks_iterative(
                     if processed_child is not child_val or processed_child.marks:
                         made_change = True
 
-            final_container = _finalize_container(
-                container_val, new_inner_value, made_change
-            )
+            final_container = _finalize_container(container_val, new_inner_value, made_change)
             results[container_id] = final_container
             continue
 
@@ -87,9 +77,7 @@ def _apply_schema_marks_iterative(
         if val_id in results or val_id in processing:
             continue
 
-        marked_value, children_to_process = _process_single_item(
-            val, schema, processing
-        )
+        marked_value, children_to_process = _process_single_item(val, schema, processing)
 
         if children_to_process:
             work_stack.extend([(val, schema), POST_PROCESS])
@@ -103,9 +91,7 @@ def _apply_schema_marks_iterative(
 def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicValue:
     """Marshals a Python or CtyValue into a protobuf DynamicValue."""
     if not isinstance(schema, CtyType | PvsType):
-        raise TypeError(
-            f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}"
-        )
+        raise TypeError(f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}")
 
     schema_cty_type = schema.to_cty_type() if hasattr(schema, "to_cty_type") else schema
 
@@ -124,9 +110,7 @@ def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicVa
 def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType) -> CtyValue:
     """Unmarshals a DynamicValue from the wire protocol into a CtyValue."""
     if not isinstance(schema, CtyType | PvsType):
-        raise TypeError(
-            f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}"
-        )
+        raise TypeError(f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}")
 
     root_cty_type = schema.to_cty_type() if hasattr(schema, "to_cty_type") else schema
 

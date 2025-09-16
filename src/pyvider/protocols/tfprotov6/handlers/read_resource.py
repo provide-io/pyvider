@@ -1,26 +1,23 @@
 from typing import Any
 
 import msgpack
-
 from provide.foundation.errors import with_error_handling
+
 from pyvider.common.encryption import decrypt
 from pyvider.conversion import marshal, unmarshal
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.resources.context import ResourceContext
-
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.resources.context import ResourceContext
 
 
 @with_error_handling()
-async def ReadResourceHandler(
-    request: pb.ReadResource.Request, context: Any
-) -> pb.ReadResource.Response:
+async def ReadResourceHandler(request: pb.ReadResource.Request, context: Any) -> pb.ReadResource.Response:
     response = pb.ReadResource.Response()
     resource_context = None
     try:
@@ -34,9 +31,7 @@ async def ReadResourceHandler(
 
         resource_schema = resource_class.get_schema()
         prior_state_cty = unmarshal(request.current_state, schema=resource_schema.block)
-        prior_state_instance = cty_to_attrs_instance(
-            prior_state_cty, resource_class.state_class
-        )
+        prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
 
         private_state_instance = None
         if (
@@ -47,13 +42,9 @@ async def ReadResourceHandler(
             try:
                 decrypted_bytes = decrypt(request.private)
                 private_data = msgpack.unpackb(decrypted_bytes, raw=False)
-                private_state_instance = resource_class.private_state_class(
-                    **private_data
-                )
+                private_state_instance = resource_class.private_state_class(**private_data)
             except Exception as e:
-                raise ResourceError(
-                    f"Failed to deserialize private state for {request.type_name}."
-                ) from e
+                raise ResourceError(f"Failed to deserialize private state for {request.type_name}.") from e
 
         resource_handler = resource_class()
         resource_context = ResourceContext(

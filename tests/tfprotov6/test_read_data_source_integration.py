@@ -15,6 +15,7 @@ from pyvider.schema import a_dyn, s_data_source
 class DynamicOutputState:
     output: Any
 
+
 @register_data_source("test_dynamic_ds")
 class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicOutputState, None]):
     state_class = DynamicOutputState
@@ -30,13 +31,16 @@ class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicOutputState, No
     async def read(self, ctx: ResourceContext) -> DynamicOutputState:
         return DynamicOutputState(output={"a": 1, "b": ["x", "y"]})
 
+
 @pytest.mark.asyncio
 async def test_read_data_source_with_dynamic_output():
     hub.register("data_source", "test_dynamic_ds", DynamicDataSource)
     try:
         request = pb.ReadDataSource.Request(type_name="test_dynamic_ds")
         response = await ReadDataSourceHandler(request, None)
-        assert not response.diagnostics, f"ReadDataSource failed: {response.diagnostics[0].detail if response.diagnostics else 'Unknown error'}"
+        assert not response.diagnostics, (
+            f"ReadDataSource failed: {response.diagnostics[0].detail if response.diagnostics else 'Unknown error'}"
+        )
         assert response.state.msgpack is not None
     finally:
         hub.unregister("data_source", "test_dynamic_ds")

@@ -28,6 +28,7 @@ async def test_create_diagnostic_from_ctyattibutevalidationerror():
     assert diag.attribute.steps[0].attribute_name == "config"
     assert diag.attribute.steps[1].attribute_name == "retries"
 
+
 @pytest.mark.asyncio
 async def test_create_diagnostic_from_ctynumbervalidationerror():
     """
@@ -35,11 +36,7 @@ async def test_create_diagnostic_from_ctynumbervalidationerror():
     is converted into a diagnostic with a precise detail message.
     """
     path = CtyPath.get_attr("config").child("retries")
-    exc = CtyNumberValidationError(
-        "Cannot represent str value 'five' as Decimal",
-        path=path,
-        value="five"
-    )
+    exc = CtyNumberValidationError("Cannot represent str value 'five' as Decimal", path=path, value="five")
 
     diag = await create_diagnostic_from_exception(exc)
 
@@ -49,6 +46,7 @@ async def test_create_diagnostic_from_ctynumbervalidationerror():
     assert "The invalid value provided was 'five'." in diag.detail
     assert diag.attribute.steps[0].attribute_name == "config"
     assert diag.attribute.steps[1].attribute_name == "retries"
+
 
 @pytest.mark.asyncio
 async def test_create_diagnostic_from_generic_ctyvalidationerror():

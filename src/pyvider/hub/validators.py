@@ -36,9 +36,7 @@ class Validators:
 
             validator = cls._registry[name]
 
-            if not hasattr(metadata, "validators") or not isinstance(
-                metadata.validators, list
-            ):
+            if not hasattr(metadata, "validators") or not isinstance(metadata.validators, list):
                 logger.error(
                     f"Cannot attach validator: 'metadata' object for '{getattr(metadata, 'description', 'unknown')}' lacks a list 'validators' attribute."
                 )
@@ -59,7 +57,7 @@ class Validators:
         try:
             cls._registry[validator_name](value, metadata)
         except Exception as e:
-            raise ConfigValidationError(f"Validation failed for '{validator_name}': {str(e)}") from e
+            raise ConfigValidationError(f"Validation failed for '{validator_name}': {e!s}") from e
 
 
 # 🐍🏗️

@@ -17,6 +17,7 @@ class WarningState:
     name: str | None = None
     old_name: str | None = None
 
+
 @register_resource("warning_test_resource")
 class WarningResource(BaseResource):
     state_class = WarningState
@@ -24,10 +25,12 @@ class WarningResource(BaseResource):
 
     @classmethod
     def get_schema(cls):
-        return s_resource({
-            "name": a_str(optional=True),
-            "old_name": a_str(optional=True, description="This attribute is deprecated."),
-        })
+        return s_resource(
+            {
+                "name": a_str(optional=True),
+                "old_name": a_str(optional=True, description="This attribute is deprecated."),
+            }
+        )
 
     async def _validate_config(self, config: Any) -> list[str]:
         return []
@@ -43,8 +46,12 @@ class WarningResource(BaseResource):
         base_plan["name"] = config.name or config.old_name
         return base_plan, None
 
-    async def read(self, ctx): pass
-    async def _delete_apply(self, ctx: ResourceContext) -> None: pass
+    async def read(self, ctx):
+        pass
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        pass
+
 
 @pytest.mark.asyncio
 async def test_plan_handler_collects_attribute_warnings(provider_in_hub):
@@ -56,10 +63,7 @@ async def test_plan_handler_collects_attribute_warnings(provider_in_hub):
         config_dv = marshal(raw_config, schema=schema.block)
         null_dv = marshal(None, schema=schema.block)
         request = pb.PlanResourceChange.Request(
-            type_name=resource_name,
-            config=config_dv,
-            prior_state=null_dv,
-            proposed_new_state=config_dv
+            type_name=resource_name, config=config_dv, prior_state=null_dv, proposed_new_state=config_dv
         )
         response = await PlanResourceChangeHandler(request, context=None)
         assert len(response.diagnostics) == 1

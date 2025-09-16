@@ -1,15 +1,15 @@
 from collections.abc import Callable
 from typing import Any
 
+from provide.foundation import Registry, logger
+
 from pyvider.exceptions import ComponentRegistryError
-from provide.foundation import logger
-from provide.foundation import Registry
 
 
 class ComponentRegistry:
     """
     Multi-dimensional registry for managing components by type and name.
-    
+
     Uses provide.foundation's Registry for thread-safe operations.
     """
 
@@ -22,30 +22,19 @@ class ComponentRegistry:
         # Check if already registered
         existing = self._registry.get(name, dimension=component_type)
         if existing is component:
-            logger.debug(
-                f"Skipping redundant registration: {component_type}.{name}"
-            )
+            logger.debug(f"Skipping redundant registration: {component_type}.{name}")
             return
         elif existing is not None:
-            logger.warning(
-                f"Component '{name}' under type '{component_type}' is being replaced."
-            )
-        
+            logger.warning(f"Component '{name}' under type '{component_type}' is being replaced.")
+
         # Register with replace=True to allow overwrites
-        self._registry.register(
-            name=name,
-            value=component,
-            dimension=component_type,
-            replace=True
-        )
+        self._registry.register(name=name, value=component, dimension=component_type, replace=True)
         logger.debug(f"Registered component: type='{component_type}', name='{name}'")
 
     def unregister(self, component_type: str, name: str) -> None:
         """Unregisters a component by type and name."""
         if not self._registry.remove(name, dimension=component_type):
-            raise ComponentRegistryError(
-                f"Component '{name}' under type '{component_type}' does not exist."
-            )
+            raise ComponentRegistryError(f"Component '{name}' under type '{component_type}' does not exist.")
         logger.debug(f"Unregistered component: type='{component_type}', name='{name}'")
 
     def get_component(self, component_type: str, name: str) -> Callable | None:
@@ -55,20 +44,14 @@ class ComponentRegistry:
     def get_components(self, component_type: str) -> dict[str, Callable]:
         """Get all components of a specific type."""
         component_names = self._registry.list_dimension(component_type)
-        return {
-            name: self._registry.get(name, dimension=component_type)
-            for name in component_names
-        }
+        return {name: self._registry.get(name, dimension=component_type) for name in component_names}
 
     def list_components(self) -> dict[str, dict[str, Callable[..., Any]]]:
         """Lists all registered components."""
         all_dimensions = self._registry.list_all()
         result = {}
         for dimension, names in all_dimensions.items():
-            result[dimension] = {
-                name: self._registry.get(name, dimension=dimension)
-                for name in names
-            }
+            result[dimension] = {name: self._registry.get(name, dimension=dimension) for name in names}
         return result
 
 
@@ -86,7 +69,5 @@ def get_hub_diagnostics() -> dict[str, Any]:
     return {
         "total_component_types": len(components),
         "total_components": sum(len(comp_dict) for comp_dict in components.values()),
-        "component_breakdown": {
-            comp_type: len(comp_dict) for comp_type, comp_dict in components.items()
-        },
+        "component_breakdown": {comp_type: len(comp_dict) for comp_type, comp_dict in components.items()},
     }

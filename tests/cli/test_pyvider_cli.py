@@ -1,9 +1,7 @@
 """Tests for pyvider CLI with new flexible options."""
 
-import json
 from pathlib import Path
 
-import click
 from click.testing import CliRunner
 import pytest
 
@@ -14,7 +12,7 @@ try:
     from provide.testkit import temp_file
 except ImportError:
     import tempfile
-    
+
     @pytest.fixture
     def temp_file():
         """Fallback temp_file fixture."""
@@ -48,7 +46,7 @@ class TestPyviderCLI:
     def test_cli_accepts_log_file_option(self, temp_file):
         """Test that --log-file option is accepted."""
         log_file = str(temp_file) + ".log"
-        
+
         runner = CliRunner()
         result = runner.invoke(cli, ["--log-file", log_file, "--help"])
         assert result.exit_code == 0
@@ -116,11 +114,11 @@ class TestOptionsAtSubcommandLevel:
     def test_options_can_be_at_root_or_subcommand(self):
         """Test that options can be specified at root or subcommand level."""
         runner = CliRunner()
-        
+
         # Options at root level
         result = runner.invoke(cli, ["--log-level", "ERROR", "components", "--help"])
         assert result.exit_code == 0
-        
+
         # Options at subcommand level
         result = runner.invoke(cli, ["components", "--log-level", "ERROR", "--help"])
         assert result.exit_code == 0

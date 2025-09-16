@@ -5,7 +5,7 @@ from provide.foundation.errors import ValidationError as FoundationValidationErr
 
 class ValidationError(FoundationValidationError):
     """Raised when general validation fails for a value or operation.
-    
+
     Inherits directly from foundation's ValidationError for
     consistent validation error handling.
     """
@@ -14,18 +14,20 @@ class ValidationError(FoundationValidationError):
         self, message: str, *, context: str | None = None, detail: str | None = None, **kwargs
     ) -> None:
         # Build message with old format for compatibility
-        full_message = f"{f'Context: {context} - ' if context else ''}{message}{f' - Detail: {detail}' if detail else ''}"
-        
+        full_message = (
+            f"{f'Context: {context} - ' if context else ''}{message}{f' - Detail: {detail}' if detail else ''}"
+        )
+
         # Store in foundation context as well
         if context:
-            kwargs.setdefault('context', {})['validation.context'] = context
+            kwargs.setdefault("context", {})["validation.context"] = context
         if detail:
-            kwargs.setdefault('context', {})['validation.detail'] = detail
-            
+            kwargs.setdefault("context", {})["validation.detail"] = detail
+
         super().__init__(full_message, **kwargs)
         self.context = context
         self.detail = detail
-    
+
     def _default_code(self) -> str:
         return "VALIDATION_ERROR"
 

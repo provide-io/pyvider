@@ -19,6 +19,7 @@ def valid_schema() -> PvsSchema:
         }
     )
 
+
 class TestSchemaArchitecture:
     def test_schema_is_composed_correctly(self, valid_schema: PvsSchema):
         """Ensures the schema block is a PvsObjectType."""

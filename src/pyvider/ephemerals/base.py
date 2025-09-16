@@ -2,10 +2,9 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Generic, TypeVar
 
+from pyvider.ephemerals.context import EphemeralResourceContext
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
-
-from pyvider.ephemerals.context import EphemeralResourceContext
 
 ResultType = TypeVar("ResultType")
 PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
@@ -76,9 +75,7 @@ class BaseEphemeralResource(ABC, Generic[ResultType, PrivateStateType, ConfigTyp
         ...
 
     @abstractmethod
-    async def close(
-        self, ctx: EphemeralResourceContext[None, PrivateStateType]
-    ) -> None:
+    async def close(self, ctx: EphemeralResourceContext[None, PrivateStateType]) -> None:
         """
         Closes the ephemeral resource and cleans up any connections.
 

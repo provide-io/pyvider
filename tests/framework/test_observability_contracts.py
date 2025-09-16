@@ -1,7 +1,7 @@
+from provide.foundation import logger
 import pytest
 
 from pyvider.cty import CtyMark, CtyString
-from provide.foundation import logger
 
 
 @pytest.mark.xfail(reason="Requires structlog integration with a CtyValue redacting processor.")

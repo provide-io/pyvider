@@ -18,9 +18,11 @@ from pyvider.schema import a_dyn, s_data_source
 def identity_func(input_data: Any) -> Any:
     return input_data
 
+
 @attrs.define(frozen=True)
 class DynamicState:
     data: Any
+
 
 @register_data_source("test_dynamic_ds")
 class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicState, None]):
@@ -37,6 +39,7 @@ class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicState, None]):
     async def read(self, ctx: ResourceContext) -> DynamicState:
         return DynamicState(data={"nested": True, "items": [1, "b"]})
 
+
 @pytest.mark.asyncio
 async def test_call_function_integration_avoids_recursion():
     hub.register("function", "test_identity", identity_func)
@@ -48,6 +51,7 @@ async def test_call_function_integration_avoids_recursion():
         assert not response.error.text
     finally:
         hub.unregister("function", "test_identity")
+
 
 @pytest.mark.asyncio
 async def test_read_data_source_integration_avoids_recursion():

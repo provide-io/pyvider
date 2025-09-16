@@ -7,6 +7,8 @@ It also caches the result to avoid redundant work on repeated calls.
 
 from typing import Any
 
+from provide.foundation import logger
+
 from pyvider.functions.adapters import function_to_dict
 from pyvider.protocols.tfprotov6.adapters.function_adapter import dict_to_proto_function
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -15,7 +17,6 @@ from pyvider.protocols.tfprotov6.protobuf import (
     Function,
     GetFunctions,
 )
-from provide.foundation import logger
 
 # Module-level cache for the function definitions.
 _cached_functions: dict[str, Function] | None = None
@@ -38,9 +39,7 @@ async def _get_functions_once() -> dict[str, Function]:
             logger.debug("🧰🔍✅ Returning cached function definitions.")
             return _cached_functions
 
-        logger.debug(
-            "🧰🔍🔄 Computing and caching function definitions for the first time..."
-        )
+        logger.debug("🧰🔍🔄 Computing and caching function definitions for the first time...")
 
         from pyvider.hub import hub
 
@@ -55,9 +54,7 @@ async def _get_functions_once() -> dict[str, Function]:
                     if proto_func:
                         functions[name] = proto_func
             except Exception as e:
-                logger.error(
-                    f"🧰🔍❌ Failed to process function '{name}': {e}", exc_info=True
-                )
+                logger.error(f"🧰🔍❌ Failed to process function '{name}': {e}", exc_info=True)
                 # Optionally add a diagnostic here if you want to report this to Terraform
 
         _cached_functions = functions
@@ -65,9 +62,7 @@ async def _get_functions_once() -> dict[str, Function]:
         return _cached_functions
 
 
-async def GetFunctionsHandler(
-    request: pb.GetFunctions.Request, context: Any
-) -> pb.GetFunctions.Response:
+async def GetFunctionsHandler(request: pb.GetFunctions.Request, context: Any) -> pb.GetFunctions.Response:
     """
     Handle GetFunctions requests by returning all registered functions.
     This now uses a cached result to improve performance and reduce log noise.

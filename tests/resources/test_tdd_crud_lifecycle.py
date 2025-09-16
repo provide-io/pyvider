@@ -4,6 +4,7 @@ TDD Contract for the CRUD Resource Lifecycle.
 This test suite defines the expected behavior of the BaseResource dispatcher
 and the contracts for the _create, _update, _create_apply, and _update_apply hooks.
 """
+
 from typing import Any
 from unittest.mock import AsyncMock
 
@@ -21,17 +22,21 @@ from pyvider.schema import PvsSchema, a_str, s_resource
 class CrudConfig:
     name: str
 
+
 @attrs.define(frozen=True)
 class CrudState:
     name: str
     id: str
 
+
 @attrs.define(frozen=True)
 class CrudPrivateState(PrivateState):
     version: int
 
+
 class CrudTestResource(BaseResource):
     """A mockable resource to spy on lifecycle method calls."""
+
     config_class = CrudConfig
     state_class = CrudState
     private_state_class = CrudPrivateState
@@ -53,16 +58,17 @@ class CrudTestResource(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx: ResourceContext): pass
+    async def read(self, ctx: ResourceContext):
+        pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
         # This method makes the class concrete. The __init__ overwrites it
         # with the mock for spying.
         await self._delete_apply(ctx)
 
+
 @pytest.mark.asyncio
 class TestCrudLifecycleDispatcher:
-
     async def test_plan_dispatches_to_create(self, mocker: MockerFixture):
         """TDD Contract: plan() must call _create() when state is None."""
         resource = CrudTestResource(mocker)

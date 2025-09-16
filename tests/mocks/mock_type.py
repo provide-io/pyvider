@@ -1,8 +1,8 @@
+
 from pyvider.cty.errors import ValidationError
-from typing import Type
 
 
-class MockType(Type[str]):
+class MockType(type[str]):
     """Mock Terraform type for testing."""
 
     def validate(self, value: str) -> None:
@@ -12,7 +12,7 @@ class MockType(Type[str]):
     def serialize(self, value: str) -> str:
         return f'"{value}"'
 
-    def equal(self, other: "Type") -> bool:
+    def equal(self, other: "type") -> bool:
         return isinstance(other, MockType)
 
     def usable_as(self, other: "type") -> bool:

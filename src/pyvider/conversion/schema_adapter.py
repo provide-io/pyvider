@@ -22,9 +22,7 @@ def _pvs_object_type_to_proto(block: PvsObjectType) -> pb.Schema.Block:
     """Converts a PvsObjectType to a protobuf Block message."""
     return pb.Schema.Block(
         version=1,
-        attributes=[
-            _pvs_attribute_to_proto(attr) for attr in block.attributes.values()
-        ],
+        attributes=[_pvs_attribute_to_proto(attr) for attr in block.attributes.values()],
         block_types=[_pvs_nested_block_to_proto(nb) for nb in block.block_types],
         description=block.description or "",
         deprecated=block.deprecated,

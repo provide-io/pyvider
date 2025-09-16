@@ -4,14 +4,13 @@ from pyvider.conversion import marshal, unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.resources.context import ResourceContext
-
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.resources.context import ResourceContext
 
 
 async def ReadDataSourceHandler(
@@ -56,13 +55,9 @@ async def ReadDataSourceHandler(
                     f"DATA_SOURCE_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{request.type_name}'"
                 )
         else:
-            logger.debug(
-                f"DATA_SOURCE_DISPATCH ➡️ No capability injection needed for '{request.type_name}'"
-            )
+            logger.debug(f"DATA_SOURCE_DISPATCH ➡️ No capability injection needed for '{request.type_name}'")
 
-        logger.debug(
-            f"DATA_SOURCE_DISPATCH 🚀 Calling read with kwargs: {list(read_kwargs.keys())}"
-        )
+        logger.debug(f"DATA_SOURCE_DISPATCH 🚀 Calling read with kwargs: {list(read_kwargs.keys())}")
         state_attrs_obj = await data_source.read(resource_context, **read_kwargs)
 
         if state_attrs_obj is not None:

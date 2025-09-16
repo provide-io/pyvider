@@ -19,6 +19,9 @@ from typing import Any, TypeVar
 
 from attrs import define, field
 
+# Pyvider Imports
+from provide.foundation import logger
+
 # CTY Imports (Core dependency for function signatures)
 from pyvider.cty import (
     CtyBool,
@@ -30,9 +33,6 @@ from pyvider.cty import (
     CtyType,
 )
 from pyvider.exceptions import FunctionError
-
-# Pyvider Imports
-from provide.foundation import logger
 
 # Type Variables
 T = TypeVar("T")
@@ -62,17 +62,13 @@ class FunctionParameter:
     def _validate_name(self, attribute: Any, value: str) -> None:
         """Ensure parameter name is a valid Python identifier."""
         if not value or not value.isidentifier():
-            raise ValueError(
-                f"Invalid parameter name: '{value}'. Must be a valid identifier."
-            )
+            raise ValueError(f"Invalid parameter name: '{value}'. Must be a valid identifier.")
 
     @type.validator
     def _validate_type(self, attribute: Any, value: CtyType) -> None:
         """Ensure the type is a valid CtyType instance."""
         if not isinstance(value, CtyType):
-            raise TypeError(
-                f"Parameter type must be an instance of CtyType, got {type(value).__name__}"
-            )
+            raise TypeError(f"Parameter type must be an instance of CtyType, got {type(value).__name__}")
 
 
 @define(frozen=True, kw_only=True)
@@ -90,9 +86,7 @@ class FunctionReturnType:
     def _validate_type(self, attribute: Any, value: CtyType) -> None:
         """Ensure the type is a valid CtyType instance."""
         if not isinstance(value, CtyType):
-            raise TypeError(
-                f"Return type must be an instance of CtyType, got {type(value).__name__}"
-            )
+            raise TypeError(f"Return type must be an instance of CtyType, got {type(value).__name__}")
 
 
 @define()
@@ -177,12 +171,7 @@ class FunctionAdapter:
             return CtyList(element_type=element_cty)
         elif origin_type in (dict, dict):
             value_cty = CtyDynamic()
-            if (
-                args
-                and len(args) > 1
-                and isinstance(args[1], type)
-                and issubclass(args[1], CtyType)
-            ):
+            if args and len(args) > 1 and isinstance(args[1], type) and issubclass(args[1], CtyType):
                 value_cty = args[1]()
             return CtyMap(element_type=value_cty)
         raise ValueError(f"Unsupported collection type: {origin_type}")
@@ -240,15 +229,11 @@ class FunctionAdapter:
             args = typing.get_args(param_hint)
 
             allow_null_param = (
-                param_name in allow_null
-                if isinstance(allow_null, list)
-                else bool(allow_null)
+                param_name in allow_null if isinstance(allow_null, list) else bool(allow_null)
             ) or (origin_type is typing.Union and type(None) in args)
 
             allow_unknown_param = (
-                param_name in allow_unknown
-                if isinstance(allow_unknown, list)
-                else bool(allow_unknown)
+                param_name in allow_unknown if isinstance(allow_unknown, list) else bool(allow_unknown)
             )
 
             parameters.append(
@@ -280,9 +265,7 @@ class FunctionAdapter:
         func_display_name = name or func.__name__
 
         docstring = inspect.getdoc(func)
-        final_summary = summary or (
-            docstring.strip().split("\n", 1)[0] if docstring else ""
-        )
+        final_summary = summary or (docstring.strip().split("\n", 1)[0] if docstring else "")
         final_description = description or docstring or ""
         param_descriptions = param_descriptions or {}
 
@@ -331,9 +314,7 @@ class FunctionAdapter:
                     else:
                         result = func(*args, **kwargs)
 
-                    logger.debug(
-                        f"🧰📝✅ Adapted function '{func_name_call}' successful."
-                    )
+                    logger.debug(f"🧰📝✅ Adapted function '{func_name_call}' successful.")
                     return result
                 except FunctionError:
                     raise
@@ -342,9 +323,7 @@ class FunctionAdapter:
                         f"🧰📝❌ Error executing adapted function '{func_name_call}': {e}",
                         exc_info=True,
                     )
-                    raise FunctionError(
-                        f"Function '{func_name_call}' execution failed: {e}"
-                    ) from e
+                    raise FunctionError(f"Function '{func_name_call}' execution failed: {e}") from e
 
         logger.debug(f"🧰📝✅ Adaptation complete for '{func_display_name}'.")
         return AdaptedFunction(

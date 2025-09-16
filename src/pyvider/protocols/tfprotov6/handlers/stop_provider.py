@@ -5,14 +5,13 @@
 
 from typing import Any
 
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.rpcplugin.server import RPCPluginServer
 from provide.foundation import logger
 
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.rpcplugin.server import RPCPluginServer
 
-async def StopProviderHandler(
-    request: pb.StopProvider.Request, context: Any
-) -> pb.StopProvider.Response:
+
+async def StopProviderHandler(request: pb.StopProvider.Request, context: Any) -> pb.StopProvider.Response:
     """
     Handles the StopProvider RPC call from Terraform Core.
     This is the primary mechanism for Terraform to request a graceful plugin exit.
@@ -39,9 +38,7 @@ async def StopProviderHandler(
 
         # Terraform doesn't typically expect a message on stderr for successful StopProvider,
         # but logging is good.
-        logger.info(
-            "🛎️🔒✅ StopProvider handler finished. Returning response to Terraform."
-        )
+        logger.info("🛎️🔒✅ StopProvider handler finished. Returning response to Terraform.")
         return pb.StopProvider.Response()
 
     except Exception as e:

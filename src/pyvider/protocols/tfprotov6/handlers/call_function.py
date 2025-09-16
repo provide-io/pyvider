@@ -1,16 +1,16 @@
 import inspect
 from typing import Any
 
+from provide.foundation import logger
+
 from pyvider.conversion import marshal, unmarshal
 from pyvider.cty import CtyDynamic, CtyValue
 from pyvider.cty.conversion import cty_to_native
 from pyvider.exceptions import FunctionError as PyviderFunctionError
 from pyvider.functions.adapters import function_to_dict
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from provide.foundation import logger
-
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 def _process_function_arguments(
@@ -20,9 +20,7 @@ def _process_function_arguments(
 ) -> tuple[dict[str, Any], bool]:
     native_kwargs = {}
     has_unknown = False
-    for i, (arg_proto, param_meta) in enumerate(
-        zip(request_arguments, params_meta, strict=False)
-    ):
+    for i, (arg_proto, param_meta) in enumerate(zip(request_arguments, params_meta, strict=False)):
         param_name = param_meta.get("name", f"arg{i}")
         param_cty_type = param_meta.get("cty_type", CtyDynamic())
 
@@ -34,11 +32,7 @@ def _process_function_arguments(
 
         native_val = cty_to_native(decoded_cty_val)
         sig_param = func_sig.parameters.get(param_name)
-        if (
-            sig_param
-            and sig_param.default is not inspect.Parameter.empty
-            and native_val is None
-        ):
+        if sig_param and sig_param.default is not inspect.Parameter.empty and native_val is None:
             continue
 
         native_kwargs[param_name] = native_val
@@ -86,9 +80,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
         ) from func_err
 
 
-async def CallFunctionHandler(
-    request: pb.CallFunction.Request, context: Any
-) -> pb.CallFunction.Response:
+async def CallFunctionHandler(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:
     """
     Handles the CallFunction RPC request, acting as a robust dispatcher.
     """
@@ -101,9 +93,7 @@ async def CallFunctionHandler(
 
         function_obj = hub.get_component("function", func_name)
         if not function_obj or not callable(function_obj):
-            raise PyviderFunctionError(
-                f"Function '{func_name}' not found or not callable."
-            )
+            raise PyviderFunctionError(f"Function '{func_name}' not found or not callable.")
 
         func_meta = function_to_dict(function_obj)
         params_meta = func_meta.get("parameters", [])
@@ -114,29 +104,19 @@ async def CallFunctionHandler(
                 f"Incorrect number of arguments for {func_name}: expected {len(params_meta)}, got {len(request.arguments)}."
             )
 
-        native_kwargs, has_unknown = _process_function_arguments(
-            request.arguments, params_meta, func_sig
-        )
+        native_kwargs, has_unknown = _process_function_arguments(request.arguments, params_meta, func_sig)
 
-        declared_return_cty_type = func_meta.get("return", {}).get(
-            "cty_type", CtyDynamic()
-        )
+        declared_return_cty_type = func_meta.get("return", {}).get("cty_type", CtyDynamic())
 
         if has_unknown:
-            logger.debug(
-                f"FUNCTION_DISPATCH ⏭️  Short-circuiting '{func_name}' due to unknown argument."
-            )
+            logger.debug(f"FUNCTION_DISPATCH ⏭️  Short-circuiting '{func_name}' due to unknown argument.")
             unknown_result = CtyValue.unknown(declared_return_cty_type)
-            response.result.CopyFrom(
-                marshal(unknown_result, schema=declared_return_cty_type)
-            )
+            response.result.CopyFrom(marshal(unknown_result, schema=declared_return_cty_type))
             return response
 
         _inject_capabilities(function_obj, native_kwargs)
 
-        logger.debug(
-            f"FUNCTION_DISPATCH 🚀 Invoking '{func_name}' with kwargs: {list(native_kwargs.keys())}."
-        )
+        logger.debug(f"FUNCTION_DISPATCH 🚀 Invoking '{func_name}' with kwargs: {list(native_kwargs.keys())}.")
         logger.debug(f"FUNCTION_DISPATCH 🔍 Function kwargs details: {native_kwargs}")
 
         result_py_val = await _invoke_function(function_obj, native_kwargs)

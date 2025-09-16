@@ -5,12 +5,13 @@
 import json
 from typing import Any
 
+from provide.foundation import logger
+
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
     DynamicValue,
 )
-from provide.foundation import logger
 
 
 async def UpgradeResourceStateHandler(

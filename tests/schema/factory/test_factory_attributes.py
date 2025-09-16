@@ -7,10 +7,7 @@ class TestAttributeFactoriesCoverage:
     def test_a_obj_attribute_type_variations(self) -> None:
         """Test a_obj returns a PvsAttribute whose type is a CtyObject."""
         # a_obj now correctly returns a PvsAttribute instance.
-        obj_attr_factory_instance = a_obj({
-            "description": a_str(),
-            "count": a_num(required=True)
-        })
+        obj_attr_factory_instance = a_obj({"description": a_str(), "count": a_num(required=True)})
 
         # The instance itself is a PvsAttribute
         assert isinstance(obj_attr_factory_instance, PvsAttribute)
@@ -21,5 +18,5 @@ class TestAttributeFactoriesCoverage:
         # Check that optionality was correctly inferred for the inner attributes
         # of the CtyObject type.
         cty_obj_type = obj_attr_factory_instance.type
-        assert 'description' in cty_obj_type.optional_attributes
-        assert 'count' not in cty_obj_type.optional_attributes
+        assert "description" in cty_obj_type.optional_attributes
+        assert "count" not in cty_obj_type.optional_attributes

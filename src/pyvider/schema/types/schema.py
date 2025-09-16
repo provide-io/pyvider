@@ -2,9 +2,9 @@
 from typing import Any
 
 from attrs import define, field
+from provide.foundation import logger
 
 from pyvider.cty import CtyValidationError
-from provide.foundation import logger
 
 # CORRECTED IMPORT: Replace the obsolete PvsBlock with the new PvsObjectType.
 from pyvider.schema.types.object import PvsObjectType
@@ -33,13 +33,9 @@ class PvsSchema:
         expected contract for direct validation. Higher-level handlers are
         responsible for catching this exception and creating diagnostics.
         """
-        logger.debug(
-            "Validating configuration against schema", schema_version=self.version
-        )
+        logger.debug("Validating configuration against schema", schema_version=self.version)
         if not isinstance(config, dict):
-            raise CtyValidationError(
-                f"Configuration must be a dictionary, but got {type(config).__name__}."
-            )
+            raise CtyValidationError(f"Configuration must be a dictionary, but got {type(config).__name__}.")
 
         # Convert the schema's block to its CtyType representation to get the validator.
         validator = self.block.to_cty_type()

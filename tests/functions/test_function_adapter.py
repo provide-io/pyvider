@@ -5,27 +5,34 @@ from pyvider.functions.adapters import function_to_dict
 
 # --- Test Functions ---
 
+
 def simple_func(a: str, b: int) -> bool:
     """A simple function with basic types."""
     return a == str(b)
+
 
 def collection_func(items: list[str], config: dict[str, int]) -> list[int]:
     """A function with collection types."""
     return [config.get(item, 0) for item in items]
 
+
 def optional_func(name: str | None, count: int = 10) -> str:
     """A function with optional/default parameters."""
     return (name or "default") * count
+
 
 def dynamic_func(val: Any) -> Any:
     """A function with dynamic types."""
     return val
 
+
 def union_func(val: str | int) -> str:
     """A function with a Union type hint."""
     return str(val)
 
+
 # --- Test Cases ---
+
 
 class TestFunctionAdapter:
     def test_adapt_simple_function(self):

@@ -39,9 +39,7 @@ class TestAUnknownHelper:
             (a_set(a_num()), CtySet(element_type=CtyNumber())),
             (a_map(a_bool()), CtyMap(element_type=CtyBool())),
         ],
-        ids=[
-            "string", "number", "bool", "list(string)", "set(number)", "map(bool)"
-        ]
+        ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
     def test_a_unknown_with_various_types(self, schema_builder, expected_type):
         result = a_unknown(schema_builder)
@@ -51,10 +49,12 @@ class TestAUnknownHelper:
         assert result.vtype.equal(expected_type), "The CtyType of the value must match the schema"
 
     def test_a_unknown_with_complex_object_schema(self):
-        schema_builder = s_resource(attributes={
-            "name": a_str(),
-            "ports": a_list(a_num()),
-        })
+        schema_builder = s_resource(
+            attributes={
+                "name": a_str(),
+                "ports": a_list(a_num()),
+            }
+        )
         result = a_unknown(schema_builder)
         assert isinstance(result, CtyValue)
         assert result.is_unknown
@@ -83,9 +83,7 @@ class TestANullHelper:
             (a_set(a_num()), CtySet(element_type=CtyNumber())),
             (a_map(a_bool()), CtyMap(element_type=CtyBool())),
         ],
-        ids=[
-            "string", "number", "bool", "list(string)", "set(number)", "map(bool)"
-        ]
+        ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
     def test_a_null_with_various_types(self, schema_builder, expected_type):
         result = a_null(schema_builder)
@@ -95,10 +93,9 @@ class TestANullHelper:
         assert result.vtype.equal(expected_type), "The CtyType of the value must match the schema"
 
     def test_a_null_with_complex_object_schema(self):
-        schema_builder = s_resource(attributes={
-            "id": a_str(),
-            "config": a_obj(attributes={"enabled": a_bool()})
-        })
+        schema_builder = s_resource(
+            attributes={"id": a_str(), "config": a_obj(attributes={"enabled": a_bool()})}
+        )
         result = a_null(schema_builder)
         assert isinstance(result, CtyValue)
         assert not result.is_unknown

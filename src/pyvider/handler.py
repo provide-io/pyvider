@@ -6,11 +6,11 @@ from collections.abc import Callable
 from typing import Any
 
 from attrs import define, field
+from provide.foundation import logger
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import ProviderServicer
 from pyvider.providers.base import BaseProvider
-from provide.foundation import logger
 
 
 @define

@@ -7,6 +7,7 @@ concurrent load. This validates the pattern of using asyncio.Future to
 handle a "compute-once, await-many" scenario, which is more robust and
 idiomatic than using a simple lock for this purpose.
 """
+
 import asyncio
 from unittest.mock import AsyncMock
 
@@ -37,9 +38,7 @@ async def mock_provider_in_hub(mocker: MockerFixture):
 
 
 @pytest.mark.asyncio
-async def test_get_provider_schema_handler_avoids_race_condition(
-    mocker: MockerFixture, mock_provider_in_hub
-):
+async def test_get_provider_schema_handler_avoids_race_condition(mocker: MockerFixture, mock_provider_in_hub):
     """
     TDD Contract: Verifies that even with many concurrent requests, the
     underlying schema computation is only ever executed once.
@@ -53,9 +52,7 @@ async def test_get_provider_schema_handler_avoids_race_condition(
 
     # 2. Create a mock for the expensive computation function. We will use this
     #    to count how many times it gets called.
-    mock_compute_schema = AsyncMock(
-        return_value=pb.GetProviderSchema.Response()
-    )
+    mock_compute_schema = AsyncMock(return_value=pb.GetProviderSchema.Response())
     mocker.patch(
         "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once",
         new=mock_compute_schema,

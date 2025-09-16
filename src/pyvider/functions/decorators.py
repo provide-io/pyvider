@@ -35,9 +35,7 @@ def register_function(
         }
         func._function_metadata = metadata  # type: ignore
 
-        logger.debug(
-            f"🧰 Marked function '{name}' for discovery", capability=component_of
-        )
+        logger.debug(f"🧰 Marked function '{name}' for discovery", capability=component_of)
         return func
 
     return decorator

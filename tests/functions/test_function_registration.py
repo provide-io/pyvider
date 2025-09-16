@@ -10,6 +10,7 @@ from pyvider.hub import hub
 async def my_test_func_for_reg(a: int, b: str) -> str:
     return f"{b}{a}"
 
+
 # This test now relies on the session-wide discovery fixture to populate the hub.
 @pytest.mark.usefixtures("discovered_components_session")
 def test_register_function_decorator_marks_for_discovery():

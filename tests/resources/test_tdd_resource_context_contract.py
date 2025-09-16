@@ -19,6 +19,7 @@ class ContextAwareConfig:
     api_key: str
     username: str
 
+
 @attrs.define(frozen=True)
 class ContextSnapshotState:
     api_key: str | None = None
@@ -27,9 +28,11 @@ class ContextSnapshotState:
     api_key_was_sensitive: bool | None = None
     username_was_sensitive: bool | None = None
 
+
 @attrs.define(frozen=True)
 class ContextAwarePrivateState(PrivateState):
     plan_id: str
+
 
 @register_resource("context_aware_resource")
 class ContextAwareResource(BaseResource):
@@ -39,15 +42,19 @@ class ContextAwareResource(BaseResource):
 
     @classmethod
     def get_schema(cls):
-        return s_resource({
-            "api_key": a_str(required=True, sensitive=True),
-            "username": a_str(required=True),
-            "config_cty_was_present": a_bool(computed=True),
-            "api_key_was_sensitive": a_bool(computed=True),
-            "username_was_sensitive": a_bool(computed=True),
-        })
+        return s_resource(
+            {
+                "api_key": a_str(required=True, sensitive=True),
+                "username": a_str(required=True),
+                "config_cty_was_present": a_bool(computed=True),
+                "api_key_was_sensitive": a_bool(computed=True),
+                "username_was_sensitive": a_bool(computed=True),
+            }
+        )
 
-    async def _validate_config(self, config: Any) -> list[str]: return []
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
     async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]):
         config_cty: CtyValue | None = ctx.config_cty
         was_present = config_cty is not None
@@ -65,8 +72,13 @@ class ContextAwareResource(BaseResource):
         base_plan["username_was_sensitive"] = username_marked
         private_state = self.private_state_class(plan_id="plan-123")
         return base_plan, private_state
-    async def read(self, ctx: ResourceContext): pass
-    async def _delete_apply(self, ctx: ResourceContext) -> None: pass
+
+    async def read(self, ctx: ResourceContext):
+        pass
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        pass
+
 
 @pytest.mark.asyncio
 async def test_plan_handler_populates_full_resource_context(encryption_key_env, provider_in_hub):
@@ -81,7 +93,9 @@ async def test_plan_handler_populates_full_resource_context(encryption_key_env, 
             type_name=resource_name, config=config_dv, prior_state=null_dv, proposed_new_state=config_dv
         )
         response = await PlanResourceChangeHandler(request, context=None)
-        assert not response.diagnostics, f"Handler returned diagnostics: {[d.summary for d in response.diagnostics]}"
+        assert not response.diagnostics, (
+            f"Handler returned diagnostics: {[d.summary for d in response.diagnostics]}"
+        )
         planned_state_cty = unmarshal(response.planned_state, schema=resource_schema.block)
         planned_state = ContextAwareResource.from_cty(planned_state_cty, ContextSnapshotState)
         assert planned_state.config_cty_was_present is True

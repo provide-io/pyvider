@@ -1,4 +1,3 @@
-
 # Assuming foundation.py is in pyvider.exceptions.foundation
 from pyvider.exceptions.foundation import (
     CapabilityError,

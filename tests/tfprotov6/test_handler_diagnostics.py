@@ -19,19 +19,21 @@ from pyvider.schema import a_num, a_obj, a_str, s_data_source
 class DiagnosticTestDataSource(BaseDataSource):
     config_class = None
     state_class = None
+
     @classmethod
     def get_schema(cls):
         return s_data_source(
             attributes={
                 "name": a_str(required=True),
-                "config": a_obj(
-                    attributes={"retries": a_num(required=True)},
-                    optional=True
-                ),
+                "config": a_obj(attributes={"retries": a_num(required=True)}, optional=True),
             }
         )
-    async def _validate_config(self, config: Any) -> list[str]: return []
-    async def read(self, ctx: Any) -> Any: return None
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
+    async def read(self, ctx: Any) -> Any:
+        return None
 
 
 @pytest.mark.asyncio
@@ -52,6 +54,7 @@ async def test_create_diagnostic_from_ctyattibutevalidationerror():
     assert diag.attribute.steps[0].attribute_name == "config"
     assert diag.attribute.steps[1].attribute_name == "retries"
 
+
 @pytest.mark.asyncio
 async def test_create_diagnostic_from_ctynumbervalidationerror():
     """
@@ -59,11 +62,7 @@ async def test_create_diagnostic_from_ctynumbervalidationerror():
     is converted into a diagnostic with a precise detail message.
     """
     path = CtyPath.get_attr("config").child("retries")
-    exc = CtyNumberValidationError(
-        "Cannot represent str value 'five' as Decimal",
-        path=path,
-        value="five"
-    )
+    exc = CtyNumberValidationError("Cannot represent str value 'five' as Decimal", path=path, value="five")
 
     diag = await create_diagnostic_from_exception(exc)
 
@@ -73,6 +72,7 @@ async def test_create_diagnostic_from_ctynumbervalidationerror():
     assert "The invalid value provided was 'five'." in diag.detail
     assert diag.attribute.steps[0].attribute_name == "config"
     assert diag.attribute.steps[1].attribute_name == "retries"
+
 
 @pytest.mark.asyncio
 async def test_create_diagnostic_from_generic_ctyvalidationerror():

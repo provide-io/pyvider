@@ -1,4 +1,3 @@
-
 from pyvider.conversion import cty_to_native
 from pyvider.cty import CtyList, CtyMap, CtyNumber, CtyObject, CtyString
 
@@ -45,20 +44,20 @@ class TestCtyToNativeConversion:
         TDD 3: Verifies that `cty_to_native` works recursively on a complex,
         deeply nested data structure.
         """
-        complex_type = CtyObject(attribute_types={
-            "name": CtyString(),
-            "config": CtyMap(element_type=CtyNumber()),
-            "tags": CtyList(element_type=CtyString()),
-            "sub_items": CtyList(element_type=CtyObject(attribute_types={
-                "id": CtyString()
-            }))
-        })
+        complex_type = CtyObject(
+            attribute_types={
+                "name": CtyString(),
+                "config": CtyMap(element_type=CtyNumber()),
+                "tags": CtyList(element_type=CtyString()),
+                "sub_items": CtyList(element_type=CtyObject(attribute_types={"id": CtyString()})),
+            }
+        )
 
         data = {
             "name": "complex-item",
             "config": {"timeout": 30, "retries": 5},
             "tags": ["prod", "api"],
-            "sub_items": [{"id": "sub1"}, {"id": "sub2"}]
+            "sub_items": [{"id": "sub1"}, {"id": "sub2"}],
         }
 
         cty_value = complex_type.validate(data)
@@ -70,4 +69,3 @@ class TestCtyToNativeConversion:
         assert isinstance(native_result["tags"], list)
         assert isinstance(native_result["sub_items"][0], dict)
         assert isinstance(native_result["sub_items"][0]["id"], str)
-

@@ -15,6 +15,7 @@ from pyvider.schema import a_str, s_resource
 @attrs.define(frozen=True)
 class StatefulPrivateState(PrivateState):
     """A structured object to hold internal metadata for the resource."""
+
     internal_id: str
     version: int
     transient_token: str
@@ -34,6 +35,7 @@ class StatefulResource(BaseResource):
     - `_create` creates a private state object.
     - `_create_apply` expects to receive that exact object back.
     """
+
     state_class = StatefulResourceState
     private_state_class = StatefulPrivateState
 
@@ -74,9 +76,7 @@ class StatefulResource(BaseResource):
             raise ResourceError("Apply phase received no private state, but one was expected.")
 
         if not isinstance(ctx.private_state, StatefulPrivateState):
-            raise ResourceError(
-                f"Private state has incorrect type: got {type(ctx.private_state).__name__}"
-            )
+            raise ResourceError(f"Private state has incorrect type: got {type(ctx.private_state).__name__}")
 
         if ctx.private_state.transient_token != "secret-plan-token":
             raise ResourceError("The private state received by apply was tampered with or lost.")
@@ -91,6 +91,7 @@ class StatefulResource(BaseResource):
     # Dummy implementations for other abstract methods
     async def read(self, ctx: ResourceContext) -> StatefulResourceState | None:
         return None
+
     async def _delete_apply(self, ctx: ResourceContext) -> None:
         pass
 

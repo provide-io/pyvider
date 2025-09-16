@@ -3,9 +3,7 @@ from collections.abc import Callable
 from provide.foundation import logger
 
 
-def register_data_source(
-    name: str, component_of: str | None = None
-) -> Callable[[type], type]:
+def register_data_source(name: str, component_of: str | None = None) -> Callable[[type], type]:
     """
     Decorator to register a data source and associate it with a capability.
     """

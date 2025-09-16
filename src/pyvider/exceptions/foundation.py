@@ -32,12 +32,8 @@ class FunctionError(PyviderError):
 class InvalidTypeError(PyviderError):
     """Raised when a value does not match the expected type."""
 
-    def __init__(
-        self, expected_type: str = "unknown", actual_type: str = "unknown"
-    ) -> None:
-        super().__init__(
-            f"Invalid type: expected '{expected_type}', got '{actual_type}'."
-        )
+    def __init__(self, expected_type: str = "unknown", actual_type: str = "unknown") -> None:
+        super().__init__(f"Invalid type: expected '{expected_type}', got '{actual_type}'.")
 
 
 class UnsupportedTypeError(PyviderError):

@@ -44,6 +44,4 @@ def operation_context(context: OperationContext) -> None:
         yield
     finally:
         _current_operation_context.reset(token)
-        logger.debug(
-            f"🧰🔄📊 Popped operation context, restored to: {_current_operation_context.get().name}"
-        )
+        logger.debug(f"🧰🔄📊 Popped operation context, restored to: {_current_operation_context.get().name}")

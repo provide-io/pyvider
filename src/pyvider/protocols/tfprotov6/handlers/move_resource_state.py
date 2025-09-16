@@ -4,8 +4,9 @@
 
 from typing import Any
 
-import pyvider.protocols.tfprotov6.protobuf as pb
 from provide.foundation import logger
+
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 async def MoveResourceStateHandler(

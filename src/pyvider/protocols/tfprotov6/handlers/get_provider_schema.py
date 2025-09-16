@@ -1,15 +1,16 @@
 import asyncio
 from typing import Any
 
+from provide.foundation import logger
+from provide.foundation.errors import with_error_handling
+
 from pyvider.conversion import pvs_schema_to_proto
 from pyvider.functions.adapters import function_to_dict
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
-from provide.foundation.errors import with_error_handling
 import pyvider.protocols.tfprotov6.protobuf as pb
-from provide.foundation import logger
 
 # --- Module-level Cache using asyncio.Future ---
 _schema_future: asyncio.Future[pb.GetProviderSchema.Response] | None = None
@@ -87,9 +88,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     try:
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:
-            raise RuntimeError(
-                "Provider instance not found in hub. Setup may have failed."
-            )
+            raise RuntimeError("Provider instance not found in hub. Setup may have failed.")
 
         provider_schema = provider_instance.schema
         provider_proto_schema = await pvs_schema_to_proto(provider_schema)
@@ -155,7 +154,5 @@ async def _set_future_result(future: asyncio.Future) -> None:
         result = await _compute_schema_once()
         future.set_result(result)
     except Exception as e:
-        logger.critical(
-            "Catastrophic failure during schema computation task.", exc_info=True
-        )
+        logger.critical("Catastrophic failure during schema computation task.", exc_info=True)
         future.set_exception(e)

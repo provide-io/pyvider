@@ -1,5 +1,3 @@
-
-
 from collections.abc import Callable
 from typing import Any
 
@@ -22,9 +20,11 @@ from pyvider.exceptions import (
 ################################################################################
 ################################################################################
 
+
 @define
 class DummyType(CtyType[CtyString]):
     metadata: dict[str, Any] = field(factory=dict)
+
     def __init__(self, children=None):
         self._children = children or {}
         super().__init__(metadata={"type": "dummy"})
@@ -46,6 +46,7 @@ class DummyType(CtyType[CtyString]):
 
     def __str__(self) -> str:
         return "DummyType"
+
 
 @define
 class DummyStringType(CtyType[CtyString]):
@@ -105,9 +106,11 @@ class DummyStringType(CtyType[CtyString]):
     def __str__(self):
         return f"DummyStringType(min_length={self.min_length}, max_length={self.max_length})"
 
+
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 @define
 class DummyNumberType(CtyType[CtyNumber]):
@@ -218,6 +221,7 @@ class DummyNumberType(CtyType[CtyNumber]):
 ################################################################################
 ################################################################################
 
+
 @define
 class DummyInvalidNumberType(CtyType[Any]):
     """A dummy type that allows invalid values but raises during serialization."""
@@ -233,6 +237,7 @@ class DummyInvalidNumberType(CtyType[Any]):
 
     def usable_as(self, other: "CtyType") -> bool:
         return False
+
 
 ################################################################################
 ################################################################################
@@ -286,9 +291,11 @@ class DummyListType(CtyType[CtyList]):
             element_type_name = self.element_type.__name__
         return f"DummyListType({element_type_name})"
 
+
 ################################################################################
 ################################################################################
 ################################################################################
+
 
 @define
 class DummyMapType(CtyType[CtyMap]):
@@ -299,12 +306,11 @@ class DummyMapType(CtyType[CtyMap]):
 
     def __attrs_post_init__(self):
         if not isinstance(self.key_type, type | CtyType) or not isinstance(self.value_type, type | CtyType):
-            raise AttributeValidationError(
-                "key_type and value_type must be types or instances of CtyType."
-            )
+            raise AttributeValidationError("key_type and value_type must be types or instances of CtyType.")
 
         # Initialize validators
         object.__setattr__(self, "validators", [self.validate])
+
     def validate(self, value: dict) -> None:
         if not isinstance(value, dict):
             raise ValidationError("Value must be a dictionary.")
@@ -324,14 +330,11 @@ class DummyMapType(CtyType[CtyMap]):
                 self.value_type.validate(value)
             elif isinstance(self.value_type, tuple):
                 if not isinstance(value, self.value_type):
-                    raise ValidationError(
-                        f"Value {value} is not one of the types {self.value_type}."
-                    )
+                    raise ValidationError(f"Value {value} is not one of the types {self.value_type}.")
             elif not isinstance(value, self.value_type):
                 raise ValidationError(f"Value {value} is not of type {self.value_type}.")
         except ValidationError:
             raise
-
 
     def serialize(self, value: dict) -> str:
         self.validate(value)

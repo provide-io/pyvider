@@ -21,26 +21,38 @@ class ReadPrivateState(PrivateState):
     internal_id: str
     version: int
 
+
 @attrs.define(frozen=True)
 class ReadState:
     name: str
     read_version: int
 
+
 @register_resource("read_private_state_test_resource")
 class ResourceWithPrivateStateInRead(BaseResource):
     state_class = ReadState
     private_state_class = ReadPrivateState
+
     @classmethod
-    def get_schema(cls): return s_resource({"name": a_str(), "read_version": a_num(computed=True)})
-    async def _validate_config(self, config: Any) -> list[str]: return []
+    def get_schema(cls):
+        return s_resource({"name": a_str(), "read_version": a_num(computed=True)})
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return []
+
     async def read(self, ctx: ResourceContext) -> ReadState | None:
         if not ctx.private_state:
             raise ResourceError("Read operation received no private state.")
         if not isinstance(ctx.private_state, ReadPrivateState):
             raise ResourceError("Private state has incorrect type.")
         return self.state_class(name=ctx.state.name, read_version=ctx.private_state.version)
-    async def _create(self, ctx, base_plan): pass
-    async def _delete_apply(self, ctx: ResourceContext) -> None: pass
+
+    async def _create(self, ctx, base_plan):
+        pass
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        pass
+
 
 @pytest.mark.asyncio
 async def test_read_handler_provides_private_state_to_context(encryption_key_env, provider_in_hub):
@@ -54,12 +66,12 @@ async def test_read_handler_provides_private_state_to_context(encryption_key_env
         raw_private_bytes = msgpack.packb(attrs.asdict(private_state_obj), use_bin_type=True)
         encrypted_private_bytes = encrypt(raw_private_bytes)
         request = pb.ReadResource.Request(
-            type_name=resource_name,
-            current_state=current_state_dv,
-            private=encrypted_private_bytes
+            type_name=resource_name, current_state=current_state_dv, private=encrypted_private_bytes
         )
         response = await ReadResourceHandler(request, context=None)
-        assert not response.diagnostics, f"Handler returned diagnostics: {[d.summary for d in response.diagnostics]}"
+        assert not response.diagnostics, (
+            f"Handler returned diagnostics: {[d.summary for d in response.diagnostics]}"
+        )
         new_state_cty = unmarshal(response.new_state, schema=schema.block)
         assert new_state_cty.value["read_version"].value == 2
     finally:

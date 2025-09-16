@@ -1,4 +1,3 @@
-
 import pytest
 
 from pyvider.conversion import marshal, unmarshal
@@ -9,14 +8,17 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 # --- Test Functions ---
 
+
 @register_function(name="add_numbers")
 def add_numbers_func(a: int, b: int) -> int:
     return a + b
+
 
 @register_function(name="greet")
 def greet_func(name: str, suffix: str = "!") -> str:
     # Note: The type hint is no longer Optional, the default value handles it.
     return f"Hello, {name}{suffix}"
+
 
 @pytest.fixture(autouse=True)
 def register_test_functions():
@@ -26,6 +28,7 @@ def register_test_functions():
     yield
     hub.unregister("function", "add_numbers")
     hub.unregister("function", "greet")
+
 
 @pytest.mark.asyncio
 class TestFunctionDispatch:
@@ -60,7 +63,7 @@ class TestFunctionDispatch:
     async def test_dispatch_fails_with_wrong_arg_type(self):
         """TDD: Handler returns a type validation error for mismatched types."""
         arg1 = marshal(10, schema=CtyNumber())
-        arg2 = marshal("twenty", schema=CtyString()) # This is the wrong type
+        arg2 = marshal("twenty", schema=CtyString())  # This is the wrong type
         request = pb.CallFunction.Request(name="add_numbers", arguments=[arg1, arg2])
 
         response = await CallFunctionHandler(request, context=None)
@@ -73,7 +76,7 @@ class TestFunctionDispatch:
     async def test_dispatch_handles_optional_null_arg(self):
         """TDD: Handler correctly uses default value when a null is passed for an optional argument."""
         arg1 = marshal("World", schema=CtyString())
-        arg2 = marshal(None, schema=CtyString()) # Pass null for the optional arg
+        arg2 = marshal(None, schema=CtyString())  # Pass null for the optional arg
         request = pb.CallFunction.Request(name="greet", arguments=[arg1, arg2])
 
         response = await CallFunctionHandler(request, context=None)

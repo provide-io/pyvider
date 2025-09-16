@@ -4,6 +4,8 @@ import inspect
 from types import UnionType
 from typing import Any, get_args, get_origin, get_type_hints
 
+from provide.foundation import logger
+
 from pyvider.cty import (
     CtyBool,
     CtyDynamic,
@@ -14,7 +16,6 @@ from pyvider.cty import (
     CtyType,
     CtyValue,
 )
-from provide.foundation import logger
 
 
 def _get_cty_type_for_union(python_type: Any, args: tuple[Any, ...]) -> CtyType:
@@ -88,9 +89,7 @@ def _python_type_to_cty_type(python_type: Any) -> CtyType:
         if primitive_cty_type:
             return primitive_cty_type
 
-    logger.warning(
-        f"Could not infer a specific CtyType for hint '{python_type}', defaulting to CtyDynamic."
-    )
+    logger.warning(f"Could not infer a specific CtyType for hint '{python_type}', defaulting to CtyDynamic.")
     return CtyDynamic()
 
 
@@ -102,9 +101,7 @@ def _extract_parameters_meta(
     func_obj: Callable, sig: inspect.Signature, type_hints: dict[str, Any]
 ) -> list[dict[str, Any]]:
     parameters = []
-    param_descriptions = getattr(func_obj, "_function_metadata", {}).get(
-        "param_descriptions", {}
-    )
+    param_descriptions = getattr(func_obj, "_function_metadata", {}).get("param_descriptions", {})
     for name, param in sig.parameters.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY or name == "self":
             continue

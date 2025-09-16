@@ -41,9 +41,7 @@ def _pvs_type_to_python_type(pvs_type: PvsAttribute) -> Any:
     return Any | None
 
 
-def create_attrs_class_from_schema(
-    class_name: str, attributes: dict[str, PvsAttribute]
-) -> type:
+def create_attrs_class_from_schema(class_name: str, attributes: dict[str, PvsAttribute]) -> type:
     """
     Dynamically creates an attrs-decorated class from a schema definition.
 
@@ -59,20 +57,14 @@ def create_attrs_class_from_schema(
         # Determine the default value or factory for the attrs.field
         if pvs_attr.default is not None:
             default_val = pvs_attr.default
-            field_def = attrs.field(
-                default=default_val, type=_pvs_type_to_python_type(pvs_attr)
-            )
+            field_def = attrs.field(default=default_val, type=_pvs_type_to_python_type(pvs_attr))
         elif isinstance(pvs_attr.type, CtyMap | CtyList):
             # Use a factory for mutable defaults like dict or list
             default_factory = dict if isinstance(pvs_attr.type, CtyMap) else list
-            field_def = attrs.field(
-                factory=default_factory, type=_pvs_type_to_python_type(pvs_attr)
-            )
+            field_def = attrs.field(factory=default_factory, type=_pvs_type_to_python_type(pvs_attr))
         else:
             default_val = None
-            field_def = attrs.field(
-                default=default_val, type=_pvs_type_to_python_type(pvs_attr)
-            )
+            field_def = attrs.field(default=default_val, type=_pvs_type_to_python_type(pvs_attr))
 
         attrs_fields[name] = field_def
 

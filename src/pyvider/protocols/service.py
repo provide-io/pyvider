@@ -6,10 +6,11 @@ import asyncio
 from collections.abc import AsyncGenerator
 from typing import Any
 
+from provide.foundation import logger
+
 from pyvider.protocols.tfprotov6.protobuf import (
     Empty,
 )
-from provide.foundation import logger
 
 
 class ProtocolService:

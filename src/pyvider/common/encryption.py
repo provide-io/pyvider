@@ -3,11 +3,11 @@ import os
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from provide.foundation import logger
+from provide.foundation.errors import with_error_handling
 
 from pyvider.common.config import PyviderConfig
 from pyvider.exceptions import FrameworkConfigurationError
-from provide.foundation import logger
-from provide.foundation.errors import with_error_handling
 
 # This salt is static and public.
 HKDF_SALT = b"pyvider-private-state-encryption-salt"
@@ -33,9 +33,9 @@ def _get_key() -> bytes:
         shared_secret = config.private_state_shared_secret
     except Exception as e:
         raise FrameworkConfigurationError(
-            f"🔐 Private state shared secret not found. Please set the "
-            f"PYVIDER_PRIVATE_STATE_SHARED_SECRET environment variable, or define "
-            f"'private_state_shared_secret' in a 'pyvider.toml' file."
+            "🔐 Private state shared secret not found. Please set the "
+            "PYVIDER_PRIVATE_STATE_SHARED_SECRET environment variable, or define "
+            "'private_state_shared_secret' in a 'pyvider.toml' file."
         ) from e
 
     logger.debug("🔒 Using shared secret for private state encryption.")

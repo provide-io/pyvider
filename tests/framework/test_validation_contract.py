@@ -21,34 +21,56 @@ from pyvider.schema import PvsSchema, a_str, s_data_source, s_resource
 class ValidationConfig:
     name: str
 
+
 class IncompleteResource(BaseResource):
     @classmethod
-    def get_schema(cls) -> PvsSchema: return s_resource({})
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({})
+
 
 @attrs.define
 class ValidatableResource(BaseResource[Any, Any, ValidationConfig]):
     config_class = ValidationConfig
     state_class = ValidationConfig
+
     @classmethod
-    def get_schema(cls) -> PvsSchema: return s_resource({"name": a_str()})
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({"name": a_str()})
+
     async def _validate_config(self, config: ValidationConfig) -> list[str]:
-        if config.name == "invalid": return ["Name cannot be 'invalid'."]
+        if config.name == "invalid":
+            return ["Name cannot be 'invalid'."]
         return []
-    async def read(self, ctx: ResourceContext) -> StateType | None: return None
-    async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]) -> tuple[dict[str, Any] | None, None]: return None, None
-    async def _delete_apply(self, ctx: ResourceContext) -> None: pass
+
+    async def read(self, ctx: ResourceContext) -> StateType | None:
+        return None
+
+    async def _create(
+        self, ctx: ResourceContext, base_plan: dict[str, Any]
+    ) -> tuple[dict[str, Any] | None, None]:
+        return None, None
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        pass
+
 
 @attrs.define
 class ValidatableDataSource(BaseDataSource[Any, Any, ValidationConfig]):
     config_class = ValidationConfig
     state_class = ValidationConfig
+
     @classmethod
-    def get_schema(cls) -> PvsSchema: return s_data_source({"name": a_str()})
+    def get_schema(cls) -> PvsSchema:
+        return s_data_source({"name": a_str()})
+
     async def _validate_config(self, config: ValidationConfig) -> list[str]:
         if config.name == "invalid-ds":
             return ["Data source name cannot be 'invalid-ds'."]
         return []
-    async def read(self, ctx: ResourceContext) -> StateType | None: return None
+
+    async def read(self, ctx: ResourceContext) -> StateType | None:
+        return None
+
 
 class TestValidationContract:
     def test_subclass_must_implement_all_abstract_methods(self):

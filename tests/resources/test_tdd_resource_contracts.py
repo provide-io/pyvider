@@ -4,6 +4,7 @@ TDD Contract for the CRUD Resource Lifecycle.
 This test suite defines the expected behavior of the BaseResource dispatcher
 and the contracts for the _create, _update, _create_apply, and _update_apply hooks.
 """
+
 from typing import Any
 from unittest.mock import AsyncMock
 
@@ -85,9 +86,7 @@ class TestResourceContracts:
             }
         )
 
-        ctx = ResourceContext(
-            config=config, state=None, planned_state_cty=proposed_new_state_cty
-        )
+        ctx = ResourceContext(config=config, state=None, planned_state_cty=proposed_new_state_cty)
 
         await resource.plan(ctx)
 
@@ -103,9 +102,7 @@ class TestResourceContracts:
         TDD 2: Verifies `_update` receives a context with both prior state and new config.
         """
         resource = ContractTestResource(mocker)
-        prior_state = ContractState(
-            name="old-name", location="us-east-1", id="server-123"
-        )
+        prior_state = ContractState(name="old-name", location="us-east-1", id="server-123")
         new_config = ContractConfig(name="new-name", location="us-west-2")
 
         # Simulate the proposed new state for an update.
@@ -119,9 +116,7 @@ class TestResourceContracts:
         )
 
         # The `planned_state` (attrs object) is also needed for the context.
-        planned_state = ContractState(
-            name="new-name", location="us-west-2", id="server-123"
-        )
+        planned_state = ContractState(name="new-name", location="us-west-2", id="server-123")
 
         ctx = ResourceContext(
             config=new_config,
@@ -148,13 +143,9 @@ class TestResourceContracts:
         TDD 3: Verifies `_update_apply` receives the correct planned state.
         """
         resource = ContractTestResource(mocker)
-        prior_state = ContractState(
-            name="old-name", location="us-east-1", id="server-123"
-        )
+        prior_state = ContractState(name="old-name", location="us-east-1", id="server-123")
         # This is the state that came out of the `plan` phase.
-        planned_state_from_plan = ContractState(
-            name="new-name", location="us-west-2", id="server-123"
-        )
+        planned_state_from_plan = ContractState(name="new-name", location="us-west-2", id="server-123")
 
         ctx = ResourceContext(state=prior_state, planned_state=planned_state_from_plan)
 

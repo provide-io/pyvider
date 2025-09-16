@@ -18,8 +18,12 @@ from pyvider.protocols.tfprotov6.handlers.read_resource import ReadResourceHandl
 from pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource import RenewEphemeralResourceHandler
 from pyvider.protocols.tfprotov6.handlers.stop_provider import StopProviderHandler
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import UpgradeResourceStateHandler
-from pyvider.protocols.tfprotov6.handlers.validate_data_resource_config import ValidateDataResourceConfigHandler
-from pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config import ValidateEphemeralResourceConfigHandler
+from pyvider.protocols.tfprotov6.handlers.validate_data_resource_config import (
+    ValidateDataResourceConfigHandler,
+)
+from pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config import (
+    ValidateEphemeralResourceConfigHandler,
+)
 from pyvider.protocols.tfprotov6.handlers.validate_provider_config import ValidateProviderConfigHandler
 from pyvider.protocols.tfprotov6.handlers.validate_resource_config import ValidateResourceConfigHandler
 

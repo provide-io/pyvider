@@ -15,7 +15,7 @@ def test_pvs_object_type_conversion_handles_nested_blocks():
             b_list("users", attributes={"name": a_str()}),
             b_set("tags", attributes={"value": a_str()}),
             b_map("headers", attributes={"value": a_str()}),
-        ]
+        ],
     )
 
     # WHEN we convert the schema's block to a CtyType

@@ -2,10 +2,10 @@ from typing import Any
 
 import attrs
 import msgpack
-
 from provide.foundation import logger
 from provide.foundation.errors import with_error_handling
-from pyvider.common.encryption import encrypt, decrypt
+
+from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
@@ -15,17 +15,15 @@ from pyvider.exceptions import (
     ResourceError,
     ResourceLifecycleContractError,
 )
-from provide.foundation.errors.context import ErrorSeverity
 from pyvider.hub import hub
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.resources.context import ResourceContext
-
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
     is_valid_refinement,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.resources.context import ResourceContext
 
 
 async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any]:
@@ -34,7 +32,9 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
         err = ResourceError(f"Resource type '{type_name}' not registered")
         err.add_context("resource.type_name", type_name)
         err.add_context("terraform.summary", "Unknown resource type")
-        err.add_context("terraform.detail", f"The resource type '{type_name}' is not registered with this provider.")
+        err.add_context(
+            "terraform.detail", f"The resource type '{type_name}' is not registered with this provider."
+        )
         raise err
 
     provider_instance = hub.get_component("singleton", "provider")
@@ -49,15 +49,11 @@ async def _unmarshal_request_data(
     with operation_context(OperationContext.APPLY):
         prior_state_cty = unmarshal(request.prior_state, schema=resource_schema.block)
         config_cty_unmarked = unmarshal(request.config, schema=resource_schema.block)
-        planned_state_cty = unmarshal(
-            request.planned_state, schema=resource_schema.block
-        )
+        planned_state_cty = unmarshal(request.planned_state, schema=resource_schema.block)
     return prior_state_cty, config_cty_unmarked, planned_state_cty
 
 
-async def _process_private_state(
-    resource_class: Any, planned_private: bytes
-) -> Any | None:
+async def _process_private_state(resource_class: Any, planned_private: bytes) -> Any | None:
     logger.debug(f"Processing private state. planned_private: {planned_private}")
     private_state_instance = None
     if (
@@ -73,7 +69,9 @@ async def _process_private_state(
             err = ResourceError("Failed to deserialize private state from plan.")
             err.add_context("private_state.error", str(e))
             err.add_context("terraform.summary", "Private state deserialization failed")
-            err.add_context("terraform.detail", "The provider could not deserialize the private state data from the plan.")
+            err.add_context(
+                "terraform.detail", "The provider could not deserialize the private state data from the plan."
+            )
             raise err from e
     return private_state_instance
 
@@ -87,12 +85,8 @@ def _create_resource_context(
     provider_instance: Any,
 ) -> ResourceContext:
     config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
-    prior_state_instance = cty_to_attrs_instance(
-        prior_state_cty, resource_class.state_class
-    )
-    planned_state_instance = cty_to_attrs_instance(
-        planned_state_cty, resource_class.state_class
-    )
+    prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
+    planned_state_instance = cty_to_attrs_instance(planned_state_cty, resource_class.state_class)
 
     return ResourceContext(
         config=config_instance,
@@ -123,11 +117,16 @@ def _handle_apply_result(
                     "The final state returned by the resource's apply method is not a valid refinement of the planned state.",
                     detail=reason,
                 )
-                err.add_context("resource.type", resource_schema.name if hasattr(resource_schema, 'name') else "unknown")
+                err.add_context(
+                    "resource.type", resource_schema.name if hasattr(resource_schema, "name") else "unknown"
+                )
                 err.add_context("lifecycle.operation", "apply")
                 err.add_context("validation.reason", reason)
                 err.add_context("terraform.summary", "Resource state contract violation")
-                err.add_context("terraform.detail", f"The resource implementation violated the Terraform state contract: {reason}")
+                err.add_context(
+                    "terraform.detail",
+                    f"The resource implementation violated the Terraform state contract: {reason}",
+                )
                 # Severity is handled by the error type itself
                 raise err
 
@@ -137,9 +136,7 @@ def _handle_apply_result(
         response.new_state.msgpack = b"\xc0"
 
     if new_private_state_attrs:
-        serialized_bytes = msgpack.packb(
-            attrs.asdict(new_private_state_attrs), use_bin_type=True
-        )
+        serialized_bytes = msgpack.packb(attrs.asdict(new_private_state_attrs), use_bin_type=True)
         response.private = encrypt(serialized_bytes)
         logger.debug(f"Setting response.private: {response.private}")
         logger.debug(f"Serialized private bytes: {serialized_bytes}")
@@ -152,9 +149,7 @@ async def ApplyResourceChangeHandler(
     response = pb.ApplyResourceChange.Response()
     resource_context = None
     try:
-        resource_class, provider_instance = await _get_resource_and_provider_instances(
-            request.type_name
-        )
+        resource_class, provider_instance = await _get_resource_and_provider_instances(request.type_name)
         resource_schema = resource_class.get_schema()
 
         (
@@ -163,13 +158,9 @@ async def ApplyResourceChangeHandler(
             planned_state_cty,
         ) = await _unmarshal_request_data(request, resource_schema)
 
-        config_cty = _apply_schema_marks_iterative(
-            config_cty_unmarked, resource_schema.block
-        )
+        config_cty = _apply_schema_marks_iterative(config_cty_unmarked, resource_schema.block)
 
-        private_state_instance = await _process_private_state(
-            resource_class, request.planned_private
-        )
+        private_state_instance = await _process_private_state(resource_class, request.planned_private)
 
         resource_context = _create_resource_context(
             config_cty,
@@ -181,9 +172,7 @@ async def ApplyResourceChangeHandler(
         )
 
         resource_handler = resource_class()
-        new_state_attrs, new_private_state_attrs = await resource_handler.apply(
-            resource_context
-        )
+        new_state_attrs, new_private_state_attrs = await resource_handler.apply(resource_context)
 
         _handle_apply_result(
             new_state_attrs,
