@@ -11,6 +11,9 @@ repo_url: https://github.com/provide-io/pyvider
 repo_name: provide-io/pyvider
 edit_uri: edit/main/docs/
 
+# Development server configuration
+dev_addr: '127.0.0.1:8003'
+
 # Standalone mode settings
 docs_dir: docs
 
