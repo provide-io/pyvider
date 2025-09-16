@@ -11,5 +11,5 @@ Auto-generated API documentation for `pyvider.common`.
       show_bases: true
       merge_init_into_class: true
       separate_signature: true
-      show_if_no_docstring: false
+      show_if_no_docstring: true
       heading_level: 2
