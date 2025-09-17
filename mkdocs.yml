@@ -107,29 +107,11 @@ nav:
     - 'Installation': 'getting-started/installation.md'
     - 'Quick Start': 'getting-started/quick-start.md'
   - 'Core Concepts':
-    - 'Structured Logging': 'core-concepts/structured-logging.md'
-    - 'Semantic Layers': 'core-concepts/semantic-layers.md'
-    - 'The Emoji System': 'core-concepts/emoji-system.md'
-    - 'Configuration': 'core-concepts/configuration.md'
     - 'Architecture': 'core-concepts/architecture.md'
   - 'Guides':
-    - 'Async Usage': 'guides/async-usage.md'
-    - 'Exception Logging': 'guides/exception-logging.md'
-    - 'Performance Tuning': 'guides/performance-tuning.md'
-    - 'Custom Semantic Layers': 'guides/creating-semantic-layers.md'
-  - 'Tutorials':
-    - 'FastAPI Integration': 'tutorials/fastapi-integration.md'
+    - 'Creating Providers': 'guides/creating-providers.md'
+  - 'Tutorials': []
   - 'API Reference':
-    - 'Logger': 'api-reference/logger.md'
-    - 'Configuration': 'api-reference/config.md'
-    - 'Console Output': 'api-reference/console.md'
-    - 'Platform Detection': 'api-reference/platform.md'
-    - 'Process Execution': 'api-reference/process.md'
-    - 'Semantic Layers': 'api-reference/semantic-layers.md'
-    - 'Error Handling': 'api-reference/errors.md'
-    - 'Registry': 'api-reference/registry.md'
-    - 'CLI Framework': 'api-reference/cli.md'
-    - 'Hub': 'api-reference/hub.md'
-    - 'Utilities': 'api-reference/utils.md'
-  - 'About':
-    - 'Contributing': 'about/contributing.md'
+    - 'CLI': 'api-reference/cli.md'
+    - 'Schema': 'api-reference/schema.md'
+    - 'Types': 'api-reference/types.md'

@@ -1,6 +1,6 @@
-# Common API
+# Types
 
-::: pyvider.common
+::: pyvider.common.types
     options:
       show_source: true
       show_root_heading: true
