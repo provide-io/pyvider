@@ -4,7 +4,8 @@ import sys
 import click
 from provide.foundation.cli.decorators import flexible_options
 from provide.foundation.console import perr, pout
-from provide.foundation.utils import format_table, timed_block
+from provide.foundation.formatting import format_table
+from provide.foundation.utils import timed_block
 
 from pyvider.cli.main import PyviderContext, cli, pass_ctx
 from pyvider.hub.components import get_hub_diagnostics, registry
