@@ -1,7 +1,7 @@
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import with_error_handling
+from provide.foundation.errors import resilient
 
 from pyvider.conversion import unmarshal
 from pyvider.exceptions import ProviderConfigurationError, PyviderError
@@ -12,7 +12,7 @@ from pyvider.providers.context import ProviderContext
 from pyvider.resources.base import BaseResource
 
 
-@with_error_handling()
+@resilient()
 async def ConfigureProviderHandler(
     request: pb.ConfigureProvider.Request, context: Any
 ) -> pb.ConfigureProvider.Response:

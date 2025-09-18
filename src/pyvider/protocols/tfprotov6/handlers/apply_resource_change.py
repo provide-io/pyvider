@@ -3,7 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 from provide.foundation import logger
-from provide.foundation.errors import with_error_handling
+from provide.foundation.errors import resilient
 
 from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
@@ -142,7 +142,7 @@ def _handle_apply_result(
         logger.debug(f"Serialized private bytes: {serialized_bytes}")
 
 
-@with_error_handling()
+@resilient()
 async def ApplyResourceChangeHandler(
     request: pb.ApplyResourceChange.Request, context: Any
 ) -> pb.ApplyResourceChange.Response:

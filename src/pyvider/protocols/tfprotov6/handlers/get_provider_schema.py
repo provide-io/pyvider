@@ -2,7 +2,7 @@ import asyncio
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import with_error_handling
+from provide.foundation.errors import resilient
 
 from pyvider.conversion import pvs_schema_to_proto
 from pyvider.functions.adapters import function_to_dict
@@ -120,7 +120,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
         )
 
 
-@with_error_handling()
+@resilient()
 async def GetProviderSchemaHandler(
     request: pb.GetProviderSchema.Request, context: Any
 ) -> pb.GetProviderSchema.Response:

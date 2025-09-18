@@ -5,7 +5,7 @@ import pkgutil
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import retry_on_error, with_error_handling
+from provide.foundation.errors import retry_on_error, resilient
 
 from pyvider.hub.components import ComponentRegistry
 
@@ -23,7 +23,7 @@ class ComponentDiscovery:
         self._discovered_modules: set[str] = set()
         self.import_errors: list[tuple[str, Exception]] = []
 
-    @with_error_handling()
+    @resilient()
     @retry_on_error(max_attempts=2, base_delay=1.0)
     async def discover_all(self, strict: bool = False) -> None:
         """

@@ -7,7 +7,7 @@ from typing import Any, ClassVar
 
 from provide.foundation import logger
 from provide.foundation.config import ConfigValidationError
-from provide.foundation.errors import with_error_handling
+from provide.foundation.errors import resilient
 
 
 class Validators:
@@ -27,7 +27,7 @@ class Validators:
         return decorator
 
     @classmethod
-    @with_error_handling()
+    @resilient()
     def attach(cls, metadata: Any, *validator_names: str) -> None:
         """Attach validators to AttributeMetadata by name."""
         for name in validator_names:
@@ -48,7 +48,7 @@ class Validators:
             )
 
     @classmethod
-    @with_error_handling()
+    @resilient()
     def validate(cls, validator_name: str, value: Any, metadata: Any) -> None:
         """Apply a specific validator at runtime."""
         if validator_name not in cls._registry:

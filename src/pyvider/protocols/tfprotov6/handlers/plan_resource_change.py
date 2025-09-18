@@ -3,7 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 from provide.foundation import logger
-from provide.foundation.errors import with_error_handling
+from provide.foundation.errors import resilient
 
 from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
@@ -118,7 +118,7 @@ def _handle_planned_state_dict(
     response.planned_state.msgpack = marshalled_planned_state.msgpack
 
 
-@with_error_handling()
+@resilient()
 async def PlanResourceChangeHandler(
     request: pb.PlanResourceChange.Request, context: Any
 ) -> pb.PlanResourceChange.Response:
