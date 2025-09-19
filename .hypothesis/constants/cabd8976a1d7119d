@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/components.py
-# hypothesis_version: 6.138.14
-
-[100, 'Config source failed', 'Error handler failed', 'T', 'async', 'cleanup', 'component', 'config_schema', 'config_source', 'debug', 'default', 'dependencies', 'domain', 'emoji_set', 'error', 'error_handler', 'exception_types', 'factory', 'filter', 'formatter', 'foundation_default', 'get_value', 'health_check', 'info', 'lazy', 'load_config', 'no_health_check', 'not_found', 'pre_format', 'priority', 'processor', 'stage', 'status', 'success', 'supports_cleanup', 'timestamp', 'unknown', 'warning', 'ℹ️', '⚠️', '✅', '❌', '📝', '🔍']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/utils/env/parsers.py
-# hypothesis_version: 6.138.15
-
-[1024, 3600, 86400, '(\\d+)([dhms])', 'B', 'G', 'GB', 'K', 'KB', 'M', 'MB', 'T', 'TB', 'd', 'duration', 'duration_unit', 'h', 'm', 's', 'size', 'size_unit']

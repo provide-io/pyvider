@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/file/directory.py
-# hypothesis_version: 6.138.15
-
-[493, 'Created directory', 'ensure_dir', 'ensure_parent_dir', 'safe_rmtree', 'temp_dir']

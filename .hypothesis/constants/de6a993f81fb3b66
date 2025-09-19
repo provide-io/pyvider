@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/custom_processors.py
-# hypothesis_version: 6.138.14
-
-[100, 1000, 'INFO', 'cache_limit', 'cache_size', 'cache_utilization', 'critical', 'das.test', 'debug', 'default', 'emoji.test', 'error', 'event', 'exception', 'formatter.test', 'info', 'json.exc.test', 'level', 'logger_name', 'msg', 'provide.foundation', 'pyvider.default', 'pyvider.dynamic_call', 'service.alpha', 'service.beta', 'service.beta.child', 'service.delta', 'service.name.test', 'simple', 'test', 'test.basic', 'unknown', 'warn', 'warning', '⚙️', '❓', '🃏', '🇦', '🇧', '🇩', '🇬', '🎨', '🎭', '👣', '👶', '💡', '💥', '📄', '📛', '📝', '📦', '🔩', '🔹', '🗣️', '🛠️', '🧪']

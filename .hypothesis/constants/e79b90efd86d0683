@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/resources.py
-# hypothesis_version: 6.138.14
-
-['ALREADY_EXISTS_ERROR', 'LOCK_ERROR', 'NOT_FOUND_ERROR', 'RESOURCE_ERROR', 'context', 'exists.id', 'exists.type', 'lock.path', 'lock.timeout', 'notfound.id', 'notfound.type', 'resource.path', 'resource.type']

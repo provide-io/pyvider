@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/console/output.py
-# hypothesis_version: 6.138.15
-
-['1', 'FORCE_COLOR', 'NO_COLOR', 'bold', 'color', 'ctx', 'dim', 'function', 'isatty', 'json_key', 'newline', 'nl', 'obj', 'perr', 'pout', 'prefix', 'true', 'yes']

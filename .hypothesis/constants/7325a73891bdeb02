@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/config.py
-# hypothesis_version: 6.138.15
-
-['CONFIG_ERROR', 'VALIDATION_ERROR', 'config.class', 'config.key', 'config.source', 'context', 'validation.field', 'validation.rule', 'validation.value']

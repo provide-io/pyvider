@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/tracer/__init__.py
-# hypothesis_version: 6.138.15
-
-['Span', '_HAS_OTEL', 'get_current_span', 'get_current_trace_id', 'get_trace_context', 'set_current_span', 'with_span']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/auth.py
-# hypothesis_version: 6.138.14
-
-['AUTHZ_ERROR', 'AUTH_ERROR', 'auth.method', 'auth.realm', 'authz.actor', 'authz.permission', 'authz.resource', 'context']

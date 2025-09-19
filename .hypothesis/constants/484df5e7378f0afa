@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/resources/local_directory.py
-# hypothesis_version: 6.138.15
-
-[511, '01234567', '0o', '0o755', 'Creating directory', 'Read directory state', 'file_count', 'id', 'path', 'permissions']

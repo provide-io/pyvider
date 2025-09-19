@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/utils/__init__.py
-# hypothesis_version: 6.138.14
-
-['EnvPrefix', 'auto_parse', 'format_duration', 'format_number', 'format_percentage', 'format_size', 'format_table', 'get_bool', 'get_dict', 'get_float', 'get_int', 'get_list', 'get_path', 'get_str', 'indent', 'parse_bool', 'parse_dict', 'parse_duration', 'parse_list', 'parse_size', 'parse_typed_value', 'pluralize', 'require', 'strip_ansi', 'timed_block', 'to_camel_case', 'to_kebab_case', 'to_snake_case', 'truncate', 'wrap_text']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/decorators.py
-# hypothesis_version: 6.138.14
-
-[1.0, 60.0, 'F', 'closed', 'critical', 'debug', 'error', 'half_open', 'info', 'open', 'warning']

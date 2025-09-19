@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/apply_resource_change.py
-# hypothesis_version: 6.138.14
-
-[b'\xc0', 'apply', 'lifecycle.operation', 'name', 'private_state.error', 'private_state_class', 'provider', 'resource', 'resource.type', 'resource.type_name', 'singleton', 'terraform.detail', 'terraform.summary', 'unknown', 'validation.reason']

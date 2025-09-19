@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/http_api.py
-# hypothesis_version: 6.138.15
-
-[300, 'GET', 'content-type', 'content_type', 'error_message', 'header_count', 'headers', 'http://', 'https://', 'method', 'pyvider_http_api', 'response_body', 'response_headers', 'response_time_ms', 'status_code', 'timeout', 'url']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider-components/src/pyvider/components/data_sources/file_info.py
-# hypothesis_version: 6.138.15
-
-['Creation time.', 'Detected MIME type', 'File permissions.', 'Is it a directory.', 'Last access time.', 'MIME type.', 'Path does not exist', 'Path to inspect.', 'Reading file info', 'Size in bytes.', 'Whether path exists.', 'access_time', 'creation_time', 'exists', 'file_access', 'group', 'is_dir', 'is_file', 'is_symlink', 'mime_type', 'modified_time', 'owner', 'path', 'permissions', 'pyvider_file_info', 'size', 'stat']

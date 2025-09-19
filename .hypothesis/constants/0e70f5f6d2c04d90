@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/workenv/pyvider-rpcplugin_darwin_arm64/bin/pytest
-# hypothesis_version: 6.138.3
-
-['-script.pyw', '.exe', '__main__']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/logger/config/logging.py
-# hypothesis_version: 6.138.15
-
-[0.0, 'FOUNDATION_LOG_LEVEL', 'PROVIDE_LOG_FILE', 'PROVIDE_LOG_LEVEL', 'Path to log file']

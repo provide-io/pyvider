@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-testkit/src/provide/testkit/file/special_fixtures.py
-# hypothesis_version: 6.138.15
-
-[b'\x00\x01\x02\x03\x04\x05\x06\x07\x08\t', b'\xff\xfe\xfd\xfc\xfb\xfa\xf9\xf8\xf7\xf6', 292, 420, '.bin', '.sh', '.txt', 'Read-only content', '_link', 'binary_file', 'readonly_file', 'temp_executable_file', 'temp_symlink']

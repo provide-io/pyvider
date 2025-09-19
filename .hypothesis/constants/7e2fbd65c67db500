@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/transport/client.py
-# hypothesis_version: 6.138.15
-
-['UniversalClient', 'delete', 'get', 'get_default_client', 'head', 'options', 'patch', 'post', 'put', 'request', 'stream']

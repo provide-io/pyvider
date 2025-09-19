@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/resources/__init__.py
-# hypothesis_version: 6.138.14
-
-['PrivateState', 'ResourceContext', 'register_resource']

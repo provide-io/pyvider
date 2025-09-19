@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/cli/__init__.py
-# hypothesis_version: 6.138.15
-
-['CliTestRunner', 'assert_cli_error', 'assert_cli_success', 'config_options', 'create_cli_context', 'echo_error', 'echo_info', 'echo_json', 'echo_success', 'echo_warning', 'error_handler', 'flexible_options', 'logging_options', 'output_options', 'pass_context', 'setup_cli_logging', 'standard_options', 'version_option']

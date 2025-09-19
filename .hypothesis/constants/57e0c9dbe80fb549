@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/streams/config.py
-# hypothesis_version: 6.138.15
-
-['CLICK_TESTING', 'FORCE_COLOR', 'NO_COLOR']

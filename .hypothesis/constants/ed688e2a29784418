@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/utils/parsing.py
-# hypothesis_version: 6.138.15
-
-[',', '0', '1', '=', 'T', '_mock_name', 'bool', 'converter', 'dict', 'disabled', 'enabled', 'false', 'float', 'int', 'list', 'metadata', 'mock', 'no', 'off', 'on', 'str', 'true', 'type', 'yes']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/streams/console.py
-# hypothesis_version: 6.138.3
-
-['FORCE_COLOR', 'NO_COLOR', 'isatty']

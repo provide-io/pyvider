@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/pyvider/src/pyvider/cli/provide_command.py
-# hypothesis_version: 6.138.14
-
-['\nTo fix this:', ' i  Interactive Mode', '--force', 'INFO', 'PYVIDER_LOG_LEVEL', 'cyan', 'done', 'forced-by-cli', 'green', 'key_value', 'logging.format', 'logging.level', 'provide', 'provider', 'pyvider.critical', 'red', 'singleton', 'stream_stream', 'system', 'terraform-provider', 'tfplugin6.Provider', 'unary_unary', 'white', 'yellow', '─']

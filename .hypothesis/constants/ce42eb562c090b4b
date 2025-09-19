@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/streams/__init__.py
-# hypothesis_version: 6.138.3
-
-['close_log_streams', 'flush_log_streams', 'get_console_stream', 'get_log_stream', 'is_tty', 'reset_streams', 'supports_color', 'write_to_console']

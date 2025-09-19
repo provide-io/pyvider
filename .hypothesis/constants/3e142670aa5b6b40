@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/hub/decorators.py
-# hypothesis_version: 6.138.3
-
-['.', 'F', 'Registered command', 'aliases', 'category', 'click_command', 'command', 'description', 'hidden', 'info', 'is_group', 'parent', 'register_command']

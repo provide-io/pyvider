@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/cli/decorators.py
-# hypothesis_version: 6.138.14
-
-[130, '\nInterrupted by user', '--config', '--json', '--log-file', '--log-format', '--log-level', '--no-color', '--no-emoji', '--profile', '-c', '-l', '-p', 'CRITICAL', 'DEBUG', 'ERROR', 'F', 'INFO', 'Log output format', 'PROVIDE_CONFIG_FILE', 'PROVIDE_JSON_OUTPUT', 'PROVIDE_LOG_FILE', 'PROVIDE_LOG_FORMAT', 'PROVIDE_LOG_LEVEL', 'PROVIDE_NO_COLOR', 'PROVIDE_NO_EMOJI', 'PROVIDE_PROFILE', 'WARNING', 'Write logs to file', 'config', 'debug', 'error', 'json', 'json_output', 'key_value', 'log_file', 'log_format', 'log_level', 'no_color', 'no_emoji', 'obj', 'profile', 'red', 'text', 'type', 'yellow']

@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/file/formats.py
-# hypothesis_version: 6.138.15
-
-['Invalid JSON file', 'Invalid TOML file', 'Invalid YAML file', 'Wrote JSON file', 'Wrote TOML file', 'Wrote YAML file', 'read_json', 'read_toml', 'read_yaml', 'utf-8', 'write_json', 'write_toml', 'write_yaml']

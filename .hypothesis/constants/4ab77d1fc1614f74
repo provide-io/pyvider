@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/config/parsers/base.py
-# hypothesis_version: 6.138.15
-
-['CRITICAL', 'ConsoleFormatterStr', 'DEBUG', 'ERROR', 'INFO', 'LogLevelStr', 'TRACE', 'WARNING', 'block', 'both', 'console', 'drop_newest', 'drop_oldest', 'file', 'json', 'key_value']

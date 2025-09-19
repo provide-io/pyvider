@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/workenv/provide-foundation_darwin_arm64/bin/pytest
-# hypothesis_version: 6.138.14
-
-['-script.pyw', '.exe', '__main__']

@@ -64,3 +64,4 @@ keys/
 # Temporary files
 *.tmp
 *.tempkeys/*
+.hypothesis

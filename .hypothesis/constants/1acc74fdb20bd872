@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/errors/integration.py
-# hypothesis_version: 6.138.15
-
-['INTEGRATION_ERROR', 'NETWORK_ERROR', 'TIMEOUT_ERROR', 'context', 'integration.endpoint', 'integration.service', 'network.host', 'network.port', 'timeout.elapsed', 'timeout.limit']

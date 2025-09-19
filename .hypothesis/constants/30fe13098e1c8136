@@ -1,4 +1,0 @@
-# file: /Users/tim/code/gh/provide-io/provide-foundation/src/provide/foundation/cli/testing.py
-# hypothesis_version: 6.138.14
-
-['1.0.0', 'json', 'test-cli', 'toml', 'w', 'yaml']
