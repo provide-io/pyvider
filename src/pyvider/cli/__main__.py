@@ -4,16 +4,13 @@ The canonical entry point for the Pyvider CLI application.
 
 import asyncio
 
-from provide.foundation import setup_telemetry, shutdown_foundation_telemetry
+from provide.foundation import shutdown_foundation_telemetry
 
 from pyvider.cli import cli
 
 
 def main() -> None:
     """Main entry point for the Pyvider CLI application."""
-    # Initialize foundation telemetry
-    setup_telemetry()
-
     try:
         # The `cli` object is the fully assembled click group.
         # This call hands over control to click to parse args and run the
