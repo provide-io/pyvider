@@ -142,7 +142,3 @@ exclude_lines = [
     "def __str__",
     "pass",
 ]
-
-[tool.uv.sources]
-provide-foundation = { workspace = true }
-provide-testkit = { workspace = true }
