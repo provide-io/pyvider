@@ -171,9 +171,9 @@ Implement sophisticated error recovery patterns using foundation's capabilities.
 
 #### 1. Automatic Retry with Backoff
 ```python
-from provide.foundation.errors.decorators import retry_on_error
+from provide.foundation.errors.decorators import retry
 
-@retry_on_error(
+@retry(
     NetworkError,
     TimeoutError,
     max_attempts=3,
