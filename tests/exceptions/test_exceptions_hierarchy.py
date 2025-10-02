@@ -1,6 +1,6 @@
 # tests/exceptions/test_exceptions_hierarchy.py
 
-from hypothesis import given, strategies as st
+from hypothesis import given, strategies as st, settings, HealthCheck
 import pytest
 
 # Import the exceptions module itself to access its __all__ attribute
@@ -93,6 +93,7 @@ def test_pyvider_error_with_message(message):
     assert str(err) == message
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     source_val=st.one_of(st.integers(), st.text(), st.none()),
@@ -238,6 +239,7 @@ def test_schema_error(message, schema_name):
     assert str(err) == f"{expected_prefix} error: {message}"
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     schema_name=st.one_of(st.none(), st.text(min_size=1)),
@@ -318,6 +320,7 @@ def test_serialization_error(message, type_name, source_val, detail):
     assert err.target_type == type_name
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     type_name=st.one_of(st.none(), st.text(min_size=1)),
