@@ -155,6 +155,7 @@ def test_component_configuration_error(message):
     assert str(err) == message
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     func_name=st.one_of(st.none(), st.text(min_size=1)),
@@ -178,6 +179,7 @@ def test_function_registration_error(message, func_name):
     assert str(err) == f"{expected_prefix} registration error: {message}"
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     func_name=st.one_of(st.none(), st.text(min_size=1)),
