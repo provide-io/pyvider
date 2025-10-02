@@ -172,6 +172,7 @@ def test_function_error(message, func_name, arg_idx):
     assert proto_like["argument_index"] == arg_idx
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_function_registration_error(message, func_name):
     err = pyvider_exceptions_module.FunctionRegistrationError(message, function_name=func_name)
@@ -234,6 +235,7 @@ def test_resource_error(message):
     assert str(pyvider_exceptions_module.ResourceOperationError(message)) == message
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaError(message, schema_name=schema_name)
@@ -257,6 +259,7 @@ def test_schema_validation_error(message, schema_name, detail):
         assert f"Schema '{schema_name}'" in str(err)
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_registration_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaRegistrationError(message, schema_name=schema_name)
@@ -264,6 +267,7 @@ def test_schema_registration_error(message, schema_name):
     assert str(err) == f"{expected_prefix} registration error: {message}"
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
 def test_schema_parse_error(message, schema_name):
     err = pyvider_exceptions_module.SchemaParseError(message, schema_name=schema_name)
@@ -271,6 +275,7 @@ def test_schema_parse_error(message, schema_name):
     assert str(err) == f"{expected_prefix} parse error: {message}"
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     schema_name=st.one_of(st.none(), st.text(min_size=1)),
@@ -290,6 +295,7 @@ def test_schema_conversion_error(message, schema_name, source_val, target_type_v
     assert "target_type=int" in str(err)
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     type_name=st.one_of(st.none(), st.text(min_size=1)),
@@ -355,6 +361,7 @@ def test_deserialization_error(message, type_name, source_val, detail):
     assert err.target_type == type_name
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     context=st.one_of(st.none(), st.text(min_size=1)),
@@ -367,6 +374,7 @@ def test_validation_error(message, context, detail):
     assert str(err) == f"{expected_context_str}{message}{expected_detail_str}"
 
 
+@settings(suppress_health_check=[HealthCheck.too_slow])
 @given(
     message=st.text(),
     attr_name=st.text(min_size=1),
