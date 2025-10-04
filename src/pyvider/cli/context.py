@@ -2,22 +2,22 @@ from pathlib import Path
 from typing import Any
 
 import click
-from provide.foundation.context import Context
+from provide.foundation.context import CLIContext
 from provide.foundation.platform import get_arch_name, get_os_name
 
 from pyvider.common.config import PyviderConfig
 
 
 # --- Pyvider Context Class ---
-class PyviderContext(Context):
+class PyviderContext(CLIContext):
     """
-    Pyvider-specific context that extends foundation's Context.
+    Pyvider-specific context that extends foundation's CLIContext.
 
-    Inherits debug, verbose, and quiet flags from foundation Context.
+    Inherits debug, log_level, and other CLI settings from foundation CLIContext.
     """
 
     def __init__(self) -> None:
-        super().__init__()  # Initialize foundation Context
+        super().__init__()  # Initialize foundation CLIContext
         self.config = PyviderConfig()
         self.home = Path.home()
         self.local_bin_dir = self.home / ".local" / "bin"
