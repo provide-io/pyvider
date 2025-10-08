@@ -1,7 +1,14 @@
 """Tests for conversion utility helpers."""
 
 from pyvider.conversion.utils import unify_and_validate_list_of_objects
-from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyNumber, CtyObject, CtyString
+from pyvider.cty import (
+    CtyBool,
+    CtyDynamic,
+    CtyList,
+    CtyNumber,
+    CtyObject,
+    CtyString,
+)
 
 
 def test_unify_and_validate_list_of_objects_handles_empty_list() -> None:
@@ -9,7 +16,7 @@ def test_unify_and_validate_list_of_objects_handles_empty_list() -> None:
 
     assert isinstance(result.type, CtyList)
     assert isinstance(result.type.element_type, CtyDynamic)
-    assert result.value == []
+    assert result.value == ()
 
 
 def test_unify_and_validate_list_of_objects_infers_schema() -> None:
@@ -28,7 +35,16 @@ def test_unify_and_validate_list_of_objects_infers_schema() -> None:
     assert isinstance(element_type.attribute_types["size"], CtyNumber)
     assert isinstance(element_type.attribute_types["enabled"], CtyBool)
     assert element_type.optional_attributes == frozenset({"size", "enabled"})
-    assert result.value == items
+
+    first, second = result.value
+    assert first.value["name"].value == "alpha"
+    assert first.value["size"].value == 1
+    # Missing keys become null values in the unified object
+    assert first.value["enabled"].is_null is True
+
+    assert second.value["name"].value == "beta"
+    assert second.value["enabled"].value is True
+    assert second.value["size"].is_null is True
 
 
 def test_unify_and_validate_list_of_objects_promotes_conflicting_types() -> None:
@@ -43,4 +59,7 @@ def test_unify_and_validate_list_of_objects_promotes_conflicting_types() -> None
     assert isinstance(element_type, CtyObject)
     assert isinstance(element_type.attribute_types["value"], CtyDynamic)
     assert element_type.optional_attributes == frozenset()
-    assert result.value == items
+
+    first, second = result.value
+    assert first.value["value"].value.value == 1
+    assert second.value["value"].value.value == "one"
