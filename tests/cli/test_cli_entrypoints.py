@@ -1,40 +1,59 @@
 """Tests for CLI entrypoint modules."""
 
 import importlib
+import inspect
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
 
-def test_cli_main_invokes_cli_and_shutdown(patch_fixture) -> None:
+def _drain_coroutine(mock_run: Mock) -> None:
+    """Ensure mocked coroutines are closed to avoid warnings."""
+    (coro,) = mock_run.call_args.args
+    if inspect.iscoroutine(coro):
+        coro.close()
+
+
+def test_cli_main_invokes_cli_and_shutdown(monkeypatch: pytest.MonkeyPatch) -> None:
     """Ensure the CLI entrypoint delegates to click and cleans up Foundation."""
     import pyvider.cli.__main__ as cli_entrypoint
 
-    mock_cli = patch_fixture("pyvider.cli.__main__.cli")
-    mock_shutdown = patch_fixture("pyvider.cli.__main__.shutdown_foundation", return_value="sentinel")
-    mock_run = patch_fixture("pyvider.cli.__main__.asyncio.run")
+    mock_cli = Mock()
+    monkeypatch.setattr(cli_entrypoint, "cli", mock_cli)
+
+    mock_shutdown = AsyncMock(return_value=None)
+    monkeypatch.setattr(cli_entrypoint, "shutdown_foundation", mock_shutdown)
+
+    mock_run = Mock()
+    monkeypatch.setattr(cli_entrypoint.asyncio, "run", mock_run)
 
     cli_entrypoint.main()
 
     mock_cli.assert_called_once_with()
     mock_shutdown.assert_called_once_with()
-    mock_run.assert_called_once_with("sentinel")
+    mock_run.assert_called_once()
+    _drain_coroutine(mock_run)
 
 
-def test_cli_main_ensures_shutdown_on_error(patch_fixture) -> None:
+def test_cli_main_ensures_shutdown_on_error(monkeypatch: pytest.MonkeyPatch) -> None:
     """Even when the click command fails, the shutdown routine must run."""
     import pyvider.cli.__main__ as cli_entrypoint
 
-    mock_cli = patch_fixture("pyvider.cli.__main__.cli")
-    mock_shutdown = patch_fixture("pyvider.cli.__main__.shutdown_foundation", return_value="sentinel")
-    mock_run = patch_fixture("pyvider.cli.__main__.asyncio.run")
+    mock_cli = Mock(side_effect=RuntimeError("boom"))
+    monkeypatch.setattr(cli_entrypoint, "cli", mock_cli)
 
-    mock_cli.side_effect = RuntimeError("boom")
+    mock_shutdown = AsyncMock(return_value=None)
+    monkeypatch.setattr(cli_entrypoint, "shutdown_foundation", mock_shutdown)
+
+    mock_run = Mock()
+    monkeypatch.setattr(cli_entrypoint.asyncio, "run", mock_run)
 
     with pytest.raises(RuntimeError):
         cli_entrypoint.main()
 
     mock_shutdown.assert_called_once_with()
-    mock_run.assert_called_once_with("sentinel")
+    mock_run.assert_called_once()
+    _drain_coroutine(mock_run)
 
 
 def test_package_main_aliases_cli_main() -> None:

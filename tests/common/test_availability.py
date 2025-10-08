@@ -15,10 +15,29 @@ def _reset_availability_module():
     sys.modules.pop("pyvider.common.utils.availability", None)
 
 
+class _StubFoundationLogger:
+    """Lightweight stub that delegates logging calls to a mock."""
+
+    def __init__(self, delegate):
+        self._delegate = delegate
+
+    def info(self, event, *args, **kwargs):
+        self._delegate.info(event, *args, **kwargs)
+
+    def warning(self, event, *args, **kwargs):
+        self._delegate.warning(event, *args, **kwargs)
+
+    def error(self, event, *args, **kwargs):
+        self._delegate.error(event, *args, **kwargs)
+
+
 def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
     """Import the availability module with patched dependencies."""
     monkeypatch.setattr("importlib.util.find_spec", lambda _: spec_result)
-    monkeypatch.setattr("provide.foundation.logger", logger, raising=False)
+    stub_logger = _StubFoundationLogger(logger)
+    import provide.foundation.logger.core as foundation_logger_core
+
+    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
     module = importlib.import_module("pyvider.common.utils.availability")
     return module
 
@@ -55,7 +74,10 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
         raise RuntimeError("boom")
 
     monkeypatch.setattr("importlib.util.find_spec", _boom)
-    monkeypatch.setattr("provide.foundation.logger", logger, raising=False)
+    stub_logger = _StubFoundationLogger(logger)
+    import provide.foundation.logger.core as foundation_logger_core
+
+    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
 
     module = importlib.import_module("pyvider.common.utils.availability")
 
