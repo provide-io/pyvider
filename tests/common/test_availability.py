@@ -11,6 +11,7 @@ from provide.testkit.logger import mock_logger_factory
 @pytest.fixture(autouse=True)
 def _reset_availability_module():
     """Ensure a clean import of the availability module for each test."""
+    sys.modules.pop("pyvider.common.utils.availability", None)
     yield
     sys.modules.pop("pyvider.common.utils.availability", None)
 
