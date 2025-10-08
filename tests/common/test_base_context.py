@@ -7,10 +7,10 @@ from pyvider.protocols.tfprotov6 import protobuf as pb
 def _step_value(step: pb.AttributePath.Step):
     if step.attribute_name:
         return step.attribute_name
-    if step.element_key_int is not None:
-        return step.element_key_int
     if step.element_key_string:
         return step.element_key_string
+    if step.element_key_int is not None:
+        return step.element_key_int
     return None
 
 
