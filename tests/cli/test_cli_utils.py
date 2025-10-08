@@ -107,3 +107,20 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path):
     assert target_path.exists()
     assert f"INSTALL_DIR=\"{install_dir}\"" in captured["content"]
     assert "exec pyvider \"$@\"" in captured["content"]
+
+def test_run_command_allows_non_zero_when_check_disabled(monkeypatch, tmp_path):
+    (tmp_path / "workspace").mkdir()
+    monkeypatch.setattr("pyvider.cli.utils.Path.home", lambda: tmp_path)
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: tmp_path / "workspace")
+    monkeypatch.setattr("pyvider.cli.utils.ensure_dir", lambda path: None)
+    monkeypatch.setattr("pyvider.cli.utils.atomic_write_text", lambda path, content: None)
+    monkeypatch.setattr("pyvider.cli.utils.timed_block", lambda: DummyTimer())
+    monkeypatch.setattr("pyvider.cli.utils.pout", lambda *args, **kwargs: None)
+
+    def fake_run_command(command, cwd, env, check):
+        return SimpleNamespace(stdout="out", stderr="err", returncode=5)
+
+    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+
+    result = _run_command(["cmd"], check=False)
+    assert result == "out"
