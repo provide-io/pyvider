@@ -33,10 +33,16 @@ class _StubFoundationLogger:
 
 def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
     """Import the availability module with patched dependencies."""
-    monkeypatch.setattr("importlib.util.find_spec", lambda _: spec_result)
-    stub_logger = _StubFoundationLogger(logger)
-    import provide.foundation.logger.core as foundation_logger_core
+    original_find_spec = importlib.util.find_spec
 
+    def _find_spec(name: str, *args, **kwargs):
+        if name == "msgpack":
+            return spec_result
+        return original_find_spec(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
+    stub_logger = _StubFoundationLogger(logger)
+    foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
     monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
     module = importlib.import_module("pyvider.common.utils.availability")
     return module
@@ -73,10 +79,16 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     def _boom(_: str):
         raise RuntimeError("boom")
 
-    monkeypatch.setattr("importlib.util.find_spec", _boom)
-    stub_logger = _StubFoundationLogger(logger)
-    import provide.foundation.logger.core as foundation_logger_core
+    original_find_spec = importlib.util.find_spec
 
+    def _find_spec(name: str, *args, **kwargs):
+        if name == "msgpack":
+            return _boom(name)
+        return original_find_spec(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
+    stub_logger = _StubFoundationLogger(logger)
+    foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
     monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
 
     module = importlib.import_module("pyvider.common.utils.availability")
