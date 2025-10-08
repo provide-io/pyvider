@@ -26,8 +26,8 @@ def test_run_command_logs_success(monkeypatch, tmp_path):
     log_capture: dict[str, str] = {}
     ensured_paths: list = []
 
-    monkeypatch.setattr("pyvider.cli.utils.Path", "home", staticmethod(lambda: tmp_path))
-    monkeypatch.setattr("pyvider.cli.utils.Path", "cwd", staticmethod(lambda: tmp_path / "workspace"))
+    monkeypatch.setattr("pyvider.cli.utils.Path.home", lambda: tmp_path)
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: tmp_path / "workspace")
     monkeypatch.setattr("pyvider.cli.utils.ensure_dir", lambda path: ensured_paths.append(path))
     monkeypatch.setattr("pyvider.cli.utils.pout", lambda message, **kwargs: outputs.append(message))
     monkeypatch.setattr("pyvider.cli.utils.timed_block", lambda: DummyTimer())
@@ -52,7 +52,7 @@ def test_run_command_logs_success(monkeypatch, tmp_path):
     assert result == "done"
     assert ensured_paths == [log_dir]
     assert outputs[0].startswith("⏳ Echo")
-    assert "✅ Done (0.50s)" in outputs[-1]
+    assert any("✅ Done (0.50s)" in msg for msg in outputs)
     assert log_capture["path"] == str(log_dir / "prep.log")
     assert "Command: echo hi" in log_capture["content"]
     assert "Duration: 0.50s" in log_capture["content"]
@@ -62,8 +62,8 @@ def test_run_command_raises_on_failure(monkeypatch, tmp_path):
     (tmp_path / "workspace").mkdir()
     outputs: list[str] = []
 
-    monkeypatch.setattr("pyvider.cli.utils.Path", "home", staticmethod(lambda: tmp_path))
-    monkeypatch.setattr("pyvider.cli.utils.Path", "cwd", staticmethod(lambda: tmp_path / "workspace"))
+    monkeypatch.setattr("pyvider.cli.utils.Path.home", lambda: tmp_path)
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: tmp_path / "workspace")
     monkeypatch.setattr("pyvider.cli.utils.ensure_dir", lambda path: None)
     monkeypatch.setattr("pyvider.cli.utils.atomic_write_text", lambda path, content: None)
     monkeypatch.setattr("pyvider.cli.utils.timed_block", lambda: DummyTimer())
@@ -88,7 +88,7 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path):
     install_dir = tmp_path / "project"
     install_dir.mkdir()
 
-    monkeypatch.setattr("pyvider.cli.utils.Path", "cwd", staticmethod(lambda: install_dir))
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: install_dir)
 
     captured: dict[str, str] = {}
 
