@@ -15,22 +15,6 @@ def _reset_availability_module():
     sys.modules.pop("pyvider.common.utils.availability", None)
 
 
-class _StubFoundationLogger:
-    """Lightweight stub that delegates logging calls to a mock."""
-
-    def __init__(self, delegate):
-        self._delegate = delegate
-
-    def info(self, event, *args, **kwargs):
-        self._delegate.info(event, *args, **kwargs)
-
-    def warning(self, event, *args, **kwargs):
-        self._delegate.warning(event, *args, **kwargs)
-
-    def error(self, event, *args, **kwargs):
-        self._delegate.error(event, *args, **kwargs)
-
-
 def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
     """Import the availability module with patched dependencies."""
     original_find_spec = importlib.util.find_spec
@@ -41,9 +25,11 @@ def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
         return original_find_spec(name, *args, **kwargs)
 
     monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
-    stub_logger = _StubFoundationLogger(logger)
     foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
-    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
+    proxy = foundation_logger_core.GlobalLoggerProxy
+    monkeypatch.setattr(proxy, "info", lambda self, event, *args, **kwargs: logger.info(event, *args, **kwargs))
+    monkeypatch.setattr(proxy, "warning", lambda self, event, *args, **kwargs: logger.warning(event, *args, **kwargs))
+    monkeypatch.setattr(proxy, "error", lambda self, event, *args, **kwargs: logger.error(event, *args, **kwargs))
     module = importlib.import_module("pyvider.common.utils.availability")
     return module
 
@@ -87,9 +73,11 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
         return original_find_spec(name, *args, **kwargs)
 
     monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
-    stub_logger = _StubFoundationLogger(logger)
     foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
-    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: stub_logger)
+    proxy = foundation_logger_core.GlobalLoggerProxy
+    monkeypatch.setattr(proxy, "info", lambda self, event, *args, **kwargs: logger.info(event, *args, **kwargs))
+    monkeypatch.setattr(proxy, "warning", lambda self, event, *args, **kwargs: logger.warning(event, *args, **kwargs))
+    monkeypatch.setattr(proxy, "error", lambda self, event, *args, **kwargs: logger.error(event, *args, **kwargs))
 
     module = importlib.import_module("pyvider.common.utils.availability")
 
