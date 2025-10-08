@@ -6,7 +6,7 @@ import attrs
 
 from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
 from pyvider.schema.types import PvsAttribute
-from pyvider.cty import CtyDynamic, CtyList, CtyNumber, CtyString
+from pyvider.cty import CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
 
 
 def _get_field(cls: type, field_name: str) -> attrs.Attribute:
@@ -66,3 +66,24 @@ def test_create_attrs_class_supports_dynamic_payloads() -> None:
     assert instance.payload is None
     assert field.default is None
     assert field.type == (dict | Any | None)
+
+
+def test_create_attrs_class_uses_dict_factory_for_maps() -> None:
+    """Map attributes should leverage dict factories to avoid shared state."""
+    schema = {
+        "settings": PvsAttribute(name="settings", type=CtyMap(element_type=CtyString())),
+    }
+
+    generated = create_attrs_class_from_schema("MapConfig", schema)
+    field = _get_field(generated, "settings")
+
+    first = generated()
+    second = generated()
+
+    assert isinstance(field.default, attrs.Factory)
+    assert field.default.factory is dict
+
+    assert first.settings == {}
+    assert second.settings == {}
+    assert first.settings is not second.settings
+    assert field.type == (dict | None)
