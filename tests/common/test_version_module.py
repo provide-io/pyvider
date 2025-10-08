@@ -2,6 +2,8 @@
 
 import importlib
 import importlib.metadata
+from pathlib import Path
+
 import pytest
 
 
@@ -45,3 +47,31 @@ def test_get_version_falls_back_to_default(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(importlib.metadata, "version", _raise)
 
     assert version_module.get_version() == "0.0.0-dev"
+
+def test_get_version_reads_version_file(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Happy path should read the VERSION file discovered in the project tree."""
+    import pyvider._version as version_module
+
+    project_root = tmp_path / "project"
+    project_root.mkdir()
+    version_file = project_root / "VERSION"
+    version_file.write_text("1.2.3-test\n")
+
+    monkeypatch.setattr(version_module, "_find_project_root", lambda: project_root)
+
+    assert version_module.get_version() == "1.2.3-test"
+
+
+def test_find_project_root_returns_none_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    """The helper should gracefully return None when the VERSION marker is absent."""
+    import pyvider._version as version_module
+
+    class _Path(Path):
+        _flavour = Path(".")._flavour
+
+    fake_start = _Path("/tmp")
+
+    monkeypatch.setattr(version_module, "Path", lambda *_: fake_start)
+    monkeypatch.setattr(Path, "exists", lambda self: False)
+
+    assert version_module._find_project_root() is None
