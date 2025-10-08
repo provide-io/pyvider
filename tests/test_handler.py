@@ -2,6 +2,7 @@ import pytest
 from unittest.mock import MagicMock, patch, AsyncMock
 
 from pyvider.handler import ProviderHandler
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -9,6 +10,7 @@ def mock_provider():
     return MagicMock()
 
 
+def test_post_init(mock_provider):
     handler = ProviderHandler(provider=mock_provider)
     assert "GetMetadata" in handler._handlers
     assert "GetProviderSchema" in handler._handlers
@@ -33,6 +35,7 @@ def mock_provider():
 
 
 @pytest.mark.asyncio
+async def test_delegate_success(mock_provider):
     handler = ProviderHandler(provider=mock_provider)
 
     mock_handler = AsyncMock(return_value="success")
@@ -49,7 +52,7 @@ def mock_provider():
 
 @pytest.mark.asyncio
 async def test_delegate_no_handler(mock_provider):
-    handler = ProviderHandler(_provider=mock_provider)
+    handler = ProviderHandler(provider=mock_provider)
     handler._handlers = {}  # empty handlers
 
     request = MagicMock()
@@ -59,14 +62,14 @@ async def test_delegate_no_handler(mock_provider):
     with patch("pyvider.handler.getattr", return_value=MagicMock()) as mock_getattr:
         response = await handler._delegate("UnknownMethod", request, context)
         mock_getattr.assert_called_once_with(
-            __import__("pyvider.protocols.tfprotov6.protobuf"), "UnknownMethod.Response", None
+            pb, "UnknownMethod.Response", None
         )
         assert response is not None
 
 
 @pytest.mark.asyncio
 async def test_delegate_unhandled_exception(mock_provider):
-    handler = ProviderHandler(_provider=mock_provider)
+    handler = ProviderHandler(provider=mock_provider)
 
     mock_handler = AsyncMock(side_effect=Exception("test error"))
     handler._handlers = {"TestMethod": mock_handler}
@@ -74,13 +77,22 @@ async def test_delegate_unhandled_exception(mock_provider):
     request = MagicMock()
     context = MagicMock()
 
-    with patch("pyvider.handler.getattr", return_value=MagicMock()) as mock_getattr:
+    response_class_mock = MagicMock()
+    response_instance_mock = MagicMock()
+    response_class_mock.return_value = response_instance_mock
+
+    with patch("pyvider.handler.getattr", return_value=response_class_mock) as mock_getattr:
         response = await handler._delegate("TestMethod", request, context)
+
         mock_getattr.assert_called_with(
-            __import__("pyvider.protocols.tfprotov6.protobuf"), "TestMethod.Response", None
+            pb, "TestMethod.Response", None
         )
-        assert response is not None
-        # check diagnostics
-        assert len(response.diagnostics) == 1
-        assert response.diagnostics[0].severity == 1  # ERROR
-        assert "Internal provider error" in response.diagnostics[0].summary
+
+        response_class_mock.assert_called_once()
+        _, kwargs = response_class_mock.call_args
+        assert "diagnostics" in kwargs
+        assert len(kwargs["diagnostics"]) == 1
+        assert kwargs["diagnostics"][0].severity == 1  # ERROR
+        assert "Internal provider error" in kwargs["diagnostics"][0].summary
+
+        assert response == response_instance_mock
