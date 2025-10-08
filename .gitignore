@@ -66,3 +66,4 @@ keys/
 *.tempkeys/*
 .hypothesis
 workenv/*
+.coverage*
