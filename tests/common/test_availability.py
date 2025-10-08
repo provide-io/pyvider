@@ -26,10 +26,7 @@ def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
 
     monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
     foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
-    proxy = foundation_logger_core.GlobalLoggerProxy
-    monkeypatch.setattr(proxy, "info", lambda self, event, *args, **kwargs: logger.info(event, *args, **kwargs))
-    monkeypatch.setattr(proxy, "warning", lambda self, event, *args, **kwargs: logger.warning(event, *args, **kwargs))
-    monkeypatch.setattr(proxy, "error", lambda self, event, *args, **kwargs: logger.error(event, *args, **kwargs))
+    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: logger)
     module = importlib.import_module("pyvider.common.utils.availability")
     return module
 
@@ -74,10 +71,7 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
 
     monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
     foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
-    proxy = foundation_logger_core.GlobalLoggerProxy
-    monkeypatch.setattr(proxy, "info", lambda self, event, *args, **kwargs: logger.info(event, *args, **kwargs))
-    monkeypatch.setattr(proxy, "warning", lambda self, event, *args, **kwargs: logger.warning(event, *args, **kwargs))
-    monkeypatch.setattr(proxy, "error", lambda self, event, *args, **kwargs: logger.error(event, *args, **kwargs))
+    monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: logger)
 
     module = importlib.import_module("pyvider.common.utils.availability")
 
