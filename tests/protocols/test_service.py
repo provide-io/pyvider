@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import pytest
 from unittest.mock import MagicMock, AsyncMock, patch
 
@@ -60,10 +61,14 @@ async def test_start_stream_timeout(shutdown_event):
 async def test_shutdown(shutdown_event):
     service = ProtocolService(shutdown_event)
 
-    with patch("pyvider.protocols.service.shutdown_manager") as mock_shutdown_manager:
-        mock_shutdown_manager.request_shutdown = MagicMock()
-        mock_shutdown_manager.shutdown_tracers = AsyncMock()
+    mock_shutdown_manager = MagicMock()
+    mock_shutdown_manager.request_shutdown = MagicMock()
+    mock_shutdown_manager.shutdown_tracers = AsyncMock()
 
+    fake_server_module = MagicMock()
+    fake_server_module.shutdown_manager = mock_shutdown_manager
+
+    with patch.dict("sys.modules", {"pyvider.server": fake_server_module}):
         response = await service.Shutdown(MagicMock(), MagicMock())
 
         assert isinstance(response, pb.Empty)
