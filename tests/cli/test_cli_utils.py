@@ -77,7 +77,7 @@ def test_run_command_raises_on_failure(monkeypatch, tmp_path):
     with pytest.raises(ProcessError) as exc:
         _run_command(["false"], title="Fail")
 
-    assert exc.value.return_code == 3
+    assert "exit code 3" in str(exc.value)
     assert outputs[0].startswith("⏳ Fail")
     assert any("❌ FAILED" in msg for msg in outputs)
 
