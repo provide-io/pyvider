@@ -9,8 +9,7 @@ def mock_provider():
     return MagicMock()
 
 
-def test_post_init(mock_provider):
-    handler = ProviderHandler(_provider=mock_provider)
+    handler = ProviderHandler(provider=mock_provider)
     assert "GetMetadata" in handler._handlers
     assert "GetProviderSchema" in handler._handlers
     assert "ConfigureProvider" in handler._handlers
@@ -34,8 +33,7 @@ def test_post_init(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_delegate_success(mock_provider):
-    handler = ProviderHandler(_provider=mock_provider)
+    handler = ProviderHandler(provider=mock_provider)
 
     mock_handler = AsyncMock(return_value="success")
     handler._handlers = {"TestMethod": mock_handler}
