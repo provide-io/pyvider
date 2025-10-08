@@ -52,3 +52,13 @@ def test_attribute_diagnostics_attach_attribute_paths() -> None:
     assert warning_steps == ["items", 0, "id"]
     assert warning_diag.summary == "Deprecated"
     assert warning_diag.severity == pb.Diagnostic.WARNING
+
+def test_attribute_warning_with_dot_path() -> None:
+    ctx = BaseContext()
+
+    ctx.add_attribute_warning("config.value", "Heads up")
+
+    (diag,) = ctx.diagnostics
+    step_values = [_step_value(step) for step in diag.attribute.steps]
+    assert step_values == ["config", "value"]
+    assert diag.severity == pb.Diagnostic.WARNING
