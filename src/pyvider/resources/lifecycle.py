@@ -3,7 +3,7 @@
 #
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 
 
@@ -33,7 +33,7 @@ class ResourceLifecycle:
         """Transition to a new state."""
         self.state = state
         self.last_operation = operation
-        self.last_updated = datetime.utcnow()
+        self.last_updated = datetime.now(timezone.utc)
 
 
 # 🐍🏗️
