@@ -2,6 +2,8 @@ import asyncio
 
 import pytest
 
+pytest_plugins = ("provide.testkit.mocking.fixtures",)
+
 from pyvider.common.encryption import CONFIG_KEY_NAME
 from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
