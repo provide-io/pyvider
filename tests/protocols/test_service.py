@@ -1,8 +1,9 @@
 import asyncio
 import pytest
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock, AsyncMock, patch
 
 from pyvider.protocols.service import ProtocolService
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -32,3 +33,67 @@ async def test_handle_shutdown(shutdown_event):
     await service.handle_shutdown(force=True)
     assert service._stream_active is False
     assert service._message_queue.empty()
+
+@pytest.mark.asyncio
+async def test_start_stream_success(shutdown_event):
+    service = ProtocolService(shutdown_event)
+    service._setup_complete.set()
+    context = MagicMock()
+    response = await service.StartStream(MagicMock(), context)
+    assert isinstance(response, pb.Empty)
+
+
+@pytest.mark.asyncio
+async def test_start_stream_timeout(shutdown_event):
+    service = ProtocolService(shutdown_event)
+    context = MagicMock()
+    context.set_code = MagicMock()
+    context.set_details = MagicMock()
+
+    with pytest.raises(asyncio.TimeoutError):
+        await service.StartStream(MagicMock(), context)
+
+    context.set_code.assert_called_once_with("UNIMPLEMENTED")
+    context.set_details.assert_called_once_with("Timeout waiting for StreamStdio setup")
+
+@pytest.mark.asyncio
+async def test_shutdown(shutdown_event):
+    service = ProtocolService(shutdown_event)
+
+    with patch("pyvider.protocols.service.shutdown_manager") as mock_shutdown_manager:
+        mock_shutdown_manager.request_shutdown = MagicMock()
+        mock_shutdown_manager.shutdown_tracers = AsyncMock()
+
+        response = await service.Shutdown(MagicMock(), MagicMock())
+
+        assert isinstance(response, pb.Empty)
+        assert service._stream_active is False
+        assert shutdown_event.is_set()
+        mock_shutdown_manager.request_shutdown.assert_called_once()
+        mock_shutdown_manager.shutdown_tracers.assert_awaited_once()
+
+@pytest.mark.asyncio
+async def test_stop_stream(shutdown_event):
+    service = ProtocolService(shutdown_event)
+    response = await service.StopStream(MagicMock(), MagicMock())
+    assert isinstance(response, pb.Empty)
+    assert service._stream_active is False
+
+@pytest.mark.asyncio
+async def test_stream_stdio_success(shutdown_event):
+    service = ProtocolService(shutdown_event)
+
+    async def mock_iterator():
+        yield "message1"
+        yield "message2"
+
+    request_iterator = mock_iterator()
+
+    responses = []
+    async for response in service.StreamStdio(request_iterator, MagicMock()):
+        responses.append(response)
+
+    assert responses == ["message1", "message2"]
+    assert service._message_queue.qsize() == 2
+    assert service._setup_complete.is_set()
+    assert service._stream_active is False
