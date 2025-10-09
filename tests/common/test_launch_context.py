@@ -112,3 +112,12 @@ def test_log_launch_context_uses_logger(monkeypatch):
 
 def test_is_direct_script_launch_handles_py_extension():
     assert _is_direct_script_launch("/tmp/tool.py") is True
+
+def test_detect_launch_method_prefers_direct_script(monkeypatch):
+    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: False)
+    monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
+    monkeypatch.setattr(lc, "_is_editable_install", lambda exe: False)
+    method, details = lc._detect_launch_method("/tmp/script.py", "/usr/bin/python")
+
+    assert method is LaunchMethod.SCRIPT_DIRECT
+    assert details["script_path"] == "/tmp/script.py"
