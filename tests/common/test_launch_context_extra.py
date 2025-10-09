@@ -1,9 +1,8 @@
 """Additional tests for launch context helpers covering edge scenarios."""
 
-from io import StringIO
 from contextlib import redirect_stdout
-
-import pytest
+from io import StringIO
+import types
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -18,7 +17,7 @@ from pyvider.common.launch_context import (
 
 
 def test_detect_launch_context_without_terraform_cookie(monkeypatch):
-    monkeypatch.delenitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", raising=False)
+    monkeypatch.delitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", raising=False)
     monkeypatch.setattr(lc.sys, "argv", ["/bin/pyvider"])
     monkeypatch.setattr(lc.sys, "executable", "/usr/bin/python3")
     monkeypatch.setattr(lc.sys, "version", "3.x-test")
@@ -30,14 +29,20 @@ def test_detect_launch_context_without_terraform_cookie(monkeypatch):
     context = detect_launch_context()
 
     assert context.is_terraform_invoked is False
-    assert "terraform_cookie_present" in context.environment_info
     assert context.environment_info["terraform_cookie_present"] is False
 
 
-def test_get_editable_install_details_handles_import_error(monkeypatch):
-    monkeypatch.delattr(lc, "pyvider", raising=False)
-    details = _get_editable_install_details("/not/relevant")
-    assert details["pyvider_import_error"].startswith("Could not import pyvider")
+def test_get_editable_install_details_reports_development_mode(monkeypatch):
+    dummy_pyvider = types.SimpleNamespace(
+        __file__="/repo/src/pyvider/__init__.py",
+        __path__=["/repo/src/pyvider"],
+    )
+    monkeypatch.setattr(lc, "pyvider", dummy_pyvider, raising=False)
+
+    details = _get_editable_install_details("/repo/.venv/bin/pyvider")
+
+    assert details["pyvider_location"].endswith("src/pyvider")
+    assert details["is_development_mode"] is True
 
 
 def test_analyze_executable_reports_missing(tmp_path):
@@ -52,7 +57,7 @@ def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch):
     python_path.parent.mkdir(parents=True)
     python_path.write_text("")
 
-    def failing_iterdir(self):  # pragma: no cover - branch to exercise error handling
+    def failing_iterdir(self):  # pragma: no cover - exercised when permissions fail
         raise PermissionError("denied")
 
     monkeypatch.setattr(lc.Path, "iterdir", failing_iterdir)
