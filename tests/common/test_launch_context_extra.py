@@ -2,7 +2,7 @@
 
 from contextlib import redirect_stdout
 from io import StringIO
-import types
+from types import ModuleType
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -33,11 +33,10 @@ def test_detect_launch_context_without_terraform_cookie(monkeypatch):
 
 
 def test_get_editable_install_details_reports_development_mode(monkeypatch):
-    dummy_pyvider = types.SimpleNamespace(
-        __file__="/repo/src/pyvider/__init__.py",
-        __path__=["/repo/src/pyvider"],
-    )
-    monkeypatch.setattr(lc, "pyvider", dummy_pyvider, raising=False)
+    dummy_module = ModuleType("pyvider")
+    dummy_module.__file__ = "/repo/src/pyvider/__init__.py"
+    dummy_module.__path__ = ["/repo/src/pyvider"]
+    monkeypatch.setitem(lc.sys.modules, "pyvider", dummy_module)
 
     details = _get_editable_install_details("/repo/.venv/bin/pyvider")
 
