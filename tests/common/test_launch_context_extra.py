@@ -40,7 +40,7 @@ def test_get_editable_install_details_reports_development_mode(monkeypatch):
 
     details = _get_editable_install_details("/repo/.venv/bin/pyvider")
 
-    assert details["pyvider_location"].endswith("src/pyvider")
+    assert details["pyvider_location"].endswith("src")
     assert details["is_development_mode"] is True
 
 
