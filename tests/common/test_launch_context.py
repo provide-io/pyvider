@@ -4,12 +4,12 @@ import types
 
 import pytest
 
+import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
     LaunchContext,
     LaunchMethod,
     _analyze_cache_structure,
     _analyze_executable,
-    _detect_launch_method,
     _get_module_name,
     _get_pspf_details,
     _is_direct_script_launch,
@@ -22,15 +22,15 @@ from pyvider.common.launch_context import (
 
 
 def test_detect_launch_context_collects_environment(monkeypatch):
-    monkeypatch.setitem(__import__("pyvider.common.launch_context", fromlist=["os"]).os.environ, "TF_PLUGIN_MAGIC_COOKIE", "1")
-    monkeypatch.setitem(__import__("pyvider.common.launch_context", fromlist=["os"]).os.environ, "PSPF_TOKEN", "secret")
-    monkeypatch.setattr("pyvider.common.launch_context.sys.argv", ["/app/__main__.py"])
-    monkeypatch.setattr("pyvider.common.launch_context.sys.executable", "/opt/python")
-    monkeypatch.setattr("pyvider.common.launch_context.sys.version", "3.x-test")
-    monkeypatch.setattr("pyvider.common.launch_context.sys.platform", "posix")
-    monkeypatch.setattr("pyvider.common.launch_context.sys.path", ["one", "two", "three"])
-    monkeypatch.setattr("pyvider.common.launch_context.os.getcwd", lambda: "/workspace")
-    monkeypatch.setattr("pyvider.common.launch_context._detect_launch_method", lambda: (LaunchMethod.UNKNOWN, {"reason": "patched"}))
+    monkeypatch.setitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", "1")
+    monkeypatch.setitem(lc.os.environ, "PSPF_TOKEN", "secret")
+    monkeypatch.setattr(lc.sys, "argv", ["/app/__main__.py"])
+    monkeypatch.setattr(lc.sys, "executable", "/opt/python")
+    monkeypatch.setattr(lc.sys, "version", "3.x-test")
+    monkeypatch.setattr(lc.sys, "platform", "posix")
+    monkeypatch.setattr(lc.sys, "path", ["one", "two", "three"])
+    monkeypatch.setattr(lc.os, "getcwd", lambda: "/workspace")
+    monkeypatch.setattr(lc, "_detect_launch_method", lambda exe, py: (LaunchMethod.UNKNOWN, {"reason": "patched"}))
 
     context = detect_launch_context()
 
@@ -46,7 +46,7 @@ def test_is_pspf_launch_detects_cache_path():
 
 
 def test_is_module_launch_with_main(monkeypatch):
-    monkeypatch.setattr("pyvider.common.launch_context.sys.argv", ["/tmp/pyvider/__main__.py"])
+    monkeypatch.setattr(lc.sys, "argv", ["/tmp/pyvider/__main__.py"])
     assert _is_module_launch() is True
 
 
@@ -55,12 +55,12 @@ def test_is_editable_install_detects_src(monkeypatch):
         __file__="/repo/src/pyvider/__init__.py",
         __path__=["/repo/src/pyvider"],
     )
-    monkeypatch.setattr("pyvider.common.launch_context.pyvider", dummy_pyvider, raising=False)
+    monkeypatch.setattr(lc, "pyvider", dummy_pyvider, raising=False)
     assert _is_editable_install("/repo/.venv/bin/pyvider") is True
 
 
 def test_get_module_name_defaults(monkeypatch):
-    monkeypatch.setattr("pyvider.common.launch_context.sys.argv", ["pyvider"])
+    monkeypatch.setattr(lc.sys, "argv", ["pyvider"])
     assert _get_module_name() == "pyvider"
 
 
@@ -80,7 +80,7 @@ def test_analyze_cache_structure_lists_directories(tmp_path, monkeypatch):
     python_path = bin_dir / "python"
     python_path.write_text("")
 
-    monkeypatch.setattr("pyvider.common.launch_context.sys.executable", str(python_path))
+    monkeypatch.setattr(lc.sys, "executable", str(python_path))
 
     details = _get_pspf_details()
     assert "metadata_path" in details
@@ -102,7 +102,7 @@ def test_log_launch_context_uses_logger(monkeypatch):
         details={},
     )
 
-    monkeypatch.setattr("pyvider.common.launch_context.detect_launch_context", lambda: context)
+    monkeypatch.setattr(lc, "detect_launch_context", lambda: context)
 
     result = log_launch_context(captured.append)
 
