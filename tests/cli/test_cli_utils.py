@@ -55,6 +55,7 @@ def test_run_command_logs_success(monkeypatch, tmp_path):
     assert any("✅ Done (0.50s)" in msg for msg in outputs)
     assert log_capture["path"] == str(log_dir / "prep.log")
     assert "Command: echo hi" in log_capture["content"]
+    assert "STDOUT:\n" in log_capture["content"]
     assert "Duration: 0.50s" in log_capture["content"]
 
 
