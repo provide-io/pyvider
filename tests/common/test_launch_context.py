@@ -121,3 +121,24 @@ def test_detect_launch_method_prefers_direct_script(monkeypatch):
 
     assert method is LaunchMethod.SCRIPT_DIRECT
     assert details["script_path"] == "/tmp/script.py"
+
+
+def test_detect_launch_method_prefers_pspf(monkeypatch):
+    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: True)
+    monkeypatch.setattr(lc, "_get_pspf_details", lambda: {"cache": "info"})
+    method, details = lc._detect_launch_method("/tmp/provider", "/tmp/cache/python")
+
+    assert method is LaunchMethod.PSPF_PACKAGE
+    assert details["cache"] == "info"
+
+
+def test_detect_launch_method_handles_editable(monkeypatch):
+    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: False)
+    monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
+    monkeypatch.setattr(lc, "_is_editable_install", lambda exe: True)
+    monkeypatch.setattr(lc, "_get_editable_install_details", lambda exe: {"executable_path": exe})
+
+    method, details = lc._detect_launch_method("/repo/.venv/bin/pyvider", "/usr/bin/python")
+
+    assert method is LaunchMethod.EDITABLE_INSTALL
+    assert details["executable_path"] == "/repo/.venv/bin/pyvider"
