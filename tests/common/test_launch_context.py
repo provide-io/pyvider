@@ -125,10 +125,12 @@ def test_detect_launch_method_prefers_direct_script(monkeypatch):
 
 
 def test_detect_launch_method_prefers_pspf(monkeypatch):
-    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: True)
+    calls = {}
+    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: calls.setdefault("pspf", True))
     monkeypatch.setattr(lc, "_get_pspf_details", lambda: {"cache": "info"})
     method, details = lc._detect_launch_method("/tmp/provider", "/tmp/cache/python")
 
+    assert calls["pspf"] is True
     assert method is LaunchMethod.PSPF_PACKAGE
     assert details["cache"] == "info"
 
