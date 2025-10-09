@@ -146,3 +146,34 @@ def test_run_command_logs_unexpected_exception(monkeypatch, tmp_path):
 
     assert any("❌ ERROR" in msg for msg in outputs)
     assert any("Failed to run command" in msg for msg in outputs)
+
+def test_run_command_appends_existing_log(monkeypatch, tmp_path):
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    log_dir = tmp_path / ".pyvider" / "logs"
+    log_dir.mkdir(parents=True)
+    log_file = log_dir / "prep.log"
+    log_file.write_text("existing\n")
+
+    monkeypatch.setattr("pyvider.cli.utils.Path.home", lambda: tmp_path)
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: workspace)
+    monkeypatch.setattr("pyvider.cli.utils.ensure_dir", lambda path: None)
+    monkeypatch.setattr("pyvider.cli.utils.timed_block", lambda: DummyTimer())
+    monkeypatch.setattr("pyvider.cli.utils.pout", lambda *args, **kwargs: None)
+
+    def fake_atomic(path, content):
+        path.write_text(content, encoding="utf-8")
+
+    monkeypatch.setattr("pyvider.cli.utils.atomic_write_text", fake_atomic)
+
+    def fake_run_command(command, cwd, env, check):
+        return SimpleNamespace(stdout="fresh", stderr="", returncode=0)
+
+    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+
+    result = _run_command(["echo", "hi"], title="append")
+
+    assert result == "fresh"
+    file_text = log_file.read_text(encoding="utf-8")
+    assert file_text.startswith("existing\n--- Log Entry")
+    assert "Command: echo hi" in file_text
