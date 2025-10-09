@@ -124,3 +124,25 @@ def test_run_command_allows_non_zero_when_check_disabled(monkeypatch, tmp_path):
 
     result = _run_command(["cmd"], check=False)
     assert result == "out"
+
+def test_run_command_logs_unexpected_exception(monkeypatch, tmp_path):
+    (tmp_path / "workspace").mkdir()
+    outputs: list[str] = []
+
+    monkeypatch.setattr("pyvider.cli.utils.Path.home", lambda: tmp_path)
+    monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: tmp_path / "workspace")
+    monkeypatch.setattr("pyvider.cli.utils.ensure_dir", lambda path: None)
+    monkeypatch.setattr("pyvider.cli.utils.atomic_write_text", lambda path, content: None)
+    monkeypatch.setattr("pyvider.cli.utils.timed_block", lambda: DummyTimer())
+    monkeypatch.setattr("pyvider.cli.utils.pout", lambda message, **kwargs: outputs.append(message))
+
+    def failing_run_command(*_args, **_kwargs):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr("pyvider.cli.utils.run_command", failing_run_command)
+
+    with pytest.raises(RuntimeError):
+        _run_command(["explode"], title="Explode")
+
+    assert any("❌ ERROR" in msg for msg in outputs)
+    assert any("Failed to run command" in msg for msg in outputs)
