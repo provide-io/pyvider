@@ -1,6 +1,7 @@
 """Tests for launch context detection helpers."""
 
 import types
+from pathlib import Path
 
 import pytest
 
@@ -142,3 +143,19 @@ def test_detect_launch_method_handles_editable(monkeypatch):
 
     assert method is LaunchMethod.EDITABLE_INSTALL
     assert details["executable_path"] == "/repo/.venv/bin/pyvider"
+
+
+
+def test_detect_launch_method_returns_unknown(monkeypatch):
+    calls = {}
+    monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: calls.setdefault("pspf", True) and False)
+    monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
+    monkeypatch.setattr(lc, "_is_editable_install", lambda exe: False)
+    monkeypatch.setattr(lc, "_is_direct_script_launch", lambda exe: False)
+    monkeypatch.setattr(lc, "_analyze_executable", lambda exe: {"name": Path(exe).name})
+
+    method, details = lc._detect_launch_method("/opt/bin/custom", "/usr/bin/python")
+
+    assert method is LaunchMethod.UNKNOWN
+    assert details["reason"].startswith("Could not determine")
+    assert details["executable_analysis"]["name"] == "custom"
