@@ -31,7 +31,8 @@
       "Bash(for file in src/pyvider/protocols/tfprotov6/handlers/*.py)",
       "Bash(xargs basename:*)",
       "Bash(cat:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(.venv/bin/python:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
