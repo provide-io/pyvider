@@ -1952,22 +1952,23 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.0.30"
+version = "0.0.32"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiofiles" },
     { name = "attrs" },
+    { name = "psutil" },
     { name = "structlog" },
     { name = "tomli-w" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/30/35/80f7b5a82bb33bdbd744ca9761a4d8e53eb601fb96a08570f9e11d72da70/provide_foundation-0.0.30.tar.gz", hash = "sha256:9b2d0df67921313252fee692fc68e25c80ad128813d4344d7a02965828d652ce", size = 298433, upload-time = "2025-09-22T15:31:48.729Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/61/ea/921d6868bb36cf61b51a55af38c792a04940aed5e14bf715f4738401c5f7/provide_foundation-0.0.32.tar.gz", hash = "sha256:f15008a7d90ea250b2148217daeeb9b8c25d98a02397e70169c23156025b7538", size = 358743, upload-time = "2025-10-10T04:04:40.637Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/03/0a/046886f2e5df69ab378f03eebe91dfed8cd2e1e11d133ce7accffc68cb6f/provide_foundation-0.0.30-py3-none-any.whl", hash = "sha256:9805c0199fdf6f0890aca9f0132226ec0dd9c27b40412c05b6a866235a944654", size = 364402, upload-time = "2025-09-22T15:31:46.914Z" },
+    { url = "https://files.pythonhosted.org/packages/97/9a/984282d723dc28f210f5b8269c3b1925f051c014aa1d65271e9a0007094a/provide_foundation-0.0.32-py3-none-any.whl", hash = "sha256:c18a757434fc198ffc847173a19b1a0de13d6f238b033a72b405903a15c3cda8", size = 490481, upload-time = "2025-10-10T04:04:38.852Z" },
 ]
 
 [[package]]
 name = "provide-testkit"
-version = "0.0.31"
+version = "0.0.32"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -1979,9 +1980,9 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "pytest-xdist" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/19/6f/e50ecae9deed3628de22647f0813cc45d002021324928a72a84dff1c3096/provide_testkit-0.0.31.tar.gz", hash = "sha256:14822875df4eb52ac6743f1622f1f059c3f4d4c700f4e1867f8ef5331808a7c8", size = 99774, upload-time = "2025-10-08T19:03:47.053Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/07/62dd9b9ce5b33583904b889cddf53fc34b8ea3a2db5d19026e09782b3008/provide_testkit-0.0.32.tar.gz", hash = "sha256:63f8061fce0bbb151634d2e2147c0be449f7acf39dd0b7bb9b57a77fc0b76a23", size = 99796, upload-time = "2025-10-10T01:13:36.15Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/34/81/b5ba2e5ac453ca55631e482fe0050d0509b69ae62115d2bbdc4aa7b8a9e3/provide_testkit-0.0.31-py3-none-any.whl", hash = "sha256:0ce0a0c94005c47b8d835377acdf8bf2bd2a5322d9bb48820b4a19a484136aea", size = 130835, upload-time = "2025-10-08T19:03:45.736Z" },
+    { url = "https://files.pythonhosted.org/packages/de/23/4a2e396a445efda4e381bd0647330c2d04322b8e4e08f94a6ca49cede0a5/provide_testkit-0.0.32-py3-none-any.whl", hash = "sha256:973a7ea601a5560600b4ea0eb7937d19417e5a6dc85506fde9bc336a8ddd3ba0", size = 130837, upload-time = "2025-10-10T01:13:34.302Z" },
 ]
 
 [package.optional-dependencies]
