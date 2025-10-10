@@ -20,7 +20,8 @@
       "Bash(find:*)",
       "Bash(pytest:*)",
       "Bash(ruff check:*)",
-      "Bash(ruff format:*)"
+      "Bash(ruff format:*)",
+      "Bash(python:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

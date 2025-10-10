@@ -146,6 +146,23 @@ def _handle_apply_result(
 async def ApplyResourceChangeHandler(
     request: pb.ApplyResourceChange.Request, context: Any
 ) -> pb.ApplyResourceChange.Response:
+    """Handle apply resource change request with metrics collection."""
+    start_time = time.perf_counter()
+    handler_requests.add(1, {"handler": "ApplyResourceChange"})
+
+    try:
+        return await _apply_resource_change_impl(request, context)
+    except Exception as e:
+        handler_errors.add(1, {"handler": "ApplyResourceChange"})
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.record(duration, {"handler": "ApplyResourceChange"})
+
+
+async def _apply_resource_change_impl(
+    request: pb.ApplyResourceChange.Request, context: Any
+) -> pb.ApplyResourceChange.Response:
     response = pb.ApplyResourceChange.Response()
     resource_context = None
     try:
