@@ -27,7 +27,8 @@
       "Bash(do if grep -q \"handler_requests.inc\" \"$file\")",
       "Bash(then basename \"$file\")",
       "Bash(fi)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(for file in src/pyvider/protocols/tfprotov6/handlers/*.py)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
