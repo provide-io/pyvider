@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 from provide.foundation import logger
@@ -6,6 +7,11 @@ from provide.foundation.errors import resilient
 from pyvider.conversion import unmarshal
 from pyvider.exceptions import ProviderConfigurationError, PyviderError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.providers.context import ProviderContext
@@ -23,6 +29,23 @@ async def ConfigureProviderHandler(
     and initializes the provider context, making it available for all
     subsequent component operations.
     """
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="ConfigureProvider")
+
+    try:
+        return await _configure_provider_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="ConfigureProvider")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="ConfigureProvider")
+
+
+async def _configure_provider_impl(
+    request: pb.ConfigureProvider.Request, context: Any
+) -> pb.ConfigureProvider.Response:
+    """Implementation of ConfigureProvider handler."""
     response = pb.ConfigureProvider.Response()
     logger.debug("Received ConfigureProvider request")
     try:

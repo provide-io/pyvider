@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import attrs
@@ -13,6 +14,11 @@ from pyvider.cty import CtyObject, CtyValue
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import (
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
@@ -122,6 +128,24 @@ def _handle_planned_state_dict(
 async def PlanResourceChangeHandler(
     request: pb.PlanResourceChange.Request, context: Any
 ) -> pb.PlanResourceChange.Response:
+    """Handle plan resource change request."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="PlanResourceChange")
+
+    try:
+        return await _plan_resource_change_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="PlanResourceChange")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="PlanResourceChange")
+
+
+async def _plan_resource_change_impl(
+    request: pb.PlanResourceChange.Request, context: Any
+) -> pb.PlanResourceChange.Response:
+    """Implementation of PlanResourceChange handler."""
     response = pb.PlanResourceChange.Response()
     resource_context = None
     try:

@@ -2,17 +2,38 @@
 # pyvider/protocols/tfprotov6/handlers/get_metadata.py
 #
 
+import time
 from typing import Any
 
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @resilient()
 async def GetMetadataHandler(request: pb.GetMetadata.Request, context: Any) -> pb.GetMetadata.Response:
     """Get provider metadata with dynamically discovered resources."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="GetMetadata")
+
+    try:
+        return await _get_metadata_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="GetMetadata")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="GetMetadata")
+
+
+async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> pb.GetMetadata.Response:
+    """Implementation of GetMetadata handler."""
     from pyvider.hub import hub
 
     logger.debug("GetMetadata called")

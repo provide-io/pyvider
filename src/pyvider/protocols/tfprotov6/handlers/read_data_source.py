@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 from provide.foundation.errors import resilient
@@ -6,6 +7,11 @@ from pyvider.conversion import marshal, unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
@@ -19,6 +25,24 @@ from pyvider.resources.context import ResourceContext
 async def ReadDataSourceHandler(
     request: pb.ReadDataSource.Request, context: Any
 ) -> pb.ReadDataSource.Response:
+    """Handle read data source request."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="ReadDataSource")
+
+    try:
+        return await _read_data_source_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="ReadDataSource")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="ReadDataSource")
+
+
+async def _read_data_source_impl(
+    request: pb.ReadDataSource.Request, context: Any
+) -> pb.ReadDataSource.Response:
+    """Implementation of ReadDataSource handler."""
     response = pb.ReadDataSource.Response()
     resource_context = None
     try:

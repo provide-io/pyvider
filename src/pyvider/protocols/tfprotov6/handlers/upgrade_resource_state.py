@@ -3,11 +3,17 @@
 #
 
 import json
+import time
 from typing import Any
 
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
@@ -24,6 +30,23 @@ async def UpgradeResourceStateHandler(
     as we are not implementing schema versioning. It must return the state
     it was given, unmodified.
     """
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="UpgradeResourceState")
+
+    try:
+        return await _upgrade_resource_state_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="UpgradeResourceState")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="UpgradeResourceState")
+
+
+async def _upgrade_resource_state_impl(
+    request: pb.UpgradeResourceState.Request, context: Any
+) -> pb.UpgradeResourceState.Response:
+    """Implementation of UpgradeResourceState handler."""
     logger.debug("UpgradeResourceState called")
     try:
         logger.debug(f"Upgrade request: {request}")

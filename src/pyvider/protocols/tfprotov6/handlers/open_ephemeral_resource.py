@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import attrs
@@ -10,6 +11,11 @@ from pyvider.cty.exceptions import CtyValidationError
 from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
 from pyvider.protocols.tfprotov6.handlers.utils_timestamp import datetime_to_proto
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -20,6 +26,23 @@ async def OpenEphemeralResourceHandler(
     request: pb.OpenEphemeralResource.Request, context: Any
 ) -> pb.OpenEphemeralResource.Response:
     """Handles opening an ephemeral resource."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="OpenEphemeralResource")
+
+    try:
+        return await _open_ephemeral_resource_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="OpenEphemeralResource")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="OpenEphemeralResource")
+
+
+async def _open_ephemeral_resource_impl(
+    request: pb.OpenEphemeralResource.Request, context: Any
+) -> pb.OpenEphemeralResource.Response:
+    """Implementation of OpenEphemeralResource handler."""
     logger.debug(f"EPHEMERAL 📖 Opening resource '{request.type_name}'")
     response = pb.OpenEphemeralResource.Response()
     try:

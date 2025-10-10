@@ -5,12 +5,18 @@ to protocol-specific messages, maintaining clean separation of concerns.
 It also caches the result to avoid redundant work on repeated calls.
 """
 
+import time
 from typing import Any
 
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
 from pyvider.functions.adapters import function_to_dict
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.adapters.function_adapter import dict_to_proto_function
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
@@ -69,6 +75,21 @@ async def GetFunctionsHandler(request: pb.GetFunctions.Request, context: Any) ->
     Handle GetFunctions requests by returning all registered functions.
     This now uses a cached result to improve performance and reduce log noise.
     """
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="GetFunctions")
+
+    try:
+        return await _get_functions_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="GetFunctions")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="GetFunctions")
+
+
+async def _get_functions_impl(request: pb.GetFunctions.Request, context: Any) -> pb.GetFunctions.Response:
+    """Implementation of GetFunctions handler."""
     try:
         functions = await _get_functions_once()
         return GetFunctions.Response(functions=functions, diagnostics=[])

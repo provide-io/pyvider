@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import msgpack
@@ -7,6 +8,11 @@ from provide.foundation.errors import resilient
 from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 
@@ -16,6 +22,23 @@ async def CloseEphemeralResourceHandler(
     request: pb.CloseEphemeralResource.Request, context: Any
 ) -> pb.CloseEphemeralResource.Response:
     """Handles closing an ephemeral resource."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="CloseEphemeralResource")
+
+    try:
+        return await _close_ephemeral_resource_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="CloseEphemeralResource")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="CloseEphemeralResource")
+
+
+async def _close_ephemeral_resource_impl(
+    request: pb.CloseEphemeralResource.Request, context: Any
+) -> pb.CloseEphemeralResource.Response:
+    """Implementation of CloseEphemeralResource handler."""
     logger.debug(f"EPHEMERAL 🔒 Closing resource '{request.type_name}'")
     response = pb.CloseEphemeralResource.Response()
     try:

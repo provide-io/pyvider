@@ -2,12 +2,17 @@
 # pyvider/src/pyvider/protocols/tfprotov6/handlers/stop_provider.py
 #
 
-
+import time
 from typing import Any
 
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.rpcplugin.server import RPCPluginServer
 
@@ -18,6 +23,21 @@ async def StopProviderHandler(request: pb.StopProvider.Request, context: Any) ->
     Handles the StopProvider RPC call from Terraform Core.
     This is the primary mechanism for Terraform to request a graceful plugin exit.
     """
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="StopProvider")
+
+    try:
+        return await _stop_provider_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="StopProvider")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="StopProvider")
+
+
+async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) -> pb.StopProvider.Response:
+    """Implementation of StopProvider handler."""
     try:
         logger.info("🛎️🔒✅ StopProvider RPC received. Initiating provider shutdown...")
 

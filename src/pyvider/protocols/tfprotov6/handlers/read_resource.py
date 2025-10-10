@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import msgpack
@@ -7,6 +8,11 @@ from pyvider.common.encryption import decrypt
 from pyvider.conversion import marshal, unmarshal
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
@@ -18,6 +24,22 @@ from pyvider.resources.context import ResourceContext
 
 @resilient()
 async def ReadResourceHandler(request: pb.ReadResource.Request, context: Any) -> pb.ReadResource.Response:
+    """Handle read resource request."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="ReadResource")
+
+    try:
+        return await _read_resource_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="ReadResource")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="ReadResource")
+
+
+async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) -> pb.ReadResource.Response:
+    """Implementation of ReadResource handler."""
     response = pb.ReadResource.Response()
     resource_context = None
     try:
