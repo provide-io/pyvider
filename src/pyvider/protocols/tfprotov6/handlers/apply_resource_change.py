@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 import attrs
@@ -8,6 +9,11 @@ from provide.foundation.errors import resilient
 from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import (
@@ -148,16 +154,16 @@ async def ApplyResourceChangeHandler(
 ) -> pb.ApplyResourceChange.Response:
     """Handle apply resource change request with metrics collection."""
     start_time = time.perf_counter()
-    handler_requests.add(1, {"handler": "ApplyResourceChange"})
+    handler_requests.inc(handler="ApplyResourceChange")
 
     try:
         return await _apply_resource_change_impl(request, context)
-    except Exception as e:
-        handler_errors.add(1, {"handler": "ApplyResourceChange"})
+    except Exception:
+        handler_errors.inc(handler="ApplyResourceChange")
         raise
     finally:
         duration = time.perf_counter() - start_time
-        handler_duration.record(duration, {"handler": "ApplyResourceChange"})
+        handler_duration.observe(duration, handler="ApplyResourceChange")
 
 
 async def _apply_resource_change_impl(

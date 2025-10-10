@@ -4,7 +4,7 @@ The canonical entry point for the Pyvider CLI application.
 
 import asyncio
 
-from provide.foundation import setup_logging, shutdown_foundation
+from provide.foundation import logger, shutdown_foundation
 
 from pyvider.cli import cli
 
@@ -13,7 +13,8 @@ def main() -> None:
     """Main entry point for the Pyvider CLI application."""
     # Initialize Foundation logging for CLI mode
     # (Provider mode initializes logging separately in provide_command.py)
-    setup_logging()
+    # Note: logger module auto-initializes on first import, so just importing it is sufficient
+    logger.debug("Pyvider CLI starting")
 
     try:
         # The `cli` object is the fully assembled click group.
