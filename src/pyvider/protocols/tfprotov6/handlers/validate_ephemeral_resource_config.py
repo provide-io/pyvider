@@ -1,3 +1,4 @@
+import time
 from typing import Any
 
 from provide.foundation import logger
@@ -7,6 +8,11 @@ from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
 import pyvider.protocols.tfprotov6.protobuf as pb
 
@@ -16,6 +22,23 @@ async def ValidateEphemeralResourceConfigHandler(
     request: pb.ValidateEphemeralResourceConfig.Request, context: Any
 ) -> pb.ValidateEphemeralResourceConfig.Response:
     """Handles validation of an ephemeral resource's configuration."""
+    start_time = time.perf_counter()
+    handler_requests.inc(handler="ValidateEphemeralResourceConfig")
+
+    try:
+        return await _validate_ephemeral_resource_config_impl(request, context)
+    except Exception:
+        handler_errors.inc(handler="ValidateEphemeralResourceConfig")
+        raise
+    finally:
+        duration = time.perf_counter() - start_time
+        handler_duration.observe(duration, handler="ValidateEphemeralResourceConfig")
+
+
+async def _validate_ephemeral_resource_config_impl(
+    request: pb.ValidateEphemeralResourceConfig.Request, context: Any
+) -> pb.ValidateEphemeralResourceConfig.Response:
+    """Implementation of ValidateEphemeralResourceConfig handler."""
     logger.debug(f"EPHEMERAL 🔎 Validating config for '{request.type_name}'")
     response = pb.ValidateEphemeralResourceConfig.Response()
     try:

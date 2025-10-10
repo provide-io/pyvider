@@ -21,7 +21,13 @@
       "Bash(pytest:*)",
       "Bash(ruff check:*)",
       "Bash(ruff format:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(python3:*)",
+      "Bash(for file in /Users/tim/code/gh/provide-io/pyvider/src/pyvider/protocols/tfprotov6/handlers/*.py)",
+      "Bash(do if grep -q \"handler_requests.inc\" \"$file\")",
+      "Bash(then basename \"$file\")",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
