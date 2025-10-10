@@ -1,5 +1,7 @@
 from typing import Any
 
+from provide.foundation.errors import resilient
+
 from pyvider.conversion import marshal, unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
@@ -13,6 +15,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
 
 
+@resilient()
 async def ReadDataSourceHandler(
     request: pb.ReadDataSource.Request, context: Any
 ) -> pb.ReadDataSource.Response:

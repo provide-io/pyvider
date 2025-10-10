@@ -6,6 +6,7 @@ import json
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
@@ -14,6 +15,7 @@ from pyvider.protocols.tfprotov6.protobuf import (
 )
 
 
+@resilient()
 async def UpgradeResourceStateHandler(
     request: pb.UpgradeResourceState.Request, context: Any
 ) -> pb.UpgradeResourceState.Response:

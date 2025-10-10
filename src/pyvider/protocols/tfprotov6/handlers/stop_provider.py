@@ -6,11 +6,13 @@
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.rpcplugin.server import RPCPluginServer
 
 
+@resilient()
 async def StopProviderHandler(request: pb.StopProvider.Request, context: Any) -> pb.StopProvider.Response:
     """
     Handles the StopProvider RPC call from Terraform Core.

@@ -8,6 +8,7 @@ It also caches the result to avoid redundant work on repeated calls.
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 from pyvider.functions.adapters import function_to_dict
 from pyvider.protocols.tfprotov6.adapters.function_adapter import dict_to_proto_function
@@ -62,6 +63,7 @@ async def _get_functions_once() -> dict[str, Function]:
         return _cached_functions
 
 
+@resilient()
 async def GetFunctionsHandler(request: pb.GetFunctions.Request, context: Any) -> pb.GetFunctions.Response:
     """
     Handle GetFunctions requests by returning all registered functions.

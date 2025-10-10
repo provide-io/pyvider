@@ -5,6 +5,7 @@
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
@@ -12,6 +13,7 @@ from pyvider.protocols.tfprotov6.protobuf import (
 )
 
 
+@resilient()
 async def ValidateProviderConfigHandler(
     request: pb.ValidateProviderConfig.Request, context: Any
 ) -> pb.ValidateProviderConfig.Response:

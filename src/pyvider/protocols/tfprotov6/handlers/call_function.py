@@ -2,6 +2,7 @@ import inspect
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 from pyvider.conversion import marshal, unmarshal
 from pyvider.cty import CtyDynamic, CtyValue
@@ -80,6 +81,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
         ) from func_err
 
 
+@resilient()
 async def CallFunctionHandler(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:
     """
     Handles the CallFunction RPC request, acting as a robust dispatcher.

@@ -5,10 +5,12 @@
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
+@resilient()
 async def GetMetadataHandler(request: pb.GetMetadata.Request, context: Any) -> pb.GetMetadata.Response:
     """Get provider metadata with dynamically discovered resources."""
     from pyvider.hub import hub

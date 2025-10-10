@@ -1,5 +1,7 @@
 from typing import Any
 
+from provide.foundation.errors import resilient
+
 from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
@@ -8,6 +10,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_ex
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
+@resilient()
 async def ValidateResourceConfigHandler(
     request: pb.ValidateResourceConfig.Request, context: Any
 ) -> pb.ValidateResourceConfig.Response:

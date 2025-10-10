@@ -5,10 +5,12 @@
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
+@resilient()
 async def ImportResourceStateHandler(
     request: pb.ImportResourceState.Request, context: Any
 ) -> pb.ImportResourceState.Response:

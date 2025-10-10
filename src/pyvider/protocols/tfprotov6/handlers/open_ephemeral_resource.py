@@ -3,6 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 from pyvider.conversion import marshal, unmarshal
 from pyvider.cty.exceptions import CtyValidationError
@@ -14,6 +15,7 @@ from pyvider.protocols.tfprotov6.handlers.utils_timestamp import datetime_to_pro
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
+@resilient()
 async def OpenEphemeralResourceHandler(
     request: pb.OpenEphemeralResource.Request, context: Any
 ) -> pb.OpenEphemeralResource.Response:

@@ -3,6 +3,7 @@ from typing import Any
 import attrs
 import msgpack
 from provide.foundation import logger
+from provide.foundation.errors import resilient
 
 from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import PyviderError, ResourceError
@@ -12,6 +13,7 @@ from pyvider.protocols.tfprotov6.handlers.utils_timestamp import datetime_to_pro
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
+@resilient()
 async def RenewEphemeralResourceHandler(
     request: pb.RenewEphemeralResource.Request, context: Any
 ) -> pb.RenewEphemeralResource.Response:
