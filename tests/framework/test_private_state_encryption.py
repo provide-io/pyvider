@@ -4,9 +4,10 @@ import attrs
 import msgpack
 import pytest
 
+from provide.foundation.errors import ConfigurationError
+
 from pyvider.common.encryption import CONFIG_KEY_NAME, decrypt, encrypt
 from pyvider.conversion import marshal
-from pyvider.exceptions import FrameworkConfigurationError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers import (
     ApplyResourceChangeHandler,
@@ -60,10 +61,10 @@ def test_encryption_raises_error_when_secret_is_missing(monkeypatch):
     env_var_name = f"PYVIDER_{CONFIG_KEY_NAME.upper()}"
     monkeypatch.delenv(env_var_name, raising=False)
     monkeypatch.setattr("pyvider.common.config.PyviderConfig.get", lambda self, key, default=None: None)
-    from pyvider.common import encryption
+    from pyvider.common.encryption import reset_encryption_manager
 
-    encryption._ENCRYPTION_KEY = None
-    with pytest.raises(FrameworkConfigurationError, match="Private state shared secret not found"):
+    reset_encryption_manager()
+    with pytest.raises(ConfigurationError, match="Private state shared secret"):
         encrypt(b"some data")
 
 

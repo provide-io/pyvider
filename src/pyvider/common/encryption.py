@@ -78,7 +78,7 @@ class EncryptionManager:
         self._lock = threading.Lock()
         logger.debug("Encryption manager initialized")
 
-    @resilient(max_attempts=2)
+    @resilient()
     def _get_shared_secret(self) -> str:
         """
         Retrieve the shared secret from configuration.
