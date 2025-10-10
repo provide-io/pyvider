@@ -28,7 +28,8 @@
       "Bash(then basename \"$file\")",
       "Bash(fi)",
       "Bash(done)",
-      "Bash(for file in src/pyvider/protocols/tfprotov6/handlers/*.py)"
+      "Bash(for file in src/pyvider/protocols/tfprotov6/handlers/*.py)",
+      "Bash(xargs basename:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
