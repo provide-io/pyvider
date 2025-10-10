@@ -30,7 +30,8 @@
       "Bash(done)",
       "Bash(for file in src/pyvider/protocols/tfprotov6/handlers/*.py)",
       "Bash(xargs basename:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(test:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
