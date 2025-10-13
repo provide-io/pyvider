@@ -42,7 +42,8 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "provide-testkit[pyvider-dev]",
+    "provide-testkit[standard,typecheck,advanced-testing,build,profiling]",
+    "pyvider-rpcplugin[test]",
 ]
 docs = [
     "provide-testkit[docs]",
@@ -68,8 +69,17 @@ version = {file = "VERSION"}
 log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
+pythonpath = ["src", "."]
 python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks integration tests",
+    "unit: marks unit tests",
+]
 norecursedirs = [
     ".git",
     "build",
