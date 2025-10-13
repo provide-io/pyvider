@@ -17,7 +17,8 @@
       "Bash(echo $PWD)",
       "Bash(/Users/tim/.local/bin/flavor pack --manifest /Users/tim/code/gh/provide-io/terraform-provider-pyvider/pyproject.toml --output /Users/tim/code/gh/provide-io/terraform-provider-pyvider/dist/terraform-provider-pyvider.psp --launcher-bin /Users/tim/code/gh/provide-io/flavorpack/ingredients/bin/flavor-rs-launcher-darwin_arm64 --key-seed test123)",
       "Bash(/bin/rm:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(pytest:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

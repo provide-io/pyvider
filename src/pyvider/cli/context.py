@@ -2,14 +2,14 @@ from pathlib import Path
 from typing import Any
 
 import click
-from provide.foundation.context import Context
+from provide.foundation.context import CLIContext
 from provide.foundation.platform import get_arch_name, get_os_name
 
 from pyvider.common.config import PyviderConfig
 
 
 # --- Pyvider Context Class ---
-class PyviderContext(Context):
+class PyviderContext(CLIContext):
     """
     Pyvider-specific context that extends foundation's Context.
 

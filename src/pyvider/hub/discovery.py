@@ -5,7 +5,8 @@ import pkgutil
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import retry_on_error, resilient
+from provide.foundation.errors import resilient
+from provide.foundation.resilience import retry
 
 from pyvider.hub.components import ComponentRegistry
 
@@ -24,7 +25,7 @@ class ComponentDiscovery:
         self.import_errors: list[tuple[str, Exception]] = []
 
     @resilient()
-    @retry_on_error(max_attempts=2, base_delay=1.0)
+    @retry(max_attempts=2, base_delay=1.0)
     async def discover_all(self, strict: bool = False) -> None:
         """
         Discovers all components. In strict mode, it re-raises import errors.
