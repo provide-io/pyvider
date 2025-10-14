@@ -6,6 +6,7 @@ from typing import Protocol, runtime_checkable
 
 from pyvider.common.types import ConfigType, StateType
 from pyvider.resources.context import ResourceContext
+from pyvider.resources.private_state import PrivateState
 from pyvider.resources.types import ResourceType
 
 
@@ -17,19 +18,19 @@ class ResourceProtocol(Protocol[ResourceType, StateType, ConfigType]):
         """Validate resource configuration."""
         ...
 
-    async def read(self, ctx: ResourceContext[ConfigType, StateType]) -> StateType:
+    async def read(self, ctx: ResourceContext[ConfigType, StateType, PrivateState]) -> StateType:
         """Read resource state."""
         ...
 
-    async def plan(self, ctx: ResourceContext[ConfigType, StateType]) -> tuple[StateType, bytes]:
+    async def plan(self, ctx: ResourceContext[ConfigType, StateType, PrivateState]) -> tuple[StateType, bytes]:
         """Plan resource changes."""
         ...
 
-    async def apply(self, ctx: ResourceContext[ConfigType, StateType]) -> tuple[StateType, bytes]:
+    async def apply(self, ctx: ResourceContext[ConfigType, StateType, PrivateState]) -> tuple[StateType, bytes]:
         """Apply resource changes."""
         ...
 
-    async def delete(self, ctx: ResourceContext[ConfigType, StateType]) -> None:
+    async def delete(self, ctx: ResourceContext[ConfigType, StateType, PrivateState]) -> None:
         """Delete the resource."""
         ...
 

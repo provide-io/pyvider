@@ -13,7 +13,7 @@ from pyvider.resources.private_state import PrivateState
 if TYPE_CHECKING:
     from pyvider.capabilities import BaseCapability
 
-PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState, default=PrivateState)
+PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
 
 
 @define(frozen=True)

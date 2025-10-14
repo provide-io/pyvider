@@ -45,7 +45,7 @@ def test_run_command_logs_success(monkeypatch, tmp_path):
         assert cwd == tmp_path / "workspace"
         return SimpleNamespace(stdout="done", stderr="", returncode=0)
 
-    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+    monkeypatch.setattr("pyvider.cli.utils.run", fake_run_command)
 
     result = _run_command(["echo", "hi"], title="Echo")
 
@@ -73,7 +73,7 @@ def test_run_command_raises_on_failure(monkeypatch, tmp_path):
     def fake_run_command(command, cwd, env, check):
         return SimpleNamespace(stdout="out", stderr="err", returncode=3)
 
-    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+    monkeypatch.setattr("pyvider.cli.utils.run", fake_run_command)
 
     with pytest.raises(ProcessError) as exc:
         _run_command(["false"], title="Fail")
@@ -121,7 +121,7 @@ def test_run_command_allows_non_zero_when_check_disabled(monkeypatch, tmp_path):
     def fake_run_command(command, cwd, env, check):
         return SimpleNamespace(stdout="out", stderr="err", returncode=5)
 
-    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+    monkeypatch.setattr("pyvider.cli.utils.run", fake_run_command)
 
     result = _run_command(["cmd"], check=False)
     assert result == "out"
@@ -140,7 +140,7 @@ def test_run_command_logs_unexpected_exception(monkeypatch, tmp_path):
     def failing_run_command(*_args, **_kwargs):
         raise RuntimeError("boom")
 
-    monkeypatch.setattr("pyvider.cli.utils.run_command", failing_run_command)
+    monkeypatch.setattr("pyvider.cli.utils.run", failing_run_command)
 
     with pytest.raises(RuntimeError):
         _run_command(["explode"], title="Explode")
@@ -170,7 +170,7 @@ def test_run_command_appends_existing_log(monkeypatch, tmp_path):
     def fake_run_command(command, cwd, env, check):
         return SimpleNamespace(stdout="fresh", stderr="", returncode=0)
 
-    monkeypatch.setattr("pyvider.cli.utils.run_command", fake_run_command)
+    monkeypatch.setattr("pyvider.cli.utils.run", fake_run_command)
 
     result = _run_command(["echo", "hi"], title="append")
 

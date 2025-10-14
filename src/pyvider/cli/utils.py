@@ -5,7 +5,7 @@ from pathlib import Path
 
 from provide.foundation.console import pout
 from provide.foundation.file import atomic_write_text, ensure_dir
-from provide.foundation.process import run_command
+from provide.foundation.process import run
 from provide.foundation.utils import timed_block
 
 from pyvider.cli.context import PyviderContext
@@ -71,7 +71,7 @@ def _run_command(
     try:
         with timed_block() as timer:
             # Use foundation's process runner with better error handling
-            result = run_command(
+            result = run(
                 command,
                 cwd=effective_cwd,
                 env=env,
