@@ -1,6 +1,6 @@
 # tests/exceptions/test_exceptions_hierarchy.py
 
-from hypothesis import given, strategies as st, settings, HealthCheck
+from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
 # Import the exceptions module itself to access its __all__ attribute

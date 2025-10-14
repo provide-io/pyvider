@@ -26,7 +26,9 @@ class ResourceProtocol(Protocol[ResourceType, StateType, ConfigType]):
         """Plan resource changes."""
         ...
 
-    async def apply(self, ctx: ResourceContext[ConfigType, StateType, PrivateState]) -> tuple[StateType, bytes]:
+    async def apply(
+        self, ctx: ResourceContext[ConfigType, StateType, PrivateState]
+    ) -> tuple[StateType, bytes]:
         """Apply resource changes."""
         ...
 

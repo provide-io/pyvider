@@ -6,13 +6,13 @@ from provide.foundation import logger
 from provide.foundation.errors import resilient
 
 from pyvider.conversion import pvs_schema_to_proto
+from pyvider.functions.adapters import function_to_dict
+from pyvider.hub import hub
 from pyvider.observability import (
     handler_duration,
     handler_errors,
     handler_requests,
 )
-from pyvider.functions.adapters import function_to_dict
-from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )

@@ -1,7 +1,7 @@
 import asyncio
-import sys
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, AsyncMock, patch
 
 from pyvider.protocols.service import ProtocolService
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -35,6 +35,7 @@ async def test_handle_shutdown(shutdown_event):
     assert service._stream_active is False
     assert service._message_queue.empty()
 
+
 @pytest.mark.asyncio
 async def test_start_stream_success(shutdown_event):
     service = ProtocolService(shutdown_event)
@@ -57,6 +58,7 @@ async def test_start_stream_timeout(shutdown_event):
     context.set_code.assert_called_once_with("UNIMPLEMENTED")
     context.set_details.assert_called_once_with("Timeout waiting for StreamStdio setup")
 
+
 @pytest.mark.asyncio
 async def test_shutdown(shutdown_event):
     service = ProtocolService(shutdown_event)
@@ -77,12 +79,14 @@ async def test_shutdown(shutdown_event):
         mock_shutdown_manager.request_shutdown.assert_called_once()
         mock_shutdown_manager.shutdown_tracers.assert_awaited_once()
 
+
 @pytest.mark.asyncio
 async def test_stop_stream(shutdown_event):
     service = ProtocolService(shutdown_event)
     response = await service.StopStream(MagicMock(), MagicMock())
     assert isinstance(response, pb.Empty)
     assert service._stream_active is False
+
 
 @pytest.mark.asyncio
 async def test_stream_stdio_success(shutdown_event):

@@ -3,9 +3,8 @@
 import importlib
 import sys
 
-import pytest
-
 from provide.testkit.logger import mock_logger_factory
+import pytest
 
 
 @pytest.fixture(autouse=True)
@@ -51,7 +50,9 @@ def test_logs_warning_when_msgpack_missing(monkeypatch: pytest.MonkeyPatch) -> N
     module = _import_with(monkeypatch, spec_result=None, logger=logger)
 
     assert module.HAS_MSGPACK is False
-    logger.warning.assert_called_once_with("⚠️ msgpack library not found. msgpack features will be unavailable.")
+    logger.warning.assert_called_once_with(
+        "⚠️ msgpack library not found. msgpack features will be unavailable."
+    )
     logger.info.assert_not_called()
     logger.error.assert_not_called()
 

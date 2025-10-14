@@ -8,6 +8,7 @@ to ensure cryptographic security and proper error handling.
 import os
 from unittest.mock import patch
 
+from provide.foundation.errors import ConfigurationError
 import pytest
 
 from pyvider.common.config import PyviderConfig
@@ -18,7 +19,6 @@ from pyvider.common.encryption import (
     encrypt,
     reset_encryption_manager,
 )
-from provide.foundation.errors import ConfigurationError
 
 # Import testkit fixtures with fallback
 try:
@@ -313,7 +313,6 @@ class TestEncryptionSecurity:
         with patch.dict(os.environ, {"PYVIDER_PRIVATE_STATE_SHARED_SECRET": test_secret}):
             reset_encryption_manager()
             # Create test data with controlled salt by monkey-patching os.urandom
-            import pyvider.common.encryption as enc_module
 
             original_urandom = os.urandom
             call_count = [0]
@@ -324,7 +323,7 @@ class TestEncryptionSecurity:
                     return test_salt
                 return original_urandom(n)  # Nonce uses real random
 
-            with patch.object(os, 'urandom', controlled_urandom):
+            with patch.object(os, "urandom", controlled_urandom):
                 encrypted = encrypt(b"test")
 
             # Verify the salt in the ciphertext matches

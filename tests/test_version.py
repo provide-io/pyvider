@@ -1,5 +1,5 @@
-from unittest.mock import patch, MagicMock
 from importlib.metadata import PackageNotFoundError
+from unittest.mock import MagicMock, patch
 
 from pyvider._version import get_version
 

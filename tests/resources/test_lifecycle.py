@@ -1,9 +1,8 @@
-from datetime import datetime, timezone
-import pytest
+from datetime import UTC, datetime
 
 from pyvider.resources.lifecycle import (
-    ResourceState,
     ResourceLifecycle,
+    ResourceState,
 )
 
 
@@ -28,9 +27,9 @@ def test_resource_lifecycle_init():
 
 def test_resource_lifecycle_transition_to():
     lifecycle = ResourceLifecycle()
-    before = datetime.now(timezone.utc)
+    before = datetime.now(UTC)
     lifecycle.transition_to(ResourceState.CREATED, "create")
-    after = datetime.now(timezone.utc)
+    after = datetime.now(UTC)
 
     assert lifecycle.state == ResourceState.CREATED
     assert lifecycle.last_operation == "create"

@@ -9,11 +9,6 @@ from provide.foundation.errors import resilient
 from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, unmarshal
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import (
@@ -22,6 +17,11 @@ from pyvider.exceptions import (
     ResourceLifecycleContractError,
 )
 from pyvider.hub import hub
+from pyvider.observability import (
+    handler_duration,
+    handler_errors,
+    handler_requests,
+)
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,

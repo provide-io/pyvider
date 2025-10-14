@@ -17,8 +17,8 @@ from pyvider.observability import (
     handler_requests,
 )
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
-from pyvider.protocols.tfprotov6.handlers.utils_timestamp import datetime_to_proto
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.protocols.tfprotov6.utils import datetime_to_proto
 
 
 @resilient()

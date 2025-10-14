@@ -183,12 +183,7 @@ class EncryptionManager:
             ciphertext = aesgcm.encrypt(nonce, plaintext, None)
 
             # Pack: version + salt + nonce + ciphertext
-            result = (
-                struct.pack("B", VERSION_CURRENT)
-                + salt
-                + nonce
-                + ciphertext
-            )
+            result = struct.pack("B", VERSION_CURRENT) + salt + nonce + ciphertext
 
             logger.debug(
                 "Encrypted data",

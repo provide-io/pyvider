@@ -53,6 +53,7 @@ def test_attribute_diagnostics_attach_attribute_paths() -> None:
     assert warning_diag.summary == "Deprecated"
     assert warning_diag.severity == pb.Diagnostic.WARNING
 
+
 def test_attribute_warning_with_dot_path() -> None:
     ctx = BaseContext()
 

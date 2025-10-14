@@ -4,8 +4,8 @@ Tests for pyvider install command utilities.
 Tests venv detection and script generation with 100% coverage.
 """
 
-import tempfile
 from pathlib import Path
+import tempfile
 
 import pytest
 

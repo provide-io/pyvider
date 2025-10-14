@@ -5,7 +5,6 @@ Tests all metrics defined in pyvider.observability.metrics module to ensure
 100% test coverage of observability features.
 """
 
-import pytest
 
 from pyvider.observability import (
     components_discovered,

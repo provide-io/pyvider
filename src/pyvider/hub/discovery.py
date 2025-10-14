@@ -4,8 +4,7 @@ import inspect
 import pkgutil
 from typing import Any
 
-from provide.foundation import logger
-from provide.foundation import retry, resilient
+from provide.foundation import logger, resilient, retry
 
 from pyvider.hub.components import ComponentRegistry
 

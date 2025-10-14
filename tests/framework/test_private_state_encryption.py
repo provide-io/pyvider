@@ -2,9 +2,8 @@ from typing import Any
 
 import attrs
 import msgpack
-import pytest
-
 from provide.foundation.errors import ConfigurationError
+import pytest
 
 from pyvider.common.encryption import CONFIG_KEY_NAME, decrypt, encrypt
 from pyvider.conversion import marshal

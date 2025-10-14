@@ -1,12 +1,12 @@
 import pytest
 
 from pyvider.schema.exceptions import (
-    PyviderSchemaError,
-    SchemaConversionError,
-    PvsValidationError,
-    PvsSchemaDefinitionError,
     PvsAttributeError,
     PvsBlockError,
+    PvsSchemaDefinitionError,
+    PvsValidationError,
+    PyviderSchemaError,
+    SchemaConversionError,
 )
 
 
@@ -30,9 +30,7 @@ def test_schema_conversion_error_str():
     err = SchemaConversionError("test conversion error", detail="some detail")
     assert str(err) == "test conversion error (Detail: some detail)"
 
-    err = SchemaConversionError(
-        "test conversion error", schema_name="my_schema", detail="some detail"
-    )
+    err = SchemaConversionError("test conversion error", schema_name="my_schema", detail="some detail")
     assert str(err) == "[Schema: my_schema] test conversion error (Detail: some detail)"
 
 

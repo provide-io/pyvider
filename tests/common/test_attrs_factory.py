@@ -5,8 +5,8 @@ from typing import Any
 import attrs
 
 from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
-from pyvider.schema.types import PvsAttribute
 from pyvider.cty import CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
+from pyvider.schema.types import PvsAttribute
 
 
 def _get_field(cls: type, field_name: str) -> attrs.Attribute:

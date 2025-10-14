@@ -32,7 +32,11 @@
       "Bash(xargs basename:*)",
       "Bash(cat:*)",
       "Bash(test:*)",
-      "Bash(.venv/bin/python:*)"
+      "Bash(.venv/bin/python:*)",
+      "Bash(.venv/bin/python -m pytest:*)",
+      "Read(//Users/tim/code/gh/provide-io/provide-foundation/**)",
+      "Bash(test -f src/pyvider/protocols/tfprotov6/utils.py)",
+      "Bash(test -f src/pyvider/protocols/tfprotov6/handlers/utils_timestamp.py)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

@@ -21,7 +21,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
     """
     # --- Deferred Imports for Provider Mode ---
     from attrs import define, field
-    from provide.foundation import logger, setup_logging
+    from provide.foundation import logger
 
     from pyvider.common.config import PyviderConfig
     from pyvider.handler import ProviderHandler
@@ -35,7 +35,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
         log_format = config.get("logging.format", "key_value")
         os.environ["PYVIDER_LOG_LEVEL"] = log_level
         os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
-        setup_logging()
+        # Note: Foundation automatically sets up logging on import, no explicit setup needed
         logger.info("Telemetry configured for provider server mode.", domain="system")
 
     @define

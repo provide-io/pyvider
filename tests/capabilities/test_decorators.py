@@ -23,8 +23,8 @@ def test_register_capability_marks_class() -> None:
     class DummyCapability:
         pass
 
-    assert getattr(DummyCapability, "_is_registered_capability") is True
-    assert getattr(DummyCapability, "_registered_name") == "dummy-capability"
+    assert DummyCapability._is_registered_capability is True
+    assert DummyCapability._registered_name == "dummy-capability"
 
 
 def test_requires_capability_injects_parent_for_sync_methods() -> None:

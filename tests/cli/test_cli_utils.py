@@ -2,9 +2,8 @@
 
 from types import SimpleNamespace
 
-import pytest
-
 from provide.foundation.process import ProcessError
+import pytest
 
 from pyvider.cli.utils import _place_terraform_provider_script, _run_command
 
@@ -89,6 +88,14 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path):
     install_dir = tmp_path / "project"
     install_dir.mkdir()
 
+    # Create a fake venv directory structure
+    venv_dir = install_dir / ".venv"
+    venv_bin = venv_dir / "bin"
+    venv_bin.mkdir(parents=True)
+    (venv_bin / "python").touch()
+    (venv_bin / "pyvider").touch()
+    (venv_bin / "activate").touch()  # Required by _find_actual_venv
+
     monkeypatch.setattr("pyvider.cli.utils.Path.cwd", lambda: install_dir)
 
     captured: dict[str, str] = {}
@@ -100,14 +107,16 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path):
         path.write_text(content, encoding="utf-8")
 
     monkeypatch.setattr("pyvider.cli.utils.atomic_write_text", fake_atomic)
+    monkeypatch.setattr("pyvider.cli.utils.pout", lambda *args, **kwargs: None)
 
     _place_terraform_provider_script(ctx)
 
     target_path = plugin_dir / "terraform-provider-pyvider"
     assert captured["path"] == str(target_path)
     assert target_path.exists()
-    assert f"INSTALL_DIR=\"{install_dir}\"" in captured["content"]
-    assert "exec pyvider \"$@\"" in captured["content"]
+    assert f'INSTALL_DIR="{install_dir}"' in captured["content"]
+    assert 'exec pyvider provide "$@"' in captured["content"]
+
 
 def test_run_command_allows_non_zero_when_check_disabled(monkeypatch, tmp_path):
     (tmp_path / "workspace").mkdir()
@@ -125,6 +134,7 @@ def test_run_command_allows_non_zero_when_check_disabled(monkeypatch, tmp_path):
 
     result = _run_command(["cmd"], check=False)
     assert result == "out"
+
 
 def test_run_command_logs_unexpected_exception(monkeypatch, tmp_path):
     (tmp_path / "workspace").mkdir()
@@ -147,6 +157,7 @@ def test_run_command_logs_unexpected_exception(monkeypatch, tmp_path):
 
     assert any("❌ ERROR" in msg for msg in outputs)
     assert any("Failed to run command" in msg for msg in outputs)
+
 
 def test_run_command_appends_existing_log(monkeypatch, tmp_path):
     workspace = tmp_path / "workspace"

@@ -1,9 +1,7 @@
 """Tests for launch context detection helpers."""
 
-import types
 from pathlib import Path
-
-import pytest
+import types
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -31,7 +29,9 @@ def test_detect_launch_context_collects_environment(monkeypatch):
     monkeypatch.setattr(lc.sys, "platform", "posix")
     monkeypatch.setattr(lc.sys, "path", ["one", "two", "three"])
     monkeypatch.setattr(lc.os, "getcwd", lambda: "/workspace")
-    monkeypatch.setattr(lc, "_detect_launch_method", lambda exe, py: (LaunchMethod.UNKNOWN, {"reason": "patched"}))
+    monkeypatch.setattr(
+        lc, "_detect_launch_method", lambda exe, py: (LaunchMethod.UNKNOWN, {"reason": "patched"})
+    )
 
     context = detect_launch_context()
 
@@ -114,6 +114,7 @@ def test_log_launch_context_uses_logger(monkeypatch):
 def test_is_direct_script_launch_handles_py_extension():
     assert _is_direct_script_launch("/tmp/tool.py") is True
 
+
 def test_detect_launch_method_prefers_direct_script(monkeypatch):
     monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: False)
     monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
@@ -145,7 +146,6 @@ def test_detect_launch_method_handles_editable(monkeypatch):
 
     assert method is LaunchMethod.EDITABLE_INSTALL
     assert details["executable_path"] == "/repo/.venv/bin/pyvider"
-
 
 
 def test_detect_launch_method_returns_unknown(monkeypatch):

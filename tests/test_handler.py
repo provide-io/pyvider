@@ -1,5 +1,6 @@
+from unittest.mock import AsyncMock, MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock, patch, AsyncMock
 
 from pyvider.handler import ProviderHandler
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -61,9 +62,7 @@ async def test_delegate_no_handler(mock_provider):
     # Mock getattr to return a mock response class
     with patch("pyvider.handler.getattr", return_value=MagicMock()) as mock_getattr:
         response = await handler._delegate("UnknownMethod", request, context)
-        mock_getattr.assert_called_once_with(
-            pb, "UnknownMethod.Response", None
-        )
+        mock_getattr.assert_called_once_with(pb, "UnknownMethod.Response", None)
         assert response is not None
 
 
@@ -84,9 +83,7 @@ async def test_delegate_unhandled_exception(mock_provider):
     with patch("pyvider.handler.getattr", return_value=response_class_mock) as mock_getattr:
         response = await handler._delegate("TestMethod", request, context)
 
-        mock_getattr.assert_called_with(
-            pb, "TestMethod.Response", None
-        )
+        mock_getattr.assert_called_with(pb, "TestMethod.Response", None)
 
         response_class_mock.assert_called_once()
         _, kwargs = response_class_mock.call_args
