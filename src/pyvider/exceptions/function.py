@@ -13,7 +13,7 @@ class FunctionError(FoundationRuntimeError):
     """Base exception for function-related errors during execution."""
 
     def __init__(
-        self, message: str, function_name: str | None = None, argument_index: int | None = None, **kwargs
+        self, message: str, function_name: str | None = None, argument_index: int | None = None, **kwargs: Any
     ) -> None:
         self.function_name = function_name
         self.argument_index = argument_index
@@ -45,7 +45,7 @@ class FunctionError(FoundationRuntimeError):
 class FunctionRegistrationError(FoundationConfigurationError):
     """Exception raised when a function cannot be registered properly."""
 
-    def __init__(self, message: str, function_name: str | None = None, **kwargs) -> None:
+    def __init__(self, message: str, function_name: str | None = None, **kwargs: Any) -> None:
         self.function_name = function_name
 
         prefix = f"Function '{function_name}'" if function_name else "Function"
@@ -69,7 +69,7 @@ class FunctionValidationError(FoundationValidationError):
         function_name: str | None = None,
         argument_name: str | None = None,
         argument_index: int | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         self.function_name = function_name
         self.argument_name = argument_name

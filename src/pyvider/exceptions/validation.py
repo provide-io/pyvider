@@ -21,15 +21,14 @@ class ValidationError(FoundationValidationError):
         )
 
         # Store in foundation context as well
-        if "context" not in kwargs:
-            kwargs["context"] = {}
+        ctx_dict: dict[str, Any] = kwargs.setdefault("context", {})
         if context:
-            kwargs["context"]["validation.context"] = context  # type: ignore[index]
+            ctx_dict["validation.context"] = context
         if detail:
-            kwargs["context"]["validation.detail"] = detail  # type: ignore[index]
+            ctx_dict["validation.detail"] = detail
 
         super().__init__(full_message, **kwargs)
-        self.context = context
+        self.validation_context = context
         self.detail = detail
 
     def _default_code(self) -> str:

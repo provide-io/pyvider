@@ -22,7 +22,7 @@ class SchemaValidationError(FoundationValidationError):
     """Raised when schema validation fails against provided data."""
 
     def __init__(
-        self, message: str, schema_name: str | None = None, detail: str | None = None, **kwargs
+        self, message: str, schema_name: str | None = None, detail: str | None = None, **kwargs: Any
     ) -> None:
         self.schema_name = schema_name
         self.detail = detail
@@ -43,7 +43,7 @@ class SchemaValidationError(FoundationValidationError):
 class SchemaRegistrationError(FoundationConfigurationError):
     """Raised when schema registration fails in the framework."""
 
-    def __init__(self, message: str, schema_name: str | None = None, **kwargs) -> None:
+    def __init__(self, message: str, schema_name: str | None = None, **kwargs: Any) -> None:
         self.schema_name = schema_name
         prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
         full_message = f"{prefix} registration error: {message}"
@@ -60,7 +60,7 @@ class SchemaRegistrationError(FoundationConfigurationError):
 class SchemaParseError(FoundationValidationError):
     """Raised when a schema definition cannot be parsed."""
 
-    def __init__(self, message: str, schema_name: str | None = None, **kwargs) -> None:
+    def __init__(self, message: str, schema_name: str | None = None, **kwargs: Any) -> None:
         self.schema_name = schema_name
         prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
         full_message = f"{prefix} parse error: {message}"

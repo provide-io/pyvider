@@ -1,4 +1,6 @@
 # pyvider/exceptions/resource.py
+from typing import Any
+
 from provide.foundation.errors import (
     NotFoundError as FoundationNotFoundError,
     RuntimeError as FoundationRuntimeError,
@@ -53,7 +55,7 @@ class ResourceLifecycleContractError(FoundationStateError):
     apply operation did not match its proposed plan.
     """
 
-    def __init__(self, message: str, *, detail: str | None = None, **kwargs) -> None:
+    def __init__(self, message: str, *, detail: str | None = None, **kwargs: Any) -> None:
         self.detail = detail
         if detail:
             kwargs.setdefault("context", {})["lifecycle.detail"] = detail
