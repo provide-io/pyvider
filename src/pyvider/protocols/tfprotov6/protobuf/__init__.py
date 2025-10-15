@@ -45,50 +45,50 @@ from pyvider.protocols.tfprotov6.protobuf.tfplugin6_pb2_grpc import (
 )
 
 __all__ = [
-    # Core Protobuf Messages
-    "DynamicValue",
-    "Diagnostic",
-    "Deferred",
-    "RawState",
-    # Schema and Attribute Definitions
-    "Schema",
-    "AttributePath",
-    "StringKind",
-    "Empty",
     # Capabilities
-    "ServerCapabilities",
-    "ClientCapabilities",
+    "ApplyResourceChange",
+    "AttributePath",
     # Functions
+    "CallFunction",
+    "ClientCapabilities",
+    # Ephemeral Resource Operations
+    "CloseEphemeralResource",
+    # Provider Configuration
+    "ConfigureProvider",
+    # Core Protobuf Messages
+    "Deferred",
+    "Diagnostic",
+    "DynamicValue",
+    "Empty",
     "Function",
     "FunctionError",
     "GetFunctions",
-    "CallFunction",
-    # Validation Operations
-    "ValidateResourceConfig",
-    "ValidateDataResourceConfig",
-    "ValidateEphemeralResourceConfig",
-    # Planning and State Operations
-    "PlanResourceChange",
-    "ApplyResourceChange",
-    "UpgradeResourceState",
-    "MoveResourceState",
-    "ImportResourceState",
-    # Read Operations
-    "ReadResource",
-    "ReadDataSource",
-    # Ephemeral Resource Operations
-    "OpenEphemeralResource",
-    "RenewEphemeralResource",
-    "CloseEphemeralResource",
-    # Provider Configuration
     "GetMetadata",
     "GetProviderSchema",
-    "ValidateProviderConfig",
-    "ConfigureProvider",
-    "StopProvider",
+    # Planning and State Operations
+    "ImportResourceState",
+    "MoveResourceState",
+    "OpenEphemeralResource",
+    "PlanResourceChange",
     # gRPC service definitions
     "ProviderServicer",
     "ProviderStub",
+    "RawState",
+    # Read Operations
+    "ReadDataSource",
+    "ReadResource",
+    "RenewEphemeralResource",
+    # Schema and Attribute Definitions
+    "Schema",
+    "ServerCapabilities",
+    "StopProvider",
+    "StringKind",
+    "UpgradeResourceState",
+    # Validation Operations
+    "ValidateDataResourceConfig",
+    "ValidateEphemeralResourceConfig",
+    "ValidateProviderConfig",
+    "ValidateResourceConfig",
     "add_ProviderServicer_to_server",
     "add_to_server",
 ]

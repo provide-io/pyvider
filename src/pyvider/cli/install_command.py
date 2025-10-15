@@ -21,7 +21,7 @@ def is_running_as_binary() -> bool:
 
 @click.command(name="install")
 @click.pass_context
-def install_command(ctx: click.Context) -> None:
+def install_command(ctx: click.Context) -> None:  # noqa: C901
     """
     Installs the provider for use with Terraform.
 

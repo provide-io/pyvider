@@ -110,10 +110,7 @@ class InvalidTypeError(PyviderValueError):
         actual_type: str = "unknown",
         message_override: str | None = None,
     ) -> None:
-        if message_override:
-            message = message_override
-        else:
-            message = f"Invalid type: expected '{expected_type}', got '{actual_type}'."
+        message = message_override or f"Invalid type: expected '{expected_type}', got '{actual_type}'."
 
         super().__init__(message, context={"type.expected": expected_type, "type.actual": actual_type})
 
@@ -125,10 +122,7 @@ class UnsupportedTypeError(PyviderValueError):
     """Raised when an unsupported type is encountered."""
 
     def __init__(self, type_name: str = "unknown", message_override: str | None = None) -> None:
-        if message_override:
-            message = message_override
-        else:
-            message = f"Unsupported type encountered: '{type_name}'."
+        message = message_override or f"Unsupported type encountered: '{type_name}'."
 
         super().__init__(message, context={"type.unsupported": type_name})
 

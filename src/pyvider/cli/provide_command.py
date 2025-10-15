@@ -126,48 +126,46 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
     script_name = Path(sys.argv[0]).name
 
     # Check if Terraform is trying to launch us but we can't detect it properly
-    if magic_cookie and not force:
-        # Terraform set the magic cookie, but let's check if the binary name is correct
-        if "terraform-provider" not in script_name.lower() and "terraform-provider" not in sys.argv[0].lower():
-            click.secho("\n" + "─" * 70, fg="red")
-            click.secho(" ❌  Provider Detection Error", fg="red", bold=True)
-            click.secho("─" * 70, fg="red")
-            click.secho(
-                "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
-                f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
-                fg="yellow",
-            )
-            click.secho(
-                "\nThis usually happens when:",
-                fg="white",
-            )
-            click.secho(
-                "  1. The provider binary was renamed or symlinked incorrectly",
-                fg="white",
-            )
-            click.secho(
-                "  2. The PSPF package was built with an incorrect command configuration",
-                fg="white",
-            )
-            click.secho("\nTo fix this:", fg="cyan", bold=True)
-            click.secho(
-                f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
-                fg="cyan",
-            )
-            click.secho(
-                "  • Check the [tool.flavor] configuration in pyproject.toml",
-                fg="cyan",
-            )
-            click.secho(
-                "  • Rebuild the package with the correct command path",
-                fg="cyan",
-            )
-            click.secho("─" * 70, fg="red")
-            click.secho("\nDebug Info:", fg="white", dim=True)
-            click.secho(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
-            click.secho(f"  script_name: {script_name}", fg="white", dim=True)
-            click.secho(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
-            sys.exit(1)
+    if magic_cookie and not force and "terraform-provider" not in script_name.lower() and "terraform-provider" not in sys.argv[0].lower():
+        click.secho("\n" + "─" * 70, fg="red")
+        click.secho(" ❌  Provider Detection Error", fg="red", bold=True)
+        click.secho("─" * 70, fg="red")
+        click.secho(
+            "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
+            f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
+            fg="yellow",
+        )
+        click.secho(
+            "\nThis usually happens when:",
+            fg="white",
+        )
+        click.secho(
+            "  1. The provider binary was renamed or symlinked incorrectly",
+            fg="white",
+        )
+        click.secho(
+            "  2. The PSPF package was built with an incorrect command configuration",
+            fg="white",
+        )
+        click.secho("\nTo fix this:", fg="cyan", bold=True)
+        click.secho(
+            f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
+            fg="cyan",
+        )
+        click.secho(
+            "  • Check the [tool.flavor] configuration in pyproject.toml",
+            fg="cyan",
+        )
+        click.secho(
+            "  • Rebuild the package with the correct command path",
+            fg="cyan",
+        )
+        click.secho("─" * 70, fg="red")
+        click.secho("\nDebug Info:", fg="white", dim=True)
+        click.secho(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
+        click.secho(f"  script_name: {script_name}", fg="white", dim=True)
+        click.secho(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
+        sys.exit(1)
 
     if not magic_cookie and not force:
         # Show launch context in interactive mode
