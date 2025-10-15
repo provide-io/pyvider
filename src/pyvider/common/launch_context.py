@@ -5,6 +5,7 @@ This module detects how Pyvider was launched and provides context information
 about the execution environment.
 """
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 import os
@@ -207,7 +208,7 @@ def _is_direct_script_launch(executable_path: str) -> bool:
 
 def _get_pspf_details() -> dict[str, Any]:
     """Get details specific to PSPF launches."""
-    details = {}
+    details: dict[str, Any] = {}
 
     # Try to find PSPF cache information
     python_path = Path(sys.executable)
@@ -259,7 +260,7 @@ def _get_module_name() -> str:
 
 def _get_editable_install_details(executable_path: str) -> dict[str, Any]:
     """Get details for editable installs."""
-    details = {"executable_path": executable_path}
+    details: dict[str, Any] = {"executable_path": executable_path}
 
     try:
         import pyvider
@@ -307,7 +308,7 @@ def _analyze_cache_structure(python_path: Path) -> dict[str, Any]:
     return structure
 
 
-def log_launch_context(logger_func=None) -> LaunchContext:
+def log_launch_context(logger_func: Callable[[str], None] | None = None) -> LaunchContext:
     """
     Detect and log the launch context.
 

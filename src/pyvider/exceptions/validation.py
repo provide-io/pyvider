@@ -11,7 +11,7 @@ class ValidationError(FoundationValidationError):
     """
 
     def __init__(
-        self, message: str, *, context: str | None = None, detail: str | None = None, **kwargs
+        self, message: str, *, context: str | None = None, detail: str | None = None, **kwargs: any
     ) -> None:
         # Build message with old format for compatibility
         full_message = (
@@ -19,10 +19,12 @@ class ValidationError(FoundationValidationError):
         )
 
         # Store in foundation context as well
+        if "context" not in kwargs:
+            kwargs["context"] = {}
         if context:
-            kwargs.setdefault("context", {})["validation.context"] = context
+            kwargs["context"]["validation.context"] = context  # type: ignore[index]
         if detail:
-            kwargs.setdefault("context", {})["validation.detail"] = detail
+            kwargs["context"]["validation.detail"] = detail  # type: ignore[index]
 
         super().__init__(full_message, **kwargs)
         self.context = context
