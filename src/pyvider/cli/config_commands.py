@@ -1,5 +1,6 @@
 import os
 import tomllib
+from typing import Any
 
 import click
 from provide.foundation.cli.decorators import flexible_options
@@ -11,7 +12,7 @@ from pyvider.cli.context import PyviderContext, pass_ctx
 @click.group()
 @flexible_options  # Allow logging control at the config group level
 @pass_ctx
-def config(ctx: PyviderContext, **kwargs) -> None:
+def config(ctx: PyviderContext, **kwargs: Any) -> None:
     """Manage and display Pyvider configuration."""
     pass
 

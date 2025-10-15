@@ -64,7 +64,7 @@ def detect_launch_context() -> LaunchContext:
     """
     executable_path = sys.argv[0] if sys.argv else ""
     python_executable = sys.executable
-    working_directory = os.getcwd()
+    working_directory = str(Path.cwd())
     is_terraform_invoked = bool(os.environ.get("TF_PLUGIN_MAGIC_COOKIE"))
 
     # Gather environment information
@@ -126,7 +126,7 @@ def _detect_launch_method(executable_path: str, python_executable: str) -> tuple
     # Check if we're running as a direct script
     if _is_direct_script_launch(executable_path):
         details["script_path"] = executable_path
-        details["is_symlink"] = os.path.islink(executable_path)
+        details["is_symlink"] = Path(executable_path).is_symlink()
         return LaunchMethod.SCRIPT_DIRECT, details
 
     # Unknown launch method
@@ -171,7 +171,7 @@ def _is_module_launch() -> bool:
 
         # If the first argument is just "pyvider" or similar module name
         # and we're running from a __main__.py, it's likely python -m
-        first_arg = os.path.basename(sys.argv[0])
+        first_arg = Path(sys.argv[0]).name
         if first_arg in ["pyvider", "__main__.py"] or first_arg.endswith("__main__.py"):
             return True
 

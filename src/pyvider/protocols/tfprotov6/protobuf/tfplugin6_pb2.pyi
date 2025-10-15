@@ -1263,7 +1263,7 @@ class CallFunction(_message.Message):
         def __init__(
             self,
             result: DynamicValue | _Mapping | None = ...,
-            error: FunctionError | Mapping[Any, Any] | None = ...,
+            error: FunctionError | _Mapping[Any, Any] | None = ...,
         ) -> None: ...
 
     def __init__(self) -> None: ...

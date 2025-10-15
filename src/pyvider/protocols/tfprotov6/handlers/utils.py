@@ -178,7 +178,7 @@ def str_path_to_proto_path(path_str: str | None) -> pb.AttributePath | None:
     normalized_path = path_str.replace("].", "][")
 
     for match in PATH_STEP_REGEX.finditer(normalized_path):
-        dot, attr, index, key = match.groups()
+        _dot, attr, index, key = match.groups()
         if attr:
             proto_steps.append(pb.AttributePath.Step(attribute_name=attr))
         elif index:

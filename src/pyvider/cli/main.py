@@ -1,3 +1,5 @@
+from typing import Any
+
 import click
 from provide.foundation.cli.decorators import flexible_options, output_options
 from provide.foundation.console import perr
@@ -9,7 +11,7 @@ from pyvider.cli.context import PyviderContext
 @flexible_options  # Add logging and config options at root level
 @output_options  # Add output format options
 @click.pass_context
-def cli(ctx: click.Context, **kwargs) -> None:
+def cli(ctx: click.Context, **kwargs: Any) -> None:
     """
     Pyvider CLI Tool.
 

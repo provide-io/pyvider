@@ -98,8 +98,8 @@ class PyviderConfig(BaseConfig):
         # First check if this is a typed field
         from attrs import fields
 
-        for field in fields(type(self)):
-            if field.name == key and not field.name.startswith("_"):
+        for fld in fields(type(self)):
+            if fld.name == key and not fld.name.startswith("_"):
                 value = getattr(self, key)
                 logger.debug(f"⚙️  Config: Found typed field '{key}'", value=value)
                 return value

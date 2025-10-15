@@ -112,7 +112,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
     help="Force the provider to start in server mode, ignoring the magic cookie check.",
 )
 @click.pass_context
-def provide_cmd(ctx: click.Context, force: bool, **kwargs) -> None:
+def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
     """
     Starts the provider in gRPC server mode for Terraform. (This is the default
     action when run by Terraform or when the binary is run with no arguments).

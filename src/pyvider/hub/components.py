@@ -13,7 +13,7 @@ class ComponentRegistry:
     Uses provide.foundation's Registry for thread-safe operations.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize with foundation's Registry."""
         self._registry = Registry()
 

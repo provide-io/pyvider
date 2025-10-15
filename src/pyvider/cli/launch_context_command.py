@@ -7,6 +7,7 @@ import json
 import click
 
 from pyvider.cli.main import cli
+from pyvider.common.launch_context import LaunchMethod
 
 
 @cli.command("launch-context")
@@ -113,10 +114,8 @@ def launch_context_cmd(format: str, verbose: bool) -> None:
         _show_method_specific_help(launch_context.method)
 
 
-def _show_method_specific_help(method: "LaunchMethod") -> None:  # type: ignore[name-defined]
+def _show_method_specific_help(method: LaunchMethod) -> None:
     """Show helpful information based on the detected launch method."""
-    from pyvider.common.launch_context import LaunchMethod
-
     if method.value == "pspf_package":
         click.secho("\n💡 PSPF Package Detected", fg="blue", bold=True)
         click.echo("  This provider is running from a PSPF (Progressive Secure Package Format)")
