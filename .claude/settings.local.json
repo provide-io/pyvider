@@ -38,7 +38,9 @@
       "Bash(test -f src/pyvider/protocols/tfprotov6/utils.py)",
       "Bash(test -f src/pyvider/protocols/tfprotov6/handlers/utils_timestamp.py)",
       "Bash(while read f)",
-      "Bash(do echo \"=== $f ===\")"
+      "Bash(do echo \"=== $f ===\")",
+      "Bash(do basename \"$f\")",
+      "Bash(awk:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
