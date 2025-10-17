@@ -184,14 +184,18 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
         # Create base_plan from planned_state_cty, preserving unknown values
         base_plan = self._cty_to_dict_preserving_unknown(ctx.planned_state_cty)
+        logger.debug(f"BaseResource.plan() base_plan from planned_state_cty: {list(base_plan.keys())}")
 
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
         if ctx.config_cty and hasattr(ctx.config_cty, "value"):
+            logger.debug(f"BaseResource.plan() merging {len(ctx.config_cty.value)} config fields: {list(ctx.config_cty.value.keys())}")
             for key, value in ctx.config_cty.value.items():
                 # Only add if not already in base_plan (planned_state takes precedence)
                 if key not in base_plan:
+                    logger.debug(f"BaseResource.plan() adding config field '{key}' to base_plan")
                     base_plan[key] = value
+        logger.debug(f"BaseResource.plan() final base_plan before calling resource method: {list(base_plan.keys())}")
 
         if is_create:
             planned_state, private_state = await self._create(ctx, base_plan)
