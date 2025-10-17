@@ -97,11 +97,36 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
 
 
 async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> Any:
+    """
+    Invoke a function with properly separated positional and keyword arguments.
+
+    Handles VAR_POSITIONAL (*args) parameters by extracting them from native_kwargs
+    and passing them as positional arguments.
+    """
     try:
+        # Extract variadic args if present
+        func_sig = inspect.signature(function_obj)
+        variadic_args = []
+        regular_kwargs = {}
+
+        for param_name, param in func_sig.parameters.items():
+            if param.kind == inspect.Parameter.VAR_POSITIONAL:
+                # This is a *args parameter - extract its tuple
+                if param_name in native_kwargs:
+                    variadic_args = native_kwargs[param_name]
+                    if not isinstance(variadic_args, tuple):
+                        variadic_args = tuple(variadic_args) if isinstance(variadic_args, list) else (variadic_args,)
+            else:
+                # Regular parameter
+                if param_name in native_kwargs:
+                    regular_kwargs[param_name] = native_kwargs[param_name]
+
+        # Invoke with separated args and kwargs
         if inspect.iscoroutinefunction(function_obj):
-            result_py_val = await function_obj(**native_kwargs)
+            result_py_val = await function_obj(*variadic_args, **regular_kwargs)
         else:
-            result_py_val = function_obj(**native_kwargs)
+            result_py_val = function_obj(*variadic_args, **regular_kwargs)
+
         logger.debug(
             f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' returned: {type(result_py_val)} = {result_py_val}"
         )
