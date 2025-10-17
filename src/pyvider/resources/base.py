@@ -137,6 +137,28 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     @abstractmethod
     async def _validate_config(self, config: ConfigType) -> list[str]: ...
 
+    @classmethod
+    def _cty_to_dict_preserving_unknown(cls, cty_value: CtyValue | None) -> dict[str, Any]:
+        """Convert CTY value to dict, but preserve unknown CtyValue objects instead of converting to None."""
+        if not cty_value or cty_value.is_null:
+            return {}
+
+        if not isinstance(cty_value.type, CtyObject):
+            return cty_to_native(cty_value) if cty_value else {}
+
+        result = {}
+        for key, value_cty in cty_value.value.items():
+            if isinstance(value_cty, CtyValue):
+                # Preserve unknown values as CtyValue objects
+                if value_cty.is_unknown:
+                    result[key] = value_cty
+                else:
+                    result[key] = cty_to_native(value_cty)
+            else:
+                result[key] = value_cty
+
+        return result
+
     async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         validation_errors = await self.validate(ctx.config)
         if validation_errors:
@@ -150,11 +172,8 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if is_delete:
             return await self._delete_plan(ctx)
 
-        base_plan = (
-            cty_to_native(ctx.planned_state_cty)
-            if ctx.planned_state_cty and not ctx.planned_state_cty.is_null
-            else {}
-        )
+        # Create base_plan from planned_state_cty, preserving unknown values
+        base_plan = self._cty_to_dict_preserving_unknown(ctx.planned_state_cty)
 
         if is_create:
             planned_state, private_state = await self._create(ctx, base_plan)
