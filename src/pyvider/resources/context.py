@@ -63,3 +63,47 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
             True if private state is present, False otherwise
         """
         return self.private_state is not None
+
+    def is_field_unknown(self, field_name: str, source: str = "config") -> bool:
+        """
+        Check if a configuration or state field has an unknown value during planning.
+
+        This is the proper way for resources to handle unknown values - check explicitly
+        rather than catching errors or working around None values.
+
+        Args:
+            field_name: Name of the field to check
+            source: Which CTY value to check - "config" or "planned_state" (default: "config")
+
+        Returns:
+            True if the field exists but has an unknown value, False otherwise
+
+        Example:
+            async def _create(self, ctx: ResourceContext, base_plan: dict) -> ...:
+                if ctx.is_field_unknown("content"):
+                    # Content is unknown during planning, can't compute hash
+                    base_plan["exists"] = True
+                    return base_plan, None
+
+                # Content is known, use typed config
+                config = cast(FileContentConfig, ctx.config)
+                base_plan["content_hash"] = hashlib.sha256(config.content.encode()).hexdigest()
+                return base_plan, None
+        """
+        cty_value = self.config_cty if source == "config" else self.planned_state_cty
+
+        if not cty_value or cty_value.is_null:
+            return False
+
+        if not hasattr(cty_value, "value") or not isinstance(cty_value.value, dict):
+            return False
+
+        field_cty = cty_value.value.get(field_name)
+        if field_cty is None:
+            return False
+
+        # Check if it's a CtyValue with unknown marker
+        if isinstance(field_cty, CtyValue):
+            return field_cty.is_unknown
+
+        return False
