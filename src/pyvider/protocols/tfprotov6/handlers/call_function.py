@@ -23,11 +23,20 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 def _process_function_arguments(
     request_arguments: list[pb.DynamicValue],
     params_meta: list[dict[str, Any]],
+    variadic_meta: dict[str, Any] | None,
     func_sig: inspect.Signature,
 ) -> tuple[dict[str, Any], bool]:
+    """
+    Process function arguments including variadic parameters.
+
+    Returns:
+        tuple: (native_kwargs dict, has_unknown bool)
+    """
     native_kwargs = {}
     has_unknown = False
-    for i, (arg_proto, param_meta) in enumerate(zip(request_arguments, params_meta, strict=False)):
+
+    # Process required parameters
+    for i, (arg_proto, param_meta) in enumerate(zip(request_arguments[:len(params_meta)], params_meta, strict=False)):
         param_name = param_meta.get("name", f"arg{i}")
         param_cty_type = param_meta.get("cty_type", CtyDynamic())
 
@@ -43,6 +52,28 @@ def _process_function_arguments(
             continue
 
         native_kwargs[param_name] = native_val
+
+    # Process variadic parameters (extra arguments beyond required)
+    if variadic_meta and len(request_arguments) > len(params_meta):
+        variadic_param_name = variadic_meta.get("name", "options")
+        variadic_cty_type = variadic_meta.get("cty_type", CtyDynamic())
+        variadic_args = []
+
+        for arg_proto in request_arguments[len(params_meta):]:
+            decoded_cty_val = unmarshal(arg_proto, schema=variadic_cty_type)
+
+            if decoded_cty_val.is_unknown:
+                has_unknown = True
+                break
+
+            variadic_args.append(cty_to_native(decoded_cty_val))
+
+        # Find the variadic parameter in the function signature
+        for param_name, param in func_sig.parameters.items():
+            if param.kind == inspect.Parameter.VAR_POSITIONAL:
+                native_kwargs[param_name] = tuple(variadic_args)
+                break
+
     return native_kwargs, has_unknown
 
 
@@ -120,14 +151,31 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
 
         func_meta = function_to_dict(function_obj)
         params_meta = func_meta.get("parameters", [])
+        variadic_meta = func_meta.get("variadic_parameter")  # Optional variadic parameter
         func_sig = inspect.signature(function_obj)
 
-        if len(request.arguments) != len(params_meta):
-            raise PyviderFunctionError(
-                f"Incorrect number of arguments for {func_name}: expected {len(params_meta)}, got {len(request.arguments)}."
-            )
+        # Validate argument count
+        # - Without variadic: must match exactly
+        # - With variadic: must have at least the required parameters
+        num_required = len(params_meta)
+        num_provided = len(request.arguments)
 
-        native_kwargs, has_unknown = _process_function_arguments(request.arguments, params_meta, func_sig)
+        if variadic_meta:
+            # With variadic parameter, we need AT LEAST the required parameters
+            if num_provided < num_required:
+                raise PyviderFunctionError(
+                    f"Incorrect number of arguments for {func_name}: expected at least {num_required}, got {num_provided}."
+                )
+        else:
+            # Without variadic parameter, must match exactly
+            if num_provided != num_required:
+                raise PyviderFunctionError(
+                    f"Incorrect number of arguments for {func_name}: expected {num_required}, got {num_provided}."
+                )
+
+        native_kwargs, has_unknown = _process_function_arguments(
+            request.arguments, params_meta, variadic_meta, func_sig
+        )
 
         declared_return_cty_type = func_meta.get("return", {}).get("cty_type", CtyDynamic())
 
