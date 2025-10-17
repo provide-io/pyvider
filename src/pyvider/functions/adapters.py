@@ -99,23 +99,68 @@ def _is_optional_type_hint(annotation: Any) -> bool:
 
 def _extract_parameters_meta(
     func_obj: Callable, sig: inspect.Signature, type_hints: dict[str, Any]
-) -> list[dict[str, Any]]:
-    parameters = []
+) -> dict[str, Any]:
+    """
+    Extract parameter metadata, separating required and variadic parameters.
+
+    Parameters with default values become variadic (optional) parameters in Terraform.
+    This enables true optional parameters with excellent DX.
+
+    Returns:
+        dict with "parameters" (required) and "variadic_parameter" (optional) keys
+    """
+    required_params = []
+    variadic_param = None
     param_descriptions = getattr(func_obj, "_function_metadata", {}).get("param_descriptions", {})
+
     for name, param in sig.parameters.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY or name == "self":
             continue
-        param_hint = type_hints.get(name, Any)
-        parameters.append(
-            {
+
+        # Handle *args (VAR_POSITIONAL) - this is a true variadic parameter
+        if param.kind == inspect.Parameter.VAR_POSITIONAL:
+            param_hint = type_hints.get(name, Any)
+            # Extract element type from *args annotation if available
+            if hasattr(param_hint, '__args__') and param_hint.__args__:
+                element_type = param_hint.__args__[0]
+            else:
+                element_type = Any
+
+            variadic_param = {
                 "name": name,
-                "cty_type": _python_type_to_cty_type(param_hint),
-                "description": param_descriptions.get(name, ""),
-                "allow_null": _is_optional_type_hint(param_hint)
-                or (param.default is not inspect.Parameter.empty),
+                "cty_type": _python_type_to_cty_type(element_type),
+                "description": param_descriptions.get(name, "Optional parameters"),
+                "allow_null": True,  # Variadic params can be omitted
             }
-        )
-    return parameters
+            continue
+
+        param_hint = type_hints.get(name, Any)
+        param_meta = {
+            "name": name,
+            "cty_type": _python_type_to_cty_type(param_hint),
+            "description": param_descriptions.get(name, ""),
+            "allow_null": _is_optional_type_hint(param_hint),
+        }
+
+        # Parameters with defaults become variadic (but we only support ONE variadic param)
+        # So if we find a default, convert it to variadic and stop processing params
+        if param.default is not inspect.Parameter.empty:
+            if variadic_param is None:
+                variadic_param = param_meta
+            else:
+                # Multiple defaults - add as required param with a warning
+                logger.warning(
+                    f"Function {func_obj.__name__} has multiple parameters with defaults. "
+                    f"Only the first will be variadic. Parameter '{name}' will be required."
+                )
+                required_params.append(param_meta)
+        else:
+            required_params.append(param_meta)
+
+    return {
+        "parameters": required_params,
+        "variadic_parameter": variadic_param,
+    }
 
 
 def _extract_return_type_meta(type_hints: dict[str, Any]) -> dict[str, Any]:
@@ -143,7 +188,12 @@ def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
         )
         type_hints = {}
 
-    base_meta["parameters"] = _extract_parameters_meta(func_obj, sig, type_hints)
+    # Extract parameters (returns dict with "parameters" and "variadic_parameter")
+    params_meta = _extract_parameters_meta(func_obj, sig, type_hints)
+    base_meta["parameters"] = params_meta["parameters"]
+    if params_meta["variadic_parameter"]:
+        base_meta["variadic_parameter"] = params_meta["variadic_parameter"]
+
     base_meta["return"] = _extract_return_type_meta(type_hints)
     _extract_docstring_meta(func_obj, base_meta)
 

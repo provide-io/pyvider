@@ -13,6 +13,7 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
     """Converts a dictionary representation of a function to a Protobuf Function."""
     func_name = func_data.get("name", "unknown")
     try:
+        # Process required parameters
         parameters = []
         for param_data in func_data.get("parameters", []):
             cty_type_obj = param_data.get("cty_type")
@@ -36,6 +37,29 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
                 )
             )
 
+        # Process variadic parameter (optional parameters)
+        variadic_param_obj = None
+        if variadic_data := func_data.get("variadic_parameter"):
+            cty_type_obj = variadic_data.get("cty_type")
+            if cty_type_obj is None:
+                logger.warning(
+                    f"Missing CtyType for variadic parameter '{variadic_data.get('name')}' in function '{func_name}'. Defaulting to CtyDynamic."
+                )
+                from pyvider.cty import CtyDynamic
+
+                cty_type_obj = CtyDynamic()
+
+            type_bytes = json.dumps(encode_cty_type_to_wire_json(cty_type_obj)).encode("utf-8")
+
+            variadic_param_obj = pb.Function.Parameter(
+                name=variadic_data.get("name", "options"),
+                type=type_bytes,
+                description=variadic_data.get("description", "Optional parameters"),
+                allow_null_value=variadic_data.get("allow_null", True),
+                allow_unknown_values=True,
+            )
+
+        # Process return type
         return_value_obj = None
         if return_data := func_data.get("return"):
             cty_type_obj = return_data.get("cty_type")
@@ -65,6 +89,10 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
             "description": func_data.get("description", ""),
             "deprecation_message": func_data.get("deprecation_message", ""),
         }
+
+        if variadic_param_obj:
+            constructor_kwargs["variadic_parameter"] = variadic_param_obj
+
         if return_value_obj:
             constructor_kwargs["return"] = return_value_obj
 

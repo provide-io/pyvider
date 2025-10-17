@@ -108,25 +108,34 @@ def _handle_planned_state_dict(
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
 
-    raw_values_for_validation = {}
-    unknown_keys = set()
-    for key, value in planned_state_dict.items():
-        if isinstance(value, CtyValue) and value.is_unknown:
-            unknown_keys.add(key)
-            raw_values_for_validation[key] = None
-        else:
-            raw_values_for_validation[key] = value
+    # Mark unset computed fields as unknown when there are unknown values in the plan
+    # This allows resources to skip setting computed fields when dependencies are unknown
+    has_unknown_values = any(
+        isinstance(v, CtyValue) and v.is_unknown for v in planned_state_dict.values()
+    )
 
-    logger.debug(f"Raw values for validation: {raw_values_for_validation}")
-    logger.debug(f"Unknown keys: {unknown_keys}")
+    if has_unknown_values:
+        # Get computed attributes from schema
+        computed_attrs = set()
+        for attr in resource_schema.block.attributes.values():
+            if attr.computed and not attr.required:
+                computed_attrs.add(attr.name)
 
-    planned_state_with_nulls = validator_type.validate(raw_values_for_validation)
-    final_value_map = planned_state_with_nulls.value.copy()
-    for key in unknown_keys:
-        if key in validator_type.attribute_types:
-            final_value_map[key] = CtyValue.unknown(validator_type.attribute_types[key])
+        # Mark unset computed fields as unknown
+        for attr_name in computed_attrs:
+            if attr_name not in planned_state_dict or planned_state_dict[attr_name] is None:
+                attr_type = validator_type.attribute_types.get(attr_name)
+                if attr_type:
+                    planned_state_dict[attr_name] = CtyValue.unknown(attr_type)
 
-    planned_state_cty_final = CtyValue(validator_type, final_value_map)
+    # Pass unknown CtyValues directly to validation - CTY knows how to handle them
+    # Don't convert to None, as that creates null CtyValues which fail validation for required fields
+    raw_values_for_validation = planned_state_dict.copy()
+
+    logger.debug(f"Raw values for validation: {list(raw_values_for_validation.keys())}")
+
+    # Validate the planned state - unknown values will be preserved by CTY
+    planned_state_cty_final = validator_type.validate(raw_values_for_validation)
     marshalled_planned_state = marshal(planned_state_cty_final, schema=resource_schema.block)
     response.planned_state.msgpack = marshalled_planned_state.msgpack
 
