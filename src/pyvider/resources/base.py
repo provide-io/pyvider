@@ -206,6 +206,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         else:
             logger.warning("BaseResource.plan() NOT merging config",
                          has_config_cty=ctx.config_cty is not None,
+                         config_cty_type=type(ctx.config_cty).__name__ if ctx.config_cty else None,
                          is_ctyvalue=isinstance(ctx.config_cty, CtyValue) if ctx.config_cty else False,
                          has_value_attr=hasattr(ctx.config_cty, "value") if ctx.config_cty else False)
 
