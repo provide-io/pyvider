@@ -199,6 +199,9 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 for key, value in cty_value_dict.items():
                     # Only add if not already in base_plan (planned_state takes precedence)
                     if key not in base_plan:
+                        # Skip null values - they're likely computed fields
+                        if isinstance(value, CtyValue) and value.is_null:
+                            continue
                         # Convert known CtyValues to native Python values
                         # Unknown CtyValues are preserved as-is for the handler to detect
                         if isinstance(value, CtyValue) and not value.is_unknown:
