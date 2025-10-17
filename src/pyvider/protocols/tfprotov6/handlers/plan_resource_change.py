@@ -181,6 +181,9 @@ async def _plan_resource_change_impl(
 
         planned_state_dict, planned_private_state_attrs = await resource_handler.plan(resource_context)
 
+        logger.debug(f"Resource.plan() returned planned_state_dict: {planned_state_dict}")
+        logger.debug(f"Keys in planned_state_dict: {list(planned_state_dict.keys()) if planned_state_dict else None}")
+
         if resource_context.diagnostics:
             response.diagnostics.extend(resource_context.diagnostics)
             if any(d.severity == pb.Diagnostic.ERROR for d in resource_context.diagnostics):
