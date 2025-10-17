@@ -101,6 +101,9 @@ def _handle_planned_state_dict(
     resource_schema: Any,
     response: pb.PlanResourceChange.Response,
 ) -> None:
+    logger.debug(f"_handle_planned_state_dict received: {list(planned_state_dict.keys())}")
+    logger.debug(f"Planned state dict values: {planned_state_dict}")
+
     validator_type = resource_schema.block.to_cty_type()
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
@@ -113,6 +116,9 @@ def _handle_planned_state_dict(
             raw_values_for_validation[key] = None
         else:
             raw_values_for_validation[key] = value
+
+    logger.debug(f"Raw values for validation: {raw_values_for_validation}")
+    logger.debug(f"Unknown keys: {unknown_keys}")
 
     planned_state_with_nulls = validator_type.validate(raw_values_for_validation)
     final_value_map = planned_state_with_nulls.value.copy()
