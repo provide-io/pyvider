@@ -189,12 +189,15 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
         if ctx.config_cty and hasattr(ctx.config_cty, "value"):
-            logger.debug(f"BaseResource.plan() merging {len(ctx.config_cty.value)} config fields: {list(ctx.config_cty.value.keys())}")
             for key, value in ctx.config_cty.value.items():
                 # Only add if not already in base_plan (planned_state takes precedence)
                 if key not in base_plan:
-                    logger.debug(f"BaseResource.plan() adding config field '{key}' to base_plan")
-                    base_plan[key] = value
+                    # Convert known CtyValues to native Python values
+                    # Unknown CtyValues are preserved as-is for the handler to detect
+                    if isinstance(value, CtyValue) and not value.is_unknown:
+                        base_plan[key] = cty_to_native(value)
+                    else:
+                        base_plan[key] = value
         logger.debug(f"BaseResource.plan() final base_plan before calling resource method: {list(base_plan.keys())}")
 
         if is_create:
