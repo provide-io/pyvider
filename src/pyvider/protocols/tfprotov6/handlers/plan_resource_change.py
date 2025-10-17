@@ -80,6 +80,7 @@ def _create_resource_context(
     resource_class: Any,
     provider_instance: Any,
 ) -> ResourceContext:
+    # Try to create attrs instances, but they may return None if values are unknown/computed
     config_instance = cty_to_attrs_instance(config_cty_marked, resource_class.config_class)
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
     proposed_new_state_instance = cty_to_attrs_instance(proposed_new_state_cty, resource_class.state_class)

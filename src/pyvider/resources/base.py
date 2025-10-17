@@ -75,12 +75,22 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             if name in data and field_def.init:
                 raw_value = data[name]
                 converted_value = cls._cty_to_attrs_recursive(raw_value, field_def.type)
-                if converted_value is not None:
-                    kwargs[name] = converted_value
+                # Include the field even if converted_value is None
+                # This handles unknown/computed values during validation/planning
+                kwargs[name] = converted_value
 
         try:
             return target_cls(**kwargs)
         except TypeError as e:
+            # If we can't create the instance due to missing required fields,
+            # check if it's because some values are None (unknown/computed).
+            # In that case, return None to signal that the instance can't be created yet.
+            if "missing" in str(e) and "required" in str(e):
+                logger.debug(
+                    f"Cannot create '{target_cls.__name__}' instance yet - likely has unknown/computed values",
+                    error=str(e)
+                )
+                return None
             raise TypeError(f"Could not create '{target_cls.__name__}' from data: {e}") from e
 
     @classmethod
