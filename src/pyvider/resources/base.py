@@ -83,14 +83,18 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             return target_cls(**kwargs)
         except TypeError as e:
             # If we can't create the instance due to missing required fields,
-            # check if it's because some values are None (unknown/computed).
-            # In that case, return None to signal that the instance can't be created yet.
+            # it's likely because some values are unknown/computed during planning.
+            # Return None to signal "attrs instance not available - use is_field_unknown() instead"
+            #
+            # Resources should check ctx.is_field_unknown("field_name") to handle unknown values
+            # explicitly rather than relying on ctx.config being None.
             if "missing" in str(e) and "required" in str(e):
                 logger.debug(
-                    f"Cannot create '{target_cls.__name__}' instance yet - likely has unknown/computed values",
+                    f"Cannot create '{target_cls.__name__}' instance - unknown/computed values present",
                     error=str(e)
                 )
                 return None
+            # Re-raise other TypeErrors as they indicate real problems
             raise TypeError(f"Could not create '{target_cls.__name__}' from data: {e}") from e
 
     @classmethod

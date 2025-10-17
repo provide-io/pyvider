@@ -47,21 +47,15 @@ async def _validate_resource_config_impl(
 
         config_cty = unmarshal(request.config, schema=resource_schema.block)
 
-        # Try to create attrs instance, but if it fails due to unknown values,
-        # skip custom validation and rely on schema validation only
-        config_instance = None
-        try:
-            config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
-        except TypeError as e:
-            # If we can't create the instance due to missing required fields,
-            # it's likely because some values are unknown/computed during validation.
-            # This is expected and we can skip custom validation.
-            if "missing" in str(e) and "required" in str(e):
-                # Schema validation already passed, skip custom validation
-                return response
-            else:
-                # Re-raise if it's a different TypeError
-                raise
+        # Try to create typed attrs instance from CTY config
+        # If values are unknown/computed, this will return None (expected during planning)
+        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
+
+        # If config_instance is None, skip custom validation
+        # Resources should use ctx.is_field_unknown() to handle unknown values properly
+        if config_instance is None:
+            # Schema validation already passed, custom validation not possible with unknown values
+            return response
 
         resource_handler = resource_class()
         validation_errors = await resource_handler.validate(config_instance)
