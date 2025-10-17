@@ -141,9 +141,11 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _cty_to_dict_preserving_unknown(cls, cty_value: CtyValue | None) -> dict[str, Any]:
         """Convert CTY value to dict, but preserve unknown CtyValue objects instead of converting to None."""
         if not cty_value or cty_value.is_null:
+            logger.debug("_cty_to_dict_preserving_unknown: cty_value is None or null")
             return {}
 
         if not isinstance(cty_value.type, CtyObject):
+            logger.debug(f"_cty_to_dict_preserving_unknown: cty_value type is not CtyObject: {type(cty_value.type)}")
             return cty_to_native(cty_value) if cty_value else {}
 
         result = {}
@@ -152,11 +154,15 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 # Preserve unknown values as CtyValue objects
                 if value_cty.is_unknown:
                     result[key] = value_cty
+                    logger.debug(f"_cty_to_dict_preserving_unknown: preserving unknown value for key '{key}'")
                 else:
                     result[key] = cty_to_native(value_cty)
+                    logger.debug(f"_cty_to_dict_preserving_unknown: converted known value for key '{key}' to {result[key]}")
             else:
                 result[key] = value_cty
+                logger.debug(f"_cty_to_dict_preserving_unknown: non-CtyValue for key '{key}': {value_cty}")
 
+        logger.debug(f"_cty_to_dict_preserving_unknown: returning dict with keys: {list(result.keys())}")
         return result
 
     async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
