@@ -184,18 +184,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
         # Create base_plan from planned_state_cty, preserving unknown values
         base_plan = self._cty_to_dict_preserving_unknown(ctx.planned_state_cty)
-        logger.debug("BaseResource.plan() base_plan from planned_state_cty", keys=list(base_plan.keys()))
 
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
-
-        # Don't use truthiness check on CtyValue - unknown values are falsy!
+        # NOTE: Don't use truthiness check on CtyValue - unknown values are falsy!
         # Use explicit 'is not None' instead
         if ctx.config_cty is not None and isinstance(ctx.config_cty, CtyValue) and hasattr(ctx.config_cty, "value"):
             cty_value_dict = ctx.config_cty.value
-            logger.debug("BaseResource.plan() inside if block", value_type=type(cty_value_dict).__name__)
             if isinstance(cty_value_dict, dict):
-                logger.debug("BaseResource.plan() merging fields", num_fields=len(cty_value_dict))
                 for key, value in cty_value_dict.items():
                     # Only add if not already in base_plan (planned_state takes precedence)
                     if key not in base_plan:
@@ -208,18 +204,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                             base_plan[key] = cty_to_native(value)
                         else:
                             base_plan[key] = value
-            else:
-                logger.warning("BaseResource.plan() config_cty.value is not a dict",
-                             value_type=type(cty_value_dict).__name__)
-        else:
-            logger.warning("BaseResource.plan() NOT merging config",
-                         config_cty_is_none=ctx.config_cty is None,
-                         config_cty_repr=repr(ctx.config_cty),
-                         config_cty_type=type(ctx.config_cty).__name__,
-                         is_ctyvalue=isinstance(ctx.config_cty, CtyValue),
-                         has_value_attr=hasattr(ctx.config_cty, "value"))
-
-        logger.debug("BaseResource.plan() final base_plan", keys=list(base_plan.keys()))
 
         if is_create:
             planned_state, private_state = await self._create(ctx, base_plan)
