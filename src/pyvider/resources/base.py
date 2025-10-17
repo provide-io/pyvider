@@ -188,9 +188,19 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
+
+        # DEBUG: Check conditions before if statement
+        cond1 = ctx.config_cty is not None and ctx.config_cty
+        cond2 = isinstance(ctx.config_cty, CtyValue) if ctx.config_cty else False
+        cond3 = hasattr(ctx.config_cty, "value") if ctx.config_cty else False
+        logger.debug("BaseResource.plan() if-check", cond1=cond1, cond2=cond2, cond3=cond3,
+                    combined=cond1 and cond2 and cond3)
+
         if ctx.config_cty and isinstance(ctx.config_cty, CtyValue) and hasattr(ctx.config_cty, "value"):
             cty_value_dict = ctx.config_cty.value
+            logger.debug("BaseResource.plan() inside if block", value_type=type(cty_value_dict).__name__)
             if isinstance(cty_value_dict, dict):
+                logger.debug("BaseResource.plan() merging fields", num_fields=len(cty_value_dict))
                 for key, value in cty_value_dict.items():
                     # Only add if not already in base_plan (planned_state takes precedence)
                     if key not in base_plan:
