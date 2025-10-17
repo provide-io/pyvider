@@ -188,31 +188,26 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
-        logger.debug("BaseResource.plan() checking config_cty",
-                    has_config_cty=ctx.config_cty is not None,
-                    has_value_attr=hasattr(ctx.config_cty, "value") if ctx.config_cty else False,
-                    config_cty_type=type(ctx.config_cty).__name__ if ctx.config_cty else None)
-
-        if ctx.config_cty and hasattr(ctx.config_cty, "value"):
-            logger.debug("BaseResource.plan() merging config fields",
-                        num_fields=len(ctx.config_cty.value),
-                        field_names=list(ctx.config_cty.value.keys()))
-            for key, value in ctx.config_cty.value.items():
-                # Only add if not already in base_plan (planned_state takes precedence)
-                if key not in base_plan:
-                    # Convert known CtyValues to native Python values
-                    # Unknown CtyValues are preserved as-is for the handler to detect
-                    if isinstance(value, CtyValue) and not value.is_unknown:
-                        native_value = cty_to_native(value)
-                        logger.debug("BaseResource.plan() adding known config field",
-                                   field=key, native_value=native_value)
-                        base_plan[key] = native_value
-                    else:
-                        logger.debug("BaseResource.plan() adding unknown config field",
-                                   field=key, is_unknown=isinstance(value, CtyValue) and value.is_unknown)
-                        base_plan[key] = value
+        if ctx.config_cty and isinstance(ctx.config_cty, CtyValue) and hasattr(ctx.config_cty, "value"):
+            cty_value_dict = ctx.config_cty.value
+            if isinstance(cty_value_dict, dict):
+                for key, value in cty_value_dict.items():
+                    # Only add if not already in base_plan (planned_state takes precedence)
+                    if key not in base_plan:
+                        # Convert known CtyValues to native Python values
+                        # Unknown CtyValues are preserved as-is for the handler to detect
+                        if isinstance(value, CtyValue) and not value.is_unknown:
+                            base_plan[key] = cty_to_native(value)
+                        else:
+                            base_plan[key] = value
+            else:
+                logger.warning("BaseResource.plan() config_cty.value is not a dict",
+                             value_type=type(cty_value_dict).__name__)
         else:
-            logger.warning("BaseResource.plan() NOT merging config - config_cty missing or has no value attribute")
+            logger.warning("BaseResource.plan() NOT merging config",
+                         has_config_cty=ctx.config_cty is not None,
+                         is_ctyvalue=isinstance(ctx.config_cty, CtyValue) if ctx.config_cty else False,
+                         has_value_attr=hasattr(ctx.config_cty, "value") if ctx.config_cty else False)
 
         logger.debug("BaseResource.plan() final base_plan", keys=list(base_plan.keys()))
 
