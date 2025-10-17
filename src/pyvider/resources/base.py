@@ -205,10 +205,11 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                              value_type=type(cty_value_dict).__name__)
         else:
             logger.warning("BaseResource.plan() NOT merging config",
-                         has_config_cty=ctx.config_cty is not None,
-                         config_cty_type=type(ctx.config_cty).__name__ if ctx.config_cty else None,
-                         is_ctyvalue=isinstance(ctx.config_cty, CtyValue) if ctx.config_cty else False,
-                         has_value_attr=hasattr(ctx.config_cty, "value") if ctx.config_cty else False)
+                         config_cty_is_none=ctx.config_cty is None,
+                         config_cty_repr=repr(ctx.config_cty),
+                         config_cty_type=type(ctx.config_cty).__name__,
+                         is_ctyvalue=isinstance(ctx.config_cty, CtyValue),
+                         has_value_attr=hasattr(ctx.config_cty, "value"))
 
         logger.debug("BaseResource.plan() final base_plan", keys=list(base_plan.keys()))
 
