@@ -185,6 +185,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         # Create base_plan from planned_state_cty, preserving unknown values
         base_plan = self._cty_to_dict_preserving_unknown(ctx.planned_state_cty)
 
+        # Merge in config fields - base_plan starts with all config values
+        # Resources then add/modify computed fields in their _create()/_update() methods
+        if ctx.config_cty and hasattr(ctx.config_cty, "value"):
+            for key, value in ctx.config_cty.value.items():
+                # Only add if not already in base_plan (planned_state takes precedence)
+                if key not in base_plan:
+                    base_plan[key] = value
+
         if is_create:
             planned_state, private_state = await self._create(ctx, base_plan)
             logger.debug(f"Plan _create returned private_state: {private_state}")
