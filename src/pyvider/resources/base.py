@@ -189,14 +189,9 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         # Merge in config fields - base_plan starts with all config values
         # Resources then add/modify computed fields in their _create()/_update() methods
 
-        # DEBUG: Check conditions before if statement
-        cond1 = ctx.config_cty is not None and ctx.config_cty
-        cond2 = isinstance(ctx.config_cty, CtyValue) if ctx.config_cty else False
-        cond3 = hasattr(ctx.config_cty, "value") if ctx.config_cty else False
-        logger.warning("BaseResource.plan() PRE-IF-CHECK", cond1=cond1, cond2=cond2, cond3=cond3,
-                    combined=cond1 and cond2 and cond3)
-
-        if ctx.config_cty and isinstance(ctx.config_cty, CtyValue) and hasattr(ctx.config_cty, "value"):
+        # Don't use truthiness check on CtyValue - unknown values are falsy!
+        # Use explicit 'is not None' instead
+        if ctx.config_cty is not None and isinstance(ctx.config_cty, CtyValue) and hasattr(ctx.config_cty, "value"):
             cty_value_dict = ctx.config_cty.value
             logger.debug("BaseResource.plan() inside if block", value_type=type(cty_value_dict).__name__)
             if isinstance(cty_value_dict, dict):
