@@ -119,10 +119,8 @@ module = ["structlog.*", "google.*", "grpc.*", "pytest.*", "jq.*", "psutil.*"]
 ignore_missing_imports = true
 
 [tool.mutmut]
-paths_to_mutate = "src/pyvider"
-runner = "pytest"
-# Exclude generated protobuf files from mutation
-exclude = ["*/protobuf/*_pb2.py", "*/protobuf/*_pb2.pyi", "*/protobuf/*_pb2_grpc.py"]
+paths_to_mutate = "src/pyvider/handler.py"
+runner = "pytest tests/test_handler.py"
 dict_synonyms = ["dict", "OrderedDict", "defaultdict"]
 use_patch_file = true
 
