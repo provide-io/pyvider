@@ -65,6 +65,45 @@ def discovered_components_session(event_loop):
     yield
 
 
+@pytest.fixture(scope="session", autouse=True)
+def suppress_logging_during_mutmut():
+    """
+    Automatically suppress all logging during mutmut runs to avoid I/O errors.
+
+    Mutmut redirects stdio which causes structlog to fail with
+    'I/O operation on closed file' errors. We work around this by redirecting
+    stdout/stderr to /dev/null.
+    """
+    import os
+    import sys
+
+    # Check if running under mutmut
+    is_mutmut = (
+        os.environ.get('MUTANT_UNDER_TEST') or
+        os.path.exists('.mutmut-cache') or
+        'mutmut' in sys.argv[0]
+    )
+
+    if is_mutmut:
+        # Save original stdout/stderr
+        original_stdout = sys.stdout
+        original_stderr = sys.stderr
+
+        # Redirect to /dev/null
+        devnull = open(os.devnull, 'w')
+        sys.stdout = devnull
+        sys.stderr = devnull
+
+        yield
+
+        # Restore original stdout/stderr
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
+        devnull.close()
+    else:
+        yield
+
+
 @pytest.fixture
 async def provider_in_hub(discovered_components_session):
     """

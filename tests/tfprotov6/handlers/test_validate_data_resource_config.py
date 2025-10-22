@@ -39,12 +39,13 @@ class TestValidateDataResourceConfigHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_returns_response(self, sample_request):
         """Test that handler returns ValidateDataResourceConfig.Response."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            mock_hub.get_component.return_value = None
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+                mock_hub.get_component.return_value = None
 
-            response = await ValidateDataResourceConfigHandler(sample_request, context=None)
+                response = await ValidateDataResourceConfigHandler(sample_request, context=None)
 
-            assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+                assert isinstance(response, pb.ValidateDataResourceConfig.Response)
 
     @pytest.mark.asyncio
     async def test_handler_calls_implementation(self, sample_request):
@@ -238,25 +239,27 @@ class TestValidateDataResourceConfigEdgeCases:
         request.type_name = ""
         request.config.msgpack = b""
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
-                mock_create_diag.return_value = mock_diag
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+                    mock_hub.get_component.return_value = None
+                    mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
+                    mock_create_diag.return_value = mock_diag
 
-                response = await _validate_data_resource_config_impl(request, context=None)
+                    response = await _validate_data_resource_config_impl(request, context=None)
 
-                assert isinstance(response, pb.ValidateDataResourceConfig.Response)
-                assert len(response.diagnostics) >= 1
+                    assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+                    assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
     async def test_with_context_object(self, sample_request):
         """Test handler with non-None context."""
         context = MagicMock()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            mock_hub.get_component.return_value = None
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+                mock_hub.get_component.return_value = None
 
-            response = await ValidateDataResourceConfigHandler(sample_request, context=context)
+                response = await ValidateDataResourceConfigHandler(sample_request, context=context)
 
-            assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+                assert isinstance(response, pb.ValidateDataResourceConfig.Response)
