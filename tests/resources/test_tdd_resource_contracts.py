@@ -6,7 +6,7 @@ and the contracts for the _create, _update, _create_apply, and _update_apply hoo
 """
 
 from typing import Any
-from unittest.mock import AsyncMock
+from provide.testkit.mocking import AsyncMock
 
 import attrs
 import pytest

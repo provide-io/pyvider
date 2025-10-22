@@ -1,7 +1,7 @@
 """Tests for ImportResourceState handler."""
 
 import pytest
-from unittest.mock import patch
+from provide.testkit.mocking import patch
 
 from pyvider.protocols.tfprotov6.handlers.import_resource_state import (
     ImportResourceStateHandler,

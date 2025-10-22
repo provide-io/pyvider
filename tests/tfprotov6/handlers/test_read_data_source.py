@@ -1,7 +1,7 @@
 """Tests for ReadDataSource handler."""
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.handlers.read_data_source import (
     ReadDataSourceHandler,

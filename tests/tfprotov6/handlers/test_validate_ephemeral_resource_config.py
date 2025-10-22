@@ -1,7 +1,7 @@
 """Tests for ValidateEphemeralResourceConfig handler."""
 
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
 from pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config import (
     ValidateEphemeralResourceConfigHandler,

@@ -9,7 +9,7 @@ idiomatic than using a simple lock for this purpose.
 """
 
 import asyncio
-from unittest.mock import AsyncMock
+from provide.testkit.mocking import AsyncMock
 
 import pytest
 from pytest_mock import MockerFixture

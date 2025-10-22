@@ -1,7 +1,7 @@
 """Tests for launch_context_command module."""
 
 import json
-from unittest import mock
+from provide.testkit import mocking as mock
 
 from click.testing import CliRunner
 import pytest

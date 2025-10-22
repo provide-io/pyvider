@@ -1,7 +1,7 @@
 """Tests for ValidateProviderConfig handler."""
 
 import pytest
-from unittest.mock import AsyncMock, patch
+from provide.testkit.mocking import AsyncMock, patch
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.handlers.validate_provider_config import (
     ValidateProviderConfigHandler,

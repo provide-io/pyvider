@@ -1,6 +1,6 @@
 """Tests for handlers/utils.py utility functions."""
 
-from unittest.mock import patch
+from provide.testkit.mocking import patch
 
 import attrs
 from provide.foundation.errors import FoundationError

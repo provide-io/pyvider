@@ -1,6 +1,6 @@
 """Tests for CLI components commands."""
 
-from unittest import mock
+from provide.testkit import mocking as mock
 
 import pytest
 

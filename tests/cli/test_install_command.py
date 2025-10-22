@@ -1,7 +1,7 @@
 """Tests for install_command module."""
 
 from pathlib import Path
-from unittest import mock
+from provide.testkit import mocking as mock
 
 from click.testing import CliRunner
 import pytest

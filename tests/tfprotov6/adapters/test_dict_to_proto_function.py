@@ -2,7 +2,7 @@
 
 import json
 import pytest
-from unittest.mock import patch, MagicMock
+from provide.testkit.mocking import patch, MagicMock
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
 from pyvider.protocols.tfprotov6.adapters.function_adapter import dict_to_proto_function

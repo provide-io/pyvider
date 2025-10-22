@@ -3,7 +3,7 @@
 from datetime import datetime, timezone
 import msgpack
 import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
 from pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource import (
     RenewEphemeralResourceHandler,

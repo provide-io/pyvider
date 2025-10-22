@@ -1,7 +1,7 @@
 """Tests for ApplyResourceChange handler - the most critical CRUD operation handler."""
 
 import json
-from unittest import mock
+from provide.testkit import mocking as mock
 
 import pytest
 

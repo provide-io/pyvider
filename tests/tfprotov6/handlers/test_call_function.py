@@ -1,7 +1,7 @@
 """Tests for CallFunction handler."""
 
 import inspect
-from unittest import mock
+from provide.testkit import mocking as mock
 
 import pytest
 

@@ -6,7 +6,7 @@ to ensure cryptographic security and proper error handling.
 """
 
 import os
-from unittest.mock import patch
+from provide.testkit.mocking import patch
 
 from provide.foundation.errors import ConfigurationError
 import pytest

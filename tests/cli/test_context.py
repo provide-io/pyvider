@@ -1,7 +1,7 @@
 """Tests for CLI context module."""
 
 from pathlib import Path
-from unittest import mock
+from provide.testkit import mocking as mock
 
 import pytest
 
