@@ -1,9 +1,0 @@
-{
-    "exit_code_by_key": {
-        "pyvider.capabilities.decorators.x_register_capability__mutmut_1": null,
-        "pyvider.capabilities.decorators.x_register_capability__mutmut_2": null,
-        "pyvider.capabilities.decorators.x_register_capability__mutmut_3": null,
-        "pyvider.capabilities.decorators.x_requires_capability__mutmut_1": null
-    },
-    "hash_by_function_name": {}
-}
