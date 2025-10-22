@@ -67,6 +67,15 @@ class TestReadDataSourceImpl:
         mock_instance = AsyncMock()
         mock_instance.read.return_value = MagicMock(name="test_data")
         mock_data_source_class.return_value = mock_instance
+        # Prevent capability injection by not having _parent_capability
+        mock_data_source_class._parent_capability = None
+
+        # Create a properly mocked schema with to_cty_type method
+        mock_block = MagicMock()
+        mock_block.to_cty_type.return_value = CtyObject(attribute_types={"name": CtyString()})
+        mock_schema = MagicMock()
+        mock_schema.block = mock_block
+        mock_data_source_class.get_schema.return_value = mock_schema
 
         with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
@@ -91,6 +100,8 @@ class TestReadDataSourceImpl:
         mock_instance = AsyncMock()
         mock_instance.read.return_value = None
         mock_data_source_class.return_value = mock_instance
+        # Prevent capability injection
+        mock_data_source_class._parent_capability = None
 
         with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"):
