@@ -1,7 +1,7 @@
 """Property-based tests for CTY type conversions using Hypothesis."""
 
 import pytest
-from hypothesis import given, strategies as st, assume, settings
+from hypothesis import given, strategies as st, assume, settings, HealthCheck
 from pyvider.cty import (
     CtyString,
     CtyNumber,
@@ -147,7 +147,7 @@ class TestCtyListValidation:
     """Property-based tests for CtyList validation."""
 
     @given(items=st.lists(st.text(max_size=50), max_size=20))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_list_of_strings_validates(self, items):
         """Property: CtyList(CtyString) should accept lists of strings."""
         cty_list = CtyList(element_type=CtyString())
