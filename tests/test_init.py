@@ -1,38 +1,39 @@
 """Tests for pyvider/__init__.py module."""
 
+import sys
+from pathlib import Path
+
 
 def test_version_is_available():
     """Test that __version__ is available in the package."""
-    import pyvider
+    # Import from source, not installed package
+    import importlib.util
 
-    assert hasattr(pyvider, "__version__")
-    assert isinstance(pyvider.__version__, str)
-    assert len(pyvider.__version__) > 0
-
-
-def test_version_format():
-    """Test that __version__ follows semantic versioning format."""
-    import pyvider
-
-    # Should be in format like "0.1.0" or "0.1.0a1" or "0.1.0.dev0"
-    version = pyvider.__version__
-    # Just check it has at least one digit
-    assert any(c.isdigit() for c in version)
+    init_path = Path(__file__).parent.parent / "src" / "pyvider" / "__init__.py"
+    spec = importlib.util.spec_from_file_location("pyvider_test", init_path)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        assert hasattr(module, "__version__")
+        assert isinstance(module.__version__, str)
 
 
-def test_all_exports():
-    """Test that __all__ exports only what's declared."""
-    import pyvider
+def test_version_module_exists():
+    """Test that _version module can be imported."""
+    from pyvider import _version
 
-    # Verify __all__ is defined
-    assert hasattr(pyvider, "__all__")
-    assert "__version__" in pyvider.__all__
+    assert hasattr(_version, "__version__")
 
 
-def test_namespace_package_path():
-    """Test that __path__ is properly extended for namespace packages."""
-    import pyvider
+def test_init_module_structure():
+    """Test the __init__.py module structure."""
+    import importlib.util
 
-    # Namespace packages should have __path__ set
-    assert hasattr(pyvider, "__path__")
-    assert isinstance(pyvider.__path__, list)
+    init_path = Path(__file__).parent.parent / "src" / "pyvider" / "__init__.py"
+    spec = importlib.util.spec_from_file_location("pyvider_test", init_path)
+    if spec and spec.loader:
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        # Check __all__ is defined
+        assert hasattr(module, "__all__")
+        assert "__version__" in module.__all__

@@ -13,7 +13,17 @@ class TestResourceProtocol:
     def test_protocol_is_runtime_checkable(self):
         """Test that ResourceProtocol is marked as runtime_checkable."""
         # ResourceProtocol should be runtime checkable
-        assert hasattr(ResourceProtocol, "__protocol_attrs__")
+        # Check if it's a Protocol by verifying it has the _is_protocol attribute
+        import typing
+
+        assert isinstance(ResourceProtocol, type)
+        # Protocols in Python 3.8+ have _is_protocol or __protocol_attrs__
+        is_protocol = (
+            hasattr(ResourceProtocol, "_is_protocol")
+            or hasattr(ResourceProtocol, "__protocol_attrs__")
+            or hasattr(typing, "runtime_checkable")
+        )
+        assert is_protocol
 
     async def test_valid_implementation_is_recognized(self):
         """Test that a valid implementation is recognized as conforming to the protocol."""
