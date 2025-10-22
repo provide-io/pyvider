@@ -116,7 +116,7 @@ class TestAttrsToDictForCty:
 
     def test_passes_through_cty_values(self):
         """Test that CtyValue instances are passed through."""
-        cty_val = CtyValue(type=CtyString(), value="test")
+        cty_val = CtyValue(vtype=CtyString(), value="test")
         result = attrs_to_dict_for_cty(cty_val)
         assert result is cty_val
 
@@ -147,8 +147,8 @@ class TestIsValidRefinement:
 
     def test_type_mismatch_returns_false(self):
         """Test that type mismatch is detected."""
-        plan = CtyValue(type=CtyString(), value="test")
-        result = CtyValue(type=CtyNumber(), value=42)
+        plan = CtyValue(vtype=CtyString(), value="test")
+        result = CtyValue(vtype=CtyNumber(), value=42)
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -157,8 +157,8 @@ class TestIsValidRefinement:
 
     def test_unknown_to_concrete_is_valid(self):
         """Test that unknown can be refined to concrete."""
-        plan = CtyValue(type=CtyString(), value="test", unknown=True)
-        result = CtyValue(type=CtyString(), value="concrete")
+        plan = CtyValue(vtype=CtyString(), value="test", is_unknown=True)
+        result = CtyValue(vtype=CtyString(), value="concrete")
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -167,8 +167,8 @@ class TestIsValidRefinement:
 
     def test_unrefined_unknown_can_refine_to_any(self):
         """Test that UNREFINED_UNKNOWN can refine to any concrete value."""
-        plan = CtyValue(type=CtyString(), value=UNREFINED_UNKNOWN)
-        result = CtyValue(type=CtyString(), value="anything")
+        plan = CtyValue(vtype=CtyString(), value=UNREFINED_UNKNOWN)
+        result = CtyValue(vtype=CtyString(), value="anything")
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -176,8 +176,8 @@ class TestIsValidRefinement:
 
     def test_null_to_concrete_is_valid(self):
         """Test that null can be refined to concrete."""
-        plan = CtyValue(type=CtyString(), value=None)
-        result = CtyValue(type=CtyString(), value="concrete")
+        plan = CtyValue(vtype=CtyString(), value=None)
+        result = CtyValue(vtype=CtyString(), value="concrete")
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -185,8 +185,8 @@ class TestIsValidRefinement:
 
     def test_concrete_to_null_is_invalid(self):
         """Test that concrete cannot be refined to null."""
-        plan = CtyValue(type=CtyString(), value="concrete")
-        result = CtyValue(type=CtyString(), value=None)
+        plan = CtyValue(vtype=CtyString(), value="concrete")
+        result = CtyValue(vtype=CtyString(), value=None)
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -195,8 +195,8 @@ class TestIsValidRefinement:
 
     def test_known_to_unknown_is_invalid(self):
         """Test that known cannot become unknown."""
-        plan = CtyValue(type=CtyString(), value="known")
-        result = CtyValue(type=CtyString(), value="test", unknown=True)
+        plan = CtyValue(vtype=CtyString(), value="known")
+        result = CtyValue(vtype=CtyString(), value="test", is_unknown=True)
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -205,8 +205,8 @@ class TestIsValidRefinement:
 
     def test_concrete_value_change_is_invalid(self):
         """Test that concrete values cannot change."""
-        plan = CtyValue(type=CtyString(), value="original")
-        result = CtyValue(type=CtyString(), value="changed")
+        plan = CtyValue(vtype=CtyString(), value="original")
+        result = CtyValue(vtype=CtyString(), value="changed")
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -217,11 +217,11 @@ class TestIsValidRefinement:
         """Test object refinement detects key mismatches."""
         plan_obj = CtyValue(
             type=CtyObject(attribute_types={"a": CtyString()}),
-            value={"a": CtyValue(type=CtyString(), value="test")}
+            value={"a": CtyValue(vtype=CtyString(), value="test")}
         )
         result_obj = CtyValue(
             type=CtyObject(attribute_types={"b": CtyString()}),
-            value={"b": CtyValue(type=CtyString(), value="test")}
+            value={"b": CtyValue(vtype=CtyString(), value="test")}
         )
 
         is_valid, reason = is_valid_refinement(plan_obj, result_obj)
@@ -233,13 +233,13 @@ class TestIsValidRefinement:
         """Test list refinement detects length changes."""
         plan_list = CtyValue(
             type=CtyList(element_type=CtyString()),
-            value=[CtyValue(type=CtyString(), value="a")]
+            value=[CtyValue(vtype=CtyString(), value="a")]
         )
         result_list = CtyValue(
             type=CtyList(element_type=CtyString()),
             value=[
-                CtyValue(type=CtyString(), value="a"),
-                CtyValue(type=CtyString(), value="b")
+                CtyValue(vtype=CtyString(), value="a"),
+                CtyValue(vtype=CtyString(), value="b")
             ]
         )
 
@@ -462,14 +462,14 @@ class TestCtyToAttrsInstance:
 
     def test_returns_none_when_attrs_cls_is_none(self):
         """Test that None attrs_cls returns None."""
-        cty_val = CtyValue(type=CtyString(), value="test")
+        cty_val = CtyValue(vtype=CtyString(), value="test")
         result = cty_to_attrs_instance(cty_val, None)
 
         assert result is None
 
     def test_raises_error_when_not_a_class(self):
         """Test that non-class raises TypeError."""
-        cty_val = CtyValue(type=CtyString(), value="test")
+        cty_val = CtyValue(vtype=CtyString(), value="test")
 
         with pytest.raises(TypeError, match="must be a class"):
             cty_to_attrs_instance(cty_val, "not_a_class")
@@ -482,7 +482,7 @@ class TestCtyToAttrsInstance:
 
         cty_val = CtyValue(
             type=CtyObject(attribute_types={"name": CtyString()}),
-            value={"name": CtyValue(type=CtyString(), value="test")}
+            value={"name": CtyValue(vtype=CtyString(), value="test")}
         )
 
         # This will test the delegation path
