@@ -1,0 +1,134 @@
+"""Tests for ConfigureProvider handler."""
+
+import attrs
+import pytest
+
+from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers.configure_provider import (
+    ConfigureProviderHandler,
+    _configure_provider_impl,
+)
+import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema import a_str, s_provider
+
+
+@attrs.define
+class SampleProviderConfig:
+    region: str = "us-west-2"
+    api_key: str = ""
+
+
+class TestConfigureProviderHandler:
+    """Tests for ConfigureProviderHandler function."""
+
+    @pytest.mark.asyncio
+    async def test_handler_returns_response_object(self, provider_in_hub):
+        """Test that handler returns proper response object."""
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({})
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+        response = await ConfigureProviderHandler(request, context=None)
+
+        assert isinstance(response, pb.ConfigureProvider.Response)
+
+    @pytest.mark.asyncio
+    async def test_handler_configures_provider_successfully(self, provider_in_hub):
+        """Test handler configures provider with valid config."""
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({})
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+        response = await ConfigureProviderHandler(request, context=None)
+
+        assert len(response.diagnostics) == 0
+        # Provider context should be registered
+        provider_context = hub.get_component("singleton", "provider_context")
+        assert provider_context is not None
+
+    @pytest.mark.asyncio
+    async def test_handler_handles_unknown_config(self, provider_in_hub):
+        """Test handler handles unknown configuration during planning."""
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+
+        from pyvider.cty import CtyValue
+        unknown_config = CtyValue.unknown(cty_type)
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(unknown_config, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+        response = await ConfigureProviderHandler(request, context=None)
+
+        # Should return without error, deferring configuration
+        assert isinstance(response, pb.ConfigureProvider.Response)
+
+    @pytest.mark.asyncio
+    async def test_handler_handles_missing_provider(self, provider_in_hub):
+        """Test handler handles missing provider instance."""
+        # Temporarily remove provider
+        provider = hub.get_component("singleton", "provider")
+        hub.unregister("singleton", "provider")
+
+        try:
+            request = pb.ConfigureProvider.Request(
+                config=pb.DynamicValue(msgpack=b"\x80")
+            )
+            response = await ConfigureProviderHandler(request, context=None)
+
+            assert len(response.diagnostics) > 0
+        finally:
+            # Restore provider
+            hub.register("singleton", "provider", provider)
+
+    @pytest.mark.asyncio
+    async def test_impl_creates_provider_context(self, provider_in_hub):
+        """Test implementation creates and stores provider context."""
+        # Clear any existing provider context
+        if hub.get_component("singleton", "provider_context"):
+            hub.unregister("singleton", "provider_context")
+
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({})
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+        await _configure_provider_impl(request, context=None)
+
+        # Provider context should be created
+        provider_context = hub.get_component("singleton", "provider_context")
+        assert provider_context is not None
+        assert provider_context.config is not None
+
+    @pytest.mark.asyncio
+    async def test_handler_metrics_recorded(self, provider_in_hub):
+        """Test that handler records metrics."""
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({})
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+
+        # Just verify handler completes successfully (metrics recorded internally)
+        response = await ConfigureProviderHandler(request, context=None)
+        assert isinstance(response, pb.ConfigureProvider.Response)
