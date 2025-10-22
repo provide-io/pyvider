@@ -3,6 +3,7 @@
 import msgpack
 import attrs
 import pytest
+from unittest.mock import patch
 
 from pyvider.common.encryption import encrypt
 from pyvider.hub import hub
@@ -311,5 +312,94 @@ class TestReadResourceEdgeCases:
             response = await ReadResourceHandler(request, context=None)
 
             assert isinstance(response, pb.ReadResource.Response)
+        finally:
+            hub.unregister("resource", "test_resource")
+
+    @pytest.mark.asyncio
+    async def test_handler_records_errors_on_exception(self, provider_in_hub):
+        """Test that handler records error metrics when exception occurs."""
+        hub.register("resource", "test_resource", SampleReadResource)
+
+        try:
+            schema = SampleReadResource.get_schema()
+            cty_type = schema.block.to_cty_type()
+            state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 1})
+
+            from pyvider.conversion import marshal
+            state_dv = marshal(state_cty, schema=schema.block)
+
+            request = pb.ReadResource.Request(
+                type_name="test_resource",
+                current_state=state_dv,
+            )
+
+            with patch("pyvider.protocols.tfprotov6.handlers.read_resource.handler_errors") as mock_errors:
+                with patch("pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl") as mock_impl:
+                    # Make implementation raise an exception
+                    mock_impl.side_effect = RuntimeError("Test error")
+
+                    with pytest.raises(RuntimeError, match="Test error"):
+                        await ReadResourceHandler(request, context=None)
+
+                    # Verify error metric was recorded
+                    mock_errors.inc.assert_called_once_with(handler="ReadResource")
+        finally:
+            hub.unregister("resource", "test_resource")
+
+    @pytest.mark.asyncio
+    async def test_handler_appends_context_diagnostics(self, provider_in_hub):
+        """Test that handler appends diagnostics from resource context to response."""
+
+        class ResourceWithContextDiagnostics(BaseResource):
+            """Resource that adds diagnostics to context."""
+            state_class = SampleState
+
+            @classmethod
+            def get_schema(cls):
+                return s_resource(attributes={"id": a_str(), "name": a_str(), "count": a_num()})
+
+            async def _validate_config(self, config) -> list[str]:
+                return []
+
+            async def read(self, ctx):
+                # Add diagnostic to context
+                diagnostic = pb.Diagnostic(
+                    severity=pb.Diagnostic.WARNING,
+                    summary="Context warning",
+                    detail="This is a warning from the resource context"
+                )
+                ctx.diagnostics.append(diagnostic)
+
+                # Return updated state
+                return SampleState(
+                    id=ctx.state.id,
+                    name=ctx.state.name,
+                    count=ctx.state.count + 1
+                )
+
+            async def _delete_apply(self, ctx):
+                pass
+
+        hub.register("resource", "test_resource", ResourceWithContextDiagnostics)
+
+        try:
+            schema = ResourceWithContextDiagnostics.get_schema()
+            cty_type = schema.block.to_cty_type()
+            state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
+
+            from pyvider.conversion import marshal
+            state_dv = marshal(state_cty, schema=schema.block)
+
+            request = pb.ReadResource.Request(
+                type_name="test_resource",
+                current_state=state_dv,
+            )
+
+            response = await ReadResourceHandler(request, context=None)
+
+            # Verify context diagnostic was appended to response
+            assert len(response.diagnostics) == 1
+            assert response.diagnostics[0].severity == pb.Diagnostic.WARNING
+            assert response.diagnostics[0].summary == "Context warning"
         finally:
             hub.unregister("resource", "test_resource")
