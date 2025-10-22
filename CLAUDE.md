@@ -6,50 +6,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Environment Setup
 ```bash
-# Set up development environment (creates venv, installs dependencies)
-source ./env.sh
-
-# Alternative for PowerShell
-. ./env.ps1
+# Install dependencies
+uv sync
 ```
 
 ### Testing
 ```bash
 # Run all tests
-pytest
+uv run pytest
 
 # Run specific test file
-pytest tests/path/to/test_file.py
+uv run pytest tests/path/to/test_file.py
 
 # Run with coverage
-pytest --cov=pyvider
+uv run pytest --cov=pyvider
 
 # Run tests in parallel
-pytest -n auto
+uv run pytest -n auto
 
 # Run specific test by name
-pytest -k "test_name"
+uv run pytest -k "test_name"
 
 # Run with verbose output
-pytest -v
+uv run pytest -v
 ```
 
 ### Code Quality
 ```bash
 # Format code
-ruff format
+uv run ruff format
 
 # Lint code
-ruff check
+uv run ruff check
 
 # Auto-fix linting issues
-ruff check --fix
+uv run ruff check --fix
 
 # Type checking with mypy
-mypy src/pyvider
+uv run mypy src/pyvider
 
 # Type checking with pyright
-pyright
+uv run pyright
 ```
 
 ### Building & Packaging
@@ -171,4 +168,16 @@ mypy src/pyvider
 pytest
 ```
 
-## Rebuild flavor helpers every time before testing/verifying to ensure accuracy
+## Testing Verification
+After making changes, always run:
+```bash
+# Lint and format check
+uv run ruff check
+uv run ruff format --check
+
+# Type checking
+uv run mypy src/pyvider
+
+# Tests
+uv run pytest
+```
