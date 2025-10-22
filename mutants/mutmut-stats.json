@@ -1,0 +1,34 @@
+{
+    "tests_by_mangled_function_name": {
+        "pyvider._version.x_get_version": [],
+        "pyvider.capabilities.decorators.x_register_capability": [],
+        "pyvider.hub.components.x\u01c1ComponentRegistry\u01c1register": [],
+        "pyvider.providers.decorators.x_register_provider": [],
+        "pyvider.hub.discovery.x\u01c1ComponentDiscovery\u01c1_process_module": [],
+        "pyvider.hub.components.x\u01c1ComponentRegistry\u01c1list_components": [],
+        "pyvider.hub.discovery.x\u01c1ComponentDiscovery\u01c1__init__": [],
+        "pyvider._version.x__find_project_root": [],
+        "pyvider.hub.components.x\u01c1ComponentRegistry\u01c1__init__": [],
+        "pyvider.hub.discovery.x\u01c1ComponentDiscovery\u01c1_discover_package": [],
+        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.x__upgrade_resource_state_impl": [
+            "tests/mutmut_tests/test_upgrade_handler.py::test_handles_empty_state",
+            "tests/mutmut_tests/test_upgrade_handler.py::test_passes_through_json_state"
+        ]
+    },
+    "duration_by_test": {
+        "tests/hub/test_validators.py::test_register_validator": 7.695800741203129e-05,
+        "tests/hub/test_validators.py::test_register_multiple_validators": 4.6792003558948636e-05,
+        "tests/hub/test_validators.py::test_attach_validator_to_metadata": 4.475000605452806e-05,
+        "tests/hub/test_validators.py::test_attach_multiple_validators_to_metadata": 4.475000605452806e-05,
+        "tests/hub/test_validators.py::test_attach_unregistered_validator_raises_error": 4.924999666400254e-05,
+        "tests/hub/test_validators.py::test_attach_validator_to_metadata_without_validators_list": 4.583400732371956e-05,
+        "tests/hub/test_validators.py::test_validate_with_registered_validator": 4.566599091049284e-05,
+        "tests/hub/test_validators.py::test_validate_with_failing_validator": 5.162500019650906e-05,
+        "tests/hub/test_validators.py::test_validate_with_unregistered_validator": 4.354199336376041e-05,
+        "tests/hub/test_validators.py::test_validator_receives_metadata": 4.1459003114141524e-05,
+        "tests/hub/test_validators.py::test_multiple_attach_calls_accumulate": 0.00011654201080091298,
+        "tests/mutmut_tests/test_upgrade_handler.py::test_handles_empty_state": 0.00027637499442789704,
+        "tests/mutmut_tests/test_upgrade_handler.py::test_passes_through_json_state": 0.00020962499547749758
+    },
+    "stats_time": 0.892374
+}

@@ -43,7 +43,8 @@
       "Bash(awk:*)",
       "Bash(mypy:*)",
       "Bash(mutmut run:*)",
-      "Bash(mutmut:*)"
+      "Bash(mutmut:*)",
+      "Bash(tee:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

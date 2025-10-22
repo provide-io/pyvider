@@ -38,11 +38,30 @@ def discovered_components_session(event_loop):
     """
     A session-scoped fixture that runs component discovery once.
     This ensures the hub is populated for all tests that need it.
+
+    Skip during mutmut runs to avoid stdio conflicts.
     """
-    print("\n--- Running session-wide component discovery for tests ---")
-    discovery = ComponentDiscovery(hub)
-    event_loop.run_until_complete(discovery.discover_all())
-    print("--- Component discovery complete ---")
+    import os
+    import sys
+
+    # Skip discovery if running under mutmut (check for mutmut cache)
+    if (os.environ.get('MUTANT_UNDER_TEST') or
+        os.path.exists('.mutmut-cache') or
+        'mutmut' in sys.argv[0]):
+        yield
+        return
+
+    try:
+        print("\n--- Running session-wide component discovery for tests ---")
+        discovery = ComponentDiscovery(hub)
+        event_loop.run_until_complete(discovery.discover_all())
+        print("--- Component discovery complete ---")
+    except (ValueError, OSError) as e:
+        # If there's an I/O error (e.g., from mutmut), skip discovery
+        if "I/O operation on closed file" in str(e):
+            pass
+        else:
+            raise
     yield
 
 
