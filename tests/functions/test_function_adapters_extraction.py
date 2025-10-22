@@ -1,23 +1,26 @@
 """Tests for function adapters - Parameter and metadata extraction."""
 
-import inspect
-from typing import Any, Optional, Union
+from decimal import Decimal
+from typing import Any
+from provide.testkit import mocking as mock
 
 import pytest
 
-from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyObject, CtyString
+from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString, CtyValue
 from pyvider.functions.adapters import (
-    ExtractParametersError,
-    extract_docstring_meta,
-    extract_parameters_meta,
-    extract_return_type_meta,
+    _extract_docstring_meta,
+    _extract_parameters_meta,
+    _extract_return_type_meta,
+    _get_cty_type_for_dict,
+    _get_cty_type_for_list,
+    _get_cty_type_for_primitive,
+    _get_cty_type_for_union,
+    _is_dict_type,
+    _is_list_type,
+    _is_optional_type_hint,
+    _is_union_type,
+    _python_type_to_cty_type,
     function_to_dict,
-    get_cty_type_for_union,
-    is_dict_type,
-    is_list_type,
-    is_optional_type_hint,
-    is_union_type,
-    python_type_to_cty_type,
 )
 
 
