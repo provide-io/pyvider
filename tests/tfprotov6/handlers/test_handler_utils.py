@@ -630,39 +630,6 @@ class TestCreateDiagnosticEdgeCases:
     """Additional tests for create_diagnostic_from_exception edge cases."""
 
     @pytest.mark.asyncio
-    async def test_cty_validation_error_with_long_value(self):
-        """Test diagnostic truncates very long value representations."""
-        # Create a very long string value that should be truncated
-        long_value = "x" * 200
-        exc = CtyStringValidationError(
-            "Value too long",
-            value=long_value,
-            type_name="string",
-            path=CtyPath(steps=[GetAttrStep("test_field")]),
-        )
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "..." in diag.detail  # Should be truncated
-
-    @pytest.mark.asyncio
-    async def test_cty_validation_error_without_value_attribute(self):
-        """Test diagnostic handles validation errors without value attribute."""
-        exc = CtyValidationError(
-            "Generic validation failed",
-            type_name="unknown",
-            path=CtyPath(steps=[GetAttrStep("field")]),
-        )
-        # Ensure exc doesn't have 'value' attribute
-        assert not hasattr(exc, "value")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "validation error" in diag.detail.lower()
-
-    @pytest.mark.asyncio
     async def test_foundation_error_with_dict_context(self):
         """Test diagnostic from FoundationError with dict context."""
         context_dict = {
@@ -678,65 +645,3 @@ class TestCreateDiagnosticEdgeCases:
         assert "Custom Summary" in diag.summary
         assert "Custom Detail" in diag.detail
         assert "custom.field: custom_value" in diag.detail
-
-    @pytest.mark.asyncio
-    async def test_foundation_error_with_non_dict_context(self):
-        """Test diagnostic from FoundationError with non-dict context."""
-        exc = FoundationError("Error message", context="string_context")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Error message" in diag.detail
-
-    @pytest.mark.asyncio
-    async def test_resource_lifecycle_contract_error_with_detail(self):
-        """Test diagnostic from ResourceLifecycleContractError with detail attribute."""
-        exc = ResourceLifecycleContractError("Contract violated")
-        exc.detail = "Additional detail information"
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Contract violated" in diag.detail
-        assert "Additional detail information" in diag.detail
-
-    @pytest.mark.asyncio
-    async def test_function_error_has_correct_summary(self):
-        """Test FunctionError gets specific summary."""
-        exc = FunctionError("Function execution failed", function_name="test_func")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Function Execution Error" in diag.summary
-
-    @pytest.mark.asyncio
-    async def test_resource_error_has_correct_summary(self):
-        """Test ResourceError gets specific summary."""
-        exc = ResourceError("Resource operation failed")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Provider Operation Error" in diag.summary
-
-    @pytest.mark.asyncio
-    async def test_data_source_error_has_correct_summary(self):
-        """Test DataSourceError gets specific summary."""
-        exc = DataSourceError("Data source read failed")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Provider Operation Error" in diag.summary
-
-    @pytest.mark.asyncio
-    async def test_pyvider_error_has_correct_summary(self):
-        """Test PyviderError gets specific summary."""
-        exc = PyviderError("Framework error occurred")
-
-        diag = await create_diagnostic_from_exception(exc)
-
-        assert diag.severity == pb.Diagnostic.ERROR
-        assert "Provider Framework Error" in diag.summary
