@@ -489,3 +489,254 @@ class TestCtyToAttrsInstance:
 
             mock_from_cty.assert_called_once_with(cty_val, TestConfig)
             assert result.name == "test"
+
+
+class TestAttrsToDictCircularReferences:
+    """Tests for circular reference handling in attrs_to_dict_for_cty."""
+
+    def test_circular_ref_in_non_attrs_objects(self):
+        """Test circular reference handling for non-attrs objects."""
+        # Create a circular reference with a plain class (not attrs)
+        class PlainNode:
+            def __init__(self, value):
+                self.value = value
+                self.next = None
+
+        node1 = PlainNode(1)
+        node2 = PlainNode(2)
+        node1.next = node2
+        node2.next = node1  # Create circular reference
+
+        # This should handle circular refs in non-attrs objects
+        result = attrs_to_dict_for_cty([node1, node2])
+
+        # Should return the objects as-is since they're not attrs, str, int, float, bool, or None
+        assert isinstance(result, list)
+
+
+class TestIsValidRefinementEdgeCases:
+    """Additional tests for is_valid_refinement edge cases."""
+
+    def test_object_with_mismatched_keys(self):
+        """Test object refinement fails when types differ (detected as type mismatch)."""
+        plan_type = CtyObject(attribute_types={"name": CtyString(), "age": CtyNumber()})
+        result_type = CtyObject(attribute_types={"name": CtyString()})  # Missing 'age'
+
+        plan = CtyValue(
+            vtype=plan_type,
+            value={
+                "name": CtyValue(vtype=CtyString(), value="Alice"),
+                "age": CtyValue(vtype=CtyNumber(), value=30),
+            },
+        )
+        result = CtyValue(
+            vtype=result_type,
+            value={"name": CtyValue(vtype=CtyString(), value="Alice")}
+        )
+
+        is_valid, reason = is_valid_refinement(plan, result)
+
+        assert not is_valid
+        # Different attributes means type mismatch
+        assert "type mismatch" in reason.lower()
+
+    def test_object_with_invalid_nested_refinement(self):
+        """Test object refinement fails when nested attribute refinement fails."""
+        obj_type = CtyObject(attribute_types={"nested": CtyObject(attribute_types={"val": CtyString()})})
+
+        plan = CtyValue(
+            vtype=obj_type,
+            value={
+                "nested": CtyValue(
+                    vtype=CtyObject(attribute_types={"val": CtyString()}),
+                    value={"val": CtyValue(vtype=CtyString(), value="known")},
+                )
+            },
+        )
+        result = CtyValue(
+            vtype=obj_type,
+            value={
+                "nested": CtyValue(
+                    vtype=CtyObject(attribute_types={"val": CtyString()}),
+                    value={"val": CtyValue(vtype=CtyString(), value="changed")},
+                )
+            },
+        )
+
+        is_valid, reason = is_valid_refinement(plan, result)
+
+        assert not is_valid
+        assert "nested" in reason.lower()
+
+    def test_collection_with_mismatched_length(self):
+        """Test collection refinement fails when lengths don't match."""
+        list_type = CtyList(element_type=CtyString())
+
+        plan = CtyValue(
+            vtype=list_type,
+            value=[
+                CtyValue(vtype=CtyString(), value="a"),
+                CtyValue(vtype=CtyString(), value="b"),
+            ],
+        )
+        result = CtyValue(
+            vtype=list_type,
+            value=[CtyValue(vtype=CtyString(), value="a")],  # One fewer element
+        )
+
+        is_valid, reason = is_valid_refinement(plan, result)
+
+        assert not is_valid
+        assert "length" in reason.lower()
+
+    def test_collection_with_invalid_element_refinement(self):
+        """Test collection refinement fails when element refinement fails."""
+        list_type = CtyList(element_type=CtyString())
+
+        plan = CtyValue(
+            vtype=list_type,
+            value=[
+                CtyValue(vtype=CtyString(), value="known"),
+                CtyValue(vtype=CtyString(), value="also_known"),
+            ],
+        )
+        result = CtyValue(
+            vtype=list_type,
+            value=[
+                CtyValue(vtype=CtyString(), value="known"),
+                CtyValue(vtype=CtyString(), value="changed"),  # Changed value
+            ],
+        )
+
+        is_valid, reason = is_valid_refinement(plan, result)
+
+        assert not is_valid
+        assert "[1]" in reason
+
+    def test_refinement_with_concrete_value_mismatch(self):
+        """Test refinement fails when concrete values don't match."""
+        plan = CtyValue(vtype=CtyString(), value="original")
+        result = CtyValue(vtype=CtyString(), value="modified")
+
+        is_valid, reason = is_valid_refinement(plan, result)
+
+        assert not is_valid
+        assert "value mismatch" in reason.lower()
+        assert "original" in reason
+        assert "modified" in reason
+
+
+class TestCreateDiagnosticEdgeCases:
+    """Additional tests for create_diagnostic_from_exception edge cases."""
+
+    @pytest.mark.asyncio
+    async def test_cty_validation_error_with_long_value(self):
+        """Test diagnostic truncates very long value representations."""
+        # Create a very long string value that should be truncated
+        long_value = "x" * 200
+        exc = CtyStringValidationError(
+            "Value too long",
+            value=long_value,
+            type_name="string",
+            path=CtyPath(steps=[GetAttrStep("test_field")]),
+        )
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "..." in diag.detail  # Should be truncated
+
+    @pytest.mark.asyncio
+    async def test_cty_validation_error_without_value_attribute(self):
+        """Test diagnostic handles validation errors without value attribute."""
+        exc = CtyValidationError(
+            "Generic validation failed",
+            type_name="unknown",
+            path=CtyPath(steps=[GetAttrStep("field")]),
+        )
+        # Ensure exc doesn't have 'value' attribute
+        assert not hasattr(exc, "value")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "validation error" in diag.detail.lower()
+
+    @pytest.mark.asyncio
+    async def test_foundation_error_with_dict_context(self):
+        """Test diagnostic from FoundationError with dict context."""
+        context_dict = {
+            "terraform.summary": "Custom Summary",
+            "terraform.detail": "Custom Detail",
+            "custom.field": "custom_value",
+        }
+        exc = FoundationError("Base error message", context=context_dict)
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Custom Summary" in diag.summary
+        assert "Custom Detail" in diag.detail
+        assert "custom.field: custom_value" in diag.detail
+
+    @pytest.mark.asyncio
+    async def test_foundation_error_with_non_dict_context(self):
+        """Test diagnostic from FoundationError with non-dict context."""
+        exc = FoundationError("Error message", context="string_context")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Error message" in diag.detail
+
+    @pytest.mark.asyncio
+    async def test_resource_lifecycle_contract_error_with_detail(self):
+        """Test diagnostic from ResourceLifecycleContractError with detail attribute."""
+        exc = ResourceLifecycleContractError("Contract violated")
+        exc.detail = "Additional detail information"
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Contract violated" in diag.detail
+        assert "Additional detail information" in diag.detail
+
+    @pytest.mark.asyncio
+    async def test_function_error_has_correct_summary(self):
+        """Test FunctionError gets specific summary."""
+        exc = FunctionError("Function execution failed", function_name="test_func")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Function Execution Error" in diag.summary
+
+    @pytest.mark.asyncio
+    async def test_resource_error_has_correct_summary(self):
+        """Test ResourceError gets specific summary."""
+        exc = ResourceError("Resource operation failed")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Provider Operation Error" in diag.summary
+
+    @pytest.mark.asyncio
+    async def test_data_source_error_has_correct_summary(self):
+        """Test DataSourceError gets specific summary."""
+        exc = DataSourceError("Data source read failed")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Provider Operation Error" in diag.summary
+
+    @pytest.mark.asyncio
+    async def test_pyvider_error_has_correct_summary(self):
+        """Test PyviderError gets specific summary."""
+        exc = PyviderError("Framework error occurred")
+
+        diag = await create_diagnostic_from_exception(exc)
+
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Provider Framework Error" in diag.summary
