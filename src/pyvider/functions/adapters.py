@@ -146,6 +146,8 @@ def _extract_parameters_meta(
         # So if we find a default, convert it to variadic and stop processing params
         if param.default is not inspect.Parameter.empty:
             if variadic_param is None:
+                # Parameters with defaults are always nullable (can be omitted)
+                param_meta["allow_null"] = True
                 variadic_param = param_meta
             else:
                 # Multiple defaults - add as required param with a warning

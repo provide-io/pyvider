@@ -79,16 +79,20 @@ class TestFunctionAdapter:
         """TDD: Verifies adaptation of optional and default-value parameters."""
         meta = function_to_dict(optional_func)
 
+        # Parameters without defaults go in "parameters"
         params = {p["name"]: p for p in meta["parameters"]}
-        assert len(params) == 2
+        assert len(params) == 1
 
-        # `str | None` should be nullable
+        # `str | None` should be nullable (no default, but nullable type)
         assert params["name"]["allow_null"] is True
         assert isinstance(params["name"]["cty_type"], CtyString)
 
-        # A parameter with a default value should be nullable
-        assert params["count"]["allow_null"] is True
-        assert isinstance(params["count"]["cty_type"], CtyNumber)
+        # Parameter with default value becomes variadic_parameter
+        assert "variadic_parameter" in meta
+        variadic = meta["variadic_parameter"]
+        assert variadic["name"] == "count"
+        assert variadic["allow_null"] is True
+        assert isinstance(variadic["cty_type"], CtyNumber)
 
     def test_adapt_dynamic_types(self):
         """TDD: Verifies that `Any` correctly maps to `CtyDynamic`."""
