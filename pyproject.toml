@@ -78,6 +78,9 @@ norecursedirs = [
     "htmlcov",
     ".hypothesis",
 ]
+filterwarnings = [
+    "ignore::pytest.PytestAssertRewriteWarning",
+]
 
 [tool.ruff]
 line-length = 111
