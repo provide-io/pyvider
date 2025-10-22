@@ -23,29 +23,29 @@ from pyvider.schema import a_str, a_num, a_bool, s_resource
 
 # Test fixtures
 @attrs.define
-class TestConfig:
+class SampleConfig:
     name: str
     count: int = 0
 
 
 @attrs.define
-class TestState:
+class SampleState:
     id: str
     name: str
     count: int = 0
 
 
 @attrs.define
-class TestPrivateState(PrivateState):
+class SamplePrivateState(PrivateState):
     secret: str = ""
 
 
-class TestResource(BaseResource[Any, TestState, TestConfig]):
+class SampleResource(BaseResource[Any, SampleState, SampleConfig]):
     """Concrete test resource for testing."""
 
-    config_class = TestConfig
-    state_class = TestState
-    private_state_class = TestPrivateState
+    config_class = SampleConfig
+    state_class = SampleState
+    private_state_class = SamplePrivateState
 
     @classmethod
     def get_schema(cls):
@@ -57,13 +57,13 @@ class TestResource(BaseResource[Any, TestState, TestConfig]):
             }
         )
 
-    async def _validate_config(self, config: TestConfig) -> list[str]:
+    async def _validate_config(self, config: SampleConfig) -> list[str]:
         errors = []
         if config.name == "invalid":
             errors.append("Name cannot be 'invalid'")
         return errors
 
-    async def read(self, ctx: ResourceContext) -> TestState | None:
+    async def read(self, ctx: ResourceContext) -> SampleState | None:
         if ctx.state and ctx.state.id == "deleted":
             return None
         return ctx.state
@@ -78,8 +78,8 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_validate_with_valid_config(self):
         """Test validation passes for valid config."""
-        resource = TestResource()
-        config = TestConfig(name="valid", count=10)
+        resource = SampleResource()
+        config = SampleConfig(name="valid", count=10)
 
         errors = await resource.validate(config)
 
@@ -88,8 +88,8 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_validate_with_invalid_config(self):
         """Test validation fails for invalid config."""
-        resource = TestResource()
-        config = TestConfig(name="invalid", count=10)
+        resource = SampleResource()
+        config = SampleConfig(name="invalid", count=10)
 
         errors = await resource.validate(config)
 
@@ -99,7 +99,7 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_validate_with_none_config_returns_empty_list(self):
         """Test validation with None config returns empty list."""
-        resource = TestResource()
+        resource = SampleResource()
 
         errors = await resource.validate(None)
 
@@ -108,12 +108,12 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_plan_create_operation(self):
         """Test plan for create operation (state is None)."""
-        resource = TestResource()
-        schema = TestResource.get_schema()
+        resource = SampleResource()
+        schema = SampleResource.get_schema()
         cty_type = schema.block.to_cty_type()
 
         # Create operation: state is None
-        config = TestConfig(name="new-resource", count=5)
+        config = SampleConfig(name="new-resource", count=5)
         config_cty = cty_type.validate({"name": "new-resource", "count": 5})
         planned_state_cty = cty_type.validate({"name": "new-resource", "count": 5, "id": "computed"})
 
@@ -135,13 +135,13 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_plan_update_operation(self):
         """Test plan for update operation (state exists)."""
-        resource = TestResource()
-        schema = TestResource.get_schema()
+        resource = SampleResource()
+        schema = SampleResource.get_schema()
         cty_type = schema.block.to_cty_type()
 
         # Update operation: state exists
-        config = TestConfig(name="updated-resource", count=10)
-        state = TestState(id="res-123", name="old-name", count=5)
+        config = SampleConfig(name="updated-resource", count=10)
+        state = SampleState(id="res-123", name="old-name", count=5)
         config_cty = cty_type.validate({"id": "res-123", "name": "updated-resource", "count": 10})
         planned_state_cty = cty_type.validate({"id": "res-123", "name": "updated-resource", "count": 10})
 
@@ -162,8 +162,8 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_plan_delete_operation(self):
         """Test plan for delete operation (config is None, planned_state is None)."""
-        resource = TestResource()
-        state = TestState(id="res-to-delete", name="old", count=0)
+        resource = SampleResource()
+        state = SampleState(id="res-to-delete", name="old", count=0)
 
         ctx = ResourceContext(
             config=None,  # Delete operation
@@ -182,11 +182,11 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_plan_with_validation_errors(self):
         """Test that plan adds validation errors to context."""
-        resource = TestResource()
-        schema = TestResource.get_schema()
+        resource = SampleResource()
+        schema = SampleResource.get_schema()
         cty_type = schema.block.to_cty_type()
 
-        config = TestConfig(name="invalid", count=5)
+        config = SampleConfig(name="invalid", count=5)
         config_cty = cty_type.validate({"name": "invalid", "count": 5})
 
         ctx = ResourceContext(
@@ -208,9 +208,9 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_apply_create_operation(self):
         """Test apply for create operation."""
-        resource = TestResource()
+        resource = SampleResource()
 
-        planned_state = TestState(id="new-id", name="created", count=1)
+        planned_state = SampleState(id="new-id", name="created", count=1)
         ctx = ResourceContext(
             config=None,
             state=None,  # Create operation
@@ -228,10 +228,10 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_apply_update_operation(self):
         """Test apply for update operation."""
-        resource = TestResource()
+        resource = SampleResource()
 
-        old_state = TestState(id="res-123", name="old", count=1)
-        planned_state = TestState(id="res-123", name="updated", count=2)
+        old_state = SampleState(id="res-123", name="old", count=1)
+        planned_state = SampleState(id="res-123", name="updated", count=2)
 
         ctx = ResourceContext(
             config=None,
@@ -250,9 +250,9 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_apply_delete_operation(self):
         """Test apply for delete operation."""
-        resource = TestResource()
+        resource = SampleResource()
 
-        old_state = TestState(id="res-to-delete", name="deleted", count=0)
+        old_state = SampleState(id="res-to-delete", name="deleted", count=0)
         ctx = ResourceContext(
             config=None,
             state=old_state,
@@ -270,8 +270,8 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_read_returns_state(self):
         """Test read method returns state."""
-        resource = TestResource()
-        state = TestState(id="res-123", name="test", count=5)
+        resource = SampleResource()
+        state = SampleState(id="res-123", name="test", count=5)
 
         ctx = ResourceContext(
             config=None,
@@ -289,8 +289,8 @@ class TestBaseResourceLifecycle:
     @pytest.mark.asyncio
     async def test_read_returns_none_for_deleted_resource(self):
         """Test read returns None for deleted resource."""
-        resource = TestResource()
-        state = TestState(id="deleted", name="gone", count=0)
+        resource = SampleResource()
+        state = SampleState(id="deleted", name="gone", count=0)
 
         ctx = ResourceContext(
             config=None,

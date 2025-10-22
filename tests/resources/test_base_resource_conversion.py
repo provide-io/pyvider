@@ -23,29 +23,29 @@ from pyvider.schema import a_str, a_num, a_bool, s_resource
 
 # Test fixtures
 @attrs.define
-class TestConfig:
+class SampleConfig:
     name: str
     count: int = 0
 
 
 @attrs.define
-class TestState:
+class SampleState:
     id: str
     name: str
     count: int = 0
 
 
 @attrs.define
-class TestPrivateState(PrivateState):
+class SamplePrivateState(PrivateState):
     secret: str = ""
 
 
-class TestResource(BaseResource[Any, TestState, TestConfig]):
+class SampleResource(BaseResource[Any, SampleState, SampleConfig]):
     """Concrete test resource for testing."""
 
-    config_class = TestConfig
-    state_class = TestState
-    private_state_class = TestPrivateState
+    config_class = SampleConfig
+    state_class = SampleState
+    private_state_class = SamplePrivateState
 
     @classmethod
     def get_schema(cls):
@@ -57,13 +57,13 @@ class TestResource(BaseResource[Any, TestState, TestConfig]):
             }
         )
 
-    async def _validate_config(self, config: TestConfig) -> list[str]:
+    async def _validate_config(self, config: SampleConfig) -> list[str]:
         errors = []
         if config.name == "invalid":
             errors.append("Name cannot be 'invalid'")
         return errors
 
-    async def read(self, ctx: ResourceContext) -> TestState | None:
+    async def read(self, ctx: ResourceContext) -> SampleState | None:
         if ctx.state and ctx.state.id == "deleted":
             return None
         return ctx.state
@@ -77,7 +77,7 @@ class TestFromCtyConversion:
 
     def test_from_cty_with_null_value(self):
         """Test from_cty returns None for null values."""
-        result = TestResource.from_cty(None, TestConfig)
+        result = SampleResource.from_cty(None, SampleConfig)
         assert result is None
 
     def test_from_cty_with_valid_cty_value(self):
@@ -85,9 +85,9 @@ class TestFromCtyConversion:
         cty_type = CtyObject({"name": CtyString(), "count": CtyNumber()})
         cty_value = cty_type.validate({"name": "test", "count": 10})
 
-        result = TestResource.from_cty(cty_value, TestConfig)
+        result = SampleResource.from_cty(cty_value, SampleConfig)
 
-        assert isinstance(result, TestConfig)
+        assert isinstance(result, SampleConfig)
         assert result.name == "test"
         assert result.count == 10
 
@@ -96,7 +96,7 @@ class TestFromCtyConversion:
         cty_type = CtyString()
         null_value = CtyValue.null(cty_type)
 
-        result = TestResource._handle_cty_value(null_value, str)
+        result = SampleResource._handle_cty_value(null_value, str)
 
         assert result is None
 
@@ -105,7 +105,7 @@ class TestFromCtyConversion:
         cty_type = CtyString()
         unknown_value = CtyValue.unknown(cty_type)
 
-        result = TestResource._handle_cty_value(unknown_value, str)
+        result = SampleResource._handle_cty_value(unknown_value, str)
 
         assert result is None
 
@@ -115,7 +115,7 @@ class TestFromCtyConversion:
         unknown_value = CtyValue.unknown(cty_type)
 
         # Unknown objects should still be processed (not return None immediately)
-        result = TestResource._handle_cty_value(unknown_value, dict)
+        result = SampleResource._handle_cty_value(unknown_value, dict)
 
         # Result depends on the value structure
         assert result is not None or result is None  # Either way is valid
@@ -124,7 +124,7 @@ class TestFromCtyConversion:
         """Test _handle_list_conversion converts list items."""
         data = ["item1", "item2", "item3"]
 
-        result = TestResource._handle_list_conversion(data, list[str])
+        result = SampleResource._handle_list_conversion(data, list[str])
 
         assert isinstance(result, list)
         assert len(result) == 3
@@ -134,7 +134,7 @@ class TestFromCtyConversion:
         """Test _handle_dict_conversion converts dict values."""
         data = {"key1": "value1", "key2": "value2"}
 
-        result = TestResource._handle_dict_conversion(data, dict[str, str])
+        result = SampleResource._handle_dict_conversion(data, dict[str, str])
 
         assert isinstance(result, dict)
         assert result["key1"] == "value1"
@@ -144,15 +144,15 @@ class TestFromCtyConversion:
         """Test _handle_attrs_conversion creates attrs instance."""
         data = {"name": "test", "count": 5}
 
-        result = TestResource._handle_attrs_conversion(data, TestConfig)
+        result = SampleResource._handle_attrs_conversion(data, SampleConfig)
 
-        assert isinstance(result, TestConfig)
+        assert isinstance(result, SampleConfig)
         assert result.name == "test"
         assert result.count == 5
 
     def test_handle_attrs_conversion_with_non_dict_returns_none(self):
         """Test _handle_attrs_conversion returns None for non-dict."""
-        result = TestResource._handle_attrs_conversion("not a dict", TestConfig)
+        result = SampleResource._handle_attrs_conversion("not a dict", SampleConfig)
 
         assert result is None
 
@@ -161,7 +161,7 @@ class TestFromCtyConversion:
         # Missing 'name' field which is required
         data = {"count": 5}
 
-        result = TestResource._handle_attrs_conversion(data, TestConfig)
+        result = SampleResource._handle_attrs_conversion(data, SampleConfig)
 
         assert result is None
 
@@ -176,30 +176,30 @@ class TestFromCtyConversion:
         data = {"field": "value"}
 
         with pytest.raises(TypeError, match="Could not create"):
-            TestResource._handle_attrs_conversion(data, BadConfig)
+            SampleResource._handle_attrs_conversion(data, BadConfig)
 
     def test_cty_to_attrs_recursive_with_none(self):
         """Test _cty_to_attrs_recursive returns None for None."""
-        result = TestResource._cty_to_attrs_recursive(None, str)
+        result = SampleResource._cty_to_attrs_recursive(None, str)
         assert result is None
 
     def test_cty_to_attrs_recursive_with_unknown_sentinel(self):
         """Test _cty_to_attrs_recursive returns None for unknown sentinel."""
-        result = TestResource._cty_to_attrs_recursive(_UNREFINED_UNKNOWN_SENTINEL, str)
+        result = SampleResource._cty_to_attrs_recursive(_UNREFINED_UNKNOWN_SENTINEL, str)
         assert result is None
 
     def test_cty_to_attrs_recursive_with_union_type(self):
         """Test _cty_to_attrs_recursive handles Union types."""
         from typing import Union
 
-        result = TestResource._cty_to_attrs_recursive("test", Union[str, None])
+        result = SampleResource._cty_to_attrs_recursive("test", Union[str, None])
         assert result == "test"
 
     def test_cty_to_attrs_recursive_with_list(self):
         """Test _cty_to_attrs_recursive handles list."""
         data = ["a", "b", "c"]
 
-        result = TestResource._cty_to_attrs_recursive(data, list[str])
+        result = SampleResource._cty_to_attrs_recursive(data, list[str])
 
         assert result == ["a", "b", "c"]
 
@@ -207,7 +207,7 @@ class TestFromCtyConversion:
         """Test _cty_to_attrs_recursive handles dict."""
         data = {"key": "value"}
 
-        result = TestResource._cty_to_attrs_recursive(data, dict[str, str])
+        result = SampleResource._cty_to_attrs_recursive(data, dict[str, str])
 
         assert result == {"key": "value"}
 
@@ -215,9 +215,9 @@ class TestFromCtyConversion:
         """Test _cty_to_attrs_recursive creates attrs instance."""
         data = {"name": "test", "count": 10}
 
-        result = TestResource._cty_to_attrs_recursive(data, TestConfig)
+        result = SampleResource._cty_to_attrs_recursive(data, SampleConfig)
 
-        assert isinstance(result, TestConfig)
+        assert isinstance(result, SampleConfig)
         assert result.name == "test"
 
 
@@ -235,7 +235,7 @@ class TestCtyToDictPreservingUnknown:
         # Make value unknown
         cty_value.value["value"] = CtyValue.unknown(CtyNumber())
 
-        result = TestResource._cty_to_dict_preserving_unknown(cty_value)
+        result = SampleResource._cty_to_dict_preserving_unknown(cty_value)
 
         assert "name" in result
         assert result["name"] == "test"
@@ -248,7 +248,7 @@ class TestCtyToDictPreservingUnknown:
         cty_type = CtyObject({"name": CtyString(), "active": CtyBool()})
         cty_value = cty_type.validate({"name": "test", "active": True})
 
-        result = TestResource._cty_to_dict_preserving_unknown(cty_value)
+        result = SampleResource._cty_to_dict_preserving_unknown(cty_value)
 
         assert result["name"] == "test"
         assert result["active"] is True
@@ -258,7 +258,7 @@ class TestCtyToDictPreservingUnknown:
         cty_type = CtyObject({"name": CtyString()})
         null_value = CtyValue.null(cty_type)
 
-        result = TestResource._cty_to_dict_preserving_unknown(null_value)
+        result = SampleResource._cty_to_dict_preserving_unknown(null_value)
 
         assert result == {}
 
@@ -267,7 +267,7 @@ class TestCtyToDictPreservingUnknown:
         import logging
         caplog.set_level(logging.DEBUG)
 
-        result = TestResource._cty_to_dict_preserving_unknown(None)
+        result = SampleResource._cty_to_dict_preserving_unknown(None)
 
         assert result == {}
 
@@ -278,7 +278,7 @@ class TestCtyToDictPreservingUnknown:
 
         cty_value = CtyString().validate("test")
 
-        result = TestResource._cty_to_dict_preserving_unknown(cty_value)
+        result = SampleResource._cty_to_dict_preserving_unknown(cty_value)
 
         assert result == "test"
 
@@ -293,7 +293,7 @@ class TestCtyToDictPreservingUnknown:
         # Manually insert non-CtyValue
         cty_value.value["extra"] = "direct_value"
 
-        result = TestResource._cty_to_dict_preserving_unknown(cty_value)
+        result = SampleResource._cty_to_dict_preserving_unknown(cty_value)
 
         assert "extra" in result
         assert result["extra"] == "direct_value"
@@ -305,7 +305,7 @@ class TestLifecycleHooks:
     @pytest.mark.asyncio
     async def test_create_hook_default_implementation(self):
         """Test _create hook default implementation."""
-        resource = TestResource()
+        resource = SampleResource()
         base_plan = {"name": "test", "count": 5}
 
         ctx = ResourceContext(config=None, state=None, private_state=None, capabilities={})
@@ -318,7 +318,7 @@ class TestLifecycleHooks:
     @pytest.mark.asyncio
     async def test_update_hook_default_implementation(self):
         """Test _update hook default implementation."""
-        resource = TestResource()
+        resource = SampleResource()
         base_plan = {"name": "updated", "count": 10}
 
         ctx = ResourceContext(config=None, state=None, private_state=None, capabilities={})
@@ -331,7 +331,7 @@ class TestLifecycleHooks:
     @pytest.mark.asyncio
     async def test_delete_plan_hook_default_implementation(self):
         """Test _delete_plan hook default implementation."""
-        resource = TestResource()
+        resource = SampleResource()
 
         ctx = ResourceContext(config=None, state=None, private_state=None, capabilities={})
 
@@ -343,8 +343,8 @@ class TestLifecycleHooks:
     @pytest.mark.asyncio
     async def test_create_apply_hook_default_implementation(self):
         """Test _create_apply hook default implementation."""
-        resource = TestResource()
-        planned_state = TestState(id="new-id", name="created", count=1)
+        resource = SampleResource()
+        planned_state = SampleState(id="new-id", name="created", count=1)
 
         ctx = ResourceContext(
             config=None,
@@ -362,9 +362,9 @@ class TestLifecycleHooks:
     @pytest.mark.asyncio
     async def test_update_apply_hook_default_implementation(self):
         """Test _update_apply hook default implementation."""
-        resource = TestResource()
-        planned_state = TestState(id="res-123", name="updated", count=2)
-        private = TestPrivateState(secret="test-secret")
+        resource = SampleResource()
+        planned_state = SampleState(id="res-123", name="updated", count=2)
+        private = SamplePrivateState(secret="test-secret")
 
         ctx = ResourceContext(
             config=None,
