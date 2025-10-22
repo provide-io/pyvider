@@ -57,6 +57,7 @@ async def _unmarshal_request_data(
 async def _process_private_state(resource_class: Any, prior_private: bytes) -> Any | None:
     private_state_instance = None
     if hasattr(resource_class, "private_state_class") and resource_class.private_state_class and prior_private:
+        decrypted_bytes = None
         try:
             logger.debug(f"Attempting to decrypt prior_private: {prior_private}")
             decrypted_bytes = decrypt(prior_private)
