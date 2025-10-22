@@ -10,7 +10,7 @@ from pyvider.cli.components_commands import (
     _display_block_type,
     _handle_discovery_errors,
 )
-from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, BlockNesting
+from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType
 from pyvider.cty import CtyString, CtyNumber, CtyBool
 
 
@@ -68,11 +68,7 @@ class TestDisplayAttribute:
 
     def test_displays_attribute_with_description(self):
         """Test displaying attribute with description."""
-        attr = PvsAttribute(
-            name="described_attr",
-            type=CtyBool(),
-            description="This is a test attribute"
-        )
+        attr = PvsAttribute(name="described_attr", type=CtyBool(), description="This is a test attribute")
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_attribute(attr, indent_level=0)
@@ -82,11 +78,7 @@ class TestDisplayAttribute:
 
     def test_displays_attribute_with_default(self):
         """Test displaying attribute with default value."""
-        attr = PvsAttribute(
-            name="default_attr",
-            type=CtyString(),
-            default="default_value"
-        )
+        attr = PvsAttribute(name="default_attr", type=CtyString(), default="default_value")
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_attribute(attr, indent_level=0)
@@ -96,11 +88,7 @@ class TestDisplayAttribute:
 
     def test_displays_sensitive_attribute(self):
         """Test displaying sensitive attribute."""
-        attr = PvsAttribute(
-            name="secret",
-            type=CtyString(),
-            sensitive=True
-        )
+        attr = PvsAttribute(name="secret", type=CtyString(), sensitive=True)
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_attribute(attr, indent_level=0)
@@ -109,11 +97,7 @@ class TestDisplayAttribute:
 
     def test_displays_computed_attribute(self):
         """Test displaying computed attribute."""
-        attr = PvsAttribute(
-            name="computed_val",
-            type=CtyNumber(),
-            computed=True
-        )
+        attr = PvsAttribute(name="computed_val", type=CtyNumber(), computed=True)
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_attribute(attr, indent_level=0)
@@ -126,16 +110,14 @@ class TestDisplayBlockType:
 
     def test_displays_simple_block(self):
         """Test displaying a simple block type."""
-        block_content = PvsObjectType(
-            attributes={
-                "name": PvsAttribute(name="name", type=CtyString())
-            }
-        )
-        block = PvsNestedBlock(
-            type_name="test_block",
-            nesting=BlockNesting.SINGLE,
-            block=block_content
-        )
+        block_content = PvsObjectType(attributes={"name": PvsAttribute(name="name", type=CtyString())})
+        # Create a mock block with nesting attribute
+        block = mock.MagicMock(spec=PvsNestedBlock)
+        block.type_name = "test_block"
+        block.nesting = mock.MagicMock()
+        block.nesting.name = "SINGLE"
+        block.block = block_content
+        block.description = None
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_block_type(block, indent_level=0)
@@ -146,12 +128,12 @@ class TestDisplayBlockType:
     def test_displays_block_with_description(self):
         """Test displaying block with description."""
         block_content = PvsObjectType(attributes={})
-        block = PvsNestedBlock(
-            type_name="described_block",
-            nesting=BlockNesting.LIST,
-            block=block_content,
-            description="Test block description"
-        )
+        block = mock.MagicMock(spec=PvsNestedBlock)
+        block.type_name = "described_block"
+        block.nesting = mock.MagicMock()
+        block.nesting.name = "LIST"
+        block.block = block_content
+        block.description = "Test block description"
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_block_type(block, indent_level=0)
@@ -179,18 +161,15 @@ class TestDisplayBlockContent:
 
     def test_displays_block_with_nested_blocks(self):
         """Test displaying block content with nested blocks."""
-        nested_content = PvsObjectType(
-            attributes={"inner": PvsAttribute(name="inner", type=CtyString())}
-        )
-        nested_block = PvsNestedBlock(
-            type_name="nested",
-            nesting=BlockNesting.SINGLE,
-            block=nested_content
-        )
-        block = PvsObjectType(
-            attributes={},
-            block_types=[nested_block]
-        )
+        nested_content = PvsObjectType(attributes={"inner": PvsAttribute(name="inner", type=CtyString())})
+        nested_block = mock.MagicMock(spec=PvsNestedBlock)
+        nested_block.type_name = "nested"
+        nested_block.nesting = mock.MagicMock()
+        nested_block.nesting.name = "SINGLE"
+        nested_block.block = nested_content
+        nested_block.description = None
+
+        block = PvsObjectType(attributes={}, block_types=[nested_block])
 
         with mock.patch("pyvider.cli.components_commands.pout") as mock_pout:
             _display_block_content(block, indent_level=0)
