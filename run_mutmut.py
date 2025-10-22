@@ -31,6 +31,16 @@ def patched_execute_pytest(self, params, **kwargs):
     """Fixed execute_pytest that runs tests from the runner config."""
     import pytest
 
+    # Fix PYTHONPATH to include src/ directory
+    project_root = os.getcwd()
+    src_path = os.path.join(project_root, 'src')
+
+    # Set PYTHONPATH environment variable (works better than sys.path for subprocess/pytest)
+    current_pythonpath = os.environ.get('PYTHONPATH', '')
+    paths_to_add = [src_path, project_root]
+    new_pythonpath_parts = paths_to_add + ([current_pythonpath] if current_pythonpath else [])
+    os.environ['PYTHONPATH'] = os.pathsep.join(new_pythonpath_parts)
+
     # Add rootdir
     params += ['--rootdir=.']
 
