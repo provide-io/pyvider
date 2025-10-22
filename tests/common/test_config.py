@@ -173,8 +173,10 @@ class TestPyviderConfigProperties:
 
         assert config.loaded_file_path == config_file
 
-    def test_loaded_file_path_none_when_no_file(self):
+    def test_loaded_file_path_none_when_no_file(self, monkeypatch):
         """Test that loaded_file_path is None when no file loaded."""
+        # Point to a non-existent file
+        monkeypatch.setenv("PYVIDER_CONFIG_FILE", "/nonexistent/config.toml")
         config = PyviderConfig()
         # With no config file, should be None
-        assert config.loaded_file_path is None or not config.loaded_file_path.exists()
+        assert config.loaded_file_path is None
