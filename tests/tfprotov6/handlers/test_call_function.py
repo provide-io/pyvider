@@ -334,3 +334,169 @@ class TestCallFunctionErrorHandling:
         assert isinstance(response, pb.CallFunction.Response)
         # Should have error field
         assert response.HasField("error")
+
+
+class TestInvokeFunction:
+    """Tests for _invoke_function helper - the core invocation logic."""
+
+    @pytest.mark.asyncio
+    async def test_invokes_sync_function_with_positional_args(self):
+        """Test invoking a synchronous function with positional arguments."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def test_func(name: str, count: int):
+            return f"{name}_{count}"
+
+        kwargs = {"name": "test", "count": 42}
+        result = await _invoke_function(test_func, kwargs)
+
+        assert result == "test_42"
+
+    @pytest.mark.asyncio
+    async def test_invokes_async_function_with_positional_args(self):
+        """Test invoking an asynchronous function."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        async def async_test_func(name: str, count: int):
+            return f"{name}_{count}"
+
+        kwargs = {"name": "async_test", "count": 99}
+        result = await _invoke_function(async_test_func, kwargs)
+
+        assert result == "async_test_99"
+
+    @pytest.mark.asyncio
+    async def test_invokes_function_with_variadic_args(self):
+        """Test invoking a function with *args (VAR_POSITIONAL)."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def variadic_func(name: str, *options):
+            return f"{name}: {','.join(str(o) for o in options)}"
+
+        kwargs = {"name": "test", "options": (1, 2, 3)}
+        result = await _invoke_function(variadic_func, kwargs)
+
+        assert result == "test: 1,2,3"
+
+    @pytest.mark.asyncio
+    async def test_invokes_function_with_keyword_only_args(self):
+        """Test invoking a function with keyword-only parameters."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def keyword_func(name: str, *, debug: bool = False):
+            return f"{name}_{'debug' if debug else 'prod'}"
+
+        kwargs = {"name": "test", "debug": True}
+        result = await _invoke_function(keyword_func, kwargs)
+
+        assert result == "test_debug"
+
+    @pytest.mark.asyncio
+    async def test_invokes_function_with_mixed_parameters(self):
+        """Test invoking with positional, variadic, and keyword-only parameters."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def complex_func(name: str, *items, verbose: bool = False):
+            items_str = ','.join(str(i) for i in items)
+            return f"{name}[{items_str}]{'!' if verbose else ''}"
+
+        kwargs = {"name": "test", "items": ("a", "b", "c"), "verbose": True}
+        result = await _invoke_function(complex_func, kwargs)
+
+        assert result == "test[a,b,c]!"
+
+    @pytest.mark.asyncio
+    async def test_handles_variadic_as_list(self):
+        """Test that variadic args work when provided as list instead of tuple."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def variadic_func(*args):
+            return sum(args)
+
+        # Provide as list (should be converted to tuple internally)
+        kwargs = {"args": [1, 2, 3, 4]}
+        result = await _invoke_function(variadic_func, kwargs)
+
+        assert result == 10
+
+    @pytest.mark.asyncio
+    async def test_handles_variadic_as_single_value(self):
+        """Test that single non-tuple variadic value is converted to tuple."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def variadic_func(*args):
+            return len(args)
+
+        # Single value, not in a tuple
+        kwargs = {"args": "single"}
+        result = await _invoke_function(variadic_func, kwargs)
+
+        assert result == 1
+
+    @pytest.mark.asyncio
+    async def test_wraps_function_errors_as_pyvider_function_error(self):
+        """Test that function errors are wrapped in PyviderFunctionError."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+        from pyvider.exceptions import FunctionError as PyviderFunctionError
+
+        def failing_func(x: int):
+            raise ValueError("Something went wrong")
+
+        kwargs = {"x": 42}
+
+        with pytest.raises(PyviderFunctionError) as exc_info:
+            await _invoke_function(failing_func, kwargs)
+
+        assert "failing_func" in str(exc_info.value)
+        assert "Something went wrong" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_preserves_pyvider_function_errors(self):
+        """Test that PyviderFunctionError is re-raised directly."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+        from pyvider.exceptions import FunctionError as PyviderFunctionError
+
+        def failing_func(x: int):
+            raise PyviderFunctionError("Direct pyvider error")
+
+        kwargs = {"x": 42}
+
+        with pytest.raises(PyviderFunctionError) as exc_info:
+            await _invoke_function(failing_func, kwargs)
+
+        # Should re-raise directly (but the except clause still triggers, so it re-raises)
+        assert "Direct pyvider error" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_logs_successful_invocation(self):
+        """Test that successful invocations are logged."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+
+        def simple_func(x: int):
+            return x * 2
+
+        kwargs = {"x": 21}
+
+        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.logger") as mock_logger:
+            result = await _invoke_function(simple_func, kwargs)
+
+            assert result == 42
+            # Should log debug info about return
+            assert mock_logger.debug.called
+
+    @pytest.mark.asyncio
+    async def test_logs_function_errors(self):
+        """Test that function errors are logged."""
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
+        from pyvider.exceptions import FunctionError as PyviderFunctionError
+
+        def error_func():
+            raise RuntimeError("Test error")
+
+        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.logger") as mock_logger:
+            with pytest.raises(PyviderFunctionError):
+                await _invoke_function(error_func, {})
+
+            # Should log error
+            mock_logger.error.assert_called_once()
+            assert "error_func" in str(mock_logger.error.call_args)
