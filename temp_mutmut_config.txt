@@ -1,0 +1,6 @@
+[tool.mutmut]
+paths_to_mutate = ["src/pyvider/protocols/tfprotov6/handlers"]
+tests_dir = "tests/tfprotov6/handlers"
+runner = "pytest -x --tb=short"
+dict_synonyms = ["dict", "OrderedDict", "defaultdict"]
+use_patch_file = true

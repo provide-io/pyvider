@@ -54,7 +54,8 @@
       "Bash(timeout 60 mutmut:*)",
       "Bash(timeout 90 python -m mutmut run:*)",
       "Bash(timeout 90 mutmut run:*)",
-      "Bash(timeout 20 mutmut run:*)"
+      "Bash(timeout 20 mutmut run:*)",
+      "Bash(timeout 60 python:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
