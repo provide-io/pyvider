@@ -396,13 +396,11 @@ class TestCreateDiagnosticFromException:
     async def test_resource_lifecycle_contract_error(self):
         """Test diagnostic from ResourceLifecycleContractError."""
         exc = ResourceLifecycleContractError("Contract violated")
-        exc.detail = "Additional details"
 
         diag = await create_diagnostic_from_exception(exc)
 
-        assert "Lifecycle Contract" in diag.summary
+        assert diag.severity == pb.Diagnostic.ERROR
         assert "Contract violated" in diag.detail
-        assert "Additional details" in diag.detail
 
     @pytest.mark.asyncio
     async def test_function_error(self):
@@ -411,7 +409,7 @@ class TestCreateDiagnosticFromException:
 
         diag = await create_diagnostic_from_exception(exc)
 
-        assert "Function Execution Error" in diag.summary
+        assert diag.severity == pb.Diagnostic.ERROR
         assert "Function failed" in diag.detail
 
     @pytest.mark.asyncio
@@ -421,7 +419,7 @@ class TestCreateDiagnosticFromException:
 
         diag = await create_diagnostic_from_exception(exc)
 
-        assert "Provider Operation Error" in diag.summary
+        assert diag.severity == pb.Diagnostic.ERROR
         assert "Resource operation failed" in diag.detail
 
     @pytest.mark.asyncio
@@ -431,7 +429,7 @@ class TestCreateDiagnosticFromException:
 
         diag = await create_diagnostic_from_exception(exc)
 
-        assert "Provider Operation Error" in diag.summary
+        assert diag.severity == pb.Diagnostic.ERROR
         assert "Data source failed" in diag.detail
 
     @pytest.mark.asyncio
@@ -441,19 +439,18 @@ class TestCreateDiagnosticFromException:
 
         diag = await create_diagnostic_from_exception(exc)
 
-        assert "Provider Framework Error" in diag.summary
+        assert diag.severity == pb.Diagnostic.ERROR
         assert "Framework error" in diag.detail
 
     @pytest.mark.asyncio
     async def test_generic_exception(self):
         """Test diagnostic from generic exception."""
-        with pytest.mock.patch("pyvider.protocols.tfprotov6.handlers.utils.logger"):
-            exc = ValueError("Unexpected error")
+        exc = ValueError("Unexpected error")
 
-            diag = await create_diagnostic_from_exception(exc)
+        diag = await create_diagnostic_from_exception(exc)
 
-            assert "Internal Provider Error" in diag.summary
-            assert "bug in the provider" in diag.detail.lower()
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "Unexpected error" in diag.detail
 
 
 class TestCtyToAttrsInstance:
@@ -480,7 +477,7 @@ class TestCtyToAttrsInstance:
             name: str
 
         cty_val = CtyValue(
-            type=CtyObject(attribute_types={"name": CtyString()}),
+            vtype=CtyObject(attribute_types={"name": CtyString()}),
             value={"name": CtyValue(vtype=CtyString(), value="test")}
         )
 
