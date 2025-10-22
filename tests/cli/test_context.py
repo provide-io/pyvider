@@ -1,0 +1,290 @@
+"""Tests for CLI context module."""
+
+from pathlib import Path
+from unittest import mock
+
+import pytest
+
+from pyvider.cli.context import PyviderContext
+
+
+class TestPyviderContextInitialization:
+    """Tests for PyviderContext initialization."""
+
+    def test_context_initializes_without_errors(self):
+        """Test that PyviderContext initializes without errors."""
+        ctx = PyviderContext()
+        assert ctx is not None
+
+    def test_context_has_config(self):
+        """Test that context has config attribute."""
+        ctx = PyviderContext()
+        assert hasattr(ctx, 'config')
+        assert ctx.config is not None
+
+    def test_context_has_home_directory(self):
+        """Test that context has home directory set."""
+        ctx = PyviderContext()
+        assert ctx.home is not None
+        assert isinstance(ctx.home, Path)
+        assert ctx.home.exists()
+
+    def test_context_has_local_bin_dir(self):
+        """Test that context has local bin directory set."""
+        ctx = PyviderContext()
+        assert ctx.local_bin_dir is not None
+        assert isinstance(ctx.local_bin_dir, Path)
+        assert ctx.local_bin_dir == ctx.home / ".local" / "bin"
+
+    def test_context_has_terraform_os(self):
+        """Test that context has terraform OS set."""
+        ctx = PyviderContext()
+        assert ctx.tf_os is not None
+        assert isinstance(ctx.tf_os, str)
+        # Should be one of: darwin, linux, windows
+        assert ctx.tf_os in ["darwin", "linux", "windows", "freebsd"]
+
+    def test_context_has_terraform_arch(self):
+        """Test that context has terraform architecture set."""
+        ctx = PyviderContext()
+        assert ctx.tf_arch is not None
+        assert isinstance(ctx.tf_arch, str)
+        # Should be one of: amd64, arm64, arm, 386
+        assert ctx.tf_arch in ["amd64", "arm64", "arm", "386"]
+
+    def test_context_has_pyvider_version(self):
+        """Test that context has pyvider version set."""
+        ctx = PyviderContext()
+        assert ctx.pyvider_version is not None
+        assert isinstance(ctx.pyvider_version, str)
+        # Version should be non-empty
+        assert len(ctx.pyvider_version) > 0
+
+    def test_context_has_tf_plugin_dir(self):
+        """Test that context has terraform plugin directory set."""
+        ctx = PyviderContext()
+        assert ctx.tf_plugin_dir is not None
+        assert isinstance(ctx.tf_plugin_dir, Path)
+        # Should be under home directory
+        assert str(ctx.tf_plugin_dir).startswith(str(ctx.home))
+        # Should contain .terraform.d
+        assert ".terraform.d" in str(ctx.tf_plugin_dir)
+
+
+class TestPyviderContextPluginPath:
+    """Tests for plugin path construction."""
+
+    def test_plugin_path_structure(self):
+        """Test that plugin path has correct structure."""
+        ctx = PyviderContext()
+        plugin_dir = ctx.tf_plugin_dir
+
+        # Path should follow: ~/.terraform.d/plugins/local/providers/pyvider/{version}/{os}_{arch}
+        parts = plugin_dir.parts
+        assert ".terraform.d" in parts
+        assert "plugins" in parts
+        assert "local" in parts
+        assert "providers" in parts
+        assert "pyvider" in parts
+
+    def test_plugin_path_contains_version(self):
+        """Test that plugin path contains version."""
+        ctx = PyviderContext()
+        assert ctx.pyvider_version in str(ctx.tf_plugin_dir)
+
+    def test_plugin_path_contains_platform(self):
+        """Test that plugin path contains platform info."""
+        ctx = PyviderContext()
+        platform_string = f"{ctx.tf_os}_{ctx.tf_arch}"
+        assert platform_string in str(ctx.tf_plugin_dir)
+
+
+class TestPyviderContextComponentDiscovery:
+    """Tests for component discovery in context."""
+
+    def test_context_has_components_discovered_flag(self):
+        """Test that context has components_discovered flag."""
+        ctx = PyviderContext()
+        assert hasattr(ctx, 'components_discovered')
+        assert isinstance(ctx.components_discovered, bool)
+        # Initially should be False
+        assert ctx.components_discovered is False
+
+    def test_context_has_discovery_errors_list(self):
+        """Test that context has discovery_errors list."""
+        ctx = PyviderContext()
+        assert hasattr(ctx, 'discovery_errors')
+        assert isinstance(ctx.discovery_errors, list)
+        # Initially should be empty
+        assert len(ctx.discovery_errors) == 0
+
+    @pytest.mark.asyncio
+    async def test_ensure_components_discovered_runs(self):
+        """Test that _ensure_components_discovered can be called."""
+        ctx = PyviderContext()
+
+        # Mock the registry and discovery
+        mock_registry = mock.MagicMock()
+        mock_discovery_cls = mock.MagicMock()
+        mock_discovery_instance = mock.MagicMock()
+        mock_discovery_instance.discover_all = mock.AsyncMock()
+        mock_discovery_instance.import_errors = []
+        mock_discovery_cls.return_value = mock_discovery_instance
+
+        await ctx._ensure_components_discovered(
+            mock_registry,
+            mock_discovery_cls,
+            print,
+            print
+        )
+
+        assert ctx.components_discovered is True
+        assert mock_discovery_instance.discover_all.called
+
+    @pytest.mark.asyncio
+    async def test_ensure_components_discovered_only_runs_once(self):
+        """Test that _ensure_components_discovered only runs once."""
+        ctx = PyviderContext()
+        ctx.components_discovered = True  # Already discovered
+
+        # Mock the discovery
+        mock_registry = mock.MagicMock()
+        mock_discovery_cls = mock.MagicMock()
+        mock_discovery_instance = mock.MagicMock()
+        mock_discovery_instance.discover_all = mock.AsyncMock()
+        mock_discovery_cls.return_value = mock_discovery_instance
+
+        await ctx._ensure_components_discovered(
+            mock_registry,
+            mock_discovery_cls,
+            print,
+            print
+        )
+
+        # Discovery should not have been called
+        assert not mock_discovery_instance.discover_all.called
+
+    @pytest.mark.asyncio
+    async def test_ensure_components_discovered_captures_errors(self):
+        """Test that _ensure_components_discovered captures import errors."""
+        ctx = PyviderContext()
+
+        # Mock the registry and discovery with errors
+        mock_registry = mock.MagicMock()
+        mock_discovery_cls = mock.MagicMock()
+        mock_discovery_instance = mock.MagicMock()
+        mock_discovery_instance.discover_all = mock.AsyncMock()
+        mock_discovery_instance.import_errors = [("test_module", ImportError("Test error"))]
+        mock_discovery_cls.return_value = mock_discovery_instance
+
+        await ctx._ensure_components_discovered(
+            mock_registry,
+            mock_discovery_cls,
+            print,
+            print
+        )
+
+        assert ctx.components_discovered is True
+        assert len(ctx.discovery_errors) == 1
+        assert ctx.discovery_errors[0][0] == "test_module"
+
+    @pytest.mark.asyncio
+    async def test_ensure_components_discovered_handles_discovery_failure(self):
+        """Test that _ensure_components_discovered handles discovery failures."""
+        ctx = PyviderContext()
+
+        # Mock the registry and discovery to raise an error
+        mock_registry = mock.MagicMock()
+        mock_discovery_cls = mock.MagicMock()
+        mock_discovery_instance = mock.MagicMock()
+        mock_discovery_instance.discover_all = mock.AsyncMock(side_effect=RuntimeError("Discovery failed"))
+        mock_discovery_cls.return_value = mock_discovery_instance
+
+        await ctx._ensure_components_discovered(
+            mock_registry,
+            mock_discovery_cls,
+            print,
+            print
+        )
+
+        # Should have captured the error
+        assert ctx.components_discovered is False
+        assert len(ctx.discovery_errors) == 1
+        assert ctx.discovery_errors[0][0] == "discovery_runner"
+
+
+class TestPyviderContextInheritance:
+    """Tests for PyviderContext inheritance from CLIContext."""
+
+    def test_context_inherits_from_cli_context(self):
+        """Test that PyviderContext inherits from foundation's CLIContext."""
+        from provide.foundation.context import CLIContext
+        ctx = PyviderContext()
+        assert isinstance(ctx, CLIContext)
+
+    def test_context_has_foundation_attributes(self):
+        """Test that context has attributes from foundation CLIContext."""
+        ctx = PyviderContext()
+        # CLIContext should provide these
+        assert hasattr(ctx, 'log_level')
+        assert hasattr(ctx, 'log_format')
+
+
+class TestPyviderContextEdgeCases:
+    """Edge case tests for PyviderContext."""
+
+    def test_context_handles_missing_version_config(self):
+        """Test that context handles missing version in config."""
+        with mock.patch("pyvider.cli.context.PyviderConfig") as MockConfig:
+            mock_config = MockConfig.return_value
+            # get is called with a default parameter, so simulate that
+            mock_config.get.side_effect = lambda key, default=None: default
+
+            # Should use default version
+            ctx = PyviderContext()
+            # get is called with a default, so it will return that default
+            assert ctx.pyvider_version == "0.1.0"  # Default value
+
+    def test_multiple_context_instances_are_independent(self):
+        """Test that multiple context instances are independent."""
+        ctx1 = PyviderContext()
+        ctx2 = PyviderContext()
+
+        assert ctx1 is not ctx2
+
+        # Modifying one shouldn't affect the other
+        ctx1.components_discovered = True
+        assert ctx2.components_discovered is False
+
+    def test_context_discovery_errors_are_mutable(self):
+        """Test that discovery_errors can be modified."""
+        ctx = PyviderContext()
+
+        test_error = ("test_module", ImportError("test"))
+        ctx.discovery_errors.append(test_error)
+
+        assert len(ctx.discovery_errors) == 1
+        assert ctx.discovery_errors[0] == test_error
+
+    @pytest.mark.asyncio
+    async def test_ensure_components_discovered_with_non_strict_mode(self):
+        """Test that discovery runs in non-strict mode."""
+        ctx = PyviderContext()
+
+        # Mock the discovery
+        mock_registry = mock.MagicMock()
+        mock_discovery_cls = mock.MagicMock()
+        mock_discovery_instance = mock.MagicMock()
+        mock_discovery_instance.discover_all = mock.AsyncMock()
+        mock_discovery_instance.import_errors = []
+        mock_discovery_cls.return_value = mock_discovery_instance
+
+        await ctx._ensure_components_discovered(
+            mock_registry,
+            mock_discovery_cls,
+            print,
+            print
+        )
+
+        # Verify discover_all was called with strict=False
+        mock_discovery_instance.discover_all.assert_called_once_with(strict=False)
