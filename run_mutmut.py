@@ -1,13 +1,30 @@
 #!/usr/bin/env python3
 """
-Wrapper script to run mutmut with stats collection disabled.
-This bypasses the stats collection issue and runs all tests for each mutant (slower but works).
+Wrapper script to run mutmut with stats collection disabled and mutants dir relocated.
+This bypasses the stats collection issue and moves mutants/ to /tmp to avoid import conflicts.
 """
 import sys
 import os
+from pathlib import Path
 import mutmut
 import mutmut.__main__
 from mutmut.__main__ import cli
+
+# Relocate mutants directory to /tmp to avoid import conflicts
+# Use symlink approach to catch all references (os.chdir, Path(), string paths, etc.)
+MUTANTS_DIR = Path('/tmp/pyvider-mutants')
+MUTANTS_DIR.mkdir(exist_ok=True, parents=True)
+
+# Remove local mutants dir if it exists and create symlink
+local_mutants = Path('mutants')
+if local_mutants.exists() and not local_mutants.is_symlink():
+    import shutil
+    shutil.rmtree(local_mutants)
+elif local_mutants.is_symlink():
+    local_mutants.unlink()
+
+# Create symlink from local mutants to /tmp
+local_mutants.symlink_to(MUTANTS_DIR, target_is_directory=True)
 
 
 # Monkey-patch collect_or_load_stats to skip stats collection entirely
