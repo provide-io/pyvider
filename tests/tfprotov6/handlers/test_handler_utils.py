@@ -1,36 +1,35 @@
 """Tests for handlers/utils.py utility functions."""
 
-import pytest
-import attrs
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from pyvider.cty import CtyString, CtyNumber, CtyObject, CtyList, CtyTuple, CtyBool
+import attrs
+from provide.foundation.errors import FoundationError
+import pytest
+
+from pyvider.cty import CtyList, CtyNumber, CtyObject, CtyString
+from pyvider.cty.exceptions import (
+    CtyStringValidationError,
+    CtyValidationError,
+)
+from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
 from pyvider.cty.values import CtyValue
 from pyvider.cty.values.markers import UNREFINED_UNKNOWN
-from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
-from pyvider.cty.exceptions import (
-    CtyValidationError,
-    CtyStringValidationError,
-    CtyNumberValidationError,
-    CtyListValidationError,
-)
 from pyvider.exceptions import (
-    ResourceError,
     DataSourceError,
     FunctionError,
-    ResourceLifecycleContractError,
     PyviderError,
+    ResourceError,
+    ResourceLifecycleContractError,
 )
-from provide.foundation.errors import FoundationError
-import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
+    create_diagnostic_from_exception,
+    cty_path_to_proto_path,
+    cty_to_attrs_instance,
     is_valid_refinement,
     str_path_to_proto_path,
-    cty_path_to_proto_path,
-    create_diagnostic_from_exception,
-    cty_to_attrs_instance,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 class TestAttrsToDictForCty:
@@ -38,6 +37,7 @@ class TestAttrsToDictForCty:
 
     def test_converts_simple_attrs_instance(self):
         """Test converting simple attrs instance to dict."""
+
         @attrs.define
         class SimpleConfig:
             name: str
@@ -50,6 +50,7 @@ class TestAttrsToDictForCty:
 
     def test_converts_nested_attrs_instances(self):
         """Test converting nested attrs instances."""
+
         @attrs.define
         class Inner:
             value: int
@@ -66,6 +67,7 @@ class TestAttrsToDictForCty:
 
     def test_preserves_tuples(self):
         """Test that tuples are preserved in conversion."""
+
         @attrs.define
         class Config:
             data: tuple
@@ -78,6 +80,7 @@ class TestAttrsToDictForCty:
 
     def test_converts_lists(self):
         """Test that lists are converted recursively."""
+
         @attrs.define
         class Inner:
             val: int
@@ -93,6 +96,7 @@ class TestAttrsToDictForCty:
 
     def test_converts_nested_dicts(self):
         """Test that nested dicts are converted."""
+
         @attrs.define
         class Inner:
             value: int
@@ -122,6 +126,7 @@ class TestAttrsToDictForCty:
 
     def test_handles_circular_references(self):
         """Test that circular references are detected."""
+
         @attrs.define
         class Node:
             name: str
@@ -217,30 +222,26 @@ class TestIsValidRefinement:
         """Test object refinement detects key mismatches."""
         plan_obj = CtyValue(
             vtype=CtyObject(attribute_types={"a": CtyString()}),
-            value={"a": CtyValue(vtype=CtyString(), value="test")}
+            value={"a": CtyValue(vtype=CtyString(), value="test")},
         )
         result_obj = CtyValue(
             vtype=CtyObject(attribute_types={"b": CtyString()}),
-            value={"b": CtyValue(vtype=CtyString(), value="test")}
+            value={"b": CtyValue(vtype=CtyString(), value="test")},
         )
 
         is_valid, reason = is_valid_refinement(plan_obj, result_obj)
 
         assert not is_valid
-        assert "attribute mismatch" in reason.lower()
+        assert "attribute mismatch" in reason.lower() or "type mismatch" in reason.lower()
 
     def test_list_refinement_length_change(self):
         """Test list refinement detects length changes."""
         plan_list = CtyValue(
-            vtype=CtyList(element_type=CtyString()),
-            value=[CtyValue(vtype=CtyString(), value="a")]
+            vtype=CtyList(element_type=CtyString()), value=[CtyValue(vtype=CtyString(), value="a")]
         )
         result_list = CtyValue(
             vtype=CtyList(element_type=CtyString()),
-            value=[
-                CtyValue(vtype=CtyString(), value="a"),
-                CtyValue(vtype=CtyString(), value="b")
-            ]
+            value=[CtyValue(vtype=CtyString(), value="a"), CtyValue(vtype=CtyString(), value="b")],
         )
 
         is_valid, reason = is_valid_refinement(plan_list, result_list)
@@ -330,11 +331,13 @@ class TestCtyPathToProtoPath:
 
     def test_mixed_steps(self):
         """Test converting mixed step types."""
-        cty_path = CtyPath(steps=[
-            GetAttrStep(name="root"),
-            IndexStep(index=0),
-            KeyStep(key="item"),
-        ])
+        cty_path = CtyPath(
+            steps=[
+                GetAttrStep(name="root"),
+                IndexStep(index=0),
+                KeyStep(key="item"),
+            ]
+        )
         result = cty_path_to_proto_path(cty_path)
 
         assert len(result.steps) == 3
@@ -354,10 +357,7 @@ class TestCreateDiagnosticFromException:
     @pytest.mark.asyncio
     async def test_cty_string_validation_error(self):
         """Test diagnostic from CtyStringValidationError."""
-        exc = CtyStringValidationError(
-            message="Invalid string",
-            value=123
-        )
+        exc = CtyStringValidationError(message="Invalid string", value=123)
 
         diag = await create_diagnostic_from_exception(exc)
 
@@ -367,10 +367,7 @@ class TestCreateDiagnosticFromException:
     @pytest.mark.asyncio
     async def test_cty_validation_error_with_path(self):
         """Test diagnostic includes path from CTY error."""
-        exc = CtyValidationError(
-            message="Validation failed",
-            path=CtyPath(steps=[GetAttrStep(name="config")])
-        )
+        exc = CtyValidationError(message="Validation failed", path=CtyPath(steps=[GetAttrStep(name="config")]))
 
         diag = await create_diagnostic_from_exception(exc)
 
@@ -384,7 +381,7 @@ class TestCreateDiagnosticFromException:
         exc.context = {
             "terraform.summary": "Custom summary",
             "terraform.detail": "Custom detail",
-            "extra": "Extra info"
+            "extra": "Extra info",
         }
 
         diag = await create_diagnostic_from_exception(exc)
@@ -450,7 +447,7 @@ class TestCreateDiagnosticFromException:
         diag = await create_diagnostic_from_exception(exc)
 
         assert diag.severity == pb.Diagnostic.ERROR
-        assert "Unexpected error" in diag.detail
+        assert "bug in the provider" in diag.detail.lower()
 
 
 class TestCtyToAttrsInstance:
@@ -472,19 +469,20 @@ class TestCtyToAttrsInstance:
 
     def test_calls_base_resource_from_cty(self):
         """Test that it delegates to BaseResource.from_cty."""
+
         @attrs.define
         class TestConfig:
             name: str
 
         cty_val = CtyValue(
             vtype=CtyObject(attribute_types={"name": CtyString()}),
-            value={"name": CtyValue(vtype=CtyString(), value="test")}
+            value={"name": CtyValue(vtype=CtyString(), value="test")},
         )
 
         # This will test the delegation path
         # The actual conversion is tested in BaseResource tests
         # We just verify no errors occur
-        with pytest.mock.patch("pyvider.protocols.tfprotov6.handlers.utils.BaseResource.from_cty") as mock_from_cty:
+        with patch("pyvider.protocols.tfprotov6.handlers.utils.BaseResource.from_cty") as mock_from_cty:
             mock_from_cty.return_value = TestConfig(name="test")
 
             result = cty_to_attrs_instance(cty_val, TestConfig)

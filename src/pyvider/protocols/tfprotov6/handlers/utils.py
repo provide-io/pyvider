@@ -152,6 +152,10 @@ def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
     if not is_valid:
         return False, reason
 
+    # If plan is null, refinement to any concrete value is valid
+    if plan.is_null:
+        return True, ""
+
     if isinstance(plan.type, CtyObject):
         return _check_object_refinement(plan, result)
 
