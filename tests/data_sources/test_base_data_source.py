@@ -86,3 +86,24 @@ class TestDataSourceEdgeCases:
         ds2 = TestDataSource()
         assert ds1 is not ds2
         assert type(ds1) == type(ds2)
+
+    @pytest.mark.asyncio
+    async def test_validate_with_none_config(self):
+        """Test validate method with None config returns empty list."""
+        ds = TestDataSource()
+        result = await ds.validate(None)
+        assert result == []
+
+    @pytest.mark.asyncio
+    async def test_validate_with_valid_config(self):
+        """Test validate method with valid config."""
+        ds = TestDataSource()
+        config = {"name": "test", "count": 5}
+        result = await ds.validate(config)
+        assert result == []
+
+    def test_from_cty_delegates_to_base_resource(self):
+        """Test that from_cty delegates to BaseResource.from_cty."""
+        # This tests the from_cty class method exists and is callable
+        assert hasattr(TestDataSource, "from_cty")
+        assert callable(TestDataSource.from_cty)

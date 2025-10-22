@@ -1,0 +1,58 @@
+"""Tests for pyvider/resources/protocol.py."""
+
+import pytest
+
+from pyvider.resources.context import ResourceContext
+from pyvider.resources.private_state import PrivateState
+from pyvider.resources.protocol import ResourceProtocol
+
+
+class TestResourceProtocol:
+    """Tests for ResourceProtocol runtime checking."""
+
+    def test_protocol_is_runtime_checkable(self):
+        """Test that ResourceProtocol is marked as runtime_checkable."""
+        # ResourceProtocol should be runtime checkable
+        assert hasattr(ResourceProtocol, "__protocol_attrs__")
+
+    async def test_valid_implementation_is_recognized(self):
+        """Test that a valid implementation is recognized as conforming to the protocol."""
+
+        class ValidResource:
+            async def validate(self, config):
+                pass
+
+            async def read(self, ctx: ResourceContext):
+                return {}
+
+            async def plan(self, ctx: ResourceContext):
+                return {}, b""
+
+            async def apply(self, ctx: ResourceContext):
+                return {}, b""
+
+            async def delete(self, ctx: ResourceContext):
+                pass
+
+        # Should be recognized as implementing the protocol
+        resource = ValidResource()
+        assert isinstance(resource, ResourceProtocol)
+
+    async def test_partial_implementation_not_recognized(self):
+        """Test that a partial implementation is not recognized as conforming."""
+
+        class PartialResource:
+            async def validate(self, config):
+                pass
+
+            # Missing other methods
+
+        resource = PartialResource()
+        # Should NOT be recognized as implementing the protocol
+        assert not isinstance(resource, ResourceProtocol)
+
+    def test_protocol_methods_are_defined(self):
+        """Test that all expected methods are defined in the protocol."""
+        expected_methods = ["validate", "read", "plan", "apply", "delete"]
+        for method in expected_methods:
+            assert hasattr(ResourceProtocol, method)
