@@ -62,7 +62,8 @@
       "Bash(exit 1)",
       "Bash(__NEW_LINE__ grep -n \"^class\" tests/functions/test_function_adapters.py head -20 tests/functions/test_function_adapters.py)",
       "Bash(__NEW_LINE__ grep -n \"^class\" tests/test_handler.py)",
-      "Bash(.venv/bin/pip:*)"
+      "Bash(.venv/bin/pip:*)",
+      "Bash(timeout 30 mutmut run:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

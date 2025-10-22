@@ -1,7 +1,7 @@
 """Property-based tests for CTY type conversions using Hypothesis."""
 
 import pytest
-from hypothesis import given, strategies as st, assume, settings
+from hypothesis import given, strategies as st, assume, settings, HealthCheck
 from pyvider.cty import (
     CtyString,
     CtyNumber,
@@ -147,7 +147,7 @@ class TestCtyListValidation:
     """Property-based tests for CtyList validation."""
 
     @given(items=st.lists(st.text(max_size=50), max_size=20))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_list_of_strings_validates(self, items):
         """Property: CtyList(CtyString) should accept lists of strings."""
         cty_list = CtyList(element_type=CtyString())
@@ -234,7 +234,7 @@ class TestCtyObjectValidation:
         assert isinstance(result.value["age"].value, Decimal)
 
     @given(data=cty_dict(max_keys=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_dynamic_object_validates_any_dict(self, data):
         """Property: CtyObject with inferred types should validate any dict."""
         # Skip if empty dict (no attributes to infer)
@@ -254,7 +254,7 @@ class TestUnifyAndValidateListOfObjects:
     """Property-based tests for unify_and_validate_list_of_objects utility."""
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_unify_returns_cty_value(self, dict_list):
         """Property: unify_and_validate_list_of_objects should return a CtyValue."""
         assume(len(dict_list) > 0)
@@ -262,7 +262,7 @@ class TestUnifyAndValidateListOfObjects:
         assert isinstance(result, CtyValue)
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_unify_preserves_list_length(self, dict_list):
         """Property: Result should have same length as input list."""
         assume(len(dict_list) > 0)

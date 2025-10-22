@@ -77,6 +77,7 @@ norecursedirs = [
     ".venv",
     "htmlcov",
     ".hypothesis",
+    "mutants",
 ]
 filterwarnings = [
     "ignore::pytest.PytestAssertRewriteWarning",
@@ -123,9 +124,9 @@ ignore_missing_imports = true
 
 [tool.mutmut]
 paths_to_mutate = ["src/pyvider/protocols/tfprotov6/handlers"]
-runner = "pytest tests/tfprotov6/handlers/test_handler_utils.py tests/tfprotov6/handlers/test_read_data_source.py -x"
+runner = "pytest tests/tfprotov6/handlers/ -x --tb=short"
 dict_synonyms = ["dict", "OrderedDict", "defaultdict"]
-use_patch_file = true
+use_patch_file = false
 
 [tool.coverage.run]
 source = ["pyvider"]

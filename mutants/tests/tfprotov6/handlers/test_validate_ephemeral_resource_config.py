@@ -174,3 +174,30 @@ class TestValidateEphemeralResourceConfigImpl:
                     # validate should be called with config if it exists
                     if hasattr(mock_instance, 'validate'):
                         mock_instance.validate.assert_called_once()
+
+
+class TestValidateEphemeralResourceConfigEdgeCases:
+    """Test edge cases and error paths."""
+
+    @pytest.mark.asyncio
+    async def test_impl_appends_validation_error_diagnostics(self, sample_request, mock_resource_class):
+        """Test that validation errors from validate() are added as diagnostics."""
+        # Mock validate to return error messages
+        mock_instance = MagicMock()
+        validation_errors = ["Field 'name' is required", "Field 'count' must be positive"]
+        mock_instance.validate = AsyncMock(return_value=validation_errors)
+        mock_resource_class.return_value = mock_instance
+
+        with patch("pyvider.hub.hub.get_component") as mock_get:
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"):
+                with patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"):
+                    mock_get.return_value = mock_resource_class
+
+                    response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
+
+                    # Should have 2 diagnostics, one for each validation error
+                    assert len(response.diagnostics) == 2
+                    assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
+                    assert "Field 'name' is required" in response.diagnostics[0].summary
+                    assert response.diagnostics[1].severity == pb.Diagnostic.ERROR
+                    assert "Field 'count' must be positive" in response.diagnostics[1].summary

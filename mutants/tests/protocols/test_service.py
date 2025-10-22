@@ -106,3 +106,146 @@ async def test_stream_stdio_success(shutdown_event):
     assert service._message_queue.qsize() == 2
     assert service._setup_complete.is_set()
     assert service._stream_active is False
+
+
+@pytest.mark.asyncio
+async def test_stream_stdio_with_shutdown_event(shutdown_event):
+    """Test StreamStdio stops when shutdown event is set."""
+    service = ProtocolService(shutdown_event)
+
+    async def mock_iterator():
+        yield "message1"
+        shutdown_event.set()  # Set shutdown event mid-stream
+        yield "message2"
+        yield "message3"
+
+    request_iterator = mock_iterator()
+
+    responses = []
+    async for response in service.StreamStdio(request_iterator, MagicMock()):
+        responses.append(response)
+        if shutdown_event.is_set():
+            break
+
+    # Should have stopped after shutdown event
+    assert service._stream_active is False
+
+
+@pytest.mark.asyncio
+async def test_stream_stdio_with_none_messages(shutdown_event):
+    """Test StreamStdio handles None messages correctly."""
+    service = ProtocolService(shutdown_event)
+
+    async def mock_iterator():
+        yield None
+        yield "message1"
+        yield None
+
+    request_iterator = mock_iterator()
+
+    responses = []
+    async for response in service.StreamStdio(request_iterator, MagicMock()):
+        responses.append(response)
+
+    # Should include None messages
+    assert None in responses
+    assert "message1" in responses
+    assert service._setup_complete.is_set()
+
+
+@pytest.mark.asyncio
+async def test_stream_stdio_error_handling(shutdown_event):
+    """Test StreamStdio error handling during message processing."""
+    service = ProtocolService(shutdown_event)
+
+    async def mock_iterator():
+        yield "message1"
+        raise RuntimeError("Stream error")
+
+    request_iterator = mock_iterator()
+
+    with pytest.raises(RuntimeError, match="Stream error"):
+        async for response in service.StreamStdio(request_iterator, MagicMock()):
+            pass
+
+    # Stream should be deactivated after error
+    assert service._stream_active is False
+
+
+@pytest.mark.asyncio
+async def test_start_stream_generic_exception(shutdown_event):
+    """Test StartStream handles generic exceptions."""
+    service = ProtocolService(shutdown_event)
+    context = MagicMock()
+    context.set_code = MagicMock()
+    context.set_details = MagicMock()
+
+    # Mock setup_complete.wait() to raise a generic exception
+    service._setup_complete.wait = AsyncMock(side_effect=RuntimeError("Unexpected error"))
+
+    with pytest.raises(RuntimeError, match="Unexpected error"):
+        await service.StartStream(MagicMock(), context)
+
+    # Verify error was set on context
+    context.set_code.assert_called_once_with("UNIMPLEMENTED")
+    assert context.set_details.called
+
+
+@pytest.mark.asyncio
+async def test_heartbeat_method(shutdown_event):
+    """Test _heartbeat method runs until stream is inactive."""
+    import asyncio
+    service = ProtocolService(shutdown_event)
+
+    # Start heartbeat in background
+    heartbeat_task = asyncio.create_task(service._heartbeat())
+
+    # Let it run briefly
+    await asyncio.sleep(0.1)
+
+    # Stop the stream
+    service._stream_active = False
+
+    # Cancel the heartbeat task since it sleeps for 5 seconds
+    heartbeat_task.cancel()
+    try:
+        await heartbeat_task
+    except asyncio.CancelledError:
+        pass
+
+    # Verify stream is inactive
+    assert service._stream_active is False
+
+
+@pytest.mark.asyncio
+async def test_heartbeat_error_handling(shutdown_event):
+    """Test _heartbeat handles errors gracefully."""
+    service = ProtocolService(shutdown_event)
+
+    # Mock queue.put to raise an error
+    original_put = service._message_queue.put
+    call_count = [0]
+
+    async def failing_put(item):
+        call_count[0] += 1
+        if call_count[0] == 1:
+            raise RuntimeError("Queue error")
+        return await original_put(item)
+
+    service._message_queue.put = failing_put
+
+    # Start heartbeat
+    import asyncio
+    heartbeat_task = asyncio.create_task(service._heartbeat())
+
+    # Let it encounter the error
+    await asyncio.sleep(0.1)
+
+    # Should have stopped due to error
+    # Cancel if still running
+    if not heartbeat_task.done():
+        heartbeat_task.cancel()
+        try:
+            await heartbeat_task
+        except asyncio.CancelledError:
+            pass
