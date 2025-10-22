@@ -45,7 +45,8 @@
       "Bash(mutmut run:*)",
       "Bash(mutmut:*)",
       "Bash(tee:*)",
-      "Bash(sort:*)"
+      "Bash(sort:*)",
+      "Read(//tmp/**)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
