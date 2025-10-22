@@ -179,28 +179,37 @@ class TestReadDataSourceCapabilityInjection:
     """Tests for capability injection in data sources."""
 
     @pytest.mark.asyncio
-    async def test_injects_capability_when_parent_capability_set(self, sample_request, mock_data_source_class):
-        """Test that capability is injected when _parent_capability is set."""
-        # Set up parent capability
-        mock_data_source_class._parent_capability = "test_capability"
+    async def test_injects_capability_when_parent_capability_is_class(self, sample_request):
+        """Test that capability class is instantiated when _parent_capability is set."""
+        from pyvider.cty import CtyValue, CtyString
 
-        mock_capability_class = MagicMock()
-        mock_capability_instance = MagicMock()
-        mock_capability_class.return_value = mock_capability_instance
+        # Create a complete mock data source class with all required attributes
+        mock_ds_class = MagicMock()
+        mock_ds_class._parent_capability = "test_capability"
+        mock_ds_class.config_class = MagicMock
 
-        # Create a simple coroutine and wrap it with AsyncMock
-        async def read_coro(ctx, **kwargs):
+        mock_schema = MagicMock()
+        mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
+        mock_ds_class.get_schema.return_value = mock_schema
+
+        # Create mock capability class (type, not instance)
+        mock_capability_class = MagicMock
+
+        # Track if read was called
+        read_called_with_kwargs = {}
+        async def mock_read(ctx, **kwargs):
+            read_called_with_kwargs.update(kwargs)
             return None
 
-        mock_data_source = MagicMock()
-        mock_data_source.read = AsyncMock(wraps=read_coro)
-        mock_data_source_class.return_value = mock_data_source
+        mock_ds_instance = MagicMock()
+        mock_ds_instance.read = mock_read
+        mock_ds_class.return_value = mock_ds_instance
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_data_source_class,
+                        ("data_source", "test_ds"): mock_ds_class,
                         ("capability", "test_capability"): mock_capability_class,
                     }.get((comp_type, name))
 
@@ -211,68 +220,84 @@ class TestReadDataSourceCapabilityInjection:
 
                     response = await _read_data_source_impl(sample_request, context=None)
 
-                    # Check that read was called with the capability
-                    mock_data_source.read.assert_called_once()
-                    call_kwargs = mock_data_source.read.call_args[1]
-                    assert "test_capability" in call_kwargs
+                    # Check that capability was injected
+                    assert "test_capability" in read_called_with_kwargs
+                    # Should have instantiated the class
+                    assert read_called_with_kwargs["test_capability"] is not None
 
     @pytest.mark.asyncio
-    async def test_handles_capability_instance_directly(self, sample_request, mock_data_source_class):
+    async def test_handles_capability_instance_directly(self, sample_request):
         """Test that capability instance is used directly if not a class."""
-        # Set up parent capability
-        mock_data_source_class._parent_capability = "test_capability"
+        from pyvider.cty import CtyValue, CtyString
 
-        # Create an instance (not a class)
+        # Create complete mock data source
+        mock_ds_class = MagicMock()
+        mock_ds_class._parent_capability = "test_capability"
+        mock_ds_class.config_class = MagicMock
+
+        mock_schema = MagicMock()
+        mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
+        mock_ds_class.get_schema.return_value = mock_schema
+
+        # Create an instance (not a class) - not a type
         mock_capability_instance = MagicMock()
+        # Make it not a type
+        type(mock_capability_instance).__name__ = 'MockInstance'
 
-        # Create a simple coroutine and wrap it with AsyncMock
-        async def read_coro(ctx, **kwargs):
+        read_called_with_kwargs = {}
+        async def mock_read(ctx, **kwargs):
+            read_called_with_kwargs.update(kwargs)
             return None
 
-        mock_data_source = MagicMock()
-        mock_data_source.read = AsyncMock(wraps=read_coro)
-        mock_data_source_class.return_value = mock_data_source
+        mock_ds_instance = MagicMock()
+        mock_ds_instance.read = mock_read
+        mock_ds_class.return_value = mock_ds_instance
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_data_source_class,
+                        ("data_source", "test_ds"): mock_ds_class,
                         ("capability", "test_capability"): mock_capability_instance,
                     }.get((comp_type, name))
-
-                    from pyvider.cty import CtyValue, CtyString
 
                     mock_unmarshal.return_value = CtyValue.null(CtyString())
                     mock_cty_to_attrs.return_value = None
 
                     response = await _read_data_source_impl(sample_request, context=None)
 
-                    # Check that read was called with the capability instance
-                    mock_data_source.read.assert_called_once()
-                    call_kwargs = mock_data_source.read.call_args[1]
-                    assert "test_capability" in call_kwargs
-                    assert call_kwargs["test_capability"] is mock_capability_instance
+                    # Check that capability instance was used directly
+                    assert "test_capability" in read_called_with_kwargs
+                    assert read_called_with_kwargs["test_capability"] is mock_capability_instance
 
     @pytest.mark.asyncio
-    async def test_warns_when_capability_not_found(self, sample_request, mock_data_source_class):
+    async def test_warns_when_capability_not_found(self, sample_request):
         """Test that warning is logged when capability not found."""
-        # Set up parent capability
-        mock_data_source_class._parent_capability = "missing_capability"
+        from pyvider.cty import CtyValue, CtyString
 
-        # Create a simple coroutine and wrap it with AsyncMock
-        async def read_coro(ctx, **kwargs):
+        # Create complete mock
+        mock_ds_class = MagicMock()
+        mock_ds_class._parent_capability = "missing_capability"
+        mock_ds_class.config_class = MagicMock
+
+        mock_schema = MagicMock()
+        mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
+        mock_ds_class.get_schema.return_value = mock_schema
+
+        read_called_with_kwargs = {}
+        async def mock_read(ctx, **kwargs):
+            read_called_with_kwargs.update(kwargs)
             return None
 
-        mock_data_source = MagicMock()
-        mock_data_source.read = AsyncMock(wraps=read_coro)
-        mock_data_source_class.return_value = mock_data_source
+        mock_ds_instance = MagicMock()
+        mock_ds_instance.read = mock_read
+        mock_ds_class.return_value = mock_ds_instance
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_data_source_class,
+                        ("data_source", "test_ds"): mock_ds_class,
                         ("capability", "missing_capability"): None,
                     }.get((comp_type, name))
 
@@ -284,17 +309,25 @@ class TestReadDataSourceCapabilityInjection:
                     response = await _read_data_source_impl(sample_request, context=None)
 
                     # Should still succeed, just without the capability
-                    mock_data_source.read.assert_called_once()
-                    call_kwargs = mock_data_source.read.call_args[1]
-                    assert "missing_capability" not in call_kwargs
+                    assert "missing_capability" not in read_called_with_kwargs
 
 
 class TestReadDataSourceContextDiagnostics:
     """Tests for context diagnostics handling."""
 
     @pytest.mark.asyncio
-    async def test_appends_context_diagnostics_to_response(self, sample_request, mock_data_source_class):
+    async def test_appends_context_diagnostics_to_response(self, sample_request):
         """Test that context diagnostics are appended to response."""
+        from pyvider.cty import CtyValue, CtyString
+
+        # Create complete mock
+        mock_ds_class = MagicMock()
+        mock_ds_class.config_class = MagicMock
+
+        mock_schema = MagicMock()
+        mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
+        mock_ds_class.get_schema.return_value = mock_schema
+
         # Create a ResourceContext with diagnostics
         from pyvider.resources.context import ResourceContext
 
@@ -302,19 +335,18 @@ class TestReadDataSourceContextDiagnostics:
         diag = pb.Diagnostic(severity=pb.Diagnostic.WARNING, summary="Context warning")
         resource_context_with_diags.diagnostics.append(diag)
 
-        # Create a simple coroutine and wrap it with AsyncMock
-        async def read_coro(ctx, **kwargs):
+        async def mock_read(ctx, **kwargs):
             return None
 
-        mock_data_source = MagicMock()
-        mock_data_source.read = AsyncMock(wraps=read_coro)
-        mock_data_source_class.return_value = mock_data_source
+        mock_ds_instance = MagicMock()
+        mock_ds_instance.read = mock_read
+        mock_ds_class.return_value = mock_ds_instance
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.ResourceContext") as mock_rc:
-                        mock_get.return_value = mock_data_source_class
+                        mock_get.return_value = mock_ds_class
                         mock_rc.return_value = resource_context_with_diags
 
                         from pyvider.cty import CtyValue, CtyString
