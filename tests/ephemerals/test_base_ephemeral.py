@@ -7,7 +7,7 @@ import pytest
 from pyvider.ephemerals.base import BaseEphemeralResource
 from pyvider.ephemerals.context import EphemeralResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import s_ephemeral, a_str, a_num
+from pyvider.schema import s_resource, a_str, a_num
 
 
 class MockPrivateState(PrivateState):
@@ -22,7 +22,7 @@ class TestEphemeralResource(BaseEphemeralResource):
 
     @classmethod
     def get_schema(cls):
-        return s_ephemeral(
+        return s_resource(
             attributes={
                 "name": a_str(required=True),
                 "ttl": a_num(optional=True),
@@ -54,7 +54,7 @@ class PartialEphemeralResource(BaseEphemeralResource):
 
     @classmethod
     def get_schema(cls):
-        return s_ephemeral(attributes={"id": a_str()})
+        return s_resource(attributes={"id": a_str()})
 
     # Missing open, renew, close methods
 
