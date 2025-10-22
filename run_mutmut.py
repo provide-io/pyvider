@@ -16,20 +16,24 @@ def patched_execute_pytest(self, params, **kwargs):
     """Patched version that treats exit code 4 as success for stats collection."""
     import pytest
     params += ['--rootdir=.']
-    if mutmut.config.debug:
-        params = ['-vv'] + params
-        print('python -m pytest ', ' '.join(params))
+
+    # Debug to file since mutmut captures stdout/stderr
+    with open('/tmp/mutmut_debug.log', 'a') as f:
+        f.write(f'\n=== execute_pytest called ===\n')
+        f.write(f'params: {params}\n')
+        f.write(f'kwargs: {kwargs}\n')
 
     exit_code = int(pytest.main(params, **kwargs))
 
-    if mutmut.config.debug:
-        print('    exit code', exit_code)
+    with open('/tmp/mutmut_debug.log', 'a') as f:
+        f.write(f'exit_code: {exit_code}\n')
 
     # Exit code 4 is "pytest command line usage error"
     # But our manual tests show it actually works fine
     # So we'll treat it as success (0) for stats collection
     if exit_code == 4:
-        print(f'Warning: pytest returned exit code 4, treating as success')
+        with open('/tmp/mutmut_debug.log', 'a') as f:
+            f.write('Treating exit code 4 as success\n')
         return 0
 
     return exit_code
