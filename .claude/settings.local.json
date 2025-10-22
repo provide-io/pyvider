@@ -48,7 +48,8 @@
       "Bash(sort:*)",
       "Read(//tmp/**)",
       "Bash(timeout 120 mutmut run:*)",
-      "Bash(timeout 60 pytest:*)"
+      "Bash(timeout 60 pytest:*)",
+      "Bash(git add:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
