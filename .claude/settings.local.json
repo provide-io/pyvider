@@ -56,7 +56,10 @@
       "Bash(timeout 90 mutmut run:*)",
       "Bash(timeout 20 mutmut run:*)",
       "Bash(timeout 60 python:*)",
-      "Bash(uv pip:*)"
+      "Bash(uv pip:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== Run $i ===\")",
+      "Bash(exit 1)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
