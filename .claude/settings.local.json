@@ -51,7 +51,8 @@
       "Bash(timeout 60 pytest:*)",
       "Bash(git add:*)",
       "Bash(xargs:*)",
-      "Bash(timeout 60 mutmut:*)"
+      "Bash(timeout 60 mutmut:*)",
+      "Bash(timeout 90 python -m mutmut run:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
