@@ -105,15 +105,16 @@ class TestValidateDataResourceConfigImpl:
     @pytest.mark.asyncio
     async def test_impl_handles_unknown_data_source(self, sample_request):
         """Test handling of unknown data source type."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
-                mock_create_diag.return_value = mock_diag
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+                    mock_hub.get_component.return_value = None
+                    mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
+                    mock_create_diag.return_value = mock_diag
 
-                response = await _validate_data_resource_config_impl(sample_request, context=None)
+                    response = await _validate_data_resource_config_impl(sample_request, context=None)
 
-                assert len(response.diagnostics) >= 1
+                    assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
     async def test_impl_handles_cty_validation_error(self, sample_request, mock_data_source_class):
