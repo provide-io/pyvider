@@ -209,7 +209,7 @@ class TestReadDataSourceCapabilityInjection:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_ds_class,
+                        ("data_source", "test_data_source"): mock_ds_class,
                         ("capability", "test_capability"): mock_capability_class,
                     }.get((comp_type, name))
 
@@ -257,7 +257,7 @@ class TestReadDataSourceCapabilityInjection:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_ds_class,
+                        ("data_source", "test_data_source"): mock_ds_class,
                         ("capability", "test_capability"): mock_capability_instance,
                     }.get((comp_type, name))
 
@@ -297,7 +297,7 @@ class TestReadDataSourceCapabilityInjection:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
                     mock_get.side_effect = lambda comp_type, name: {
-                        ("data_source", "test_ds"): mock_ds_class,
+                        ("data_source", "test_data_source"): mock_ds_class,
                         ("capability", "missing_capability"): None,
                     }.get((comp_type, name))
 
