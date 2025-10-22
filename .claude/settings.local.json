@@ -64,7 +64,8 @@
       "Bash(__NEW_LINE__ grep -n \"^class\" tests/test_handler.py)",
       "Bash(.venv/bin/pip:*)",
       "Bash(timeout 30 mutmut run:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(timeout 180 python:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
