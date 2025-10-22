@@ -361,7 +361,7 @@ We welcome contributions! See our [Contributing Guide](CONTRIBUTING.md) for deta
 
 ```bash
 # Set up development environment
-source ./env.sh
+uv sync
 
 # Run tests
 pytest
