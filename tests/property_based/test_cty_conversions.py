@@ -234,7 +234,7 @@ class TestCtyObjectValidation:
         assert isinstance(result.value["age"].value, Decimal)
 
     @given(data=cty_dict(max_keys=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_dynamic_object_validates_any_dict(self, data):
         """Property: CtyObject with inferred types should validate any dict."""
         # Skip if empty dict (no attributes to infer)

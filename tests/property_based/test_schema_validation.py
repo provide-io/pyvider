@@ -1,6 +1,6 @@
 """Property-based tests for schema validation using Hypothesis."""
 
-from hypothesis import given, strategies as st, assume
+from hypothesis import given, strategies as st, assume, settings, HealthCheck
 import attrs
 
 from pyvider.schema import a_str, a_num, a_bool, a_list, a_map, s_data_source
@@ -40,6 +40,7 @@ def test_bool_attribute_accepts_booleans(enabled: bool):
 @given(
     items=st.lists(st.text(min_size=0, max_size=50), min_size=0, max_size=20)
 )
+@settings(suppress_health_check=[HealthCheck.too_slow])
 def test_list_attribute_schema_creation(items: list[str]):
     """
     Property: Creating a list attribute schema should always succeed.
