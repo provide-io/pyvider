@@ -49,7 +49,8 @@
       "Read(//tmp/**)",
       "Bash(timeout 120 mutmut run:*)",
       "Bash(timeout 60 pytest:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(xargs:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
