@@ -118,7 +118,13 @@ exclude = ["src/pyvider/protocols/tfprotov6/protobuf/tfplugin6_pb2.py", "src/pyv
 module = ["structlog.*", "google.*", "grpc.*", "pytest.*", "jq.*", "psutil.*"]
 ignore_missing_imports = true
 
-
+[tool.mutmut]
+paths_to_mutate = "src/pyvider"
+runner = "pytest"
+# Exclude generated protobuf files from mutation
+exclude = ["*/protobuf/*_pb2.py", "*/protobuf/*_pb2.pyi", "*/protobuf/*_pb2_grpc.py"]
+dict_synonyms = ["dict", "OrderedDict", "defaultdict"]
+use_patch_file = true
 
 [tool.coverage.run]
 source = ["pyvider"]
