@@ -13,28 +13,17 @@ original_execute_pytest = mutmut.__main__.PytestRunner.execute_pytest
 
 
 def patched_execute_pytest(self, params, **kwargs):
-    """Patched version that treats exit code 4 as success for stats collection."""
+    """Patched version that adds test paths for stats collection."""
     import pytest
     params += ['--rootdir=.']
 
-    # Debug to file since mutmut captures stdout/stderr
-    with open('/tmp/mutmut_debug.log', 'a') as f:
-        f.write(f'\n=== execute_pytest called ===\n')
-        f.write(f'params: {params}\n')
-        f.write(f'kwargs: {kwargs}\n')
+    # If no test paths are specified (stats collection phase), add them from config
+    has_test_path = any(not p.startswith('-') for p in params)
+    if not has_test_path:
+        # Add test path from mutmut runner config
+        params.append('tests/tfprotov6/handlers/')
 
     exit_code = int(pytest.main(params, **kwargs))
-
-    with open('/tmp/mutmut_debug.log', 'a') as f:
-        f.write(f'exit_code: {exit_code}\n')
-
-    # Exit code 4 is "pytest command line usage error"
-    # But our manual tests show it actually works fine
-    # So we'll treat it as success (0) for stats collection
-    if exit_code == 4:
-        with open('/tmp/mutmut_debug.log', 'a') as f:
-            f.write('Treating exit code 4 as success\n')
-        return 0
 
     return exit_code
 
