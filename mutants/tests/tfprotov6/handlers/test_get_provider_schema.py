@@ -398,3 +398,15 @@ class TestGetProviderSchemaEdgeCases:
                     assert len(response.resource_schemas) == 0
                     assert len(response.data_source_schemas) == 0
                     assert len(response.functions) == 0
+
+    @pytest.mark.asyncio
+    async def test_catastrophic_schema_computation_failure(self, sample_request, clear_schema_cache):
+        """Test handling of catastrophic failure during schema computation."""
+        # This tests the exception path in _set_future_result (lines 179-181)
+        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+            # Make _compute_schema_once raise an exception
+            mock_compute.side_effect = RuntimeError("Catastrophic computation error")
+
+            # The exception should propagate up from the Future
+            with pytest.raises(RuntimeError, match="Catastrophic computation error"):
+                await GetProviderSchemaHandler(sample_request, context=None)

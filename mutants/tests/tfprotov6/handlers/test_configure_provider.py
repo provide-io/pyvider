@@ -132,3 +132,74 @@ class TestConfigureProviderHandler:
         # Just verify handler completes successfully (metrics recorded internally)
         response = await ConfigureProviderHandler(request, context=None)
         assert isinstance(response, pb.ConfigureProvider.Response)
+
+    @pytest.mark.asyncio
+    async def test_handler_records_error_on_exception(self, provider_in_hub):
+        """Test that handler increments error counter on exceptions."""
+        from unittest.mock import patch
+
+        with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.handler_errors") as mock_errors:
+            with patch("pyvider.protocols.tfprotov6.handlers.configure_provider._configure_provider_impl") as mock_impl:
+                # Make implementation raise an exception
+                mock_impl.side_effect = RuntimeError("Test error")
+                request = pb.ConfigureProvider.Request()
+
+                # @resilient() decorator catches the exception
+                with pytest.raises(RuntimeError):
+                    await ConfigureProviderHandler(request, context=None)
+
+                # Error metric should be incremented
+                mock_errors.inc.assert_called_once_with(handler="ConfigureProvider")
+
+    @pytest.mark.asyncio
+    async def test_impl_handles_null_config_instance(self, provider_in_hub):
+        """Test handling when config_instance is None."""
+        from unittest.mock import patch
+
+        provider = hub.get_component("singleton", "provider")
+        schema = provider.schema
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({})
+
+        from pyvider.conversion import marshal
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        request = pb.ConfigureProvider.Request(config=config_dv)
+
+        # Mock from_cty to return None
+        with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.BaseResource.from_cty") as mock_from_cty:
+            mock_from_cty.return_value = None
+
+            response = await _configure_provider_impl(request, context=None)
+
+            # Should have diagnostic
+            assert len(response.diagnostics) > 0
+            assert "Invalid provider configuration" in response.diagnostics[0].summary
+
+    @pytest.mark.asyncio
+    async def test_impl_logs_warning_for_unknown_config(self, provider_in_hub):
+        """Test that unknown config triggers warning log."""
+        from unittest.mock import patch
+
+        provider = hub.get_component("singleton", "provider")
+
+        # Create request and mock unmarshal to return unknown CtyValue
+        request = pb.ConfigureProvider.Request()
+        request.config.msgpack = b"\x80"  # Empty dict in msgpack
+
+        from pyvider.cty import CtyValue, CtyObject
+        unknown_config = CtyValue.unknown(CtyObject(attribute_types={}))
+
+        # Patch logger and unmarshal
+        with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.logger") as mock_logger:
+            with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.unmarshal") as mock_unmarshal:
+                mock_unmarshal.return_value = unknown_config
+
+                response = await _configure_provider_impl(request, context=None)
+
+                # Should log warning about unknown config
+                mock_logger.warning.assert_called_once()
+                assert "unknown" in mock_logger.warning.call_args[0][0].lower()
+
+                # Should return empty response (early return)
+                assert len(response.diagnostics) == 0
