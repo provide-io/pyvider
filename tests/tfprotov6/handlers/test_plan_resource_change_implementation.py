@@ -1,4 +1,4 @@
-"""Tests for PlanResourceChange handler."""
+"""Tests for PlanResourceChange handler - Implementation and complex scenarios."""
 
 import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -38,7 +38,10 @@ def mock_resource_class():
 @pytest.fixture
 def mock_provider():
     """Create a mock provider instance."""
+    return MagicMock()
 
+
+class TestCreateResourceContext:
     """Tests for _create_resource_context function."""
 
     @pytest.mark.asyncio
