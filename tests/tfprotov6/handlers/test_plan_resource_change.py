@@ -223,14 +223,15 @@ class TestPlanResourceChangeMetrics:
         """Test that handler increments error counter on failure."""
         with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors") as mock_errors:
             with patch("pyvider.hub.hub.get_component") as mock_get:
-                # Make the handler fail in a way that raises an unhandled exception
+                # Make the handler fail
                 mock_get.side_effect = RuntimeError("Catastrophic failure")
 
-                with pytest.raises(RuntimeError):
-                    await PlanResourceChangeHandler(sample_request, context=None)
+                # The @resilient() decorator catches exceptions and returns diagnostics
+                response = await PlanResourceChangeHandler(sample_request, context=None)
 
-                # The handler should record the error
-                # Note: This may not be called if the error happens before the try block
+                # Response should contain error diagnostics (resilient catches the exception)
+                assert len(response.diagnostics) > 0
+                assert any("Internal Provider Error" in d.summary for d in response.diagnostics)
 
 
 class TestPlanResourceChangeLogging:
