@@ -322,6 +322,7 @@ class TestReadDataSourceContextDiagnostics:
 
         # Create complete mock
         mock_ds_class = MagicMock()
+        mock_ds_class._parent_capability = None
         mock_ds_class.config_class = MagicMock
 
         mock_schema = MagicMock()
@@ -335,7 +336,9 @@ class TestReadDataSourceContextDiagnostics:
         diag = pb.Diagnostic(severity=pb.Diagnostic.WARNING, summary="Context warning")
         resource_context_with_diags.diagnostics.append(diag)
 
-        async def mock_read(ctx, **kwargs):
+        async def mock_read(ctx):
+            # Store diagnostic in context
+            ctx.diagnostics.append(diag)
             return None
 
         mock_ds_instance = MagicMock()
@@ -345,17 +348,15 @@ class TestReadDataSourceContextDiagnostics:
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal:
                 with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance") as mock_cty_to_attrs:
-                    with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.ResourceContext") as mock_rc:
-                        mock_get.return_value = mock_ds_class
-                        mock_rc.return_value = resource_context_with_diags
+                    mock_get.return_value = mock_ds_class
 
-                        from pyvider.cty import CtyValue, CtyString
+                    from pyvider.cty import CtyValue, CtyString
 
-                        mock_unmarshal.return_value = CtyValue.null(CtyString())
-                        mock_cty_to_attrs.return_value = None
+                    mock_unmarshal.return_value = CtyValue.null(CtyString())
+                    mock_cty_to_attrs.return_value = None
 
-                        response = await _read_data_source_impl(sample_request, context=None)
+                    response = await _read_data_source_impl(sample_request, context=None)
 
-                        # Check that context diagnostic was added to response
-                        assert len(response.diagnostics) == 1
-                        assert response.diagnostics[0].summary == "Context warning"
+                    # Check that context diagnostic was added to response
+                    assert len(response.diagnostics) == 1
+                    assert response.diagnostics[0].summary == "Context warning"
