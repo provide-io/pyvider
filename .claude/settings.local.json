@@ -44,7 +44,8 @@
       "Bash(mypy:*)",
       "Bash(mutmut run:*)",
       "Bash(mutmut:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(sort:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
