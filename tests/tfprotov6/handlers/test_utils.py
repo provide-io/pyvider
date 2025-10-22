@@ -167,7 +167,7 @@ class TestIsValidRefinement:
 
     def test_unrefined_unknown_can_refine_to_any(self):
         """Test that UNREFINED_UNKNOWN can refine to any concrete value."""
-        plan = CtyValue(vtype=CtyString(), value=UNREFINED_UNKNOWN)
+        plan = CtyValue(vtype=CtyString(), value=UNREFINED_UNKNOWN, is_unknown=True)
         result = CtyValue(vtype=CtyString(), value="anything")
 
         is_valid, reason = is_valid_refinement(plan, result)
