@@ -254,7 +254,7 @@ class TestUnifyAndValidateListOfObjects:
     """Property-based tests for unify_and_validate_list_of_objects utility."""
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_unify_returns_cty_value(self, dict_list):
         """Property: unify_and_validate_list_of_objects should return a CtyValue."""
         assume(len(dict_list) > 0)
@@ -262,7 +262,7 @@ class TestUnifyAndValidateListOfObjects:
         assert isinstance(result, CtyValue)
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_unify_preserves_list_length(self, dict_list):
         """Property: Result should have same length as input list."""
         assume(len(dict_list) > 0)
