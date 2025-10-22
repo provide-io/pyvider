@@ -1,0 +1,10 @@
+{
+    "exit_code_by_key": {
+        "pyvider.cli.__main__.x_main__mutmut_1": null,
+        "pyvider.cli.__main__.x_main__mutmut_2": null,
+        "pyvider.cli.__main__.x_main__mutmut_3": null,
+        "pyvider.cli.__main__.x_main__mutmut_4": null,
+        "pyvider.cli.__main__.x_main__mutmut_5": null
+    },
+    "hash_by_function_name": {}
+}

@@ -41,7 +41,9 @@
       "Bash(do echo \"=== $f ===\")",
       "Bash(do basename \"$f\")",
       "Bash(awk:*)",
-      "Bash(mypy:*)"
+      "Bash(mypy:*)",
+      "Bash(mutmut run:*)",
+      "Bash(mutmut:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

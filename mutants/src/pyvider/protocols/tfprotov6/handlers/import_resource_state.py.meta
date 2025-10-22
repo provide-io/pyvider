@@ -1,0 +1,10 @@
+{
+    "exit_code_by_key": {
+        "pyvider.protocols.tfprotov6.handlers.import_resource_state.x__import_resource_state_impl__mutmut_1": null,
+        "pyvider.protocols.tfprotov6.handlers.import_resource_state.x__import_resource_state_impl__mutmut_2": null,
+        "pyvider.protocols.tfprotov6.handlers.import_resource_state.x__import_resource_state_impl__mutmut_3": null,
+        "pyvider.protocols.tfprotov6.handlers.import_resource_state.x__import_resource_state_impl__mutmut_4": null,
+        "pyvider.protocols.tfprotov6.handlers.import_resource_state.x__import_resource_state_impl__mutmut_5": null
+    },
+    "hash_by_function_name": {}
+}

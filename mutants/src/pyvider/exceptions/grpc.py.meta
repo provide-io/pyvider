@@ -1,0 +1,13 @@
+{
+    "exit_code_by_key": {
+        "pyvider.exceptions.grpc.x\u01c1GRPCError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.grpc.x\u01c1GRPCError\u01c1_default_code__mutmut_2": null,
+        "pyvider.exceptions.grpc.x\u01c1GRPCConnectionError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.grpc.x\u01c1GRPCConnectionError\u01c1_default_code__mutmut_2": null,
+        "pyvider.exceptions.grpc.x\u01c1NetworkError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.grpc.x\u01c1NetworkError\u01c1_default_code__mutmut_2": null,
+        "pyvider.exceptions.grpc.x\u01c1RateLimitError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.grpc.x\u01c1RateLimitError\u01c1_default_code__mutmut_2": null
+    },
+    "hash_by_function_name": {}
+}

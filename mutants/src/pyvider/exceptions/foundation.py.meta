@@ -1,0 +1,13 @@
+{
+    "exit_code_by_key": {
+        "pyvider.exceptions.foundation.x\u01c1InvalidTypeError\u01c1__init____mutmut_1": null,
+        "pyvider.exceptions.foundation.x\u01c1InvalidTypeError\u01c1__init____mutmut_2": null,
+        "pyvider.exceptions.foundation.x\u01c1InvalidTypeError\u01c1__init____mutmut_3": null,
+        "pyvider.exceptions.foundation.x\u01c1InvalidTypeError\u01c1__init____mutmut_4": null,
+        "pyvider.exceptions.foundation.x\u01c1InvalidTypeError\u01c1__init____mutmut_5": null,
+        "pyvider.exceptions.foundation.x\u01c1UnsupportedTypeError\u01c1__init____mutmut_1": null,
+        "pyvider.exceptions.foundation.x\u01c1UnsupportedTypeError\u01c1__init____mutmut_2": null,
+        "pyvider.exceptions.foundation.x\u01c1UnsupportedTypeError\u01c1__init____mutmut_3": null
+    },
+    "hash_by_function_name": {}
+}

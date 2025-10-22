@@ -1,0 +1,69 @@
+"""
+Pyvider CLI Package
+==================
+This module assembles the main CLI application.
+"""
+
+# 1. Import the foundational 'cli' group object from main.
+# 2. Import the command objects (groups and commands) from their modules.
+from pyvider.cli.components_commands import components
+from pyvider.cli.config_commands import config
+from pyvider.cli.install_command import install_command
+from pyvider.cli.launch_context_command import launch_context_cmd
+from pyvider.cli.main import cli
+from pyvider.cli.prep_commands import prep
+from pyvider.cli.provide_command import provide_cmd
+
+# 3. Explicitly attach the commands to the main cli group.
+cli.add_command(components)
+cli.add_command(config)
+cli.add_command(install_command)
+cli.add_command(launch_context_cmd)
+cli.add_command(prep)
+cli.add_command(provide_cmd)
+from inspect import signature as _mutmut_signature
+from typing import Annotated
+from typing import Callable
+from typing import ClassVar
+
+
+MutantDict = Annotated[dict[str, Callable], "Mutant"]
+
+
+def _mutmut_trampoline(orig, mutants, call_args, call_kwargs, self_arg = None):
+    """Forward call to original or mutated function, depending on the environment"""
+    import os
+    mutant_under_test = os.environ['MUTANT_UNDER_TEST']
+    if mutant_under_test == 'fail':
+        from mutmut.__main__ import MutmutProgrammaticFailException
+        raise MutmutProgrammaticFailException('Failed programmatically')      
+    elif mutant_under_test == 'stats':
+        from mutmut.__main__ import record_trampoline_hit
+        record_trampoline_hit(orig.__module__ + '.' + orig.__name__)
+        result = orig(*call_args, **call_kwargs)
+        return result
+    prefix = orig.__module__ + '.' + orig.__name__ + '__mutmut_'
+    if not mutant_under_test.startswith(prefix):
+        result = orig(*call_args, **call_kwargs)
+        return result
+    mutant_name = mutant_under_test.rpartition('.')[-1]
+    if self_arg:
+        # call to a class method where self is not bound
+        result = mutants[mutant_name](self_arg, *call_args, **call_kwargs)
+    else:
+        result = mutants[mutant_name](*call_args, **call_kwargs)
+    return result
+
+
+# 4. Create a main function that can be used as an entry point
+def main() -> None:
+    """Main entry point for the Pyvider CLI application.
+
+    This allows the CLI to be invoked via 'pyvider.cli:main' entry point,
+    in addition to the existing 'pyvider.cli.__main__:main' entry point.
+    """
+    cli()
+
+
+# 5. Expose the fully assembled 'cli' object and main function for entry points.
+__all__ = ["cli", "main"]

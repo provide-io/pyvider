@@ -1,0 +1,9 @@
+{
+    "exit_code_by_key": {
+        "pyvider.exceptions.registry.x\u01c1ComponentRegistryError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.registry.x\u01c1ComponentRegistryError\u01c1_default_code__mutmut_2": null,
+        "pyvider.exceptions.registry.x\u01c1ValidatorRegistrationError\u01c1_default_code__mutmut_1": null,
+        "pyvider.exceptions.registry.x\u01c1ValidatorRegistrationError\u01c1_default_code__mutmut_2": null
+    },
+    "hash_by_function_name": {}
+}

@@ -1,0 +1,31 @@
+{
+    "exit_code_by_key": {
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_1": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_2": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_3": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_4": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_5": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_6": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_7": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_8": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_9": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_10": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_11": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_12": null,
+        "pyvider.exceptions.serialization.x\u01c1SerializationError\u01c1__init____mutmut_13": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_1": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_2": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_3": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_4": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_5": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_6": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_7": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_8": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_9": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_10": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_11": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_12": null,
+        "pyvider.exceptions.serialization.x\u01c1DeserializationError\u01c1__init____mutmut_13": null
+    },
+    "hash_by_function_name": {}
+}

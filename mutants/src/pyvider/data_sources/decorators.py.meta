@@ -1,0 +1,13 @@
+{
+    "exit_code_by_key": {
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_1": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_2": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_3": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_4": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_5": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_6": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_7": null,
+        "pyvider.data_sources.decorators.x_register_data_source__mutmut_8": null
+    },
+    "hash_by_function_name": {}
+}
