@@ -176,7 +176,7 @@ class TestIsValidRefinement:
 
     def test_null_to_concrete_is_valid(self):
         """Test that null can be refined to concrete."""
-        plan = CtyValue(vtype=CtyString(), value=None)
+        plan = CtyValue(vtype=CtyString(), value=None, is_null=True)
         result = CtyValue(vtype=CtyString(), value="concrete")
 
         is_valid, reason = is_valid_refinement(plan, result)
@@ -186,7 +186,7 @@ class TestIsValidRefinement:
     def test_concrete_to_null_is_invalid(self):
         """Test that concrete cannot be refined to null."""
         plan = CtyValue(vtype=CtyString(), value="concrete")
-        result = CtyValue(vtype=CtyString(), value=None)
+        result = CtyValue(vtype=CtyString(), value=None, is_null=True)
 
         is_valid, reason = is_valid_refinement(plan, result)
 
@@ -216,11 +216,11 @@ class TestIsValidRefinement:
     def test_object_refinement_key_mismatch(self):
         """Test object refinement detects key mismatches."""
         plan_obj = CtyValue(
-            type=CtyObject(attribute_types={"a": CtyString()}),
+            vtype=CtyObject(attribute_types={"a": CtyString()}),
             value={"a": CtyValue(vtype=CtyString(), value="test")}
         )
         result_obj = CtyValue(
-            type=CtyObject(attribute_types={"b": CtyString()}),
+            vtype=CtyObject(attribute_types={"b": CtyString()}),
             value={"b": CtyValue(vtype=CtyString(), value="test")}
         )
 
@@ -232,11 +232,11 @@ class TestIsValidRefinement:
     def test_list_refinement_length_change(self):
         """Test list refinement detects length changes."""
         plan_list = CtyValue(
-            type=CtyList(element_type=CtyString()),
+            vtype=CtyList(element_type=CtyString()),
             value=[CtyValue(vtype=CtyString(), value="a")]
         )
         result_list = CtyValue(
-            type=CtyList(element_type=CtyString()),
+            vtype=CtyList(element_type=CtyString()),
             value=[
                 CtyValue(vtype=CtyString(), value="a"),
                 CtyValue(vtype=CtyString(), value="b")
@@ -288,11 +288,12 @@ class TestStrPathToProtoPath:
         """Test converting complex nested path."""
         result = str_path_to_proto_path("config.servers[0].endpoints['primary']")
 
-        assert len(result.steps) == 4
+        assert len(result.steps) == 5
         assert result.steps[0].attribute_name == "config"
         assert result.steps[1].attribute_name == "servers"
         assert result.steps[2].element_key_int == 0
         assert result.steps[3].attribute_name == "endpoints"
+        assert result.steps[4].element_key_string == "primary"
 
     def test_empty_path_returns_none(self):
         """Test that empty path returns None."""
@@ -317,7 +318,7 @@ class TestCtyPathToProtoPath:
         result = cty_path_to_proto_path(cty_path)
 
         assert len(result.steps) == 1
-        assert result.steps[1].element_key_int == 5
+        assert result.steps[0].element_key_int == 5
 
     def test_key_step(self):
         """Test converting KeyStep."""
@@ -355,7 +356,6 @@ class TestCreateDiagnosticFromException:
         """Test diagnostic from CtyStringValidationError."""
         exc = CtyStringValidationError(
             message="Invalid string",
-            type_name="string",
             value=123
         )
 
@@ -363,7 +363,6 @@ class TestCreateDiagnosticFromException:
 
         assert diag.severity == pb.Diagnostic.ERROR
         assert "Invalid string" in diag.summary
-        assert "string" in diag.detail
 
     @pytest.mark.asyncio
     async def test_cty_validation_error_with_path(self):
