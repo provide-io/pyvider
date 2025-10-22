@@ -13,15 +13,33 @@ original_execute_pytest = mutmut.__main__.PytestRunner.execute_pytest
 
 
 def patched_execute_pytest(self, params, **kwargs):
-    """Patched version that adds test paths for stats collection."""
+    """Patched version that adds test paths and fixes PYTHONPATH."""
     import pytest
+    import sys
+    import os
+
+    # Get absolute paths
+    project_root = os.getcwd()
+    src_path = os.path.join(project_root, 'src')
+
+    # Ensure src/ is in PYTHONPATH for imports to work (at the front!)
+    if src_path in sys.path:
+        sys.path.remove(src_path)
+    sys.path.insert(0, src_path)
+
+    # Also ensure project root is in path
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
+
     params += ['--rootdir=.']
 
     # If no test paths are specified (stats collection phase), add them from config
+    # Make sure we use the ORIGINAL tests directory, not mutants/tests
     has_test_path = any(not p.startswith('-') for p in params)
     if not has_test_path:
-        # Add test path from mutmut runner config
-        params.append('tests/tfprotov6/handlers/')
+        # Add absolute path to original tests to avoid mutants/ directory
+        test_path = os.path.join(project_root, 'tests', 'tfprotov6', 'handlers')
+        params.append(test_path)
 
     exit_code = int(pytest.main(params, **kwargs))
 
