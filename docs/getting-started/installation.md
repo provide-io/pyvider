@@ -78,7 +78,7 @@ git clone https://github.com/provide-io/pyvider.git
 cd pyvider
 
 # Set up development environment
-source ./env.sh  # On Windows: .\env.ps1
+uv sync  # On Windows: .\env.ps1
 
 # Install in editable mode
 pip install -e .
