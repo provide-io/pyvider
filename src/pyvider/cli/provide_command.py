@@ -126,7 +126,12 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
     script_name = Path(sys.argv[0]).name
 
     # Check if Terraform is trying to launch us but we can't detect it properly
-    if magic_cookie and not force and "terraform-provider" not in script_name.lower() and "terraform-provider" not in sys.argv[0].lower():
+    if (
+        magic_cookie
+        and not force
+        and "terraform-provider" not in script_name.lower()
+        and "terraform-provider" not in sys.argv[0].lower()
+    ):
         click.secho("\n" + "─" * 70, fg="red")
         click.secho(" ❌  Provider Detection Error", fg="red", bold=True)
         click.secho("─" * 70, fg="red")

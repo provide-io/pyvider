@@ -1,8 +1,8 @@
 """Tests for CLI context module."""
 
 from pathlib import Path
-from provide.testkit import mocking as mock
 
+from provide.testkit import mocking as mock
 import pytest
 
 from pyvider.cli.context import PyviderContext
@@ -19,7 +19,7 @@ class TestPyviderContextInitialization:
     def test_context_has_config(self):
         """Test that context has config attribute."""
         ctx = PyviderContext()
-        assert hasattr(ctx, 'config')
+        assert hasattr(ctx, "config")
         assert ctx.config is not None
 
     def test_context_has_home_directory(self):
@@ -105,7 +105,7 @@ class TestPyviderContextComponentDiscovery:
     def test_context_has_components_discovered_flag(self):
         """Test that context has components_discovered flag."""
         ctx = PyviderContext()
-        assert hasattr(ctx, 'components_discovered')
+        assert hasattr(ctx, "components_discovered")
         assert isinstance(ctx.components_discovered, bool)
         # Initially should be False
         assert ctx.components_discovered is False
@@ -113,7 +113,7 @@ class TestPyviderContextComponentDiscovery:
     def test_context_has_discovery_errors_list(self):
         """Test that context has discovery_errors list."""
         ctx = PyviderContext()
-        assert hasattr(ctx, 'discovery_errors')
+        assert hasattr(ctx, "discovery_errors")
         assert isinstance(ctx.discovery_errors, list)
         # Initially should be empty
         assert len(ctx.discovery_errors) == 0
@@ -131,12 +131,7 @@ class TestPyviderContextComponentDiscovery:
         mock_discovery_instance.import_errors = []
         mock_discovery_cls.return_value = mock_discovery_instance
 
-        await ctx._ensure_components_discovered(
-            mock_registry,
-            mock_discovery_cls,
-            print,
-            print
-        )
+        await ctx._ensure_components_discovered(mock_registry, mock_discovery_cls, print, print)
 
         assert ctx.components_discovered is True
         assert mock_discovery_instance.discover_all.called
@@ -154,12 +149,7 @@ class TestPyviderContextComponentDiscovery:
         mock_discovery_instance.discover_all = mock.AsyncMock()
         mock_discovery_cls.return_value = mock_discovery_instance
 
-        await ctx._ensure_components_discovered(
-            mock_registry,
-            mock_discovery_cls,
-            print,
-            print
-        )
+        await ctx._ensure_components_discovered(mock_registry, mock_discovery_cls, print, print)
 
         # Discovery should not have been called
         assert not mock_discovery_instance.discover_all.called
@@ -177,12 +167,7 @@ class TestPyviderContextComponentDiscovery:
         mock_discovery_instance.import_errors = [("test_module", ImportError("Test error"))]
         mock_discovery_cls.return_value = mock_discovery_instance
 
-        await ctx._ensure_components_discovered(
-            mock_registry,
-            mock_discovery_cls,
-            print,
-            print
-        )
+        await ctx._ensure_components_discovered(mock_registry, mock_discovery_cls, print, print)
 
         assert ctx.components_discovered is True
         assert len(ctx.discovery_errors) == 1
@@ -200,12 +185,7 @@ class TestPyviderContextComponentDiscovery:
         mock_discovery_instance.discover_all = mock.AsyncMock(side_effect=RuntimeError("Discovery failed"))
         mock_discovery_cls.return_value = mock_discovery_instance
 
-        await ctx._ensure_components_discovered(
-            mock_registry,
-            mock_discovery_cls,
-            print,
-            print
-        )
+        await ctx._ensure_components_discovered(mock_registry, mock_discovery_cls, print, print)
 
         # Should have captured the error
         assert ctx.components_discovered is False
@@ -219,6 +199,7 @@ class TestPyviderContextInheritance:
     def test_context_inherits_from_cli_context(self):
         """Test that PyviderContext inherits from foundation's CLIContext."""
         from provide.foundation.context import CLIContext
+
         ctx = PyviderContext()
         assert isinstance(ctx, CLIContext)
 
@@ -226,8 +207,8 @@ class TestPyviderContextInheritance:
         """Test that context has attributes from foundation CLIContext."""
         ctx = PyviderContext()
         # CLIContext should provide these
-        assert hasattr(ctx, 'log_level')
-        assert hasattr(ctx, 'log_format')
+        assert hasattr(ctx, "log_level")
+        assert hasattr(ctx, "log_format")
 
 
 class TestPyviderContextEdgeCases:
@@ -279,12 +260,7 @@ class TestPyviderContextEdgeCases:
         mock_discovery_instance.import_errors = []
         mock_discovery_cls.return_value = mock_discovery_instance
 
-        await ctx._ensure_components_discovered(
-            mock_registry,
-            mock_discovery_cls,
-            print,
-            print
-        )
+        await ctx._ensure_components_discovered(mock_registry, mock_discovery_cls, print, print)
 
         # Verify discover_all was called with strict=False
         mock_discovery_instance.discover_all.assert_called_once_with(strict=False)

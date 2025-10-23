@@ -1,20 +1,20 @@
 """Tests for common/utils/attrs_factory.py."""
 
 import attrs
+
 from pyvider.common.utils.attrs_factory import (
     _pvs_type_to_python_type,
     create_attrs_class_from_schema,
 )
 from pyvider.cty import (
-    CtyString,
-    CtyNumber,
     CtyBool,
+    CtyDynamic,
     CtyList,
     CtyMap,
-    CtySet,
-    CtyTuple,
+    CtyNumber,
     CtyObject,
-    CtyDynamic,
+    CtySet,
+    CtyString,
 )
 from pyvider.schema.types import PvsAttribute
 
@@ -77,9 +77,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_creates_class_with_simple_attributes(self):
         """Test creating class with simple string attribute."""
-        attributes = {
-            "name": PvsAttribute(type=CtyString())
-        }
+        attributes = {"name": PvsAttribute(type=CtyString())}
         cls = create_attrs_class_from_schema("TestClass", attributes)
 
         assert attrs.has(cls)
@@ -89,9 +87,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_creates_frozen_class(self):
         """Test that created class is frozen (immutable)."""
-        attributes = {
-            "value": PvsAttribute(type=CtyNumber())
-        }
+        attributes = {"value": PvsAttribute(type=CtyNumber())}
         cls = create_attrs_class_from_schema("FrozenClass", attributes)
 
         instance = cls(value=42)
@@ -104,9 +100,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_handles_default_values(self):
         """Test that default values are applied."""
-        attributes = {
-            "name": PvsAttribute(type=CtyString(), default="default_name")
-        }
+        attributes = {"name": PvsAttribute(type=CtyString(), default="default_name")}
         cls = create_attrs_class_from_schema("DefaultClass", attributes)
 
         instance = cls()
@@ -114,9 +108,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_handles_map_with_factory(self):
         """Test that CtyMap uses dict factory for default."""
-        attributes = {
-            "data": PvsAttribute(type=CtyMap(element_type=CtyString()))
-        }
+        attributes = {"data": PvsAttribute(type=CtyMap(element_type=CtyString()))}
         cls = create_attrs_class_from_schema("MapClass", attributes)
 
         instance1 = cls()
@@ -128,9 +120,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_handles_list_with_factory(self):
         """Test that CtyList uses list factory for default."""
-        attributes = {
-            "items": PvsAttribute(type=CtyList(element_type=CtyString()))
-        }
+        attributes = {"items": PvsAttribute(type=CtyList(element_type=CtyString()))}
         cls = create_attrs_class_from_schema("ListClass", attributes)
 
         instance1 = cls()
@@ -145,7 +135,7 @@ class TestCreateAttrsClassFromSchema:
         attributes = {
             "name": PvsAttribute(type=CtyString()),
             "count": PvsAttribute(type=CtyNumber()),
-            "active": PvsAttribute(type=CtyBool())
+            "active": PvsAttribute(type=CtyBool()),
         }
         cls = create_attrs_class_from_schema("MultiAttr", attributes)
 
@@ -156,9 +146,7 @@ class TestCreateAttrsClassFromSchema:
 
     def test_none_default_for_simple_types(self):
         """Test that simple types without explicit default get None."""
-        attributes = {
-            "optional": PvsAttribute(type=CtyString())
-        }
+        attributes = {"optional": PvsAttribute(type=CtyString())}
         cls = create_attrs_class_from_schema("OptionalClass", attributes)
 
         instance = cls()

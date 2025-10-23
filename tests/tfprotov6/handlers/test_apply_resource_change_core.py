@@ -1,8 +1,6 @@
 """Tests for ApplyResourceChange handler - the most critical CRUD operation handler."""
 
-import json
 from provide.testkit import mocking as mock
-
 import pytest
 
 from pyvider.protocols.tfprotov6.handlers.apply_resource_change import (
@@ -76,12 +74,14 @@ class TestApplyResourceChangeHandler:
         )
 
         # Mock to avoid complex resource setup
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+            ),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"):
-                with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                    response = await ApplyResourceChangeHandler(request, context=None)
+            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
+                response = await ApplyResourceChangeHandler(request, context=None)
 
         assert isinstance(response, pb.ApplyResourceChange.Response)
 
@@ -117,12 +117,14 @@ class TestApplyResourceChangeMetrics:
             planned_state=pb.DynamicValue(json=b'{"name": "test"}'),
         )
 
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+            ),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"):
-                with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                    response = await ApplyResourceChangeHandler(request, context=None)
+            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
+                response = await ApplyResourceChangeHandler(request, context=None)
 
         # Verify handler completed successfully
         assert isinstance(response, pb.ApplyResourceChange.Response)
@@ -243,14 +245,14 @@ class TestApplyResourceChangeLogging:
             planned_state=pb.DynamicValue(json=b'{"name": "test"}'),
         )
 
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
+            ),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"):
-                with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                    await ApplyResourceChangeHandler(request, context=None)
+            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
+                await ApplyResourceChangeHandler(request, context=None)
 
         # Handler should log some operational information
         # (Note: actual implementation may vary)
-
-

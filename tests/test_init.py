@@ -1,6 +1,5 @@
 """Tests for pyvider/__init__.py module."""
 
-import sys
 from pathlib import Path
 
 

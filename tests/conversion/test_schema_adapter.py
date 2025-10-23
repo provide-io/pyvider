@@ -11,7 +11,7 @@ from pyvider.conversion.schema_adapter import (
     pvs_schema_to_proto,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema import a_str, a_num, a_bool, b_single, b_list, s_resource, s_data_source
+from pyvider.schema import a_bool, a_num, a_str, b_list, b_single, s_data_source, s_resource
 
 
 class TestPvsAttributeToProto:
@@ -122,6 +122,7 @@ class TestPvsObjectTypeToProto:
     def test_converts_empty_object_type(self):
         """Test converting an object type with no attributes."""
         from pyvider.schema.types import PvsObjectType
+
         obj = PvsObjectType(attributes={}, block_types=[])
         proto = _pvs_object_type_to_proto(obj)
 
@@ -145,10 +146,7 @@ class TestPvsObjectTypeToProto:
 
         # Create object type with nested block directly
         nested_block = b_single("config", attributes={"value": a_str()})
-        obj = PvsObjectType(
-            attributes={"id": a_str()},
-            block_types=[nested_block]
-        )
+        obj = PvsObjectType(attributes={"id": a_str()}, block_types=[nested_block])
         proto = _pvs_object_type_to_proto(obj)
 
         assert len(proto.block_types) == 1
@@ -157,6 +155,7 @@ class TestPvsObjectTypeToProto:
     def test_object_type_with_description(self):
         """Test object type description is included."""
         from pyvider.schema.types import PvsObjectType
+
         obj = PvsObjectType(attributes={}, block_types=[], description="Test description")
         proto = _pvs_object_type_to_proto(obj)
 
@@ -165,6 +164,7 @@ class TestPvsObjectTypeToProto:
     def test_object_type_with_deprecated_flag(self):
         """Test object type deprecated flag."""
         from pyvider.schema.types import PvsObjectType
+
         obj = PvsObjectType(attributes={}, block_types=[], deprecated=True)
         proto = _pvs_object_type_to_proto(obj)
 
@@ -173,6 +173,7 @@ class TestPvsObjectTypeToProto:
     def test_object_type_version_is_one(self):
         """Test that object type version is always 1."""
         from pyvider.schema.types import PvsObjectType
+
         obj = PvsObjectType(attributes={}, block_types=[])
         proto = _pvs_object_type_to_proto(obj)
 
@@ -213,15 +214,15 @@ class TestPvsSchemaToProto:
     @pytest.mark.asyncio
     async def test_complex_nested_schema(self):
         """Test converting a complex schema with nested blocks."""
-        from pyvider.schema.types import PvsSchema, PvsObjectType
+        from pyvider.schema.types import PvsObjectType, PvsSchema
 
         # Create schema with nested blocks directly
         obj = PvsObjectType(
             attributes={"name": a_str(required=True), "count": a_num(optional=True)},
             block_types=[
                 b_single("config", attributes={"host": a_str(), "port": a_num()}),
-                b_list("items", attributes={"value": a_str()})
-            ]
+                b_list("items", attributes={"value": a_str()}),
+            ],
         )
         schema = PvsSchema(version=1, block=obj)
         proto = await pvs_schema_to_proto(schema)
@@ -268,24 +269,15 @@ class TestSchemaAdapterEdgeCases:
         level2_block = b_single("level2", attributes={"value": a_num()})
 
         # Create level1 object with nested block
-        level1_obj = PvsObjectType(
-            attributes={"name": a_str()},
-            block_types=[level2_block]
-        )
+        level1_obj = PvsObjectType(attributes={"name": a_str()}, block_types=[level2_block])
 
         # Create level1 nested block
-        from pyvider.schema.types import PvsNestedBlock, NestingMode
-        level1_nested = PvsNestedBlock(
-            type_name="level1",
-            block=level1_obj,
-            nesting=NestingMode.SINGLE
-        )
+        from pyvider.schema.types import NestingMode, PvsNestedBlock
+
+        level1_nested = PvsNestedBlock(type_name="level1", block=level1_obj, nesting=NestingMode.SINGLE)
 
         # Create root object
-        root_obj = PvsObjectType(
-            attributes={"id": a_str()},
-            block_types=[level1_nested]
-        )
+        root_obj = PvsObjectType(attributes={"id": a_str()}, block_types=[level1_nested])
 
         proto = _pvs_object_type_to_proto(root_obj)
 

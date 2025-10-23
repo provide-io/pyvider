@@ -1,13 +1,13 @@
 """Tests for GetFunctions handler."""
 
+from provide.testkit.mocking import MagicMock, patch
 import pytest
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+
 from pyvider.protocols.tfprotov6.handlers.get_functions import (
     GetFunctionsHandler,
     _get_functions_impl,
-    _get_functions_once,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -106,128 +106,126 @@ class TestGetFunctionsImplementation:
         self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
     ):
         """Test successful retrieval of registered functions."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {"test_func": sample_function_obj}
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.return_value = sample_proto_function
+            mock_hub.get_components.return_value = {"test_func": sample_function_obj}
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.return_value = sample_proto_function
 
-                    response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                    assert len(response.functions) == 1
-                    assert "test_func" in response.functions
-                    assert response.functions["test_func"] == sample_proto_function
+            assert len(response.functions) == 1
+            assert "test_func" in response.functions
+            assert response.functions["test_func"] == sample_proto_function
 
     @pytest.mark.asyncio
     async def test_handles_function_to_dict_exception(self, sample_request, sample_function_obj):
         """Test handling of function_to_dict conversion errors."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                # Clear cache before test
-                import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                mock_hub.get_components.return_value = {"bad_func": sample_function_obj}
-                mock_to_dict.side_effect = ValueError("Conversion error")
+            mock_hub.get_components.return_value = {"bad_func": sample_function_obj}
+            mock_to_dict.side_effect = ValueError("Conversion error")
 
-                response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                # Should still return a response, but without the failed function
-                assert isinstance(response, pb.GetFunctions.Response)
-                assert "bad_func" not in response.functions
+            # Should still return a response, but without the failed function
+            assert isinstance(response, pb.GetFunctions.Response)
+            assert "bad_func" not in response.functions
 
     @pytest.mark.asyncio
     async def test_handles_dict_to_proto_exception(
         self, sample_request, sample_function_obj, sample_function_dict
     ):
         """Test handling of dict_to_proto conversion errors."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {"bad_func": sample_function_obj}
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.side_effect = RuntimeError("Proto conversion error")
+            mock_hub.get_components.return_value = {"bad_func": sample_function_obj}
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.side_effect = RuntimeError("Proto conversion error")
 
-                    response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                    # Should still return a response, but without the failed function
-                    assert isinstance(response, pb.GetFunctions.Response)
-                    assert "bad_func" not in response.functions
+            # Should still return a response, but without the failed function
+            assert isinstance(response, pb.GetFunctions.Response)
+            assert "bad_func" not in response.functions
 
     @pytest.mark.asyncio
     async def test_handles_none_function_dict(self, sample_request, sample_function_obj):
         """Test handling when function_to_dict returns None."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                # Clear cache before test
-                import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                mock_hub.get_components.return_value = {"null_func": sample_function_obj}
-                mock_to_dict.return_value = None
+            mock_hub.get_components.return_value = {"null_func": sample_function_obj}
+            mock_to_dict.return_value = None
 
-                response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                # Should skip the function when dict is None
-                assert "null_func" not in response.functions
+            # Should skip the function when dict is None
+            assert "null_func" not in response.functions
 
     @pytest.mark.asyncio
     async def test_handles_none_proto_function(
         self, sample_request, sample_function_obj, sample_function_dict
     ):
         """Test handling when dict_to_proto_function returns None."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {"null_func": sample_function_obj}
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.return_value = None
+            mock_hub.get_components.return_value = {"null_func": sample_function_obj}
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.return_value = None
 
-                    response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                    # Should skip the function when proto is None
-                    assert "null_func" not in response.functions
+            # Should skip the function when proto is None
+            assert "null_func" not in response.functions
 
     @pytest.mark.asyncio
     async def test_impl_returns_error_diagnostic_on_exception(self, sample_request):
         """Test implementation returns error diagnostic on unhandled exception."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_once"
-        ) as mock_once:
+        with patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_once") as mock_once:
             mock_once.side_effect = RuntimeError("Critical error")
 
             response = await _get_functions_impl(sample_request, context=None)
@@ -247,56 +245,56 @@ class TestGetFunctionsCaching:
         self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
     ):
         """Test that function definitions are cached after first call."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {"test_func": sample_function_obj}
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.return_value = sample_proto_function
+            mock_hub.get_components.return_value = {"test_func": sample_function_obj}
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.return_value = sample_proto_function
 
-                    # First call
-                    await GetFunctionsHandler(sample_request, context=None)
-                    assert mock_hub.get_components.call_count == 1
+            # First call
+            await GetFunctionsHandler(sample_request, context=None)
+            assert mock_hub.get_components.call_count == 1
 
-                    # Second call - should use cache
-                    await GetFunctionsHandler(sample_request, context=None)
-                    assert mock_hub.get_components.call_count == 1  # Not called again
+            # Second call - should use cache
+            await GetFunctionsHandler(sample_request, context=None)
+            assert mock_hub.get_components.call_count == 1  # Not called again
 
     @pytest.mark.asyncio
     async def test_returns_cached_result_on_subsequent_calls(
         self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
     ):
         """Test that cached results are returned on subsequent calls."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {"test_func": sample_function_obj}
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.return_value = sample_proto_function
+            mock_hub.get_components.return_value = {"test_func": sample_function_obj}
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.return_value = sample_proto_function
 
-                    response1 = await GetFunctionsHandler(sample_request, context=None)
-                    response2 = await GetFunctionsHandler(sample_request, context=None)
+            response1 = await GetFunctionsHandler(sample_request, context=None)
+            response2 = await GetFunctionsHandler(sample_request, context=None)
 
-                    # Both responses should have the same functions
-                    assert response1.functions == response2.functions
+            # Both responses should have the same functions
+            assert response1.functions == response2.functions
 
 
 # Pattern: Metrics Tests
@@ -332,9 +330,7 @@ class TestGetFunctionsMetrics:
     async def test_records_error_metric_on_exception(self, sample_request):
         """Test error counter incremented on exception."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_errors") as mock_errors:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_impl"
-            ) as mock_impl:
+            with patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_impl") as mock_impl:
                 mock_impl.side_effect = RuntimeError("Test error")
 
                 with pytest.raises(RuntimeError):
@@ -362,72 +358,72 @@ class TestGetFunctionsEdgeCases:
         self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
     ):
         """Test with multiple registered functions."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {
-                        "func1": sample_function_obj,
-                        "func2": sample_function_obj,
-                        "func3": sample_function_obj,
-                    }
-                    mock_to_dict.return_value = sample_function_dict
-                    mock_to_proto.return_value = sample_proto_function
+            mock_hub.get_components.return_value = {
+                "func1": sample_function_obj,
+                "func2": sample_function_obj,
+                "func3": sample_function_obj,
+            }
+            mock_to_dict.return_value = sample_function_dict
+            mock_to_proto.return_value = sample_proto_function
 
-                    response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                    assert len(response.functions) == 3
-                    assert "func1" in response.functions
-                    assert "func2" in response.functions
-                    assert "func3" in response.functions
+            assert len(response.functions) == 3
+            assert "func1" in response.functions
+            assert "func2" in response.functions
+            assert "func3" in response.functions
 
     @pytest.mark.asyncio
     async def test_mixed_success_and_failure(
         self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
     ):
         """Test with mix of successful and failed function conversions."""
-        with patch("pyvider.hub.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict"
-            ) as mock_to_dict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
-                ) as mock_to_proto:
-                    # Clear cache before test
-                    import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
+        with (
+            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
+            ) as mock_to_proto,
+        ):
+            # Clear cache before test
+            import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
-                    gf_module._cached_functions = None
+            gf_module._cached_functions = None
 
-                    mock_hub.get_components.return_value = {
-                        "good_func": sample_function_obj,
-                        "bad_func": sample_function_obj,
-                    }
+            mock_hub.get_components.return_value = {
+                "good_func": sample_function_obj,
+                "bad_func": sample_function_obj,
+            }
 
-                    def to_dict_side_effect(func_obj):
-                        if func_obj == sample_function_obj:
-                            # Alternate between success and failure
-                            if not hasattr(to_dict_side_effect, "count"):
-                                to_dict_side_effect.count = 0
-                            to_dict_side_effect.count += 1
-                            if to_dict_side_effect.count == 1:
-                                return sample_function_dict
-                            else:
-                                raise ValueError("Conversion failed")
-                        return None
+            def to_dict_side_effect(func_obj):
+                if func_obj == sample_function_obj:
+                    # Alternate between success and failure
+                    if not hasattr(to_dict_side_effect, "count"):
+                        to_dict_side_effect.count = 0
+                    to_dict_side_effect.count += 1
+                    if to_dict_side_effect.count == 1:
+                        return sample_function_dict
+                    else:
+                        raise ValueError("Conversion failed")
+                return None
 
-                    mock_to_dict.side_effect = to_dict_side_effect
-                    mock_to_proto.return_value = sample_proto_function
+            mock_to_dict.side_effect = to_dict_side_effect
+            mock_to_proto.return_value = sample_proto_function
 
-                    response = await GetFunctionsHandler(sample_request, context=None)
+            response = await GetFunctionsHandler(sample_request, context=None)
 
-                    # Only the successful function should be in the response
-                    assert len(response.functions) == 1
-                    assert "good_func" in response.functions
+            # Only the successful function should be in the response
+            assert len(response.functions) == 1
+            assert "good_func" in response.functions

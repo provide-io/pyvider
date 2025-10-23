@@ -1,17 +1,10 @@
 """Property-based tests for function adapters using Hypothesis."""
 
-from decimal import Decimal
-from typing import Any
-
 from hypothesis import given, strategies as st
 import pytest
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
 from pyvider.functions.adapters import (
-    _get_cty_type_for_dict,
-    _get_cty_type_for_list,
-    _get_cty_type_for_primitive,
-    _get_cty_type_for_union,
     _is_optional_type_hint,
     _python_type_to_cty_type,
     function_to_dict,
@@ -126,7 +119,13 @@ class TestUnionTypeConversionPropertyBased:
 class TestFunctionConversionPropertyBased:
     """Property-based tests for function_to_dict."""
 
-    @given(func_name=st.text(min_size=1, max_size=50, alphabet=st.characters(whitelist_categories=('Ll', 'Lu', 'Nd'), whitelist_characters='_')))
+    @given(
+        func_name=st.text(
+            min_size=1,
+            max_size=50,
+            alphabet=st.characters(whitelist_categories=("Ll", "Lu", "Nd"), whitelist_characters="_"),
+        )
+    )
     def test_function_name_preserved(self, func_name: str):
         """Property: Function name should be preserved in output."""
         # Filter invalid identifiers
@@ -142,6 +141,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_str_param_produces_string_type(self):
         """Property: Function with str parameter should produce CtyString type."""
+
         def test_func(name: str):
             pass
 
@@ -151,6 +151,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_int_param_produces_number_type(self):
         """Property: Function with int parameter should produce CtyNumber type."""
+
         def test_func(count: int):
             pass
 
@@ -160,6 +161,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_bool_param_produces_bool_type(self):
         """Property: Function with bool parameter should produce CtyBool type."""
+
         def test_func(flag: bool):
             pass
 
@@ -169,6 +171,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_list_param_produces_list_type(self):
         """Property: Function with list parameter should produce CtyList type."""
+
         def test_func(items: list[str]):
             pass
 
@@ -178,6 +181,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_dict_param_produces_map_type(self):
         """Property: Function with dict parameter should produce CtyMap type."""
+
         def test_func(mapping: dict[str, int]):
             pass
 
@@ -187,6 +191,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_optional_param_is_nullable(self):
         """Property: Function with optional parameter should be nullable."""
+
         def test_func(name: str | None):
             pass
 
@@ -196,6 +201,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_default_produces_variadic(self):
         """Property: Function with default parameter should produce variadic parameter."""
+
         def test_func(name: str, count: int = 10):
             pass
 
@@ -211,6 +217,7 @@ class TestFunctionConversionPropertyBased:
 
     def test_function_with_args_produces_variadic(self):
         """Property: Function with *args should produce variadic parameter."""
+
         def test_func(name: str, *values: int):
             pass
 
@@ -244,6 +251,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_str_return_type_produces_string(self):
         """Property: str return type should produce CtyString."""
+
         def test_func() -> str:
             return ""
 
@@ -252,6 +260,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_int_return_type_produces_number(self):
         """Property: int return type should produce CtyNumber."""
+
         def test_func() -> int:
             return 0
 
@@ -260,6 +269,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_bool_return_type_produces_bool(self):
         """Property: bool return type should produce CtyBool."""
+
         def test_func() -> bool:
             return True
 
@@ -268,6 +278,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_list_return_type_produces_list(self):
         """Property: list return type should produce CtyList."""
+
         def test_func() -> list[str]:
             return []
 
@@ -276,6 +287,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_dict_return_type_produces_map(self):
         """Property: dict return type should produce CtyMap."""
+
         def test_func() -> dict[str, int]:
             return {}
 
@@ -284,6 +296,7 @@ class TestReturnTypeConversionPropertyBased:
 
     def test_no_return_type_produces_dynamic(self):
         """Property: No return type should produce CtyDynamic."""
+
         def test_func():
             pass
 
@@ -296,6 +309,7 @@ class TestComplexFunctionSignaturesPropertyBased:
 
     def test_function_with_multiple_types(self):
         """Property: Function with multiple parameter types should handle all correctly."""
+
         def test_func(name: str, count: int, flag: bool, items: list[str]):
             pass
 
@@ -308,6 +322,7 @@ class TestComplexFunctionSignaturesPropertyBased:
 
     def test_function_with_nested_types(self):
         """Property: Function with nested types should handle nesting correctly."""
+
         def test_func(nested: list[list[int]]):
             pass
 
@@ -319,6 +334,7 @@ class TestComplexFunctionSignaturesPropertyBased:
 
     def test_function_with_map_of_lists(self):
         """Property: Function with dict[str, list[int]] should handle correctly."""
+
         def test_func(data: dict[str, list[int]]):
             pass
 
@@ -331,6 +347,7 @@ class TestComplexFunctionSignaturesPropertyBased:
     @given(default_val=st.integers(min_value=-100, max_value=100))
     def test_function_with_int_default(self, default_val: int):
         """Property: Function with int default should be variadic."""
+
         def test_func(count: int = default_val):
             pass
 

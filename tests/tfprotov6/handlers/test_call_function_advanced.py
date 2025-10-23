@@ -1,12 +1,11 @@
 """Tests for CallFunction handler - Advanced features (error handling, invoke, integration)."""
 
 from provide.testkit import mocking as mock
-
 import pytest
 
+from pyvider.cty import CtyNumber, CtyString
 from pyvider.protocols.tfprotov6.handlers.call_function import CallFunctionHandler
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.cty import CtyString, CtyNumber
 
 
 class TestCallFunctionMetrics:
@@ -126,7 +125,7 @@ class TestInvokeFunction:
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
         def complex_func(name: str, *items, verbose: bool = False):
-            items_str = ','.join(str(i) for i in items)
+            items_str = ",".join(str(i) for i in items)
             return f"{name}[{items_str}]{'!' if verbose else ''}"
 
         kwargs = {"name": "test", "items": ("a", "b", "c"), "verbose": True}
@@ -165,8 +164,8 @@ class TestInvokeFunction:
     @pytest.mark.asyncio
     async def test_wraps_function_errors_as_pyvider_function_error(self):
         """Test that function errors are wrapped in PyviderFunctionError."""
-        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
         from pyvider.exceptions import FunctionError as PyviderFunctionError
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
         def failing_func(x: int):
             raise ValueError("Something went wrong")
@@ -182,8 +181,8 @@ class TestInvokeFunction:
     @pytest.mark.asyncio
     async def test_preserves_pyvider_function_errors(self):
         """Test that PyviderFunctionError is re-raised directly."""
-        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
         from pyvider.exceptions import FunctionError as PyviderFunctionError
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
         def failing_func(x: int):
             raise PyviderFunctionError("Direct pyvider error")
@@ -216,8 +215,8 @@ class TestInvokeFunction:
     @pytest.mark.asyncio
     async def test_logs_function_errors(self):
         """Test that function errors are logged."""
-        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
         from pyvider.exceptions import FunctionError as PyviderFunctionError
+        from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
         def error_func():
             raise RuntimeError("Test error")
@@ -248,7 +247,9 @@ class TestCallFunctionImplIntegration:
             return f"{a}_{b}"
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta:
+            with mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
+            ) as mock_meta:
                 mock_get.return_value = test_func
                 mock_meta.return_value = {
                     "parameters": [{"name": "a"}, {"name": "b"}],
@@ -276,7 +277,9 @@ class TestCallFunctionImplIntegration:
             return required
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta:
+            with mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
+            ) as mock_meta:
                 mock_get.return_value = test_func
                 mock_meta.return_value = {
                     "parameters": [{"name": "required"}],
@@ -303,7 +306,9 @@ class TestCallFunctionImplIntegration:
             return "should not be called"
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta:
+            with mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
+            ) as mock_meta:
                 with mock.patch(
                     "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
                 ) as mock_process:
@@ -338,7 +343,9 @@ class TestCallFunctionImplIntegration:
         test_func._parent_capability = "test_capability"
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta:
+            with mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
+            ) as mock_meta:
                 with mock.patch(
                     "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
                 ) as mock_process:
@@ -372,11 +379,15 @@ class TestCallFunctionImplIntegration:
             return x * 2
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta:
+            with mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
+            ) as mock_meta:
                 with mock.patch(
                     "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
                 ) as mock_process:
-                    with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.marshal") as mock_marshal:
+                    with mock.patch(
+                        "pyvider.protocols.tfprotov6.handlers.call_function.marshal"
+                    ) as mock_marshal:
                         mock_get.return_value = test_func
                         mock_meta.return_value = {
                             "parameters": [{"name": "x"}],

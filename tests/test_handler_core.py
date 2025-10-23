@@ -1,5 +1,4 @@
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
-
 import pytest
 
 from pyvider.handler import ProviderHandler
@@ -107,9 +106,8 @@ async def test_delegate_exception_no_response_class(mock_provider):
     context = MagicMock()
 
     # Mock getattr to return None (no response class found)
-    with patch("pyvider.handler.getattr", return_value=None):
-        with pytest.raises(Exception, match="test error"):
-            await handler._delegate("TestMethod", request, context)
+    with patch("pyvider.handler.getattr", return_value=None), pytest.raises(Exception, match="test error"):
+        await handler._delegate("TestMethod", request, context)
 
 
 @pytest.mark.asyncio
@@ -244,5 +242,3 @@ async def test_stop_provider_delegates(mock_provider):
 
     mock_delegate.assert_awaited_once_with("StopProvider", request, context)
     assert result == "stop_response"
-
-

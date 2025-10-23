@@ -1,7 +1,7 @@
 import os
 
 
-def validate_plugin_binary(plugin_path: str):
+def validate_plugin_binary(plugin_path: str) -> None:
     """
     Validates the existence and executability of a plugin binary.
 
@@ -19,7 +19,7 @@ def validate_plugin_binary(plugin_path: str):
         raise PermissionError(f"Plugin binary is not executable: {plugin_path}")
 
 
-def validate_plugin_output(plugin_path: str, expected_output: str):
+def validate_plugin_output(plugin_path: str, expected_output: str) -> None:
     """
     Validates the output of a plugin binary against expected output.
 

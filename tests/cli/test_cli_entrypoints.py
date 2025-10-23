@@ -2,8 +2,8 @@
 
 import importlib
 import inspect
-from provide.testkit.mocking import AsyncMock, Mock
 
+from provide.testkit.mocking import AsyncMock, Mock
 import pytest
 
 

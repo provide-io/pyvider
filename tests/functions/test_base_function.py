@@ -1,7 +1,8 @@
 """Tests for functions/base.py module."""
 
 import pytest
-from pyvider.cty import CtyString, CtyNumber, CtyBool, CtyList, CtyDynamic
+
+from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyNumber, CtyString
 from pyvider.functions.base import FunctionParameter, FunctionReturnType
 
 

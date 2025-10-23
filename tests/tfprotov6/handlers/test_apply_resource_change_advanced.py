@@ -1,14 +1,8 @@
 """Tests for ApplyResourceChange handler - Advanced private state and context handling."""
 
-import json
 from provide.testkit import mocking as mock
-
 import pytest
 
-from pyvider.protocols.tfprotov6.handlers.apply_resource_change import (
-    ApplyResourceChangeHandler,
-    _get_resource_and_provider_instances,
-)
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
@@ -40,8 +34,9 @@ class TestProcessPrivateState:
     @pytest.mark.asyncio
     async def test_returns_none_when_planned_private_is_empty(self):
         """Test that returns None when planned_private is empty."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
         import attrs
+
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
 
         @attrs.define
         class PrivateState:
@@ -56,9 +51,10 @@ class TestProcessPrivateState:
     @pytest.mark.asyncio
     async def test_deserializes_valid_private_state(self):
         """Test successful deserialization of private state."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
         import attrs
         import msgpack
+
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
 
         @attrs.define
         class PrivateState:
@@ -86,9 +82,10 @@ class TestProcessPrivateState:
     @pytest.mark.asyncio
     async def test_raises_resource_error_on_deserialization_failure(self):
         """Test that raises ResourceError when deserialization fails."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
-        from pyvider.exceptions import ResourceError
         import attrs
+
+        from pyvider.exceptions import ResourceError
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
 
         @attrs.define
         class PrivateState:
@@ -107,9 +104,10 @@ class TestCreateResourceContext:
 
     def test_creates_context_with_all_fields(self):
         """Test creating resource context with all fields populated."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _create_resource_context
-        from pyvider.cty import CtyValue, CtyString, CtyObject
         import attrs
+
+        from pyvider.cty import CtyObject, CtyString, CtyValue
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _create_resource_context
 
         @attrs.define
         class Config:
@@ -168,9 +166,8 @@ class TestHandleApplyResult:
 
     def test_handles_none_new_state(self):
         """Test handling None new state (delete operation)."""
+        from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
-        from pyvider.cty import CtyValue, CtyString
-        import pyvider.protocols.tfprotov6.protobuf as pb
 
         response = pb.ApplyResourceChange.Response()
 
@@ -188,10 +185,10 @@ class TestHandleApplyResult:
 
     def test_marshals_new_state_successfully(self):
         """Test successful marshaling of new state."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
-        from pyvider.cty import CtyValue, CtyString, CtyObject
-        import pyvider.protocols.tfprotov6.protobuf as pb
         import attrs
+
+        from pyvider.cty import CtyString, CtyValue
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
 
         @attrs.define
         class NewState:
@@ -213,30 +210,30 @@ class TestHandleApplyResult:
         new_state = NewState(name="test")
         planned_cty = CtyValue(vtype=CtyString(), value="test")
 
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
-        ) as mock_to_dict:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"
-            ) as mock_marshal:
-                with mock.patch(
-                    "pyvider.protocols.tfprotov6.handlers.apply_resource_change.is_valid_refinement"
-                ) as mock_refine:
-                    mock_to_dict.return_value = {"name": "test"}
-                    mock_marshal.return_value = pb.DynamicValue(msgpack=b"marshaled")
-                    mock_refine.return_value = (True, "")
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
+            ) as mock_to_dict,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal") as mock_marshal,
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.is_valid_refinement"
+            ) as mock_refine,
+        ):
+            mock_to_dict.return_value = {"name": "test"}
+            mock_marshal.return_value = pb.DynamicValue(msgpack=b"marshaled")
+            mock_refine.return_value = (True, "")
 
-                    _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
+            _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
 
-                    assert response.new_state.msgpack == b"marshaled"
+            assert response.new_state.msgpack == b"marshaled"
 
     def test_raises_error_on_invalid_refinement(self):
         """Test that raises error when new state is not valid refinement of planned state."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
-        from pyvider.cty import CtyValue, CtyString
-        from pyvider.exceptions import ResourceLifecycleContractError
-        import pyvider.protocols.tfprotov6.protobuf as pb
         import attrs
+
+        from pyvider.cty import CtyString, CtyValue
+        from pyvider.exceptions import ResourceLifecycleContractError
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
 
         @attrs.define
         class NewState:
@@ -259,24 +256,26 @@ class TestHandleApplyResult:
         new_state = NewState(name="test")
         planned_cty = CtyValue(vtype=CtyString(), value="planned")
 
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
-        ) as mock_to_dict:
-            with mock.patch(
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
+            ) as mock_to_dict,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.apply_resource_change.is_valid_refinement"
-            ) as mock_refine:
-                mock_to_dict.return_value = {"name": "test"}
-                mock_refine.return_value = (False, "Values don't match")
+            ) as mock_refine,
+        ):
+            mock_to_dict.return_value = {"name": "test"}
+            mock_refine.return_value = (False, "Values don't match")
 
-                with pytest.raises(ResourceLifecycleContractError, match="not a valid refinement"):
-                    _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
+            with pytest.raises(ResourceLifecycleContractError, match="not a valid refinement"):
+                _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
 
     def test_encrypts_and_sets_private_state(self):
         """Test that private state is serialized and encrypted."""
-        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
-        from pyvider.cty import CtyValue, CtyString
-        import pyvider.protocols.tfprotov6.protobuf as pb
         import attrs
+
+        from pyvider.cty import CtyString, CtyValue
+        from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
 
         @attrs.define
         class NewState:
@@ -302,20 +301,18 @@ class TestHandleApplyResult:
         new_state = NewState(name="test")
         new_private = NewPrivateState(token="secret")
 
-        with mock.patch(
-            "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
-        ) as mock_to_dict:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"
-            ) as mock_marshal:
-                with mock.patch(
-                    "pyvider.protocols.tfprotov6.handlers.apply_resource_change.encrypt"
-                ) as mock_encrypt:
-                    mock_to_dict.return_value = {"name": "test"}
-                    mock_marshal.return_value = pb.DynamicValue(msgpack=b"marshaled")
-                    mock_encrypt.return_value = b"encrypted_private"
+        with (
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.apply_resource_change.attrs_to_dict_for_cty"
+            ) as mock_to_dict,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal") as mock_marshal,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.encrypt") as mock_encrypt,
+        ):
+            mock_to_dict.return_value = {"name": "test"}
+            mock_marshal.return_value = pb.DynamicValue(msgpack=b"marshaled")
+            mock_encrypt.return_value = b"encrypted_private"
 
-                    _handle_apply_result(new_state, new_private, MockSchema(), None, response)
+            _handle_apply_result(new_state, new_private, MockSchema(), None, response)
 
-                    assert response.private == b"encrypted_private"
-                    mock_encrypt.assert_called_once()
+            assert response.private == b"encrypted_private"
+            mock_encrypt.assert_called_once()

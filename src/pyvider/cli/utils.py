@@ -69,7 +69,7 @@ def _run_command(
     pout(f"⏳ {step_title}...", style="cyan", end="")
 
     try:
-        with timed_block() as timer:
+        with timed_block() as timer:  # type: ignore[call-arg]
             # Use foundation's process runner with better error handling
             result = run(
                 command,
@@ -85,7 +85,7 @@ def _run_command(
             f"{log_entry_header}"
             f"{log_entry_cmd}"
             f"{log_entry_cwd}"
-            f"Duration: {timer.elapsed:.2f}s\n"
+            f"Duration: {timer.elapsed:.2f}s\n"  # type: ignore[attr-defined]
             f"STDOUT:\n{stdout_str}\n"
             f"STDERR:\n{stderr_str}\n"
             f"Return Code: {return_code}\n---\n\n"
@@ -112,7 +112,7 @@ def _run_command(
                 stderr=stderr_str,
             )
         else:
-            pout(f" ✅ Done ({timer.elapsed:.2f}s)", style="green")
+            pout(f" ✅ Done ({timer.elapsed:.2f}s)", style="green")  # type: ignore[attr-defined]
         return stdout_str
 
     except Exception as e:

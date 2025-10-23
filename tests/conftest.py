@@ -27,9 +27,7 @@ def discovered_components_session(event_loop):
     import sys
 
     # Skip discovery if running under mutmut (check for mutmut cache)
-    if (os.environ.get('MUTANT_UNDER_TEST') or
-        os.path.exists('.mutmut-cache') or
-        'mutmut' in sys.argv[0]):
+    if os.environ.get("MUTANT_UNDER_TEST") or os.path.exists(".mutmut-cache") or "mutmut" in sys.argv[0]:
         yield
         return
 
@@ -61,9 +59,7 @@ def suppress_logging_during_mutmut():
 
     # Check if running under mutmut
     is_mutmut = (
-        os.environ.get('MUTANT_UNDER_TEST') or
-        os.path.exists('.mutmut-cache') or
-        'mutmut' in sys.argv[0]
+        os.environ.get("MUTANT_UNDER_TEST") or os.path.exists(".mutmut-cache") or "mutmut" in sys.argv[0]
     )
 
     if is_mutmut:
@@ -72,7 +68,7 @@ def suppress_logging_during_mutmut():
         original_stderr = sys.stderr
 
         # Redirect to /dev/null
-        devnull = open(os.devnull, 'w')
+        devnull = open(os.devnull, "w")
         sys.stdout = devnull
         sys.stderr = devnull
 

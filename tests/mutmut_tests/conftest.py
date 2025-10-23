@@ -1,6 +1,7 @@
 """Minimal conftest for mutation testing - no autouse fixtures."""
 
 import asyncio
+
 import pytest
 
 

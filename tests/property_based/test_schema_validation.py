@@ -1,9 +1,8 @@
 """Property-based tests for schema validation using Hypothesis."""
 
-from hypothesis import given, strategies as st, assume, settings, HealthCheck
-import attrs
+from hypothesis import HealthCheck, assume, given, settings, strategies as st
 
-from pyvider.schema import a_str, a_num, a_bool, a_list, a_map, s_data_source
+from pyvider.schema import a_bool, a_list, a_map, a_num, a_str, s_data_source
 
 
 @given(name=st.text(min_size=1, max_size=100))
@@ -18,7 +17,7 @@ def test_required_string_accepts_any_non_empty_string(name: str):
 
 
 @given(
-    count=st.integers(min_value=-2**31, max_value=2**31),
+    count=st.integers(min_value=-(2**31), max_value=2**31),
 )
 def test_number_attribute_accepts_integers(count: int):
     """
@@ -37,9 +36,7 @@ def test_bool_attribute_accepts_booleans(enabled: bool):
     assert schema is not None
 
 
-@given(
-    items=st.lists(st.text(min_size=0, max_size=50), min_size=0, max_size=20)
-)
+@given(items=st.lists(st.text(min_size=0, max_size=50), min_size=0, max_size=20))
 @settings(suppress_health_check=[HealthCheck.too_slow])
 def test_list_attribute_schema_creation(items: list[str]):
     """
@@ -66,7 +63,11 @@ def test_map_attribute_schema_creation(mapping: dict[str, int]):
 
 
 @given(
-    name=st.text(min_size=1, max_size=50, alphabet=st.characters(whitelist_categories=("L", "N", "P"), whitelist_characters="_")),
+    name=st.text(
+        min_size=1,
+        max_size=50,
+        alphabet=st.characters(whitelist_categories=("L", "N", "P"), whitelist_characters="_"),
+    ),
     description=st.text(min_size=0, max_size=200),
 )
 def test_attribute_with_description(name: str, description: str):

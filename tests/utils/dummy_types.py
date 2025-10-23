@@ -103,7 +103,7 @@ class DummyStringType(CtyType[CtyString]):
     def usable_as(self, other: "CtyType") -> bool:
         return isinstance(other, DummyStringType)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"DummyStringType(min_length={self.min_length}, max_length={self.max_length})"
 
 
@@ -213,7 +213,7 @@ class DummyNumberType(CtyType[CtyNumber]):
         """
         return isinstance(other, DummyNumberType)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"DummyNumberType(min_value={self.min_value}, max_value={self.max_value})"
 
 
@@ -248,7 +248,7 @@ class DummyListType(CtyType[CtyList]):
     validators: list[Callable[[list], None]] = field(factory=list)
     element_type: Any = field(default=int)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         if not isinstance(self.element_type, (type, tuple, CtyType)):
             raise AttributeValidationError(
                 "element_type must be a type, a tuple of types, or an instance of CtyType."
@@ -284,7 +284,7 @@ class DummyListType(CtyType[CtyList]):
     def usable_as(self, other: "CtyType") -> bool:
         return isinstance(other, DummyListType) and self.element_type == other.element_type
 
-    def __str__(self):
+    def __str__(self) -> str:
         if isinstance(self.element_type, CtyType):
             element_type_name = self.element_type.__class__.__name__
         else:
@@ -304,7 +304,7 @@ class DummyMapType(CtyType[CtyMap]):
     key_type: Any = field(default=str)
     value_type: Any = field(default=str)
 
-    def __attrs_post_init__(self):
+    def __attrs_post_init__(self) -> None:
         if not isinstance(self.key_type, type | CtyType) or not isinstance(self.value_type, type | CtyType):
             raise AttributeValidationError("key_type and value_type must be types or instances of CtyType.")
 
@@ -369,5 +369,5 @@ class DummyMapType(CtyType[CtyMap]):
             )
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"DummyMapType(key_type={self.key_type}, value_type={self.value_type})"

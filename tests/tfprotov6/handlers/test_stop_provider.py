@@ -1,9 +1,10 @@
 """Tests for StopProvider handler."""
 
-import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+import pytest
+
 from pyvider.protocols.tfprotov6.handlers.stop_provider import StopProviderHandler, _stop_provider_impl
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 class TestStopProviderHandlerStructure:
@@ -27,9 +28,7 @@ class TestStopProviderHandlerStructure:
         """Test that handler delegates to implementation."""
         request = pb.StopProvider.Request()
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.stop_provider._stop_provider_impl"
-        ) as mock_impl:
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider._stop_provider_impl") as mock_impl:
             mock_impl.return_value = pb.StopProvider.Response()
 
             await StopProviderHandler(request, context=None)
@@ -89,7 +88,9 @@ class TestStopProviderMetrics:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_requests") as mock_requests:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server_class.get_instance.return_value = mock_server
 
@@ -103,7 +104,9 @@ class TestStopProviderMetrics:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server_class.get_instance.return_value = mock_server
 
@@ -122,7 +125,9 @@ class TestStopProviderMetrics:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server.stop.side_effect = RuntimeError("Stop failed")
                 mock_server_class.get_instance.return_value = mock_server
@@ -142,7 +147,9 @@ class TestStopProviderLogging:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server_class.get_instance.return_value = mock_server
 
@@ -159,16 +166,16 @@ class TestStopProviderLogging:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server_class.get_instance.return_value = mock_server
 
                 await _stop_provider_impl(request, context=None)
 
                 # Check that completion was logged
-                assert any(
-                    "stop() completed" in str(call) for call in mock_logger.info.call_args_list
-                )
+                assert any("stop() completed" in str(call) for call in mock_logger.info.call_args_list)
 
     @pytest.mark.asyncio
     async def test_impl_logs_warning_when_no_server(self):
@@ -176,7 +183,9 @@ class TestStopProviderLogging:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server_class.get_instance.return_value = None
 
                 await _stop_provider_impl(request, context=None)
@@ -191,7 +200,9 @@ class TestStopProviderLogging:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server.stop.side_effect = RuntimeError("Test error")
                 mock_server_class.get_instance.return_value = mock_server
@@ -239,7 +250,9 @@ class TestStopProviderEdgeCases:
         request = pb.StopProvider.Request()
 
         with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration:
-            with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+            ) as mock_server_class:
                 mock_server = AsyncMock()
                 mock_server.stop.side_effect = RuntimeError("Error")
                 mock_server_class.get_instance.return_value = mock_server

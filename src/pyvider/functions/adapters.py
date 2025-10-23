@@ -121,7 +121,7 @@ def _extract_parameters_meta(
         if param.kind == inspect.Parameter.VAR_POSITIONAL:
             param_hint = type_hints.get(name, Any)
             # Extract element type from *args annotation if available
-            if hasattr(param_hint, '__args__') and param_hint.__args__:
+            if hasattr(param_hint, "__args__") and param_hint.__args__:
                 element_type = param_hint.__args__[0]
             else:
                 element_type = Any

@@ -13,10 +13,10 @@ from provide.foundation.errors import resilient
 class Validators:
     """Manages global registration and application of validators."""
 
-    _registry: ClassVar[dict[str, Callable]] = {}  # Class variable initialized once
+    _registry: ClassVar[dict[str, Callable[..., Any]]] = {}  # Class variable initialized once
 
     @classmethod
-    def register(cls, name: str) -> Callable:
+    def register(cls, name: str) -> Callable[..., Any]:
         """Decorator to register a validator with a specific name."""
 
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:

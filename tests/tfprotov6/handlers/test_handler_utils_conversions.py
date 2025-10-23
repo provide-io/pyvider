@@ -1,35 +1,17 @@
 """Tests for handlers/utils.py utility functions."""
 
-from provide.testkit.mocking import patch
-
 import attrs
-from provide.foundation.errors import FoundationError
-import pytest
 
 from pyvider.cty import CtyList, CtyNumber, CtyObject, CtyString
-from pyvider.cty.exceptions import (
-    CtyStringValidationError,
-    CtyValidationError,
-)
 from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
 from pyvider.cty.values import CtyValue
 from pyvider.cty.values.markers import UNREFINED_UNKNOWN
-from pyvider.exceptions import (
-    DataSourceError,
-    FunctionError,
-    PyviderError,
-    ResourceError,
-    ResourceLifecycleContractError,
-)
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
-    create_diagnostic_from_exception,
     cty_path_to_proto_path,
-    cty_to_attrs_instance,
     is_valid_refinement,
     str_path_to_proto_path,
 )
-import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 class TestAttrsToDictForCty:
@@ -349,5 +331,3 @@ class TestCtyPathToProtoPath:
         """Test that empty path returns None."""
         assert cty_path_to_proto_path(None) is None
         assert cty_path_to_proto_path(CtyPath(steps=[])) is None
-
-

@@ -6,9 +6,9 @@ to ensure cryptographic security and proper error handling.
 """
 
 import os
-from provide.testkit.mocking import patch
 
 from provide.foundation.errors import ConfigurationError
+from provide.testkit.mocking import patch
 import pytest
 
 from pyvider.common.config import PyviderConfig

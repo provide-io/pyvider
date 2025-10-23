@@ -2,9 +2,8 @@
 
 import pytest
 
-from pyvider.schema import a_str, a_num, s_resource
+from pyvider.schema import a_num, a_str, s_resource
 from pyvider.schema.transforms import PvsSchemaTransformer
-from pyvider.schema.types.attribute import PvsAttribute
 from pyvider.schema.types.blocks import PvsNestedBlock
 from pyvider.schema.types.object import PvsObjectType
 from pyvider.schema.types.schema import PvsSchema

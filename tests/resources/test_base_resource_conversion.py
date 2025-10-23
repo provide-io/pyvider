@@ -1,24 +1,21 @@
 """Comprehensive lifecycle tests for resources/base.py (44% → 90%+)."""
 
 from typing import Any
-from provide.testkit import mocking as mock
 
 import attrs
 import pytest
 
 from pyvider.cty import (
     CtyBool,
-    CtyDynamic,
-    CtyList,
     CtyNumber,
     CtyObject,
     CtyString,
     CtyValue,
 )
-from pyvider.resources.base import BaseResource, _UNREFINED_UNKNOWN_SENTINEL
+from pyvider.resources.base import _UNREFINED_UNKNOWN_SENTINEL, BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, a_num, a_bool, s_resource
+from pyvider.schema import a_num, a_str, s_resource
 
 
 # Test fixtures
@@ -167,6 +164,7 @@ class TestFromCtyConversion:
 
     def test_handle_attrs_conversion_raises_on_other_type_errors(self):
         """Test _handle_attrs_conversion raises TypeError for non-missing-field errors."""
+
         # Create a malformed attrs class that will cause a different TypeError
         @attrs.define
         class BadConfig:
@@ -227,6 +225,7 @@ class TestCtyToDictPreservingUnknown:
     def test_preserves_unknown_values(self, caplog):
         """Test that unknown CtyValues are preserved."""
         import logging
+
         caplog.set_level(logging.DEBUG)
 
         cty_type = CtyObject({"name": CtyString(), "value": CtyNumber()})
@@ -265,6 +264,7 @@ class TestCtyToDictPreservingUnknown:
     def test_returns_empty_dict_for_none(self, caplog):
         """Test returns empty dict for None."""
         import logging
+
         caplog.set_level(logging.DEBUG)
 
         result = SampleResource._cty_to_dict_preserving_unknown(None)
@@ -274,6 +274,7 @@ class TestCtyToDictPreservingUnknown:
     def test_handles_non_object_types(self, caplog):
         """Test handles non-CtyObject types."""
         import logging
+
         caplog.set_level(logging.DEBUG)
 
         cty_value = CtyString().validate("test")
@@ -285,6 +286,7 @@ class TestCtyToDictPreservingUnknown:
     def test_handles_non_cty_values_in_dict(self, caplog):
         """Test handles non-CtyValue items in dictionary."""
         import logging
+
         caplog.set_level(logging.DEBUG)
 
         cty_type = CtyObject({"name": CtyString()})

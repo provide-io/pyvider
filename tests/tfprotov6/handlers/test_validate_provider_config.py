@@ -1,12 +1,13 @@
 """Tests for ValidateProviderConfig handler."""
 
+from provide.testkit.mocking import patch
 import pytest
-from provide.testkit.mocking import AsyncMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+
 from pyvider.protocols.tfprotov6.handlers.validate_provider_config import (
     ValidateProviderConfigHandler,
     _validate_provider_config_impl,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -65,7 +66,9 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_request_metric(self, sample_request):
         """Test request counter incremented."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_requests") as mock_requests:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_requests"
+        ) as mock_requests:
             await ValidateProviderConfigHandler(sample_request, context=None)
 
             mock_requests.inc.assert_called_once_with(handler="ValidateProviderConfig")
@@ -73,7 +76,9 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_duration_metric(self, sample_request):
         """Test duration observer called."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_duration") as mock_duration:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_duration"
+        ) as mock_duration:
             await ValidateProviderConfigHandler(sample_request, context=None)
 
             assert mock_duration.observe.call_count == 1
@@ -83,7 +88,9 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_error_metric_on_exception(self, sample_request):
         """Test error counter incremented on exception."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_errors") as mock_errors:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_errors"
+        ) as mock_errors:
             with patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
             ) as mock_impl:

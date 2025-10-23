@@ -1,11 +1,12 @@
 """Tests for conversion/marshaler.py."""
 
-import pytest
 import attrs
-from pyvider.conversion.marshaler import marshal, unmarshal, marshal_value, unmarshal_value
-from pyvider.cty import CtyString, CtyNumber, CtyObject, CtyValue
-from pyvider.schema.types import PvsAttribute, PvsObjectType
+import pytest
+
+from pyvider.conversion.marshaler import marshal, marshal_value, unmarshal, unmarshal_value
+from pyvider.cty import CtyNumber, CtyObject, CtyString, CtyValue
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema.types import PvsAttribute, PvsObjectType
 
 
 class TestMarshal:
@@ -43,6 +44,7 @@ class TestMarshal:
 
     def test_marshal_attrs_instance(self):
         """Test marshaling an attrs instance."""
+
         @attrs.define
         class TestConfig:
             name: str
@@ -56,14 +58,10 @@ class TestMarshal:
 
     def test_marshal_with_sensitive_marks(self):
         """Test that sensitive attributes are marked."""
-        schema = PvsObjectType(
-            attributes={
-                "password": PvsAttribute(type=CtyString(), sensitive=True)
-            }
-        )
+        schema = PvsObjectType(attributes={"password": PvsAttribute(type=CtyString(), sensitive=True)})
         value = CtyValue(
             vtype=CtyObject(attribute_types={"password": CtyString()}),
-            value={"password": CtyValue(vtype=CtyString(), value="secret")}
+            value={"password": CtyValue(vtype=CtyString(), value="secret")},
         )
 
         result = marshal(value, schema=schema)
@@ -183,16 +181,13 @@ class TestRoundTrip:
 
     def test_roundtrip_object(self):
         """Test marshal -> unmarshal roundtrip for object."""
-        schema = CtyObject(attribute_types={
-            "name": CtyString(),
-            "age": CtyNumber()
-        })
+        schema = CtyObject(attribute_types={"name": CtyString(), "age": CtyNumber()})
         original = CtyValue(
             vtype=schema,
             value={
                 "name": CtyValue(vtype=CtyString(), value="Alice"),
-                "age": CtyValue(vtype=CtyNumber(), value=30)
-            }
+                "age": CtyValue(vtype=CtyNumber(), value=30),
+            },
         )
 
         marshaled = marshal(original, schema=schema)

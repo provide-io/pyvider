@@ -1,7 +1,7 @@
 """Tests for conversion/utils.py."""
 
 from pyvider.conversion.utils import unify_and_validate_list_of_objects
-from pyvider.cty import CtyList, CtyObject, CtyDynamic, CtyString, CtyNumber
+from pyvider.cty import CtyList, CtyObject
 
 
 class TestUnifyAndValidateListOfObjects:
@@ -25,10 +25,7 @@ class TestUnifyAndValidateListOfObjects:
 
     def test_multiple_dicts_with_same_schema(self):
         """Test multiple dictionaries with consistent schema."""
-        dict_list = [
-            {"name": "first", "age": 25},
-            {"name": "second", "age": 30}
-        ]
+        dict_list = [{"name": "first", "age": 25}, {"name": "second", "age": 30}]
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 2
@@ -36,10 +33,7 @@ class TestUnifyAndValidateListOfObjects:
 
     def test_inconsistent_types_uses_dynamic(self):
         """Test that inconsistent types for same key use CtyDynamic."""
-        dict_list = [
-            {"value": "string"},
-            {"value": 123}
-        ]
+        dict_list = [{"value": "string"}, {"value": 123}]
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 2
@@ -51,7 +45,7 @@ class TestUnifyAndValidateListOfObjects:
         """Test that optional keys (not in all dicts) are detected."""
         dict_list = [
             {"name": "first", "optional": "value"},
-            {"name": "second"}  # missing 'optional'
+            {"name": "second"},  # missing 'optional'
         ]
         result = unify_and_validate_list_of_objects(dict_list)
 
@@ -61,11 +55,7 @@ class TestUnifyAndValidateListOfObjects:
 
     def test_all_keys_merged_across_dicts(self):
         """Test that all keys from all dicts are merged."""
-        dict_list = [
-            {"a": 1},
-            {"b": 2},
-            {"c": 3}
-        ]
+        dict_list = [{"a": 1}, {"b": 2}, {"c": 3}]
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 3
@@ -77,18 +67,14 @@ class TestUnifyAndValidateListOfObjects:
 
     def test_nested_dicts_supported(self):
         """Test that nested dictionaries are supported."""
-        dict_list = [
-            {"outer": {"inner": "value"}}
-        ]
+        dict_list = [{"outer": {"inner": "value"}}]
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 1
 
     def test_mixed_value_types(self):
         """Test handling of different value types."""
-        dict_list = [
-            {"str": "text", "num": 42, "bool": True, "null": None}
-        ]
+        dict_list = [{"str": "text", "num": 42, "bool": True, "null": None}]
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 1

@@ -36,7 +36,9 @@ def _process_function_arguments(
     has_unknown = False
 
     # Process required parameters
-    for i, (arg_proto, param_meta) in enumerate(zip(request_arguments[:len(params_meta)], params_meta, strict=False)):
+    for i, (arg_proto, param_meta) in enumerate(
+        zip(request_arguments[: len(params_meta)], params_meta, strict=False)
+    ):
         param_name = param_meta.get("name", f"arg{i}")
         param_cty_type = param_meta.get("cty_type", CtyDynamic())
 
@@ -55,11 +57,11 @@ def _process_function_arguments(
 
     # Process variadic parameters (extra arguments beyond required)
     if variadic_meta and len(request_arguments) > len(params_meta):
-        variadic_param_name = variadic_meta.get("name", "options")
+        # variadic_param_name = variadic_meta.get("name", "options")  # Reserved for future use
         variadic_cty_type = variadic_meta.get("cty_type", CtyDynamic())
         variadic_args = []
 
-        for arg_proto in request_arguments[len(params_meta):]:
+        for arg_proto in request_arguments[len(params_meta) :]:
             decoded_cty_val = unmarshal(arg_proto, schema=variadic_cty_type)
 
             if decoded_cty_val.is_unknown:
@@ -96,6 +98,34 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
             )
 
 
+def _build_function_arguments(
+    func_sig: inspect.Signature, native_kwargs: dict[str, Any]
+) -> tuple[list[Any], dict[str, Any]]:
+    """Build positional and keyword arguments from native kwargs based on signature."""
+    positional_args = []
+    variadic_args = []
+    keyword_only_kwargs = {}
+
+    for param_name, param in func_sig.parameters.items():
+        if param.kind == inspect.Parameter.VAR_POSITIONAL:
+            # This is a *args parameter - extract its tuple
+            if param_name in native_kwargs:
+                variadic_args = native_kwargs[param_name]
+                if not isinstance(variadic_args, (tuple, list)):
+                    variadic_args = (variadic_args,)
+        elif param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD):
+            # Regular positional parameter - add to ordered list
+            if param_name in native_kwargs:
+                positional_args.append(native_kwargs[param_name])
+        elif param.kind == inspect.Parameter.KEYWORD_ONLY and param_name in native_kwargs:
+            # Keyword-only parameter - must be passed as kwarg
+            keyword_only_kwargs[param_name] = native_kwargs[param_name]
+
+    # Combine: required positional + variadic
+    all_args = positional_args + list(variadic_args)
+    return all_args, keyword_only_kwargs
+
+
 async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> Any:
     """
     Invoke a function with properly ordered positional and variadic arguments.
@@ -105,29 +135,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
     """
     try:
         func_sig = inspect.signature(function_obj)
-        positional_args = []
-        variadic_args = []
-        keyword_only_kwargs = {}
-
-        # Build arguments in signature order
-        for param_name, param in func_sig.parameters.items():
-            if param.kind == inspect.Parameter.VAR_POSITIONAL:
-                # This is a *args parameter - extract its tuple
-                if param_name in native_kwargs:
-                    variadic_args = native_kwargs[param_name]
-                    if not isinstance(variadic_args, (tuple, list)):
-                        variadic_args = (variadic_args,)
-            elif param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD):
-                # Regular positional parameter - add to ordered list
-                if param_name in native_kwargs:
-                    positional_args.append(native_kwargs[param_name])
-            elif param.kind == inspect.Parameter.KEYWORD_ONLY:
-                # Keyword-only parameter - must be passed as kwarg
-                if param_name in native_kwargs:
-                    keyword_only_kwargs[param_name] = native_kwargs[param_name]
-
-        # Combine: required positional + variadic
-        all_args = positional_args + list(variadic_args)
+        all_args, keyword_only_kwargs = _build_function_arguments(func_sig, native_kwargs)
 
         # Invoke with ordered positional args + keyword-only kwargs
         if inspect.iscoroutinefunction(function_obj):

@@ -1,8 +1,9 @@
 """Tests for UpgradeResourceState handler."""
 
 import json
-import pytest
+
 from provide.testkit.mocking import patch
+import pytest
 
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     UpgradeResourceStateHandler,
@@ -110,6 +111,7 @@ async def test_upgrade_resource_state_impl_handles_exception():
     # Patch logger.debug to raise an exception on second call
     with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
         call_count = 0
+
         def debug_side_effect(*args, **kwargs):
             nonlocal call_count
             call_count += 1
@@ -155,8 +157,12 @@ async def test_upgrade_resource_state_records_metrics():
         version=0,
     )
 
-    with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_requests") as mock_requests:
-        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_duration") as mock_duration:
+    with patch(
+        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_requests"
+    ) as mock_requests:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_duration"
+        ) as mock_duration:
             await UpgradeResourceStateHandler(request, context=None)
 
             mock_requests.inc.assert_called_once_with(handler="UpgradeResourceState")

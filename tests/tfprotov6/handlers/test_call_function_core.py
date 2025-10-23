@@ -1,17 +1,17 @@
 """Tests for CallFunction handler - Core functionality."""
 
 import inspect
-from provide.testkit import mocking as mock
 
+from provide.testkit import mocking as mock
 import pytest
 
+from pyvider.cty import CtyDynamic, CtyNumber, CtyString, CtyValue
 from pyvider.protocols.tfprotov6.handlers.call_function import (
     CallFunctionHandler,
-    _process_function_arguments,
     _inject_capabilities,
+    _process_function_arguments,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.cty import CtyValue, CtyString, CtyDynamic, CtyNumber
 
 
 class TestProcessFunctionArguments:

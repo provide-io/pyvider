@@ -1,11 +1,9 @@
 """Tests for ProviderHandler - Resource and data source operations."""
 
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
-
+from provide.testkit.mocking import AsyncMock, MagicMock
 import pytest
 
 from pyvider.handler import ProviderHandler
-import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture

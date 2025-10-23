@@ -20,7 +20,7 @@ class ProtocolService:
         self._setup_complete = asyncio.Event()
         self._stream_active = True
         self._shutdown_event = shutdown_event
-        self._message_queue = asyncio.Queue()
+        self._message_queue: asyncio.Queue[Any] = asyncio.Queue()
 
     # this trace made some weird stuff happen in terms of an error.
 

@@ -1,7 +1,7 @@
 """Tests for ImportResourceState handler."""
 
-import pytest
 from provide.testkit.mocking import patch
+import pytest
 
 from pyvider.protocols.tfprotov6.handlers.import_resource_state import (
     ImportResourceStateHandler,
@@ -72,7 +72,9 @@ async def test_import_resource_state_records_metrics():
     )
 
     with patch("pyvider.protocols.tfprotov6.handlers.import_resource_state.handler_requests") as mock_requests:
-        with patch("pyvider.protocols.tfprotov6.handlers.import_resource_state.handler_duration") as mock_duration:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.import_resource_state.handler_duration"
+        ) as mock_duration:
             await ImportResourceStateHandler(request, context=None)
 
             mock_requests.inc.assert_called_once_with(handler="ImportResourceState")

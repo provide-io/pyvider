@@ -1,9 +1,10 @@
 """Tests for ReadResource handler."""
 
-import msgpack
-import attrs
-import pytest
 from unittest.mock import patch
+
+import attrs
+import msgpack
+import pytest
 
 from pyvider.common.encryption import encrypt
 from pyvider.hub import hub
@@ -14,7 +15,7 @@ from pyvider.protocols.tfprotov6.handlers.read_resource import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, a_num, s_resource
+from pyvider.schema import a_num, a_str, s_resource
 
 
 @attrs.define
@@ -52,11 +53,7 @@ class SampleReadResource(BaseResource):
         """Read returns updated state."""
         if ctx.state:
             # Simulate reading from backend and updating count
-            return SampleState(
-                id=ctx.state.id,
-                name=ctx.state.name,
-                count=ctx.state.count + 1
-            )
+            return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
         return None
 
     async def _delete_apply(self, ctx):
@@ -77,6 +74,7 @@ class TestReadResourceHandler:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -101,6 +99,7 @@ class TestReadResourceHandler:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal, unmarshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -131,6 +130,7 @@ class TestReadResourceHandler:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             # Create encrypted private state
@@ -197,6 +197,7 @@ class TestReadResourceImpl:
             state_cty = cty_type.validate({"id": "deleted", "name": "gone"})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -226,6 +227,7 @@ class TestReadResourceImpl:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -274,6 +276,7 @@ class TestReadResourceEdgeCases:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -301,6 +304,7 @@ class TestReadResourceEdgeCases:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 1})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -326,6 +330,7 @@ class TestReadResourceEdgeCases:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 1})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(
@@ -334,7 +339,9 @@ class TestReadResourceEdgeCases:
             )
 
             with patch("pyvider.protocols.tfprotov6.handlers.read_resource.handler_errors") as mock_errors:
-                with patch("pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl") as mock_impl:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl"
+                ) as mock_impl:
                     # Make implementation raise an exception
                     mock_impl.side_effect = RuntimeError("Test error")
 
@@ -352,6 +359,7 @@ class TestReadResourceEdgeCases:
 
         class ResourceWithContextDiagnostics(BaseResource):
             """Resource that adds diagnostics to context."""
+
             state_class = SampleState
 
             @classmethod
@@ -366,16 +374,12 @@ class TestReadResourceEdgeCases:
                 diagnostic = pb.Diagnostic(
                     severity=pb.Diagnostic.WARNING,
                     summary="Context warning",
-                    detail="This is a warning from the resource context"
+                    detail="This is a warning from the resource context",
                 )
                 ctx.diagnostics.append(diagnostic)
 
                 # Return updated state
-                return SampleState(
-                    id=ctx.state.id,
-                    name=ctx.state.name,
-                    count=ctx.state.count + 1
-                )
+                return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
 
             async def _delete_apply(self, ctx):
                 pass
@@ -388,6 +392,7 @@ class TestReadResourceEdgeCases:
             state_cty = cty_type.validate({"id": "res-123", "name": "test", "count": 5})
 
             from pyvider.conversion import marshal
+
             state_dv = marshal(state_cty, schema=schema.block)
 
             request = pb.ReadResource.Request(

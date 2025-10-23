@@ -1,15 +1,15 @@
 """Tests for CloseEphemeralResource handler."""
 
 import msgpack
-import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
+import pytest
 
+from pyvider.exceptions import ResourceError
 from pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource import (
     CloseEphemeralResourceHandler,
     _close_ephemeral_resource_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.exceptions import ResourceError, PyviderError
 
 
 @pytest.fixture
@@ -49,7 +49,9 @@ class TestCloseEphemeralResourceStructure:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request):
         """Test that handler increments request counter."""
-        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_requests") as mock_requests:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_requests"
+        ) as mock_requests:
             with patch("pyvider.hub.hub.get_component") as mock_get:
                 mock_get.return_value = None
 
@@ -85,7 +87,10 @@ class TestCloseEphemeralResourceImpl:
 
             assert len(response.diagnostics) > 0
             # ValueError is converted to generic "Internal Provider Error"
-            assert "Internal Provider Error" in response.diagnostics[0].summary or "not found" in response.diagnostics[0].detail.lower()
+            assert (
+                "Internal Provider Error" in response.diagnostics[0].summary
+                or "not found" in response.diagnostics[0].detail.lower()
+            )
 
     @pytest.mark.asyncio
     async def test_impl_handles_missing_private_state_class(self, sample_request):
@@ -105,7 +110,9 @@ class TestCloseEphemeralResourceImpl:
     async def test_impl_unpacks_private_data_correctly(self, sample_request, mock_ephemeral_class):
         """Test that private data is unpacked from msgpack."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.msgpack.unpackb") as mock_unpack:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.msgpack.unpackb"
+            ) as mock_unpack:
                 mock_get.return_value = mock_ephemeral_class
                 mock_unpack.return_value = {"token": "test_token"}
 
@@ -119,7 +126,9 @@ class TestCloseEphemeralResourceImpl:
     async def test_impl_creates_ephemeral_context(self, sample_request, mock_ephemeral_class):
         """Test that EphemeralResourceContext is created."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.EphemeralResourceContext") as mock_ctx:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.EphemeralResourceContext"
+            ) as mock_ctx:
                 mock_get.return_value = mock_ephemeral_class
 
                 await _close_ephemeral_resource_impl(sample_request, context=None)
@@ -176,7 +185,9 @@ class TestCloseEphemeralResourceMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_duration(self, sample_request):
         """Test that handler records duration metric."""
-        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_duration") as mock_duration:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_duration"
+        ) as mock_duration:
             with patch("pyvider.hub.hub.get_component") as mock_get:
                 mock_get.return_value = None
 
@@ -189,8 +200,12 @@ class TestCloseEphemeralResourceMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_error_on_exception(self, sample_request):
         """Test that handler increments error counter on exceptions."""
-        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_errors") as mock_errors:
-            with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl") as mock_impl:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_errors"
+        ) as mock_errors:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl"
+            ) as mock_impl:
                 mock_impl.side_effect = RuntimeError("Test error")
 
                 with pytest.raises(RuntimeError):

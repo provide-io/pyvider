@@ -1,25 +1,12 @@
 """Tests for function adapters - Parameter and metadata extraction."""
 
-from decimal import Decimal
-from typing import Any
 from provide.testkit import mocking as mock
 
-import pytest
-
-from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString, CtyValue
+from pyvider.cty import CtyDynamic, CtyNumber, CtyString
 from pyvider.functions.adapters import (
     _extract_docstring_meta,
     _extract_parameters_meta,
     _extract_return_type_meta,
-    _get_cty_type_for_dict,
-    _get_cty_type_for_list,
-    _get_cty_type_for_primitive,
-    _get_cty_type_for_union,
-    _is_dict_type,
-    _is_list_type,
-    _is_optional_type_hint,
-    _is_union_type,
-    _python_type_to_cty_type,
     function_to_dict,
 )
 
@@ -146,9 +133,7 @@ class TestExtractParametersMeta:
         def test_func(name: str):
             pass
 
-        test_func._function_metadata = {
-            "param_descriptions": {"name": "The name parameter"}
-        }
+        test_func._function_metadata = {"param_descriptions": {"name": "The name parameter"}}
 
         sig = inspect.signature(test_func)
         type_hints = {"name": str}
@@ -187,6 +172,7 @@ class TestExtractDocstringMeta:
 
     def test_extracts_summary_from_docstring(self):
         """Test extracting summary from docstring."""
+
         def test_func():
             """This is the summary line.
 
@@ -202,6 +188,7 @@ class TestExtractDocstringMeta:
 
     def test_preserves_existing_summary(self):
         """Test that existing summary is preserved."""
+
         def test_func():
             """Docstring summary."""
             pass
@@ -213,6 +200,7 @@ class TestExtractDocstringMeta:
 
     def test_handles_missing_docstring(self):
         """Test handling functions without docstring."""
+
         def test_func():
             pass
 
@@ -228,6 +216,7 @@ class TestFunctionToDict:
 
     def test_converts_simple_function(self):
         """Test converting a simple function."""
+
         def test_func(name: str) -> str:
             """Test function."""
             return name
@@ -241,6 +230,7 @@ class TestFunctionToDict:
 
     def test_uses_existing_metadata(self):
         """Test that existing metadata is used."""
+
         def test_func(name: str):
             pass
 
@@ -252,6 +242,7 @@ class TestFunctionToDict:
 
     def test_handles_function_with_defaults(self):
         """Test function with default parameters."""
+
         def test_func(name: str, count: int = 10) -> int:
             return count
 
@@ -263,6 +254,7 @@ class TestFunctionToDict:
     @mock.patch("pyvider.functions.adapters.logger")
     def test_handles_type_hint_resolution_errors(self, mock_logger):
         """Test handling type hint resolution errors."""
+
         def test_func(name):  # No type hints
             pass
 
@@ -273,6 +265,7 @@ class TestFunctionToDict:
 
     def test_includes_docstring_in_output(self):
         """Test that docstring is included in output."""
+
         def test_func(name: str):
             """This function does something."""
             pass

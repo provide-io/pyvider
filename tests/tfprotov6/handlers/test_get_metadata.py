@@ -1,12 +1,13 @@
 """Tests for GetMetadata handler."""
 
-import pytest
 from provide.testkit.mocking import MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+import pytest
+
 from pyvider.protocols.tfprotov6.handlers.get_metadata import (
     GetMetadataHandler,
     _get_metadata_impl,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -51,9 +52,7 @@ class TestGetMetadataHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_calls_implementation(self, sample_request):
         """Test that handler delegates to implementation."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl"
-        ) as mock_impl:
+        with patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl:
             mock_impl.return_value = pb.GetMetadata.Response()
 
             await GetMetadataHandler(sample_request, context=None)
@@ -171,9 +170,7 @@ class TestGetMetadataMetrics:
     async def test_handler_records_error_metric_on_failure(self, sample_request):
         """Test that handler increments error counter on failure."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_errors") as mock_errors:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl"
-            ) as mock_impl:
+            with patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl:
                 mock_impl.side_effect = RuntimeError("Test error")
 
                 with pytest.raises(RuntimeError):
@@ -193,9 +190,7 @@ class TestGetMetadataLogging:
                 await _get_metadata_impl(sample_request, context=None)
 
                 # Check that GetMetadata was logged
-                assert any(
-                    "GetMetadata" in str(call) for call in mock_logger.debug.call_args_list
-                )
+                assert any("GetMetadata" in str(call) for call in mock_logger.debug.call_args_list)
 
     @pytest.mark.asyncio
     async def test_impl_logs_discovered_resources(self, sample_request, mock_hub_with_components):
@@ -205,9 +200,7 @@ class TestGetMetadataLogging:
                 await _get_metadata_impl(sample_request, context=None)
 
                 # Check that resource discovery was logged
-                assert any(
-                    "resource" in str(call).lower() for call in mock_logger.debug.call_args_list
-                )
+                assert any("resource" in str(call).lower() for call in mock_logger.debug.call_args_list)
 
     @pytest.mark.asyncio
     async def test_impl_logs_errors(self, sample_request):

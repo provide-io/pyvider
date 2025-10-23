@@ -1,6 +1,6 @@
 import asyncio
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
 import pytest
 
 from pyvider.protocols.service import ProtocolService
@@ -195,6 +195,7 @@ async def test_start_stream_generic_exception(shutdown_event):
 async def test_heartbeat_method(shutdown_event):
     """Test _heartbeat method runs until stream is inactive."""
     import asyncio
+
     service = ProtocolService(shutdown_event)
 
     # Start heartbeat in background
@@ -236,6 +237,7 @@ async def test_heartbeat_error_handling(shutdown_event):
 
     # Start heartbeat
     import asyncio
+
     heartbeat_task = asyncio.create_task(service._heartbeat())
 
     # Let it encounter the error

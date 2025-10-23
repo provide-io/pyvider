@@ -1,9 +1,6 @@
 """Tests for pyvider/resources/protocol.py."""
 
-import pytest
-
 from pyvider.resources.context import ResourceContext
-from pyvider.resources.private_state import PrivateState
 from pyvider.resources.protocol import ResourceProtocol
 
 

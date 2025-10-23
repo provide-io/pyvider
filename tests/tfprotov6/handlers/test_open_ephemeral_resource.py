@@ -1,16 +1,16 @@
 """Tests for OpenEphemeralResource handler."""
 
-from datetime import datetime, timezone
-import pytest
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import attrs
+from datetime import UTC, datetime
 
+from provide.testkit.mocking import AsyncMock, MagicMock, patch
+import pytest
+
+from pyvider.exceptions import ResourceError
 from pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource import (
     OpenEphemeralResourceHandler,
     _open_ephemeral_resource_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.exceptions import ResourceError
 
 
 @pytest.fixture
@@ -56,8 +56,12 @@ class TestOpenEphemeralResourceStructure:
     @pytest.mark.asyncio
     async def test_handler_records_metrics(self, sample_request):
         """Test that handler records request and duration metrics."""
-        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_requests") as mock_req:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_duration") as mock_dur:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_requests"
+        ) as mock_req:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_duration"
+            ) as mock_dur:
                 with patch("pyvider.hub.hub.get_component") as mock_get:
                     mock_get.return_value = None
 
@@ -74,17 +78,27 @@ class TestOpenEphemeralResourceImpl:
     async def test_impl_opens_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
         """Test successful ephemeral resource open."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
-                    with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict:
-                        mock_get.return_value = mock_ephemeral_class
-                        mock_unmarshal.return_value = MagicMock()
-                        mock_asdict.return_value = {"key": "value"}
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
+                    ) as mock_asdict:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
+                        ) as mock_marshal:
+                            mock_get.return_value = mock_ephemeral_class
+                            mock_unmarshal.return_value = MagicMock()
+                            mock_asdict.return_value = {"key": "value"}
+                            mock_marshal.return_value = pb.DynamicValue()
 
-                        response = await _open_ephemeral_resource_impl(sample_request, context=None)
+                            response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
-                        assert isinstance(response, pb.OpenEphemeralResource.Response)
-                        assert len(response.diagnostics) == 0
+                            assert isinstance(response, pb.OpenEphemeralResource.Response)
+                            assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
     async def test_impl_handles_unknown_resource_type(self, sample_request):
@@ -100,8 +114,12 @@ class TestOpenEphemeralResourceImpl:
     async def test_impl_unmarshals_config(self, sample_request, mock_ephemeral_class):
         """Test that config is unmarshaled."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
                     mock_get.return_value = mock_ephemeral_class
                     mock_unmarshal.return_value = MagicMock()
 
@@ -114,9 +132,15 @@ class TestOpenEphemeralResourceImpl:
         """Test that result is marshaled when returned."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
-                    with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal") as mock_marshal:
-                        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
+                    ) as mock_marshal:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
+                        ) as mock_asdict:
                             mock_get.return_value = mock_ephemeral_class
                             mock_asdict.return_value = {"key": "value"}
                             mock_marshal.return_value = pb.DynamicValue()
@@ -132,40 +156,61 @@ class TestOpenEphemeralResourceImpl:
         """Test that private state is packed to msgpack."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
-                    with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.msgpack.packb") as mock_pack:
-                        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"):
-                            mock_get.return_value = mock_ephemeral_class
-                            mock_pack.return_value = b"\x81\xa3key\xa5value"
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.msgpack.packb"
+                    ) as mock_pack:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
+                        ):
+                            with patch(
+                                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
+                            ) as mock_marshal:
+                                mock_get.return_value = mock_ephemeral_class
+                                mock_pack.return_value = b"\x81\xa3key\xa5value"
+                                mock_marshal.return_value = pb.DynamicValue()
 
-                            response = await _open_ephemeral_resource_impl(sample_request, context=None)
+                                response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
-                            # Private state should be packed
-                            mock_pack.assert_called()
-                            assert len(response.private) > 0
+                                # Private state should be packed
+                                mock_pack.assert_called()
+                                assert len(response.private) > 0
 
     @pytest.mark.asyncio
     async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class):
         """Test that renew_at is set when returned."""
-        renew_time = datetime.now(timezone.utc)
+        renew_time = datetime.now(UTC)
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.open.return_value = (MagicMock(), MagicMock(), renew_time)
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
-                    with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict:
-                        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.datetime_to_proto") as mock_dt:
-                            from google.protobuf.timestamp_pb2 import Timestamp
-                            mock_get.return_value = mock_ephemeral_class
-                            mock_asdict.return_value = {"key": "value"}
-                            mock_dt.return_value = Timestamp()  # Proper protobuf type
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
+                    ) as mock_asdict:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.datetime_to_proto"
+                        ) as mock_dt:
+                            with patch(
+                                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
+                            ) as mock_marshal:
+                                from google.protobuf.timestamp_pb2 import Timestamp
 
-                            response = await _open_ephemeral_resource_impl(sample_request, context=None)
+                                mock_get.return_value = mock_ephemeral_class
+                                mock_asdict.return_value = {"key": "value"}
+                                mock_dt.return_value = Timestamp()  # Proper protobuf type
+                                mock_marshal.return_value = pb.DynamicValue()
 
-                            # datetime_to_proto should be called
-                            mock_dt.assert_called_once_with(renew_time)
-                            assert response.HasField("renew_at")
+                                response = await _open_ephemeral_resource_impl(sample_request, context=None)
+
+                                # datetime_to_proto should be called
+                                mock_dt.assert_called_once_with(renew_time)
+                                assert response.HasField("renew_at")
 
     @pytest.mark.asyncio
     async def test_impl_handles_none_result(self, sample_request, mock_ephemeral_class):
@@ -175,7 +220,9 @@ class TestOpenEphemeralResourceImpl:
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
                     mock_get.return_value = mock_ephemeral_class
 
                     response = await _open_ephemeral_resource_impl(sample_request, context=None)
@@ -189,7 +236,9 @@ class TestOpenEphemeralResourceImpl:
         from pyvider.cty.exceptions import CtyValidationError
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+            ) as mock_unmarshal:
                 mock_get.return_value = mock_ephemeral_class
                 mock_unmarshal.side_effect = CtyValidationError("Invalid config")
 
@@ -205,7 +254,9 @@ class TestOpenEphemeralResourceImpl:
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
                     mock_get.return_value = mock_ephemeral_class
 
                     response = await _open_ephemeral_resource_impl(sample_request, context=None)
@@ -220,7 +271,9 @@ class TestOpenEphemeralResourceImpl:
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
-                with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"):
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+                ):
                     mock_get.return_value = mock_ephemeral_class
 
                     response = await _open_ephemeral_resource_impl(sample_request, context=None)

@@ -1,4 +1,7 @@
-def validate_schema_dict(schema: dict):
+from typing import Any
+
+
+def validate_schema_dict(schema: dict[str, Any]) -> None:
     """
     Validates that a schema dictionary meets required specifications.
 
@@ -25,7 +28,7 @@ def validate_schema_dict(schema: dict):
                 raise ValueError(f"Block 'nested' must be a boolean: {block}")
 
 
-def validate_schema_object(schema):
+def validate_schema_object(schema: Any) -> None:
     """
     Validates a schema object that has `attributes` and `block_types` as attributes.
 

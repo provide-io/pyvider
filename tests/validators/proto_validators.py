@@ -1,4 +1,7 @@
-def validate_proto(proto):
+from typing import Any
+
+
+def validate_proto(proto: Any) -> None:
     """
     Validates a protocol buffer object to ensure it meets expected schema rules.
 

@@ -1,9 +1,8 @@
 """Tests for handlers/utils.py utility functions - Diagnostics and edge cases."""
 
-from provide.testkit.mocking import patch
-
 import attrs
 from provide.foundation.errors import FoundationError
+from provide.testkit.mocking import patch
 import pytest
 
 from pyvider.cty import CtyList, CtyNumber, CtyObject, CtyString
@@ -11,9 +10,8 @@ from pyvider.cty.exceptions import (
     CtyStringValidationError,
     CtyValidationError,
 )
-from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
+from pyvider.cty.path import CtyPath, GetAttrStep
 from pyvider.cty.values import CtyValue
-from pyvider.cty.values.markers import UNREFINED_UNKNOWN
 from pyvider.exceptions import (
     DataSourceError,
     FunctionError,
@@ -24,10 +22,8 @@ from pyvider.exceptions import (
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     create_diagnostic_from_exception,
-    cty_path_to_proto_path,
     cty_to_attrs_instance,
     is_valid_refinement,
-    str_path_to_proto_path,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 
@@ -177,6 +173,7 @@ class TestAttrsToDictCircularReferences:
 
     def test_circular_ref_in_non_attrs_objects(self):
         """Test circular reference handling for non-attrs objects."""
+
         # Create a circular reference with a plain class (not attrs)
         class PlainNode:
             def __init__(self, value):
@@ -210,10 +207,7 @@ class TestIsValidRefinementEdgeCases:
                 "age": CtyValue(vtype=CtyNumber(), value=30),
             },
         )
-        result = CtyValue(
-            vtype=result_type,
-            value={"name": CtyValue(vtype=CtyString(), value="Alice")}
-        )
+        result = CtyValue(vtype=result_type, value={"name": CtyValue(vtype=CtyString(), value="Alice")})
 
         is_valid, reason = is_valid_refinement(plan, result)
 

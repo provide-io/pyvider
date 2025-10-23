@@ -1,7 +1,6 @@
 """Tests for CLI components commands."""
 
 from provide.testkit import mocking as mock
-
 import pytest
 
 from pyvider.cli.components_commands import (
@@ -10,8 +9,8 @@ from pyvider.cli.components_commands import (
     _display_block_type,
     _handle_discovery_errors,
 )
+from pyvider.cty import CtyBool, CtyNumber, CtyString
 from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType
-from pyvider.cty import CtyString, CtyNumber, CtyBool
 
 
 class TestHandleDiscoveryErrors:

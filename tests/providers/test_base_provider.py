@@ -4,7 +4,7 @@ import pytest
 
 from pyvider.exceptions import FrameworkConfigurationError, ProviderError
 from pyvider.providers.base import BaseProvider, ProviderCapabilities, ProviderMetadata
-from pyvider.schema import s_provider, a_str
+from pyvider.schema import a_str, s_provider
 
 
 class TestProviderCapabilities:

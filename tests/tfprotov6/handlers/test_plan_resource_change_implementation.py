@@ -1,15 +1,10 @@
 """Tests for PlanResourceChange handler - Implementation and complex scenarios."""
 
-import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.protocols.tfprotov6.handlers.plan_resource_change import (
-    PlanResourceChangeHandler,
-    _get_resource_and_provider_instances,
-    _process_private_state,
-)
-from pyvider.exceptions import ResourceError
+import pytest
+
 from pyvider.cty import CtyObject, CtyString
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -47,8 +42,8 @@ class TestCreateResourceContext:
     @pytest.mark.asyncio
     async def test_creates_resource_context_with_all_fields(self):
         """Test that resource context is created with all fields."""
+        from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _create_resource_context
-        from pyvider.cty import CtyValue, CtyString
 
         mock_resource_class = MagicMock()
         mock_resource_class.config_class = MagicMock
@@ -62,7 +57,9 @@ class TestCreateResourceContext:
         proposed_state_cty = CtyValue.null(CtyString())
         private_state = None
 
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.cty_to_attrs_instance") as mock_cty_to_attrs:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.cty_to_attrs_instance"
+        ) as mock_cty_to_attrs:
             mock_cty_to_attrs.return_value = None
 
             context = _create_resource_context(
@@ -84,7 +81,6 @@ class TestHandlePlannedStateDict:
     def test_handles_planned_state_with_values(self):
         """Test handling planned state dict with values."""
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
-        from pyvider.cty import CtyValue
 
         response = pb.PlanResourceChange.Response()
         mock_schema = MagicMock()
@@ -115,8 +111,8 @@ class TestHandlePlannedStateDict:
 
     def test_handles_planned_state_with_unknown_values(self):
         """Test handling planned state with unknown values."""
-        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
         from pyvider.cty import CtyValue
+        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
 
         response = pb.PlanResourceChange.Response()
         mock_schema = MagicMock()
@@ -157,8 +153,8 @@ class TestHandlePlannedStateDict:
 
     def test_marks_unset_computed_fields_as_unknown(self):
         """Test that unset computed fields are marked as unknown when unknowns present."""
-        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
         from pyvider.cty import CtyValue
+        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
 
         response = pb.PlanResourceChange.Response()
         mock_schema = MagicMock()
@@ -218,17 +214,23 @@ class TestPlanResourceChangeImplementation:
     @pytest.mark.asyncio
     async def test_impl_with_successful_plan(self, sample_request, mock_resource_class, mock_provider):
         """Test successful plan execution."""
-        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
         from pyvider.cty import CtyValue
+        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
 
         mock_resource_handler = MagicMock()
         mock_resource_handler.plan = AsyncMock(return_value=({"name": "test"}, None))
         mock_resource_class.return_value = mock_resource_handler
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative") as mock_marks:
-                    with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.marshal") as mock_marshal:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+                ) as mock_marks:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.plan_resource_change.marshal"
+                    ) as mock_marshal:
                         mock_get.side_effect = lambda comp_type, name: {
                             ("resource", "test_resource"): mock_resource_class,
                             ("singleton", "provider"): mock_provider,
@@ -248,9 +250,10 @@ class TestPlanResourceChangeImplementation:
     @pytest.mark.asyncio
     async def test_impl_with_planned_private_state(self, sample_request, mock_resource_class, mock_provider):
         """Test plan with planned private state returned."""
-        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
-        from pyvider.cty import CtyValue
         import attrs
+
+        from pyvider.cty import CtyValue
+        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
 
         @attrs.define
         class ConfigClass:
@@ -275,11 +278,21 @@ class TestPlanResourceChangeImplementation:
         mock_resource_class.return_value = mock_resource_handler
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative") as mock_marks:
-                    with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context") as mock_create_ctx:
-                        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict") as mock_handle:
-                            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.encrypt") as mock_encrypt:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+                ) as mock_marks:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
+                    ) as mock_create_ctx:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict"
+                        ) as mock_handle:
+                            with patch(
+                                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.encrypt"
+                            ) as mock_encrypt:
                                 mock_get.side_effect = lambda comp_type, name: {
                                     ("resource", "test_resource"): mock_resource_class,
                                     ("singleton", "provider"): mock_provider,
@@ -301,19 +314,27 @@ class TestPlanResourceChangeImplementation:
                                 assert response.planned_private == b"encrypted_private"
 
     @pytest.mark.asyncio
-    async def test_impl_returns_early_on_error_diagnostics(self, sample_request, mock_resource_class, mock_provider):
+    async def test_impl_returns_early_on_error_diagnostics(
+        self, sample_request, mock_resource_class, mock_provider
+    ):
         """Test that implementation returns early when error diagnostics are present."""
-        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
         from pyvider.cty import CtyValue
+        from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
 
         mock_resource_handler = MagicMock()
         mock_resource_handler.plan = AsyncMock(return_value=({"name": "test"}, None))
         mock_resource_class.return_value = mock_resource_handler
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative") as mock_marks:
-                    with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context") as mock_create_ctx:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+                ) as mock_marks:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
+                    ) as mock_create_ctx:
                         mock_get.side_effect = lambda comp_type, name: {
                             ("resource", "test_resource"): mock_resource_class,
                             ("singleton", "provider"): mock_provider,

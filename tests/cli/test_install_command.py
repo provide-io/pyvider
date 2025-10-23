@@ -1,10 +1,9 @@
 """Tests for install_command module."""
 
 from pathlib import Path
-from provide.testkit import mocking as mock
 
 from click.testing import CliRunner
-import pytest
+from provide.testkit import mocking as mock
 
 from pyvider.cli import cli
 from pyvider.cli.install_command import is_running_as_binary
@@ -22,6 +21,7 @@ class TestIsRunningAsBinary:
     def test_returns_true_when_frozen_attribute_exists(self):
         """Test that it returns True when sys.frozen is set."""
         import sys
+
         original = getattr(sys, "frozen", None)
         try:
             sys.frozen = True
@@ -51,7 +51,7 @@ class TestInstallCommandValidation:
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
             # Create a pyvider.toml file
-            Path("pyvider.toml").write_text("[pyvider]\nname = \"test\"\n")
+            Path("pyvider.toml").write_text('[pyvider]\nname = "test"\n')
 
             # Mock the prep_provider to avoid actual installation
             with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
@@ -65,7 +65,7 @@ class TestInstallCommandValidation:
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
             # Create a pyproject.toml with [tool.pyvider]
-            Path("pyproject.toml").write_text("[tool.pyvider]\nname = \"test\"\n")
+            Path("pyproject.toml").write_text('[tool.pyvider]\nname = "test"\n')
 
             # Mock to avoid actual installation
             with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
@@ -79,7 +79,7 @@ class TestInstallCommandValidation:
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
             # Create a pyproject.toml without [tool.pyvider]
-            Path("pyproject.toml").write_text("[tool.pytest]\nminversion = \"6.0\"\n")
+            Path("pyproject.toml").write_text('[tool.pytest]\nminversion = "6.0"\n')
 
             result = runner.invoke(cli, ["install"])
             assert result.exit_code != 0
@@ -124,7 +124,9 @@ class TestInstallCommandBinaryMode:
 
             # Mock binary mode and make copy fail
             with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True):
-                with mock.patch("pyvider.cli.install_command.shutil.copy2", side_effect=PermissionError("Access denied")):
+                with mock.patch(
+                    "pyvider.cli.install_command.shutil.copy2", side_effect=PermissionError("Access denied")
+                ):
                     with mock.patch("pyvider.cli.install_command.PyviderContext"):
                         result = runner.invoke(cli, ["install"])
 
@@ -160,7 +162,9 @@ class TestInstallCommandDevelopmentMode:
 
             # Mock development mode and make prep_provider fail
             with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command.click.Context.invoke", side_effect=RuntimeError("Prep failed")):
+                with mock.patch(
+                    "pyvider.cli.install_command.click.Context.invoke", side_effect=RuntimeError("Prep failed")
+                ):
                     result = runner.invoke(cli, ["install"])
 
                     # Should handle error
@@ -227,7 +231,7 @@ class TestInstallCommandEdgeCases:
             pyproject_path.write_text("[tool.pyvider]\n")
 
             # Make it fail to read by mocking safe_read_text
-            with mock.patch("pyvider.cli.install_command.safe_read_text", side_effect=IOError("Cannot read")):
+            with mock.patch("pyvider.cli.install_command.safe_read_text", side_effect=OSError("Cannot read")):
                 result = runner.invoke(cli, ["install"])
 
                 # Should fail validation since we can't detect [tool.pyvider]

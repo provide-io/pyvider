@@ -1,8 +1,8 @@
 """Tests for protobuf function_adapter.py module."""
 
 import json
-import pytest
-from provide.testkit.mocking import patch, MagicMock
+
+from provide.testkit.mocking import patch
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
 from pyvider.protocols.tfprotov6.adapters.function_adapter import dict_to_proto_function
@@ -68,7 +68,12 @@ class TestDictToProtoFunctionVariadic:
         func_dict = {
             "name": "variadic_func",
             "parameters": [
-                {"name": "required", "cty_type": CtyString(), "description": "Required param", "allow_null": False}
+                {
+                    "name": "required",
+                    "cty_type": CtyString(),
+                    "description": "Required param",
+                    "allow_null": False,
+                }
             ],
             "variadic_parameter": {
                 "name": "options",
@@ -192,7 +197,9 @@ class TestDictToProtoFunctionMissingCtyTypes:
 
             # Should log warning (different message than missing parameter)
             assert mock_logger.warning.called
-            assert "No explicit 'return'" in str(mock_logger.warning.call_args) or "Missing CtyType" in str(mock_logger.warning.call_args)
+            assert "No explicit 'return'" in str(mock_logger.warning.call_args) or "Missing CtyType" in str(
+                mock_logger.warning.call_args
+            )
 
             # Should default return to CtyDynamic
             assert getattr(result, "return") is not None

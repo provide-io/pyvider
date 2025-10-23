@@ -1,17 +1,18 @@
 """Tests for GetProviderSchema handler."""
 
-import pytest
 import asyncio
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+
+from provide.testkit.mocking import MagicMock, patch
+import pytest
+
 from pyvider.protocols.tfprotov6.handlers.get_provider_schema import (
     GetProviderSchemaHandler,
-    _get_provider_schema_impl,
-    _collect_resource_schemas,
     _collect_data_source_schemas,
     _collect_function_schemas,
+    _collect_resource_schemas,
     _compute_schema_once,
 )
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -41,6 +42,7 @@ def mock_resource_class():
 def clear_schema_cache():
     """Clear the schema cache before each test."""
     import pyvider.protocols.tfprotov6.handlers.get_provider_schema as module
+
     module._schema_future = None
     module._task = None
     yield
@@ -54,7 +56,9 @@ class TestGetProviderSchemaHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_returns_response(self, sample_request, clear_schema_cache):
         """Test that handler returns GetProviderSchema.Response."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+        ) as mock_compute:
             mock_compute.return_value = pb.GetProviderSchema.Response()
 
             response = await GetProviderSchemaHandler(sample_request, context=None)
@@ -83,7 +87,9 @@ class TestCollectResourceSchemas:
         diagnostics = []
 
         with patch("pyvider.hub.hub.get_components") as mock_get_components:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+            ) as mock_to_proto:
                 mock_get_components.return_value = {"test_resource": mock_resource_class}
                 mock_to_proto.return_value = pb.Schema()
 
@@ -123,7 +129,9 @@ class TestCollectDataSourceSchemas:
         mock_class.get_schema.return_value = mock_schema
 
         with patch("pyvider.hub.hub.get_components") as mock_get_components:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+            ) as mock_to_proto:
                 mock_get_components.return_value = {"test_data_source": mock_class}
                 mock_to_proto.return_value = pb.Schema()
 
@@ -160,8 +168,12 @@ class TestCollectFunctionSchemas:
         mock_func = MagicMock()
 
         with patch("pyvider.hub.hub.get_components") as mock_get_components:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.function_to_dict") as mock_to_dict:
-                with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.dict_to_proto_function") as mock_to_proto:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.function_to_dict"
+            ) as mock_to_dict:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.get_provider_schema.dict_to_proto_function"
+                ) as mock_to_proto:
                     mock_get_components.return_value = {"test_function": mock_func}
                     mock_to_dict.return_value = {"name": "test_function"}
                     mock_to_proto.return_value = pb.Function()
@@ -179,7 +191,9 @@ class TestCollectFunctionSchemas:
         mock_func = MagicMock()
 
         with patch("pyvider.hub.hub.get_components") as mock_get_components:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.function_to_dict") as mock_to_dict:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.function_to_dict"
+            ) as mock_to_dict:
                 mock_get_components.return_value = {"error_func": mock_func}
                 mock_to_dict.side_effect = RuntimeError("Function error")
 
@@ -197,10 +211,18 @@ class TestComputeSchemaOnce:
     async def test_computes_schema_successfully(self, mock_provider_instance):
         """Test successful schema computation."""
         with patch("pyvider.hub.hub.get_component") as mock_get_component:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
-                with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_resource_schemas") as mock_resources:
-                    with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_data_source_schemas") as mock_data_sources:
-                        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_function_schemas") as mock_functions:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+            ) as mock_to_proto:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_resource_schemas"
+                ) as mock_resources:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_data_source_schemas"
+                    ) as mock_data_sources:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_function_schemas"
+                        ) as mock_functions:
                             mock_get_component.return_value = mock_provider_instance
                             mock_to_proto.return_value = pb.Schema()
                             mock_resources.return_value = {}
@@ -228,7 +250,9 @@ class TestComputeSchemaOnce:
     async def test_handles_computation_error(self, mock_provider_instance):
         """Test handling of errors during schema computation."""
         with patch("pyvider.hub.hub.get_component") as mock_get_component:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+            ) as mock_to_proto:
                 mock_get_component.return_value = mock_provider_instance
                 mock_to_proto.side_effect = RuntimeError("Conversion error")
 
@@ -245,8 +269,12 @@ class TestGetProviderSchemaMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request, clear_schema_cache):
         """Test that handler increments request counter."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_requests") as mock_requests:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_requests"
+        ) as mock_requests:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+            ) as mock_compute:
                 mock_compute.return_value = pb.GetProviderSchema.Response()
 
                 await GetProviderSchemaHandler(sample_request, context=None)
@@ -256,8 +284,12 @@ class TestGetProviderSchemaMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self, sample_request, clear_schema_cache):
         """Test that handler records duration metric."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_duration") as mock_duration:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_duration"
+        ) as mock_duration:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+            ) as mock_compute:
                 mock_compute.return_value = pb.GetProviderSchema.Response()
 
                 await GetProviderSchemaHandler(sample_request, context=None)
@@ -290,10 +322,18 @@ class TestGetProviderSchemaLogging:
         """Test that successful computation is logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.logger") as mock_logger:
             with patch("pyvider.hub.hub.get_component") as mock_get_component:
-                with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
-                    with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_resource_schemas") as mock_resources:
-                        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_data_source_schemas") as mock_data_sources:
-                            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_function_schemas") as mock_functions:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+                ) as mock_to_proto:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_resource_schemas"
+                    ) as mock_resources:
+                        with patch(
+                            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_data_source_schemas"
+                        ) as mock_data_sources:
+                            with patch(
+                                "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_function_schemas"
+                            ) as mock_functions:
                                 mock_get_component.return_value = mock_provider_instance
                                 mock_to_proto.return_value = pb.Schema()
                                 mock_resources.return_value = {}
@@ -313,7 +353,9 @@ class TestGetProviderSchemaLogging:
         """Test that errors are logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.logger") as mock_logger:
             with patch("pyvider.hub.hub.get_component") as mock_get_component:
-                with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+                ) as mock_to_proto:
                     mock_get_component.return_value = mock_provider_instance
                     mock_to_proto.side_effect = RuntimeError("Test error")
 
@@ -329,7 +371,9 @@ class TestGetProviderSchemaCaching:
     @pytest.mark.asyncio
     async def test_schema_computed_once(self, sample_request, clear_schema_cache):
         """Test that schema is computed only once for multiple calls."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+        ) as mock_compute:
             mock_compute.return_value = pb.GetProviderSchema.Response()
 
             # Make multiple calls
@@ -353,12 +397,12 @@ class TestGetProviderSchemaCaching:
             await asyncio.sleep(0.1)  # Simulate slow computation
             return pb.GetProviderSchema.Response()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once", side_effect=slow_compute):
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once",
+            side_effect=slow_compute,
+        ):
             # Launch multiple concurrent calls
-            tasks = [
-                GetProviderSchemaHandler(sample_request, context=None)
-                for _ in range(5)
-            ]
+            tasks = [GetProviderSchemaHandler(sample_request, context=None) for _ in range(5)]
             responses = await asyncio.gather(*tasks)
 
             # All should return same response
@@ -375,7 +419,9 @@ class TestGetProviderSchemaEdgeCases:
         """Test handler with non-None context."""
         context = MagicMock()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+        ) as mock_compute:
             mock_compute.return_value = pb.GetProviderSchema.Response()
 
             response = await GetProviderSchemaHandler(sample_request, context=context)
@@ -386,7 +432,9 @@ class TestGetProviderSchemaEdgeCases:
     async def test_empty_collections(self, mock_provider_instance, clear_schema_cache):
         """Test with no resources, data sources, or functions."""
         with patch("pyvider.hub.hub.get_component") as mock_get_component:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto") as mock_to_proto:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.pvs_schema_to_proto"
+            ) as mock_to_proto:
                 with patch("pyvider.hub.hub.get_components") as mock_get_components:
                     mock_get_component.return_value = mock_provider_instance
                     mock_to_proto.return_value = pb.Schema()
@@ -403,7 +451,9 @@ class TestGetProviderSchemaEdgeCases:
     async def test_catastrophic_schema_computation_failure(self, sample_request, clear_schema_cache):
         """Test handling of catastrophic failure during schema computation."""
         # This tests the exception path in _set_future_result (lines 179-181)
-        with patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once") as mock_compute:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
+        ) as mock_compute:
             # Make _compute_schema_once raise an exception
             mock_compute.side_effect = RuntimeError("Catastrophic computation error")
 

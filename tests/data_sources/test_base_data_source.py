@@ -1,8 +1,9 @@
 """Tests for data sources base module."""
 
 import pytest
+
 from pyvider.data_sources.base import BaseDataSource
-from pyvider.schema import s_data_source, a_str, a_num
+from pyvider.schema import a_num, a_str, s_data_source
 
 
 class TestDataSource(BaseDataSource):
@@ -31,14 +32,14 @@ class TestBaseDataSource:
 
     def test_data_source_has_get_schema(self):
         """Test that data source has get_schema method."""
-        assert hasattr(TestDataSource, 'get_schema')
+        assert hasattr(TestDataSource, "get_schema")
         schema = TestDataSource.get_schema()
         assert schema is not None
 
     def test_data_source_has_read_method(self):
         """Test that data source has read method."""
         ds = TestDataSource()
-        assert hasattr(ds, 'read')
+        assert hasattr(ds, "read")
         assert callable(ds.read)
 
     @pytest.mark.asyncio
@@ -53,7 +54,7 @@ class TestBaseDataSource:
         schema = TestDataSource.get_schema()
         assert schema is not None
         # Schema should have a block attribute
-        assert hasattr(schema, 'block')
+        assert hasattr(schema, "block")
 
 
 class TestDataSourceEdgeCases:
@@ -67,6 +68,7 @@ class TestDataSourceEdgeCases:
             @classmethod
             def get_schema(cls):
                 return s_data_source(attributes={"id": a_str()})
+
             # Missing read and _validate_config methods
 
         # Should not be able to instantiate

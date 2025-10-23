@@ -9,7 +9,6 @@ from pyvider.protocols.tfprotov6.handlers.configure_provider import (
     _configure_provider_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema import a_str, s_provider
 
 
 @attrs.define
@@ -30,6 +29,7 @@ class TestConfigureProviderHandler:
         config_cty = cty_type.validate({})
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(config_cty, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
@@ -46,6 +46,7 @@ class TestConfigureProviderHandler:
         config_cty = cty_type.validate({})
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(config_cty, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
@@ -64,9 +65,11 @@ class TestConfigureProviderHandler:
         cty_type = schema.block.to_cty_type()
 
         from pyvider.cty import CtyValue
+
         unknown_config = CtyValue.unknown(cty_type)
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(unknown_config, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
@@ -83,9 +86,7 @@ class TestConfigureProviderHandler:
         hub.unregister("singleton", "provider")
 
         try:
-            request = pb.ConfigureProvider.Request(
-                config=pb.DynamicValue(msgpack=b"\x80")
-            )
+            request = pb.ConfigureProvider.Request(config=pb.DynamicValue(msgpack=b"\x80"))
             response = await ConfigureProviderHandler(request, context=None)
 
             assert len(response.diagnostics) > 0
@@ -106,6 +107,7 @@ class TestConfigureProviderHandler:
         config_cty = cty_type.validate({})
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(config_cty, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
@@ -125,6 +127,7 @@ class TestConfigureProviderHandler:
         config_cty = cty_type.validate({})
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(config_cty, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
@@ -139,7 +142,9 @@ class TestConfigureProviderHandler:
         from unittest.mock import patch
 
         with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.handler_errors") as mock_errors:
-            with patch("pyvider.protocols.tfprotov6.handlers.configure_provider._configure_provider_impl") as mock_impl:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.configure_provider._configure_provider_impl"
+            ) as mock_impl:
                 # Make implementation raise an exception
                 mock_impl.side_effect = RuntimeError("Test error")
                 request = pb.ConfigureProvider.Request()
@@ -162,12 +167,15 @@ class TestConfigureProviderHandler:
         config_cty = cty_type.validate({})
 
         from pyvider.conversion import marshal
+
         config_dv = marshal(config_cty, schema=schema.block)
 
         request = pb.ConfigureProvider.Request(config=config_dv)
 
         # Mock from_cty to return None
-        with patch("pyvider.protocols.tfprotov6.handlers.configure_provider.BaseResource.from_cty") as mock_from_cty:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.configure_provider.BaseResource.from_cty"
+        ) as mock_from_cty:
             mock_from_cty.return_value = None
 
             response = await _configure_provider_impl(request, context=None)
@@ -187,7 +195,8 @@ class TestConfigureProviderHandler:
         request = pb.ConfigureProvider.Request()
         request.config.msgpack = b"\x80"  # Empty dict in msgpack
 
-        from pyvider.cty import CtyValue, CtyObject
+        from pyvider.cty import CtyObject, CtyValue
+
         unknown_config = CtyValue.unknown(CtyObject(attribute_types={}))
 
         # Patch logger and unmarshal

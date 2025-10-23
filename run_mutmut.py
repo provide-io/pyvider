@@ -3,17 +3,18 @@
 Wrapper script to run mutmut with stats collection disabled and mutants dir relocated.
 This bypasses the stats collection issue and moves mutants/ to /tmp to avoid import conflicts.
 """
-import sys
+
 import os
 from pathlib import Path
+import sys
 
 # FIX PYTHONPATH FIRST - before any imports that might trigger pytest/conftest loading
 project_root = os.getcwd()
-src_path = os.path.join(project_root, 'src')
-current_pythonpath = os.environ.get('PYTHONPATH', '')
+src_path = os.path.join(project_root, "src")
+current_pythonpath = os.environ.get("PYTHONPATH", "")
 paths_to_add = [src_path, project_root]
 new_pythonpath_parts = paths_to_add + ([current_pythonpath] if current_pythonpath else [])
-os.environ['PYTHONPATH'] = os.pathsep.join(new_pythonpath_parts)
+os.environ["PYTHONPATH"] = os.pathsep.join(new_pythonpath_parts)
 
 # Also add to sys.path for this process
 sys.path.insert(0, src_path)
@@ -25,13 +26,14 @@ from mutmut.__main__ import cli
 
 # Relocate mutants directory to /tmp to avoid import conflicts
 # Use symlink approach to catch all references (os.chdir, Path(), string paths, etc.)
-MUTANTS_DIR = Path('/tmp/pyvider-mutants')
+MUTANTS_DIR = Path("/tmp/pyvider-mutants")
 MUTANTS_DIR.mkdir(exist_ok=True, parents=True)
 
 # Remove local mutants dir if it exists and create symlink
-local_mutants = Path('mutants')
+local_mutants = Path("mutants")
 if local_mutants.exists() and not local_mutants.is_symlink():
     import shutil
+
     shutil.rmtree(local_mutants)
 elif local_mutants.is_symlink():
     local_mutants.unlink()
@@ -63,16 +65,16 @@ def patched_execute_pytest(self, params, **kwargs):
 
     # PYTHONPATH is already set at script startup
     # Add rootdir
-    params += ['--rootdir=.']
+    params += ["--rootdir=."]
 
     # If no test paths specified, use the runner command to extract test paths
-    has_test_path = any(not p.startswith('-') for p in params)
-    if not has_test_path and hasattr(mutmut.config, 'runner'):
+    has_test_path = any(not p.startswith("-") for p in params)
+    if not has_test_path and hasattr(mutmut.config, "runner"):
         # Extract test path from runner command
         # Runner is like: "pytest tests/tfprotov6/handlers/ -x --tb=short"
         runner_parts = mutmut.config.runner.split()
         for part in runner_parts:
-            if not part.startswith('-') and 'pytest' not in part and os.path.exists(part):
+            if not part.startswith("-") and "pytest" not in part and os.path.exists(part):
                 params.append(part)
                 break
 
@@ -100,5 +102,5 @@ mutmut.__main__.collect_or_load_stats = patched_collect_or_load_stats
 mutmut.__main__.PytestRunner.execute_pytest = patched_execute_pytest
 mutmut.__main__.PytestRunner.run_forced_fail = patched_run_forced_fail
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(cli())

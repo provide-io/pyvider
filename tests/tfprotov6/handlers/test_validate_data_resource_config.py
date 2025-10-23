@@ -1,15 +1,16 @@
 """Tests for ValidateDataResourceConfig handler."""
 
-import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+import pytest
+
+from pyvider.cty import CtyObject, CtyString
+from pyvider.cty.exceptions import CtyValidationError
+from pyvider.exceptions import PyviderError
 from pyvider.protocols.tfprotov6.handlers.validate_data_resource_config import (
     ValidateDataResourceConfigHandler,
     _validate_data_resource_config_impl,
 )
-from pyvider.cty import CtyString, CtyObject
-from pyvider.cty.exceptions import CtyValidationError
-from pyvider.exceptions import PyviderError
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -71,8 +72,12 @@ class TestValidateDataResourceConfigImpl:
         mock_data_source_class.return_value = mock_instance
 
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance") as mock_cty_to_attrs:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance"
+                ) as mock_cty_to_attrs:
                     mock_hub.get_component.return_value = mock_data_source_class
                     mock_unmarshal.return_value = MagicMock()
                     mock_cty_to_attrs.return_value = MagicMock()
@@ -90,8 +95,12 @@ class TestValidateDataResourceConfigImpl:
         mock_data_source_class.return_value = mock_instance
 
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance") as mock_cty_to_attrs:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance"
+                ) as mock_cty_to_attrs:
                     mock_hub.get_component.return_value = mock_data_source_class
                     mock_unmarshal.return_value = MagicMock()
                     mock_cty_to_attrs.return_value = MagicMock()
@@ -108,7 +117,9 @@ class TestValidateDataResourceConfigImpl:
         """Test handling of unknown data source type."""
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                ) as mock_create_diag:
                     mock_hub.get_component.return_value = None
                     mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
                     mock_create_diag.return_value = mock_diag
@@ -121,8 +132,12 @@ class TestValidateDataResourceConfigImpl:
     async def test_impl_handles_cty_validation_error(self, sample_request, mock_data_source_class):
         """Test handling of CTY validation errors."""
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                ) as mock_create_diag:
                     mock_hub.get_component.return_value = mock_data_source_class
                     mock_unmarshal.side_effect = CtyValidationError("Invalid type")
                     mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Invalid type")
@@ -137,8 +152,12 @@ class TestValidateDataResourceConfigImpl:
     async def test_impl_handles_pyvider_error(self, sample_request, mock_data_source_class):
         """Test handling of PyviderError exceptions."""
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                ) as mock_create_diag:
                     mock_hub.get_component.return_value = mock_data_source_class
                     mock_unmarshal.side_effect = PyviderError("Pyvider error")
                     mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Pyvider error")
@@ -152,8 +171,12 @@ class TestValidateDataResourceConfigImpl:
     async def test_impl_handles_generic_exception(self, sample_request, mock_data_source_class):
         """Test handling of generic exceptions."""
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+            ) as mock_unmarshal:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                ) as mock_create_diag:
                     with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
                         mock_hub.get_component.return_value = mock_data_source_class
                         mock_unmarshal.side_effect = RuntimeError("Unexpected error")
@@ -171,7 +194,9 @@ class TestValidateDataResourceConfigMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request):
         """Test that handler increments request counter."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_requests") as mock_requests:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_requests"
+        ) as mock_requests:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
@@ -182,7 +207,9 @@ class TestValidateDataResourceConfigMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self, sample_request):
         """Test that handler records duration metric."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_duration") as mock_duration:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_duration"
+        ) as mock_duration:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
@@ -196,7 +223,9 @@ class TestValidateDataResourceConfigMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_error_metric_on_failure(self, sample_request):
         """Test that handler increments error counter on failure."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_errors") as mock_errors:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_errors"
+        ) as mock_errors:
             with patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config._validate_data_resource_config_impl"
             ) as mock_impl:
@@ -216,8 +245,12 @@ class TestValidateDataResourceConfigLogging:
         """Test that unhandled errors are logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal") as mock_unmarshal:
-                    with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
+                ) as mock_unmarshal:
+                    with patch(
+                        "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                    ) as mock_create_diag:
                         mock_hub.get_component.return_value = mock_data_source_class
                         mock_unmarshal.side_effect = RuntimeError("Test error")
                         mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test error")
@@ -241,7 +274,9 @@ class TestValidateDataResourceConfigEdgeCases:
 
         with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-                with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception") as mock_create_diag:
+                with patch(
+                    "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
+                ) as mock_create_diag:
                     mock_hub.get_component.return_value = None
                     mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
                     mock_create_diag.return_value = mock_diag

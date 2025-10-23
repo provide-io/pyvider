@@ -2,15 +2,11 @@
 
 from decimal import Decimal
 from typing import Any
-from provide.testkit import mocking as mock
 
-import pytest
+from provide.testkit import mocking as mock
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString, CtyValue
 from pyvider.functions.adapters import (
-    _extract_docstring_meta,
-    _extract_parameters_meta,
-    _extract_return_type_meta,
     _get_cty_type_for_dict,
     _get_cty_type_for_list,
     _get_cty_type_for_primitive,
@@ -20,7 +16,6 @@ from pyvider.functions.adapters import (
     _is_optional_type_hint,
     _is_union_type,
     _python_type_to_cty_type,
-    function_to_dict,
 )
 
 
@@ -158,6 +153,7 @@ class TestIsUnionType:
     def test_detects_typing_union(self):
         """Test that it detects typing.Union."""
         from typing import Union
+
         assert _is_union_type(Union[str, int]) is True
 
     def test_non_union_returns_false(self):
@@ -249,6 +245,7 @@ class TestPythonTypeToCtyType:
     @mock.patch("pyvider.functions.adapters.logger")
     def test_unknown_type_logs_warning(self, mock_logger):
         """Test that unknown types log a warning."""
+
         class CustomType:
             pass
 
@@ -272,5 +269,3 @@ class TestIsOptionalTypeHint:
     def test_union_without_none_returns_false(self):
         """Test that union without None returns False."""
         assert _is_optional_type_hint(str | int) is False
-
-

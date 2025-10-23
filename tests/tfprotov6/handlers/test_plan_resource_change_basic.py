@@ -1,15 +1,16 @@
 """Tests for PlanResourceChange handler."""
 
+from provide.testkit.mocking import MagicMock, patch
 import pytest
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
-import pyvider.protocols.tfprotov6.protobuf as pb
+
+from pyvider.cty import CtyObject, CtyString
+from pyvider.exceptions import ResourceError
 from pyvider.protocols.tfprotov6.handlers.plan_resource_change import (
     PlanResourceChangeHandler,
     _get_resource_and_provider_instances,
     _process_private_state,
 )
-from pyvider.exceptions import ResourceError
-from pyvider.cty import CtyObject, CtyString
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
@@ -57,7 +58,9 @@ class TestPlanResourceChangeHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request):
         """Test that handler increments request counter."""
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests") as mock_requests:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests"
+        ) as mock_requests:
             with patch("pyvider.hub.hub.get_component") as mock_get:
                 mock_get.return_value = None
 
@@ -68,7 +71,9 @@ class TestPlanResourceChangeHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self, sample_request):
         """Test that handler records duration metric."""
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration") as mock_duration:
+        with patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration"
+        ) as mock_duration:
             with patch("pyvider.hub.hub.get_component") as mock_get:
                 mock_get.return_value = None
 
@@ -107,6 +112,7 @@ class TestGetResourceAndProviderInstances:
     async def test_raises_runtime_error_for_missing_provider(self, mock_resource_class):
         """Test that missing provider raises RuntimeError."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
+
             def get_component(comp_type, name):
                 if comp_type == "resource":
                     return mock_resource_class
@@ -149,7 +155,9 @@ class TestProcessPrivateState:
         mock_resource.private_state_class = mock_private_class
 
         with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.msgpack.unpackb") as mock_unpack:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.msgpack.unpackb"
+            ) as mock_unpack:
                 mock_decrypt.return_value = b"decrypted"
                 mock_unpack.return_value = {"key": "value"}
 
@@ -190,8 +198,11 @@ class TestPlanResourceChangeEdgeCases:
     async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider):
         """Test handling of validation errors."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
+            ) as mock_unmarshal:
                 from pyvider.cty.exceptions import CtyValidationError
+
                 mock_get.side_effect = lambda comp_type, name: {
                     ("resource", "test_resource"): mock_resource_class,
                     ("singleton", "provider"): mock_provider,
@@ -258,8 +269,8 @@ class TestUnmarshalRequestData:
     @pytest.mark.asyncio
     async def test_unmarshals_all_request_fields(self):
         """Test that all request fields are unmarshaled."""
+        from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _unmarshal_request_data
-        from pyvider.cty import CtyValue, CtyString
 
         request = pb.PlanResourceChange.Request()
         request.config.msgpack = b""
@@ -275,5 +286,3 @@ class TestUnmarshalRequestData:
             config, prior, proposed = await _unmarshal_request_data(request, mock_schema)
 
             assert mock_unmarshal.call_count == 3
-
-

@@ -1,12 +1,12 @@
 """Tests for ComponentDiscovery."""
 
-import importlib.metadata
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from abc import ABC
+from unittest.mock import MagicMock, patch
 
-from pyvider.hub.discovery import ComponentDiscovery
+import pytest
+
 from pyvider.hub.components import ComponentRegistry
+from pyvider.hub.discovery import ComponentDiscovery
 
 
 @pytest.fixture
@@ -191,7 +191,6 @@ class TestDiscoverPackage:
             # Should raise in strict mode
             with pytest.raises(RuntimeError, match="Unexpected error"):
                 await discovery._discover_package("test.module", strict=True)
-
 
 
 class TestProcessModule:

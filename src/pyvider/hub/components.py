@@ -17,7 +17,7 @@ class ComponentRegistry:
         """Initialize with foundation's Registry."""
         self._registry = Registry()
 
-    def register(self, component_type: str, name: str, component: Callable) -> None:
+    def register(self, component_type: str, name: str, component: Callable[..., Any]) -> None:
         """Registers a component under a specific type and name."""
         # Check if already registered
         existing = self._registry.get(name, dimension=component_type)
@@ -37,14 +37,14 @@ class ComponentRegistry:
             raise ComponentRegistryError(f"Component '{name}' under type '{component_type}' does not exist.")
         logger.debug(f"Unregistered component: type='{component_type}', name='{name}'")
 
-    def get_component(self, component_type: str, name: str) -> Callable | None:
+    def get_component(self, component_type: str, name: str) -> Callable[..., Any] | None:
         """Retrieves a component by type and name."""
         return self._registry.get(name, dimension=component_type)
 
-    def get_components(self, component_type: str) -> dict[str, Callable]:
+    def get_components(self, component_type: str) -> dict[str, Callable[..., Any]]:
         """Get all components of a specific type."""
         component_names = self._registry.list_dimension(component_type)
-        return {name: self._registry.get(name, dimension=component_type) for name in component_names}
+        return {name: self._registry.get(name, dimension=component_type) for name in component_names}  # type: ignore[misc]
 
     def list_components(self) -> dict[str, dict[str, Callable[..., Any]]]:
         """Lists all registered components."""
@@ -52,7 +52,7 @@ class ComponentRegistry:
         result = {}
         for dimension, names in all_dimensions.items():
             result[dimension] = {name: self._registry.get(name, dimension=dimension) for name in names}
-        return result
+        return result  # type: ignore[return-value]
 
 
 # Singleton instance

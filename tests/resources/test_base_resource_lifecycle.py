@@ -1,24 +1,14 @@
 """Comprehensive lifecycle tests for resources/base.py (44% → 90%+)."""
 
 from typing import Any
-from provide.testkit import mocking as mock
 
 import attrs
 import pytest
 
-from pyvider.cty import (
-    CtyBool,
-    CtyDynamic,
-    CtyList,
-    CtyNumber,
-    CtyObject,
-    CtyString,
-    CtyValue,
-)
-from pyvider.resources.base import BaseResource, _UNREFINED_UNKNOWN_SENTINEL
+from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, a_num, a_bool, s_resource
+from pyvider.schema import a_num, a_str, s_resource
 
 
 # Test fixtures
@@ -302,5 +292,3 @@ class TestBaseResourceLifecycle:
         result = await resource.read(ctx)
 
         assert result is None
-
-

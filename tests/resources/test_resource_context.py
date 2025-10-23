@@ -42,7 +42,7 @@ def test_has_private_state_true_when_present() -> None:
 
 def test_is_field_unknown_returns_true_for_unknown_field() -> None:
     """Test that is_field_unknown returns True for unknown fields."""
-    from pyvider.cty import CtyValue, CtyString, CtyObject
+    from pyvider.cty import CtyObject, CtyString, CtyValue
 
     config_cty = CtyValue(
         vtype=CtyObject(attribute_types={"name": CtyString()}),
@@ -55,7 +55,7 @@ def test_is_field_unknown_returns_true_for_unknown_field() -> None:
 
 def test_is_field_unknown_returns_false_for_known_field() -> None:
     """Test that is_field_unknown returns False for known fields."""
-    from pyvider.cty import CtyValue, CtyString, CtyObject
+    from pyvider.cty import CtyObject, CtyString, CtyValue
 
     config_cty = CtyValue(
         vtype=CtyObject(attribute_types={"name": CtyString()}),
@@ -68,7 +68,7 @@ def test_is_field_unknown_returns_false_for_known_field() -> None:
 
 def test_is_field_unknown_returns_false_for_missing_field() -> None:
     """Test that is_field_unknown returns False for missing fields."""
-    from pyvider.cty import CtyValue, CtyString, CtyObject
+    from pyvider.cty import CtyObject, CtyString, CtyValue
 
     config_cty = CtyValue(
         vtype=CtyObject(attribute_types={"name": CtyString()}),
@@ -88,7 +88,7 @@ def test_is_field_unknown_returns_false_when_no_config_cty() -> None:
 
 def test_is_field_unknown_returns_false_when_config_cty_is_null() -> None:
     """Test that is_field_unknown returns False when config_cty is null."""
-    from pyvider.cty import CtyValue, CtyObject
+    from pyvider.cty import CtyObject, CtyValue
 
     config_cty = CtyValue(vtype=CtyObject(attribute_types={}), value={}, is_null=True)
     ctx = ResourceContext(config_cty=config_cty)
@@ -98,7 +98,7 @@ def test_is_field_unknown_returns_false_when_config_cty_is_null() -> None:
 
 def test_is_field_unknown_with_planned_state_source() -> None:
     """Test that is_field_unknown works with planned_state source."""
-    from pyvider.cty import CtyValue, CtyString, CtyObject
+    from pyvider.cty import CtyObject, CtyString, CtyValue
 
     planned_state_cty = CtyValue(
         vtype=CtyObject(attribute_types={"count": CtyString()}),
@@ -111,7 +111,7 @@ def test_is_field_unknown_with_planned_state_source() -> None:
 
 def test_is_field_unknown_returns_false_for_non_dict_value() -> None:
     """Test that is_field_unknown returns False when cty value is not a dict."""
-    from pyvider.cty import CtyValue, CtyString
+    from pyvider.cty import CtyString, CtyValue
 
     config_cty = CtyValue(vtype=CtyString(), value="not_a_dict")
     ctx = ResourceContext(config_cty=config_cty)

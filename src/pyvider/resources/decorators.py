@@ -13,8 +13,8 @@ def register_resource(name: str, component_of: str | None = None) -> Callable[[t
     """
 
     def decorator(cls: type) -> type:
-        cls._is_registered_resource = True  # type: ignore
-        cls._registered_name = name
+        cls._is_registered_resource = True  # type: ignore[attr-defined]
+        cls._registered_name = name  # type: ignore[attr-defined]
         if component_of:
             cls._parent_capability = component_of  # type: ignore
         logger.debug(f"🔧 Marked resource '{name}' for discovery", capability=component_of)

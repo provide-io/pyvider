@@ -1,8 +1,9 @@
 """Tests for hub validators."""
 
 from typing import Any
-import pytest
+
 from provide.foundation.config import ConfigValidationError
+import pytest
 
 from pyvider.hub.validators import Validators
 

@@ -10,7 +10,7 @@ from pyvider.protocols.tfprotov6.handlers.validate_resource_config import (
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
-from pyvider.schema import a_str, a_num, s_resource
+from pyvider.schema import a_num, a_str, s_resource
 
 
 @attrs.define
@@ -63,6 +63,7 @@ class TestValidateResourceConfigHandler:
             config_cty = cty_type.validate({"name": "valid-name", "count": 5})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -87,6 +88,7 @@ class TestValidateResourceConfigHandler:
             config_cty = cty_type.validate({"name": "valid-name", "count": 10})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -111,6 +113,7 @@ class TestValidateResourceConfigHandler:
             config_cty = cty_type.validate({"name": "invalid", "count": 5})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -149,6 +152,7 @@ class TestValidateResourceConfigHandler:
             config_cty = cty_type.validate({"name": "test", "count": -5})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -178,6 +182,7 @@ class TestValidateResourceConfigImpl:
             config_cty = cty_type.validate({"name": "valid", "count": 1})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -200,7 +205,8 @@ class TestValidateResourceConfigImpl:
             schema = SampleValidateResource.get_schema()
             cty_type = schema.block.to_cty_type()
 
-            from pyvider.cty import CtyValue, CtyString
+            from pyvider.cty import CtyString, CtyValue
+
             # Create config with unknown value
             config_dict = {"name": CtyValue.unknown(CtyString()), "count": 5}
             config_cty = cty_type.validate({"name": "placeholder", "count": 5})
@@ -208,6 +214,7 @@ class TestValidateResourceConfigImpl:
             config_cty.value["name"] = CtyValue.unknown(CtyString())
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(
@@ -268,6 +275,7 @@ class TestValidateResourceConfigEdgeCases:
             config_cty = cty_type.validate({"name": "test", "count": 1})
 
             from pyvider.conversion import marshal
+
             config_dv = marshal(config_cty, schema=schema.block)
 
             request = pb.ValidateResourceConfig.Request(

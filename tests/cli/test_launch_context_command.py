@@ -1,9 +1,9 @@
 """Tests for launch_context_command module."""
 
 import json
-from provide.testkit import mocking as mock
 
 from click.testing import CliRunner
+from provide.testkit import mocking as mock
 import pytest
 
 from pyvider.cli import cli
@@ -162,7 +162,7 @@ class TestLaunchContextMethodSpecificHelp:
             working_directory="/path/to/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -182,7 +182,7 @@ class TestLaunchContextMethodSpecificHelp:
             working_directory="/path/to/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -202,7 +202,7 @@ class TestLaunchContextMethodSpecificHelp:
             working_directory="/path/to/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -222,7 +222,7 @@ class TestLaunchContextMethodSpecificHelp:
             working_directory="/path/to/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -245,7 +245,7 @@ class TestLaunchContextDetailsFormatting:
             working_directory="/path/to/work",
             is_terraform_invoked=False,
             details={"module_name": "pyvider", "version": "0.1.0"},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -263,12 +263,8 @@ class TestLaunchContextDetailsFormatting:
             python_executable="/path/to/python",
             working_directory="/path/to/work",
             is_terraform_invoked=False,
-            details={
-                "simple": "value",
-                "list": ["item1", "item2"],
-                "dict": {"key": "value"}
-            },
-            environment_info={}
+            details={"simple": "value", "list": ["item1", "item2"], "dict": {"key": "value"}},
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -293,7 +289,7 @@ class TestLaunchContextEdgeCases:
             working_directory="/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -311,7 +307,7 @@ class TestLaunchContextEdgeCases:
             working_directory="/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 
@@ -331,7 +327,7 @@ class TestLaunchContextEdgeCases:
             working_directory="/work",
             is_terraform_invoked=False,
             details={},
-            environment_info={}
+            environment_info={},
         )
         mock_detect.return_value = mock_context
 

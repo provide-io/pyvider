@@ -1,18 +1,19 @@
 """Property-based tests for CTY type conversions using Hypothesis."""
 
+from hypothesis import HealthCheck, assume, given, settings, strategies as st
 import pytest
-from hypothesis import given, strategies as st, assume, settings, HealthCheck
+
+from pyvider.conversion.utils import unify_and_validate_list_of_objects
 from pyvider.cty import (
-    CtyString,
-    CtyNumber,
     CtyBool,
+    CtyDynamic,
     CtyList,
     CtyMap,
+    CtyNumber,
     CtyObject,
-    CtyDynamic,
+    CtyString,
     CtyValue,
 )
-from pyvider.conversion.utils import unify_and_validate_list_of_objects
 
 
 # Hypothesis strategies for generating test data
@@ -41,9 +42,7 @@ def cty_dict(draw, max_keys=5):
     keys = draw(
         st.lists(
             st.text(
-                alphabet=st.characters(
-                    whitelist_categories=("Lu", "Ll"), min_codepoint=97, max_codepoint=122
-                ),
+                alphabet=st.characters(whitelist_categories=("Lu", "Ll"), min_codepoint=97, max_codepoint=122),
                 min_size=1,
                 max_size=10,
             ),
@@ -70,6 +69,7 @@ class TestCtyStringValidation:
     def test_string_accepts_any_text(self, text):
         """Property: CtyString should accept any text value."""
         import unicodedata
+
         # Normalize input to avoid Unicode compatibility character issues
         # where the same visual character has multiple representations
         text = unicodedata.normalize("NFC", text)
@@ -94,9 +94,9 @@ class TestCtyNumberValidation:
 
     @given(
         num=st.one_of(
-            st.integers(min_value=-10**6, max_value=10**6),
+            st.integers(min_value=-(10**6), max_value=10**6),
             st.floats(
-                min_value=-10**6,
+                min_value=-(10**6),
                 max_value=10**6,
                 allow_nan=False,
                 allow_infinity=False,
@@ -221,6 +221,7 @@ class TestCtyObjectValidation:
     def test_object_with_fixed_schema_validates(self, name, age):
         """Property: CtyObject should validate objects matching its schema."""
         import unicodedata
+
         # Normalize to avoid Unicode compatibility character issues
         name = unicodedata.normalize("NFC", name)
         cty_obj = CtyObject(attribute_types={"name": CtyString(), "age": CtyNumber()})

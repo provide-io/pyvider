@@ -1,11 +1,13 @@
 """Standalone tests for upgrade_resource_state for mutation testing."""
 
 import json
-import pytest
 
 # Import directly without session fixtures
 import sys
-sys.path.insert(0, 'src')
+
+import pytest
+
+sys.path.insert(0, "src")
 
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     UpgradeResourceStateHandler,
