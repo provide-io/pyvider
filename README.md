@@ -130,13 +130,13 @@ Create your first Terraform provider in under 5 minutes:
 # my_provider.py
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
 from pyvider.resources import register_resource, BaseResource
-from pyvider.schema import Attribute
+from pyvider.schema import a_str
 import attrs
 
 @register_provider("mycloud")
 class CloudProvider(BaseProvider):
     """Example cloud provider"""
-    
+
     def __init__(self):
         super().__init__(
             metadata=ProviderMetadata(
@@ -144,15 +144,15 @@ class CloudProvider(BaseProvider):
                 version="1.0.0"
             )
         )
-    
+
     @attrs.define
     class Config:
-        api_key: str = Attribute(
+        api_key: str = a_str(
             required=True,
             sensitive=True,
             description="API key for authentication"
         )
-        region: str = Attribute(
+        region: str = a_str(
             default="us-east-1",
             description="Default region"
         )
@@ -160,18 +160,18 @@ class CloudProvider(BaseProvider):
 @register_resource("instance")
 class Instance(BaseResource):
     """Cloud compute instance"""
-    
+
     @attrs.define
     class Config:
-        name: str = Attribute(required=True)
-        size: str = Attribute(default="t2.micro")
-        ami: str = Attribute(required=True)
-    
-    @attrs.define  
+        name: str = a_str(required=True)
+        size: str = a_str(default="t2.micro")
+        ami: str = a_str(required=True)
+
+    @attrs.define
     class State:
-        id: str = Attribute(computed=True)
-        public_ip: str = Attribute(computed=True)
-        status: str = Attribute(computed=True)
+        id: str = a_str(computed=True)
+        public_ip: str = a_str(computed=True)
+        status: str = a_str(computed=True)
     
     async def create(self, config: Config) -> State:
         # Your cloud API calls here
