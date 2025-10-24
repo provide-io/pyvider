@@ -440,17 +440,27 @@ def get_schema(cls):
 
 ## Advanced Topics
 
-### CTY Type System
+### CTY Type System (Internal)
 
-Pyvider uses Terraform's CTY type system under the hood:
+> **Note**: The CTY type system is an internal implementation detail. Users should **not** import from `pyvider-cty` directly. Always use the factory functions provided by `pyvider.schema`.
+
+Pyvider uses Terraform's CTY type system internally for type representation:
 
 ```python
-from pyvider.cty import CtyString, CtyNumber, CtyList, CtyObject
+# CORRECT: Use factory functions
+from pyvider.schema import a_str, a_num, a_list
 
-# Factory functions create CTY types
-a_str()  # -> PvsAttribute with CtyString()
-a_list(a_num())  # -> PvsAttribute with CtyList(CtyNumber())
+# These factory functions handle CTY types internally
+name = a_str()  # Creates a string attribute with CTY type
+count = a_num()  # Creates a number attribute with CTY type
+items = a_list(a_str())  # Creates a list of strings with CTY types
+
+# INCORRECT: Don't import CTY types directly
+# from pyvider.cty import CtyString  # ❌ Don't do this
+# from pyvider-cty import CtyNumber  # ❌ Don't do this
 ```
+
+The `pyvider-cty` package is an internal dependency that handles the low-level type system communication with Terraform. All type creation and manipulation should be done through Pyvider's public API.
 
 ### Schema Caching
 
