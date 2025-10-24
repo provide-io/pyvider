@@ -82,15 +82,23 @@ class VMConfig:
 ### 🧪 Comprehensive Testing
 ```python
 import pytest
-from pyvider.testing import ProviderTestCase
+from my_provider.resources import VirtualMachine
 
-class TestVirtualMachine(ProviderTestCase):
-    def test_create_vm(self):
-        result = self.apply_resource("virtual_machine", {
-            "name": "test-vm",
-            "size": "large"
-        })
-        assert result.state["status"] == "running"
+@pytest.mark.asyncio
+async def test_create_vm():
+    """Test VM creation with pytest."""
+    resource = VirtualMachine()
+    config = VirtualMachine.Config(
+        name="test-vm",
+        size="large"
+    )
+
+    state, private = await resource._create_apply(
+        ResourceContext(config=config)
+    )
+
+    assert state.status == "running"
+    assert state.name == "test-vm"
 ```
 
 ### 🎮 Powerful CLI
