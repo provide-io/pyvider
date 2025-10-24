@@ -173,15 +173,15 @@ uv pip install -e .
 
 **Solutions:**
 
-**1. Add logging to _create:**
+**1. Add logging to _create_apply:**
 ```python
-async def _create(self, ctx: ResourceContext, base_plan: dict):
-    logger.debug("_create called", config=base_plan)
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+    logger.debug("_create_apply called", config=ctx.config)
 
     try:
-        result = await self.api.create_resource(base_plan)
+        result = await self.api.create_resource(ctx.config)
         logger.info("Resource created", resource_id=result.id)
-        return {**base_plan, "id": result.id}, None
+        return State(id=result.id, **ctx.config.__dict__), None
     except Exception as e:
         logger.error("Create failed", error=str(e))
         raise  # Don't swallow the exception!
@@ -197,28 +197,28 @@ terraform apply
 **3. Check for missing await:**
 ```python
 # Wrong: Not awaiting async operation
-async def _create(self, ctx: ResourceContext, base_plan: dict):
-    result = self.api.create_resource(base_plan)  # Missing await!
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+    result = self.api.create_resource(ctx.config)  # Missing await!
     return result, None
 
 # Correct: Await the operation
-async def _create(self, ctx: ResourceContext, base_plan: dict):
-    result = await self.api.create_resource(base_plan)
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+    result = await self.api.create_resource(ctx.config)
     return result, None
 ```
 
 **4. Verify resource actually exists:**
 ```python
-async def _create(self, ctx: ResourceContext, base_plan: dict):
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     # Create the resource
-    result = await self.api.create_resource(base_plan)
+    result = await self.api.create_resource(ctx.config)
 
     # Verify it was created
     verification = await self.api.get_resource(result.id)
     if not verification:
         raise ResourceError(f"Resource {result.id} not found after creation")
 
-    return {**base_plan, "id": result.id}, None
+    return State(id=result.id, **ctx.config.__dict__), None
 ```
 
 ### State Drift Not Detected
@@ -311,22 +311,22 @@ _update() not implemented or not working correctly
 
 **Solution:**
 
-**1. Implement _update():**
+**1. Implement _update_apply():**
 ```python
-async def _update(self, ctx: ResourceContext, base_plan: dict):
+async def _update_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     """Update must modify the actual resource."""
 
     logger.debug(
         "Updating resource",
         resource_id=ctx.state.id,
-        changes=base_plan
+        changes=ctx.config
     )
 
     # Actually update the resource
-    await self.api.update_resource(ctx.state.id, base_plan)
+    await self.api.update_resource(ctx.state.id, ctx.config)
 
     # Return updated state
-    return base_plan, None
+    return State(id=ctx.state.id, **ctx.config.__dict__), None
 ```
 
 **2. Verify update is called:**
@@ -338,10 +338,11 @@ terraform apply
 
 **3. Check which attributes can be updated:**
 ```python
-async def _update(self, ctx: ResourceContext, base_plan: dict):
+async def _update_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     # Determine what changed
     changes = {}
-    for key, new_value in base_plan.items():
+    for key in ctx.config.__dict__:
+        new_value = getattr(ctx.config, key, None)
         old_value = getattr(ctx.state, key, None)
         if old_value != new_value:
             changes[key] = {"old": old_value, "new": new_value}
@@ -354,8 +355,8 @@ async def _update(self, ctx: ResourceContext, base_plan: dict):
             "Cannot update immutable_field, resource must be recreated"
         )
 
-    await self.api.update_resource(ctx.state.id, base_plan)
-    return base_plan, None
+    await self.api.update_resource(ctx.state.id, ctx.config)
+    return State(id=ctx.state.id, **ctx.config.__dict__), None
 ```
 
 ### Resource Delete Fails
@@ -375,7 +376,7 @@ Error: Error deleting resource
 
 **1. Handle already-deleted resources:**
 ```python
-async def _delete(self, ctx: ResourceContext):
+async def _delete_apply(self, ctx: ResourceContext) -> None:
     """Delete should be idempotent."""
 
     try:
@@ -394,7 +395,7 @@ async def _delete(self, ctx: ResourceContext):
 
 **2. Check for dependencies:**
 ```python
-async def _delete(self, ctx: ResourceContext):
+async def _delete_apply(self, ctx: ResourceContext) -> None:
     # Check if resource has dependencies
     dependencies = await self.api.get_dependencies(ctx.state.id)
 
@@ -742,10 +743,10 @@ grep -A 20 "Traceback" debug.log
 
 **2. Add error handling:**
 ```python
-async def _create(self, ctx: ResourceContext, base_plan: dict):
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     try:
-        result = await self.api.create_resource(base_plan)
-        return result, None
+        result = await self.api.create_resource(ctx.config)
+        return State(**result.__dict__), None
     except Exception as e:
         logger.error(
             "Create failed with exception",
@@ -759,12 +760,12 @@ async def _create(self, ctx: ResourceContext, base_plan: dict):
 **3. Check for infinite loops:**
 ```python
 # Wrong: Infinite loop
-async def _create(self, ctx: ResourceContext, base_plan: dict):
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     while True:
         await self.api.check_status()  # Never exits!
 
 # Correct: With timeout/limit
-async def _create(self, ctx: ResourceContext, base_plan: dict):
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     max_attempts = 10
     for attempt in range(max_attempts):
         if await self.api.check_status():
@@ -772,6 +773,9 @@ async def _create(self, ctx: ResourceContext, base_plan: dict):
         await asyncio.sleep(1)
     else:
         raise TimeoutError("Operation timed out after 10 attempts")
+
+    result = await self.api.create_resource(ctx.config)
+    return State(**result.__dict__), None
 ```
 
 ### Provider Crashes on Apply

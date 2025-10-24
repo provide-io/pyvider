@@ -86,11 +86,10 @@ Type-safe data modeling
 - [Blocks](schema/blocks.md) - Nested blocks
 - [Validators](schema/validators.md) - Input validation
 
-### 🔌 [Capabilities](capabilities/overview.md)
-Extending providers with plugins
-- [Overview](capabilities/overview.md) - Capabilities system introduction
-- [Using Capabilities](capabilities/using-capabilities.md) - Apply capabilities to components
-- [Creating Capabilities](capabilities/creating-capabilities.md) - Build custom capabilities
+### 🔌 [Capabilities (Experimental)](capabilities/overview.md)
+Planned composition mechanism for code reuse
+- [Overview](capabilities/overview.md) - Experimental capabilities system (not fully implemented)
+- For working code reuse patterns, see [Best Practices](guides/best-practices.md)
 
 ### 🤝 [Contributing](contributing/guidelines.md)
 Join the Pyvider community

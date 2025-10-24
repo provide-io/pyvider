@@ -73,31 +73,7 @@
          <lastmod>2025-10-24</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/bundling-components/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/capability-composition/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/capability-lifecycle/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/capability-marketplace/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/creating-capabilities/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
          <loc>https://foundry.provide.io/pyvider/capabilities/overview/</loc>
-         <lastmod>2025-10-24</lastmod>
-    </url>
-    <url>
-         <loc>https://foundry.provide.io/pyvider/capabilities/using-capabilities/</loc>
          <lastmod>2025-10-24</lastmod>
     </url>
     <url>
@@ -122,6 +98,30 @@
     </url>
     <url>
          <loc>https://foundry.provide.io/pyvider/development/roadmap/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/bundling-components/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/capability-composition/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/capability-lifecycle/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/capability-marketplace/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/creating-capabilities/</loc>
+         <lastmod>2025-10-24</lastmod>
+    </url>
+    <url>
+         <loc>https://foundry.provide.io/pyvider/experimental/capabilities/using-capabilities/</loc>
          <lastmod>2025-10-24</lastmod>
     </url>
     <url>

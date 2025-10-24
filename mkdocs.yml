@@ -166,15 +166,6 @@ nav:
     - 'Common Patterns': 'schema/common-patterns.md'
     - 'Best Practices': 'schema/best-practices.md'
 
-  - 'Capabilities':
-    - 'Overview': 'capabilities/overview.md'
-    - 'Using Capabilities': 'capabilities/using-capabilities.md'
-    - 'Creating Capabilities': 'capabilities/creating-capabilities.md'
-    - 'Bundling Components': 'capabilities/bundling-components.md'
-    - 'Capability Lifecycle': 'capabilities/capability-lifecycle.md'
-    - 'Capability Composition': 'capabilities/capability-composition.md'
-    - 'Capability Marketplace': 'capabilities/capability-marketplace.md'
-
   - 'API Reference':
     - 'Overview': 'api/index.md'
     - 'CLI': 'api/cli.md'
@@ -190,6 +181,9 @@ nav:
     - 'Schema': 'api/schema/index.md'
     - 'Conversion': 'api/conversion/index.md'
     - 'Protocols': 'api/protocols/index.md'
+
+  - 'Capabilities (Experimental)':
+    - 'Overview': 'capabilities/overview.md'
 
   - 'Contributing':
     - 'Guidelines': 'contributing/guidelines.md'

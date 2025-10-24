@@ -1,374 +1,170 @@
 # Capabilities Overview
 
-Capabilities are a powerful composition mechanism in Pyvider that allows you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.
+!!! danger "Experimental Feature - Not Fully Implemented"
+    **The Capabilities system is currently experimental and not fully implemented in v0.0.1000.**
+
+    - The API shown here represents planned functionality
+    - Not all features may work as documented
+    - Significant changes expected before stable release
+    - **Not recommended for production use**
+
+    For working examples of code reuse patterns, see [pyvider-components](https://github.com/provide-io/pyvider-components).
 
 ## What are Capabilities?
 
-Capabilities are compositional components that can:
+Capabilities are a planned composition mechanism in Pyvider that will allow you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.
 
-- **Extend existing components** with new functionality
-- **Share common patterns** across multiple providers
-- **Encapsulate cross-cutting concerns** like authentication, caching, or logging
-- **Be discovered and registered** automatically by Pyvider's hub system
+**Planned concept**: Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.
 
-Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.
+## Why Capabilities? (Planned)
 
-## Why Use Capabilities?
+The capabilities system aims to enable:
 
 ### Reusability
-
-Write once, use everywhere:
-
-```python
-# Define a caching capability once
-@register_capability
-class CachingCapability(BaseCapability):
-    def setup(self):
-        # Add caching logic
-        pass
-
-# Apply it to multiple resources
-@register_resource("server")
-@use_capability(CachingCapability)
-class Server(BaseResource):
-    pass
-
-@register_resource("database")
-@use_capability(CachingCapability)
-class Database(BaseResource):
-    pass
-```
+Write cross-cutting concerns once and apply them to multiple components:
+- Authentication logic (OAuth, API keys, token management)
+- Retry patterns (exponential backoff, circuit breakers)
+- Caching strategies (response caching, state caching)
+- Logging and observability
+- Performance metrics collection
 
 ### Separation of Concerns
-
-Keep your components focused on their core responsibility while capabilities handle cross-cutting concerns:
-
-- **Authentication**: OAuth, API keys, token management
-- **Retry Logic**: Exponential backoff, circuit breakers
-- **Caching**: Response caching, state caching
-- **Logging**: Structured logging, audit trails
-- **Metrics**: Performance monitoring, usage tracking
+Keep your resource/provider implementations focused on core business logic while capabilities handle infrastructure concerns.
 
 ### Modularity
+- Develop capabilities independently
+- Test in isolation
+- Version separately
+- Share across projects
+- Publish as packages
 
-Capabilities can be:
+## Current Alternatives
 
-- Developed independently
-- Tested in isolation
-- Versioned separately
-- Shared across projects
-- Published as packages
+While the capabilities system is under development, you can achieve similar goals using:
 
-## How Capabilities Work
-
-### Discovery and Registration
-
-Capabilities integrate with Pyvider's hub-based discovery system:
+### 1. **Base Class Inheritance**
+Create shared base classes for common functionality:
 
 ```python
-from pyvider.capabilities import register_capability, BaseCapability
+class BaseCloudResource(BaseResource):
+    """Shared functionality for cloud resources."""
 
-@register_capability
-class MyCapability(BaseCapability):
-    """A custom capability."""
-
-    async def setup(self):
-        """Called during provider initialization."""
-        # Initialize capability
+    async def apply_common_tags(self, resource_id: str, tags: dict):
+        # Common tagging logic
         pass
 
-    async def teardown(self):
-        """Called during provider shutdown."""
-        # Cleanup capability
+    async def setup_monitoring(self, resource_id: str):
+        # Common monitoring setup
         pass
-```
-
-### Lifecycle Hooks
-
-Capabilities have lifecycle hooks that integrate with component lifecycles:
-
-- **`setup()`**: Called when the provider initializes
-- **`teardown()`**: Called when the provider shuts down
-- **`before_operation()`**: Called before resource operations
-- **`after_operation()`**: Called after resource operations
-
-### Applying Capabilities
-
-Apply capabilities to components using decorators:
-
-```python
-from pyvider.resources import register_resource, BaseResource
-from pyvider.capabilities import use_capability
 
 @register_resource("server")
-@use_capability(CachingCapability)
-@use_capability(LoggingCapability)
-class Server(BaseResource):
-    """A server resource with caching and logging capabilities."""
-    pass
+class Server(BaseCloudResource):
+    # Inherits common functionality
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+        # Resource-specific logic
+        server = await self.create_server(ctx.config)
+
+        # Use inherited methods
+        await self.apply_common_tags(server.id, ctx.config.tags)
+        await self.setup_monitoring(server.id)
+
+        return State(...), None
 ```
 
-## Common Use Cases
-
-### Authentication Capability
-
-Centralize authentication logic:
+### 2. **Composition with Helper Classes**
+Use composition to share functionality:
 
 ```python
-@register_capability
-class OAuth2Capability(BaseCapability):
-    """OAuth2 authentication capability."""
+class RetryHandler:
+    """Reusable retry logic."""
 
-    def __init__(self):
-        self.token = None
-        self.expires_at = None
-
-    async def setup(self):
-        """Initialize OAuth2 client."""
-        await self.refresh_token()
-
-    async def refresh_token(self):
-        """Refresh OAuth2 token."""
-        # Token refresh logic
-        pass
-
-    def get_headers(self):
-        """Get authentication headers."""
-        return {
-            "Authorization": f"Bearer {self.token}"
-        }
-```
-
-### Caching Capability
-
-Add response caching:
-
-```python
-@register_capability
-class CachingCapability(BaseCapability):
-    """Response caching capability."""
-
-    def __init__(self):
-        self.cache = {}
-
-    async def get(self, key: str):
-        """Get from cache."""
-        return self.cache.get(key)
-
-    async def set(self, key: str, value: any, ttl: int = 300):
-        """Set in cache with TTL."""
-        self.cache[key] = {
-            "value": value,
-            "expires": time.time() + ttl
-        }
-
-    async def before_operation(self, ctx):
-        """Check cache before operation."""
-        cached = await self.get(ctx.cache_key)
-        if cached:
-            return cached["value"]
-        return None
-```
-
-### Retry Capability
-
-Add automatic retries with exponential backoff:
-
-```python
-@register_capability
-class RetryCapability(BaseCapability):
-    """Retry logic with exponential backoff."""
-
-    def __init__(self, max_retries=3, base_delay=1.0):
-        self.max_retries = max_retries
-        self.base_delay = base_delay
-
-    async def execute_with_retry(self, operation):
-        """Execute operation with retry logic."""
-        for attempt in range(self.max_retries):
+    async def with_retry(self, operation, max_attempts=3):
+        for attempt in range(max_attempts):
             try:
                 return await operation()
-            except RetryableError as e:
-                if attempt == self.max_retries - 1:
+            except RetryableError:
+                if attempt == max_attempts - 1:
                     raise
-                delay = self.base_delay * (2 ** attempt)
-                await asyncio.sleep(delay)
-```
+                await asyncio.sleep(2 ** attempt)
 
-### Metrics Capability
-
-Track performance metrics:
-
-```python
-@register_capability
-class MetricsCapability(BaseCapability):
-    """Performance metrics collection."""
-
+@register_resource("server")
+class Server(BaseResource):
     def __init__(self):
-        self.metrics = {}
+        super().__init__()
+        self.retry_handler = RetryHandler()
 
-    async def before_operation(self, ctx):
-        """Start timing."""
-        ctx.start_time = time.time()
-
-    async def after_operation(self, ctx):
-        """Record duration."""
-        duration = time.time() - ctx.start_time
-        self.record_metric(ctx.operation, duration)
-
-    def record_metric(self, operation: str, duration: float):
-        """Record metric."""
-        if operation not in self.metrics:
-            self.metrics[operation] = []
-        self.metrics[operation].append(duration)
-```
-
-## Capability Composition
-
-Capabilities can build on each other:
-
-```python
-@register_capability
-class AdvancedAuthCapability(BaseCapability):
-    """Advanced auth combining multiple capabilities."""
-
-    def __init__(self):
-        # Compose with other capabilities
-        self.oauth = OAuth2Capability()
-        self.caching = CachingCapability()
-        self.retry = RetryCapability()
-
-    async def setup(self):
-        """Initialize all sub-capabilities."""
-        await self.oauth.setup()
-        await self.caching.setup()
-        await self.retry.setup()
-
-    async def get_authenticated_headers(self):
-        """Get headers with caching and retry."""
-        cache_key = "auth_headers"
-
-        # Try cache first
-        cached = await self.caching.get(cache_key)
-        if cached:
-            return cached
-
-        # Get fresh token with retry
-        headers = await self.retry.execute_with_retry(
-            lambda: self.oauth.get_headers()
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+        # Use composition for retry logic
+        server = await self.retry_handler.with_retry(
+            lambda: self.create_server(ctx.config)
         )
-
-        # Cache result
-        await self.caching.set(cache_key, headers, ttl=300)
-
-        return headers
+        return State(...), None
 ```
 
-## Best Practices
-
-### 1. Keep Capabilities Focused
-
-Each capability should have a single, well-defined responsibility:
+### 3. **Utility Modules**
+Create shared utility modules:
 
 ```python
-# Good: Focused on one concern
-@register_capability
-class CachingCapability(BaseCapability):
-    """Handles caching only."""
-    pass
-
-# Bad: Too many responsibilities
-@register_capability
-class EveryThingCapability(BaseCapability):
-    """Handles caching, auth, retry, logging, metrics..."""
-    pass
-```
-
-### 2. Make Capabilities Configurable
-
-Allow users to configure capability behavior:
-
-```python
-@register_capability
-class CachingCapability(BaseCapability):
-    def __init__(self, ttl=300, max_size=1000):
+# utils/caching.py
+class Cache:
+    def __init__(self, ttl=300):
+        self.cache = {}
         self.ttl = ttl
-        self.max_size = max_size
+
+    async def get(self, key):
+        # Cache logic
+        pass
+
+    async def set(self, key, value):
+        # Cache logic
+        pass
+
+# In your resource
+from utils.caching import Cache
+
+@register_resource("server")
+class Server(BaseResource):
+    def __init__(self):
+        super().__init__()
+        self.cache = Cache(ttl=600)
 ```
 
-### 3. Document Capabilities
+### 4. **pyvider-components Examples**
+See the [pyvider-components](https://github.com/provide-io/pyvider-components) repository for 100+ working examples of:
+- Resources with common patterns
+- Data sources with shared logic
+- Functions demonstrating reusability
+- Complete provider implementations
 
-Provide clear documentation:
+## Future Plans
 
-```python
-@register_capability
-class OAuth2Capability(BaseCapability):
-    """
-    OAuth2 authentication capability.
+The full capabilities system is planned for a future release. See the [Roadmap](../development/roadmap.md) for timeline and details.
 
-    Provides automatic token management including:
-    - Initial token acquisition
-    - Automatic token refresh before expiration
-    - Thread-safe token access
-    - Error handling and retry logic
+When implemented, the capabilities system will provide:
+- Decorator-based capability attachment (`@use_capability`)
+- Automatic dependency injection
+- Lifecycle hooks (setup, teardown, before/after operations)
+- Capability composition and inheritance
+- Discovery and registration via the hub system
 
-    Configuration:
-        client_id (str): OAuth2 client ID
-        client_secret (str): OAuth2 client secret
-        token_url (str): Token endpoint URL
-        scopes (list[str]): Requested OAuth2 scopes
+## Experimental Documentation
 
-    Example:
-        @use_capability(OAuth2Capability(
-            client_id="my-client",
-            client_secret="secret",
-            token_url="https://oauth.example.com/token",
-            scopes=["read", "write"]
-        ))
-        class MyResource(BaseResource):
-            pass
-    """
-    pass
-```
+Detailed documentation for the planned capabilities system (including API design and usage examples) has been moved to the experimental folder:
 
-### 4. Test Capabilities Independently
+- Implementation concepts and lifecycle
+- Planned API patterns
+- Advanced composition techniques
+- Marketplace and distribution plans
 
-Write unit tests for capabilities:
-
-```python
-async def test_caching_capability():
-    """Test caching capability."""
-    cache = CachingCapability(ttl=10)
-
-    # Test set and get
-    await cache.set("key", "value")
-    assert await cache.get("key") == "value"
-
-    # Test expiration
-    await asyncio.sleep(11)
-    assert await cache.get("key") is None
-```
-
-### 5. Handle Errors Gracefully
-
-Capabilities should not break the host component:
-
-```python
-@register_capability
-class MetricsCapability(BaseCapability):
-    async def after_operation(self, ctx):
-        try:
-            # Record metrics
-            self.record_metric(ctx.operation, ctx.duration)
-        except Exception as e:
-            # Log error but don't fail the operation
-            logger.warning(f"Failed to record metrics: {e}")
-```
+These docs represent the **vision** for capabilities, not current functionality.
 
 ## See Also
 
-- **[Using Capabilities](using-capabilities.md)** - How to apply capabilities to components
-- **[Creating Capabilities](creating-capabilities.md)** - Building custom capabilities
-- **[Capability Lifecycle](capability-lifecycle.md)** - Lifecycle hooks and events
-- **[Capability Composition](capability-composition.md)** - Composing capabilities together
-- **[Bundling Components](bundling-components.md)** - Packaging capabilities for distribution
+- [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples of reusable patterns
+- [Best Practices](../guides/best-practices.md) - Current patterns for code reuse
+- [Roadmap](../development/roadmap.md) - Feature status and timeline
+- [Advanced Patterns](../guides/advanced-patterns.md) - Advanced implementation techniques
+
+---
+
+**Note**: If you're interested in contributing to the capabilities system design or implementation, please join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions).

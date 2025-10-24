@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://foundry.provide.io/pyvider/capabilities/overview/">
       
       
-        <link rel="prev" href="../../schema/best-practices/">
+        <link rel="prev" href="../../api/protocols/">
       
       
-        <link rel="next" href="../using-capabilities/">
+        <link rel="next" href="../../contributing/guidelines/">
       
       
       <link rel="icon" href="../../assets/favicon.ico">
@@ -333,17 +333,15 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
           
   
   
-  Capabilities
+  API Reference
 
         </a>
       </li>
@@ -355,15 +353,17 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../api/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
           
   
   
-  API Reference
+  Capabilities (Experimental)
 
         </a>
       </li>
@@ -1740,486 +1740,6 @@
       
   
   
-    
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
-        
-          
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    Capabilities
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
-            <span class="md-nav__icon md-icon"></span>
-            Capabilities
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#what-are-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      What are Capabilities?
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#why-use-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Why Use Capabilities?
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Why Use Capabilities?">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reusability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Reusability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#separation-of-concerns" class="md-nav__link">
-    <span class="md-ellipsis">
-      Separation of Concerns
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#modularity" class="md-nav__link">
-    <span class="md-ellipsis">
-      Modularity
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#how-capabilities-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      How Capabilities Work
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="How Capabilities Work">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#discovery-and-registration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Discovery and Registration
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#lifecycle-hooks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Lifecycle Hooks
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#applying-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      Applying Capabilities
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#common-use-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      Common Use Cases
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Common Use Cases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Capability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Caching Capability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#retry-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Retry Capability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#metrics-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metrics Capability
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#capability-composition" class="md-nav__link">
-    <span class="md-ellipsis">
-      Capability Composition
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      Best Practices
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Best Practices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-keep-capabilities-focused" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Keep Capabilities Focused
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-make-capabilities-configurable" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Make Capabilities Configurable
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-document-capabilities" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Document Capabilities
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-test-capabilities-independently" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. Test Capabilities Independently
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-handle-errors-gracefully" class="md-nav__link">
-    <span class="md-ellipsis">
-      5. Handle Errors Gracefully
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      See Also
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../using-capabilities/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Using Capabilities
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../creating-capabilities/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Creating Capabilities
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../bundling-components/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Bundling Components
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../capability-lifecycle/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Capability Lifecycle
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../capability-composition/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Capability Composition
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../capability-marketplace/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Capability Marketplace
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
   
   
     
@@ -2238,10 +1758,10 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -2254,8 +1774,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             API Reference
           </label>
@@ -2594,6 +2114,255 @@
       
   
   
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Capabilities (Experimental)
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Capabilities (Experimental)
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-are-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      What are Capabilities?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-capabilities-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why Capabilities? (Planned)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why Capabilities? (Planned)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reusability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reusability
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separation-of-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Separation of Concerns
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modularity
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Alternatives
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Current Alternatives">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-base-class-inheritance" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Base Class Inheritance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-composition-with-helper-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Composition with Helper Classes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-utility-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Utility Modules
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-pyvider-components-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. pyvider-components Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      Future Plans
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#experimental-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Experimental Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
   
   
     
@@ -2805,317 +2574,151 @@
 
 
 <h1 id="capabilities-overview">Capabilities Overview<a class="headerlink" href="#capabilities-overview" title="Permanent link">&para;</a></h1>
-<p>Capabilities are a powerful composition mechanism in Pyvider that allows you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.</p>
-<h2 id="what-are-capabilities">What are Capabilities?<a class="headerlink" href="#what-are-capabilities" title="Permanent link">&para;</a></h2>
-<p>Capabilities are compositional components that can:</p>
+<div class="admonition danger">
+<p class="admonition-title">Experimental Feature - Not Fully Implemented</p>
+<p><strong>The Capabilities system is currently experimental and not fully implemented in v0.0.1000.</strong></p>
 <ul>
-<li><strong>Extend existing components</strong> with new functionality</li>
-<li><strong>Share common patterns</strong> across multiple providers</li>
-<li><strong>Encapsulate cross-cutting concerns</strong> like authentication, caching, or logging</li>
-<li><strong>Be discovered and registered</strong> automatically by Pyvider's hub system</li>
+<li>The API shown here represents planned functionality</li>
+<li>Not all features may work as documented</li>
+<li>Significant changes expected before stable release</li>
+<li><strong>Not recommended for production use</strong></li>
 </ul>
-<p>Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.</p>
-<h2 id="why-use-capabilities">Why Use Capabilities?<a class="headerlink" href="#why-use-capabilities" title="Permanent link">&para;</a></h2>
+<p>For working examples of code reuse patterns, see <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a>.</p>
+</div>
+<h2 id="what-are-capabilities">What are Capabilities?<a class="headerlink" href="#what-are-capabilities" title="Permanent link">&para;</a></h2>
+<p>Capabilities are a planned composition mechanism in Pyvider that will allow you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.</p>
+<p><strong>Planned concept</strong>: Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.</p>
+<h2 id="why-capabilities-planned">Why Capabilities? (Planned)<a class="headerlink" href="#why-capabilities-planned" title="Permanent link">&para;</a></h2>
+<p>The capabilities system aims to enable:</p>
 <h3 id="reusability">Reusability<a class="headerlink" href="#reusability" title="Permanent link">&para;</a></h3>
-<p>Write once, use everywhere:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Define a caching capability once</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">CachingCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="c1"># Add caching logic</span>
+<p>Write cross-cutting concerns once and apply them to multiple components:
+- Authentication logic (OAuth, API keys, token management)
+- Retry patterns (exponential backoff, circuit breakers)
+- Caching strategies (response caching, state caching)
+- Logging and observability
+- Performance metrics collection</p>
+<h3 id="separation-of-concerns">Separation of Concerns<a class="headerlink" href="#separation-of-concerns" title="Permanent link">&para;</a></h3>
+<p>Keep your resource/provider implementations focused on core business logic while capabilities handle infrastructure concerns.</p>
+<h3 id="modularity">Modularity<a class="headerlink" href="#modularity" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Develop capabilities independently</li>
+<li>Test in isolation</li>
+<li>Version separately</li>
+<li>Share across projects</li>
+<li>Publish as packages</li>
+</ul>
+<h2 id="current-alternatives">Current Alternatives<a class="headerlink" href="#current-alternatives" title="Permanent link">&para;</a></h2>
+<p>While the capabilities system is under development, you can achieve similar goals using:</p>
+<h3 id="1-base-class-inheritance">1. <strong>Base Class Inheritance</strong><a class="headerlink" href="#1-base-class-inheritance" title="Permanent link">&para;</a></h3>
+<p>Create shared base classes for common functionality:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">BaseCloudResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Shared functionality for cloud resources.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">apply_common_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tags</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="c1"># Common tagging logic</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="k">pass</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Apply it to multiple resources</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nd">@use_capability</span><span class="p">(</span><span class="n">CachingCapability</span><span class="p">)</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="k">pass</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;database&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="nd">@use_capability</span><span class="p">(</span><span class="n">CachingCapability</span><span class="p">)</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="k">class</span><span class="w"> </span><span class="nc">Database</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="k">pass</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup_monitoring</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="c1"># Common monitoring setup</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="k">pass</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseCloudResource</span><span class="p">):</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="c1"># Inherits common functionality</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">State</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>        <span class="c1"># Resource-specific logic</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>        <span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_server</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="c1"># Use inherited methods</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">apply_common_tags</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">tags</span><span class="p">)</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">setup_monitoring</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>        <span class="k">return</span> <span class="n">State</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="kc">None</span>
 </code></pre></div>
-<h3 id="separation-of-concerns">Separation of Concerns<a class="headerlink" href="#separation-of-concerns" title="Permanent link">&para;</a></h3>
-<p>Keep your components focused on their core responsibility while capabilities handle cross-cutting concerns:</p>
+<h3 id="2-composition-with-helper-classes">2. <strong>Composition with Helper Classes</strong><a class="headerlink" href="#2-composition-with-helper-classes" title="Permanent link">&para;</a></h3>
+<p>Use composition to share functionality:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">RetryHandler</span><span class="p">:</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Reusable retry logic.&quot;&quot;&quot;</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">with_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">max_attempts</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_attempts</span><span class="p">):</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>            <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                <span class="k">return</span> <span class="k">await</span> <span class="n">operation</span><span class="p">()</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>            <span class="k">except</span> <span class="n">RetryableError</span><span class="p">:</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_attempts</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>                    <span class="k">raise</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">retry_handler</span> <span class="o">=</span> <span class="n">RetryHandler</span><span class="p">()</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">State</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>        <span class="c1"># Use composition for retry logic</span>
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        <span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry_handler</span><span class="o">.</span><span class="n">with_retry</span><span class="p">(</span>
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_server</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>        <span class="p">)</span>
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>        <span class="k">return</span> <span class="n">State</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="kc">None</span>
+</code></pre></div>
+<h3 id="3-utility-modules">3. <strong>Utility Modules</strong><a class="headerlink" href="#3-utility-modules" title="Permanent link">&para;</a></h3>
+<p>Create shared utility modules:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># utils/caching.py</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">Cache</span><span class="p">:</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">):</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">=</span> <span class="n">ttl</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>        <span class="c1"># Cache logic</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>        <span class="k">pass</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>        <span class="c1"># Cache logic</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="k">pass</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># In your resource</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="kn">from</span><span class="w"> </span><span class="nn">utils.caching</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cache</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="n">Cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="4-pyvider-components-examples">4. <strong>pyvider-components Examples</strong><a class="headerlink" href="#4-pyvider-components-examples" title="Permanent link">&para;</a></h3>
+<p>See the <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a> repository for 100+ working examples of:
+- Resources with common patterns
+- Data sources with shared logic
+- Functions demonstrating reusability
+- Complete provider implementations</p>
+<h2 id="future-plans">Future Plans<a class="headerlink" href="#future-plans" title="Permanent link">&para;</a></h2>
+<p>The full capabilities system is planned for a future release. See the <a href="../../development/roadmap/">Roadmap</a> for timeline and details.</p>
+<p>When implemented, the capabilities system will provide:
+- Decorator-based capability attachment (<code>@use_capability</code>)
+- Automatic dependency injection
+- Lifecycle hooks (setup, teardown, before/after operations)
+- Capability composition and inheritance
+- Discovery and registration via the hub system</p>
+<h2 id="experimental-documentation">Experimental Documentation<a class="headerlink" href="#experimental-documentation" title="Permanent link">&para;</a></h2>
+<p>Detailed documentation for the planned capabilities system (including API design and usage examples) has been moved to the experimental folder:</p>
 <ul>
-<li><strong>Authentication</strong>: OAuth, API keys, token management</li>
-<li><strong>Retry Logic</strong>: Exponential backoff, circuit breakers</li>
-<li><strong>Caching</strong>: Response caching, state caching</li>
-<li><strong>Logging</strong>: Structured logging, audit trails</li>
-<li><strong>Metrics</strong>: Performance monitoring, usage tracking</li>
+<li>Implementation concepts and lifecycle</li>
+<li>Planned API patterns</li>
+<li>Advanced composition techniques</li>
+<li>Marketplace and distribution plans</li>
 </ul>
-<h3 id="modularity">Modularity<a class="headerlink" href="#modularity" title="Permanent link">&para;</a></h3>
-<p>Capabilities can be:</p>
-<ul>
-<li>Developed independently</li>
-<li>Tested in isolation</li>
-<li>Versioned separately</li>
-<li>Shared across projects</li>
-<li>Published as packages</li>
-</ul>
-<h2 id="how-capabilities-work">How Capabilities Work<a class="headerlink" href="#how-capabilities-work" title="Permanent link">&para;</a></h2>
-<h3 id="discovery-and-registration">Discovery and Registration<a class="headerlink" href="#discovery-and-registration" title="Permanent link">&para;</a></h3>
-<p>Capabilities integrate with Pyvider's hub-based discovery system:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.capabilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_capability</span><span class="p">,</span> <span class="n">BaseCapability</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A custom capability.&quot;&quot;&quot;</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called during provider initialization.&quot;&quot;&quot;</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="c1"># Initialize capability</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="k">pass</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Called during provider shutdown.&quot;&quot;&quot;</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        <span class="c1"># Cleanup capability</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="k">pass</span>
-</code></pre></div>
-<h3 id="lifecycle-hooks">Lifecycle Hooks<a class="headerlink" href="#lifecycle-hooks" title="Permanent link">&para;</a></h3>
-<p>Capabilities have lifecycle hooks that integrate with component lifecycles:</p>
-<ul>
-<li><strong><code>setup()</code></strong>: Called when the provider initializes</li>
-<li><strong><code>teardown()</code></strong>: Called when the provider shuts down</li>
-<li><strong><code>before_operation()</code></strong>: Called before resource operations</li>
-<li><strong><code>after_operation()</code></strong>: Called after resource operations</li>
-</ul>
-<h3 id="applying-capabilities">Applying Capabilities<a class="headerlink" href="#applying-capabilities" title="Permanent link">&para;</a></h3>
-<p>Apply capabilities to components using decorators:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_resource</span><span class="p">,</span> <span class="n">BaseResource</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.capabilities</span><span class="w"> </span><span class="kn">import</span> <span class="n">use_capability</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nd">@use_capability</span><span class="p">(</span><span class="n">CachingCapability</span><span class="p">)</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nd">@use_capability</span><span class="p">(</span><span class="n">LoggingCapability</span><span class="p">)</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;A server resource with caching and logging capabilities.&quot;&quot;&quot;</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="k">pass</span>
-</code></pre></div>
-<h2 id="common-use-cases">Common Use Cases<a class="headerlink" href="#common-use-cases" title="Permanent link">&para;</a></h2>
-<h3 id="authentication-capability">Authentication Capability<a class="headerlink" href="#authentication-capability" title="Permanent link">&para;</a></h3>
-<p>Centralize authentication logic:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">OAuth2Capability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;OAuth2 authentication capability.&quot;&quot;&quot;</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">expires_at</span> <span class="o">=</span> <span class="kc">None</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize OAuth2 client.&quot;&quot;&quot;</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">refresh_token</span><span class="p">()</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">refresh_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Refresh OAuth2 token.&quot;&quot;&quot;</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="c1"># Token refresh logic</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="k">pass</span>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get authentication headers.&quot;&quot;&quot;</span>
-<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>        <span class="k">return</span> <span class="p">{</span>
-<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>            <span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Bearer </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="si">}</span><span class="s2">&quot;</span>
-<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>        <span class="p">}</span>
-</code></pre></div>
-<h3 id="caching-capability">Caching Capability<a class="headerlink" href="#caching-capability" title="Permanent link">&para;</a></h3>
-<p>Add response caching:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">CachingCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Response caching capability.&quot;&quot;&quot;</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get from cache.&quot;&quot;&quot;</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
-<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">any</span><span class="p">,</span> <span class="n">ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">300</span><span class="p">):</span>
-<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Set in cache with TTL.&quot;&quot;&quot;</span>
-<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>            <span class="s2">&quot;expires&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">ttl</span>
-<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>        <span class="p">}</span>
-<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
-<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Check cache before operation.&quot;&quot;&quot;</span>
-<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>        <span class="n">cached</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">cache_key</span><span class="p">)</span>
-<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>        <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
-<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>            <span class="k">return</span> <span class="n">cached</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
-<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>        <span class="k">return</span> <span class="kc">None</span>
-</code></pre></div>
-<h3 id="retry-capability">Retry Capability<a class="headerlink" href="#retry-capability" title="Permanent link">&para;</a></h3>
-<p>Add automatic retries with exponential backoff:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">RetryCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Retry logic with exponential backoff.&quot;&quot;&quot;</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">base_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
-<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">=</span> <span class="n">max_retries</span>
-<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">=</span> <span class="n">base_delay</span>
-<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
-<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute_with_retry</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
-<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Execute operation with retry logic.&quot;&quot;&quot;</span>
-<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>        <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">):</span>
-<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>            <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>                <span class="k">return</span> <span class="k">await</span> <span class="n">operation</span><span class="p">()</span>
-<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>            <span class="k">except</span> <span class="n">RetryableError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>                <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
-<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>                    <span class="k">raise</span>
-<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>                <span class="n">delay</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_delay</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">attempt</span><span class="p">)</span>
-<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">delay</span><span class="p">)</span>
-</code></pre></div>
-<h3 id="metrics-capability">Metrics Capability<a class="headerlink" href="#metrics-capability" title="Permanent link">&para;</a></h3>
-<p>Track performance metrics:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">MetricsCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Performance metrics collection.&quot;&quot;&quot;</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">before_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Start timing.&quot;&quot;&quot;</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        <span class="n">ctx</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
-<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Record duration.&quot;&quot;&quot;</span>
-<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">ctx</span><span class="o">.</span><span class="n">start_time</span>
-<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">operation</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
-<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
-<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">record_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Record metric.&quot;&quot;&quot;</span>
-<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>        <span class="k">if</span> <span class="n">operation</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">:</span>
-<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">operation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="n">operation</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="capability-composition">Capability Composition<a class="headerlink" href="#capability-composition" title="Permanent link">&para;</a></h2>
-<p>Capabilities can build on each other:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">AdvancedAuthCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Advanced auth combining multiple capabilities.&quot;&quot;&quot;</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="c1"># Compose with other capabilities</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">oauth</span> <span class="o">=</span> <span class="n">OAuth2Capability</span><span class="p">()</span>
-<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">caching</span> <span class="o">=</span> <span class="n">CachingCapability</span><span class="p">()</span>
-<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">retry</span> <span class="o">=</span> <span class="n">RetryCapability</span><span class="p">()</span>
-<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
-<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize all sub-capabilities.&quot;&quot;&quot;</span>
-<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">caching</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
-<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
-<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_authenticated_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get headers with caching and retry.&quot;&quot;&quot;</span>
-<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>        <span class="n">cache_key</span> <span class="o">=</span> <span class="s2">&quot;auth_headers&quot;</span>
-<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>
-<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>        <span class="c1"># Try cache first</span>
-<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>        <span class="n">cached</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">caching</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cache_key</span><span class="p">)</span>
-<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>        <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
-<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>            <span class="k">return</span> <span class="n">cached</span>
-<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>
-<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>        <span class="c1"># Get fresh token with retry</span>
-<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>        <span class="n">headers</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">retry</span><span class="o">.</span><span class="n">execute_with_retry</span><span class="p">(</span>
-<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>            <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">oauth</span><span class="o">.</span><span class="n">get_headers</span><span class="p">()</span>
-<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>        <span class="p">)</span>
-<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>
-<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>        <span class="c1"># Cache result</span>
-<a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">caching</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cache_key</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
-<a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>
-<a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>        <span class="k">return</span> <span class="n">headers</span>
-</code></pre></div>
-<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
-<h3 id="1-keep-capabilities-focused">1. Keep Capabilities Focused<a class="headerlink" href="#1-keep-capabilities-focused" title="Permanent link">&para;</a></h3>
-<p>Each capability should have a single, well-defined responsibility:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Good: Focused on one concern</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">CachingCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles caching only.&quot;&quot;&quot;</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="k">pass</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="c1"># Bad: Too many responsibilities</span>
-<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="k">class</span><span class="w"> </span><span class="nc">EveryThingCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Handles caching, auth, retry, logging, metrics...&quot;&quot;&quot;</span>
-<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="k">pass</span>
-</code></pre></div>
-<h3 id="2-make-capabilities-configurable">2. Make Capabilities Configurable<a class="headerlink" href="#2-make-capabilities-configurable" title="Permanent link">&para;</a></h3>
-<p>Allow users to configure capability behavior:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">CachingCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">=</span> <span class="n">ttl</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">=</span> <span class="n">max_size</span>
-</code></pre></div>
-<h3 id="3-document-capabilities">3. Document Capabilities<a class="headerlink" href="#3-document-capabilities" title="Permanent link">&para;</a></h3>
-<p>Provide clear documentation:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">OAuth2Capability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="sd">    OAuth2 authentication capability.</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="sd">    Provides automatic token management including:</span>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="sd">    - Initial token acquisition</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="sd">    - Automatic token refresh before expiration</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="sd">    - Thread-safe token access</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="sd">    - Error handling and retry logic</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="sd">    Configuration:</span>
-<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="sd">        client_id (str): OAuth2 client ID</span>
-<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="sd">        client_secret (str): OAuth2 client secret</span>
-<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="sd">        token_url (str): Token endpoint URL</span>
-<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="sd">        scopes (list[str]): Requested OAuth2 scopes</span>
-<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>
-<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="sd">    Example:</span>
-<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a><span class="sd">        @use_capability(OAuth2Capability(</span>
-<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="sd">            client_id=&quot;my-client&quot;,</span>
-<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="sd">            client_secret=&quot;secret&quot;,</span>
-<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a><span class="sd">            token_url=&quot;https://oauth.example.com/token&quot;,</span>
-<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="sd">            scopes=[&quot;read&quot;, &quot;write&quot;]</span>
-<a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="sd">        ))</span>
-<a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="sd">        class MyResource(BaseResource):</span>
-<a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="sd">            pass</span>
-<a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>    <span class="k">pass</span>
-</code></pre></div>
-<h3 id="4-test-capabilities-independently">4. Test Capabilities Independently<a class="headerlink" href="#4-test-capabilities-independently" title="Permanent link">&para;</a></h3>
-<p>Write unit tests for capabilities:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_caching_capability</span><span class="p">():</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Test caching capability.&quot;&quot;&quot;</span>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="n">cache</span> <span class="o">=</span> <span class="n">CachingCapability</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="c1"># Test set and get</span>
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="k">await</span> <span class="n">cache</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>    <span class="k">assert</span> <span class="k">await</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;value&quot;</span>
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="c1"># Test expiration</span>
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span>
-<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>    <span class="k">assert</span> <span class="k">await</span> <span class="n">cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
-</code></pre></div>
-<h3 id="5-handle-errors-gracefully">5. Handle Errors Gracefully<a class="headerlink" href="#5-handle-errors-gracefully" title="Permanent link">&para;</a></h3>
-<p>Capabilities should not break the host component:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nd">@register_capability</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">MetricsCapability</span><span class="p">(</span><span class="n">BaseCapability</span><span class="p">):</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">after_operation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>        <span class="k">try</span><span class="p">:</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>            <span class="c1"># Record metrics</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">record_metric</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">operation</span><span class="p">,</span> <span class="n">ctx</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>            <span class="c1"># Log error but don&#39;t fail the operation</span>
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to record metrics: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</code></pre></div>
+<p>These docs represent the <strong>vision</strong> for capabilities, not current functionality.</p>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong><a href="../using-capabilities/">Using Capabilities</a></strong> - How to apply capabilities to components</li>
-<li><strong><a href="../creating-capabilities/">Creating Capabilities</a></strong> - Building custom capabilities</li>
-<li><strong><a href="../capability-lifecycle/">Capability Lifecycle</a></strong> - Lifecycle hooks and events</li>
-<li><strong><a href="../capability-composition/">Capability Composition</a></strong> - Composing capabilities together</li>
-<li><strong><a href="../bundling-components/">Bundling Components</a></strong> - Packaging capabilities for distribution</li>
+<li><a href="https://github.com/provide-io/pyvider-components">pyvider-components</a> - Working examples of reusable patterns</li>
+<li><a href="../../guides/best-practices/">Best Practices</a> - Current patterns for code reuse</li>
+<li><a href="../../development/roadmap/">Roadmap</a> - Feature status and timeline</li>
+<li><a href="../../guides/advanced-patterns/">Advanced Patterns</a> - Advanced implementation techniques</li>
 </ul>
+<hr />
+<p><strong>Note</strong>: If you're interested in contributing to the capabilities system design or implementation, please join the discussion on <a href="https://github.com/provide-io/pyvider/discussions">GitHub Discussions</a>.</p>
 
 
 
