@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#schema" class="md-skip">
+        <a href="#schema-system-overview" class="md-skip">
           Skip to content
         </a>
       
@@ -1474,9 +1474,222 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#what-is-a-schema" class="md-nav__link">
     <span class="md-ellipsis">
-      🏛️ Overview
+      What is a Schema?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Hierarchy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#factory-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Factory Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Factory Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attribute-factories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attribute Factories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#block-factories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Block Factories
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-factories" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Factories
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete Example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Concepts
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#attributes-vs-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Attributes vs Blocks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-vs-optional-vs-computed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required vs Optional vs Computed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensitive-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sensitive Data
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validators
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-building-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Building Patterns
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Building Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-1-inline-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 1: Inline Schema
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-2-helper-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 2: Helper Method
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pattern-3-shared-attribute-definitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pattern 3: Shared Attribute Definitions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type-system-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type System Integration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type System Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#terraform-types-cty" class="md-nav__link">
+    <span class="md-ellipsis">
+      Terraform Types (CTY)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema Validation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next Steps
     </span>
   </a>
   
@@ -2437,12 +2650,415 @@
   
 
 
-<h1 id="schema">📜 Schema<a class="headerlink" href="#schema" title="Permanent link">&para;</a></h1>
-<p>This chapter provides a detailed overview of the <code>pyvider</code> schema.</p>
-<h2 id="overview">🏛️ Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>pyvider</code> schema is used to define the structure and constraints of your provider's resources, data sources, and functions. The schema is defined using a combination of Python types and <code>pyvider</code>'s own schema types.</p>
-<p>The schema is hierarchical, with a root schema that contains a set of attributes and blocks. Attributes are used to define the simple values in your schema, while blocks are used to define the nested objects.
-```</p>
+<h1 id="schema-system-overview">Schema System Overview<a class="headerlink" href="#schema-system-overview" title="Permanent link">&para;</a></h1>
+<p>The Pyvider schema system provides a type-safe, declarative way to define the structure and constraints of your provider's resources, data sources, and functions. It bridges Python and Terraform's type systems, enabling proper validation and documentation.</p>
+<h2 id="what-is-a-schema">What is a Schema?<a class="headerlink" href="#what-is-a-schema" title="Permanent link">&para;</a></h2>
+<p>A schema defines:</p>
+<ul>
+<li><strong>Structure</strong>: What attributes and blocks your component has</li>
+<li><strong>Types</strong>: What kind of data each attribute holds (string, number, list, etc.)</li>
+<li><strong>Constraints</strong>: What values are valid (required, optional, validators)</li>
+<li><strong>Behavior</strong>: How attributes work (computed, sensitive, default values)</li>
+<li><strong>Documentation</strong>: Descriptions shown to users</li>
+</ul>
+<h2 id="schema-hierarchy">Schema Hierarchy<a class="headerlink" href="#schema-hierarchy" title="Permanent link">&para;</a></h2>
+<p>Pyvider schemas are hierarchical:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Schema (s_resource, s_data_source, s_provider)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── Attributes (a_str, a_num, a_bool, etc.)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── Simple types (string, number, boolean)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   ├── Collection types (list, map, set)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│   ├── Complex types (object, tuple)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   └── Special types (dynamic, unknown, null)
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>└── Nested Blocks (b_main, b_list, b_single, etc.)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    └── Contains more attributes and blocks (recursive)
+</code></pre></div>
+<h2 id="factory-functions">Factory Functions<a class="headerlink" href="#factory-functions" title="Permanent link">&para;</a></h2>
+<p>Pyvider uses <strong>factory functions</strong> (not classes) to build schemas:</p>
+<h3 id="attribute-factories">Attribute Factories<a class="headerlink" href="#attribute-factories" title="Permanent link">&para;</a></h3>
+<p>Create attributes with <code>a_*</code> functions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">a_str</span><span class="p">,</span> <span class="n">a_num</span><span class="p">,</span> <span class="n">a_bool</span><span class="p">,</span> <span class="n">a_list</span><span class="p">,</span> <span class="n">a_map</span><span class="p">,</span> <span class="n">a_obj</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Simple types</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">name</span> <span class="o">=</span> <span class="n">a_str</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Server name&quot;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">port</span> <span class="o">=</span> <span class="n">a_num</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Port number&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">enabled</span> <span class="o">=</span> <span class="n">a_bool</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether server is enabled&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># Collection types</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">tags</span> <span class="o">=</span> <span class="n">a_list</span><span class="p">(</span><span class="n">a_str</span><span class="p">(),</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;List of tags&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">a_map</span><span class="p">(</span><span class="n">a_str</span><span class="p">(),</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Arbitrary metadata&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="c1"># Complex types</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="n">config</span> <span class="o">=</span> <span class="n">a_obj</span><span class="p">({</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="s2">&quot;retries&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">},</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Configuration object&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="block-factories">Block Factories<a class="headerlink" href="#block-factories" title="Permanent link">&para;</a></h3>
+<p>Create nested blocks with <code>b_*</code> functions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">b_main</span><span class="p">,</span> <span class="n">b_list</span><span class="p">,</span> <span class="n">b_single</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Main block (unnested, attributes at top level)</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">schema</span> <span class="o">=</span> <span class="n">b_main</span><span class="p">({</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">),</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">})</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="c1"># List of blocks (0 or more)</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">schema_with_rules</span> <span class="o">=</span> <span class="n">b_main</span><span class="p">({</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="s2">&quot;rule&quot;</span><span class="p">:</span> <span class="n">b_list</span><span class="p">(</span><span class="s2">&quot;rule&quot;</span><span class="p">),</span>  <span class="c1"># Multiple rule blocks allowed</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">})</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="c1"># Single block (0 or 1)</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="n">schema_with_config</span> <span class="o">=</span> <span class="n">b_main</span><span class="p">({</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="n">b_single</span><span class="p">(</span><span class="s2">&quot;config&quot;</span><span class="p">),</span>  <span class="c1"># At most one config block</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="p">})</span>
+</code></pre></div>
+<h3 id="schema-factories">Schema Factories<a class="headerlink" href="#schema-factories" title="Permanent link">&para;</a></h3>
+<p>Create complete schemas with <code>s_*</code> functions:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">s_resource</span><span class="p">,</span> <span class="n">s_data_source</span><span class="p">,</span> <span class="n">s_provider</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Resource schema</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">return</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">),</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>        <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="n">a_bool</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="p">})</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1"># Data source schema</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="k">return</span> <span class="n">s_data_source</span><span class="p">({</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>        <span class="s2">&quot;filter&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="p">})</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="c1"># Provider schema</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="k">def</span><span class="w"> </span><span class="nf">_build_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    <span class="k">return</span> <span class="n">s_provider</span><span class="p">({</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>        <span class="s2">&quot;api_endpoint&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>        <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>        <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>    <span class="p">})</span>
+</code></pre></div>
+<h2 id="complete-example">Complete Example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<p>Here's a complete resource schema demonstrating various features:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">s_resource</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">a_str</span><span class="p">,</span> <span class="n">a_num</span><span class="p">,</span> <span class="n">a_bool</span><span class="p">,</span> <span class="n">a_list</span><span class="p">,</span> <span class="n">a_map</span><span class="p">,</span> <span class="n">a_obj</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">b_list</span><span class="p">,</span> <span class="n">b_single</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="p">)</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;mycloud_server&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">class</span><span class="w"> </span><span class="nc">ServerResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="nd">@classmethod</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        <span class="k">return</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>            <span class="c1"># Required string</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Server name&quot;</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>            <span class="p">),</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>            <span class="c1"># Optional number with default</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>            <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>                <span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Port number&quot;</span><span class="p">,</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>                <span class="n">validators</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>                    <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">65535</span> <span class="ow">or</span> <span class="s2">&quot;Port must be 1-65535&quot;</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>                <span class="p">]</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>            <span class="p">),</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>            <span class="c1"># Optional boolean</span>
+<a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a>            <span class="s2">&quot;enabled&quot;</span><span class="p">:</span> <span class="n">a_bool</span><span class="p">(</span>
+<a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a>                <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Whether server is enabled&quot;</span>
+<a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>            <span class="p">),</span>
+<a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a>
+<a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a>            <span class="c1"># Computed attribute (provider sets this)</span>
+<a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a>            <span class="s2">&quot;ip_address&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a>                <span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Server IP address&quot;</span>
+<a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a>            <span class="p">),</span>
+<a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a>
+<a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a>            <span class="c1"># Sensitive attribute (masked in logs)</span>
+<a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a>            <span class="s2">&quot;admin_password&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a>                <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>                <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Administrator password&quot;</span>
+<a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a>            <span class="p">),</span>
+<a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a>
+<a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a>            <span class="c1"># List of strings</span>
+<a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a>            <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">a_list</span><span class="p">(</span>
+<a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>                <span class="n">a_str</span><span class="p">(),</span>
+<a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a>                <span class="n">default</span><span class="o">=</span><span class="p">[],</span>
+<a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Tags for the server&quot;</span>
+<a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a>            <span class="p">),</span>
+<a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a>
+<a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a>            <span class="c1"># Map of strings</span>
+<a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a>            <span class="s2">&quot;labels&quot;</span><span class="p">:</span> <span class="n">a_map</span><span class="p">(</span>
+<a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>                <span class="n">a_str</span><span class="p">(),</span>
+<a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a>                <span class="n">default</span><span class="o">=</span><span class="p">{},</span>
+<a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a>                <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Label key-value pairs&quot;</span>
+<a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a>            <span class="p">),</span>
+<a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a>
+<a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a>            <span class="c1"># Complex object</span>
+<a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a>            <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="n">a_obj</span><span class="p">({</span>
+<a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a>                <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">),</span>
+<a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a>                <span class="s2">&quot;retries&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+<a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a>                <span class="s2">&quot;debug&quot;</span><span class="p">:</span> <span class="n">a_bool</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+<a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a>            <span class="p">},</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Server configuration&quot;</span><span class="p">),</span>
+<a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a>
+<a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a>            <span class="c1"># Nested block (list)</span>
+<a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a>            <span class="s2">&quot;rule&quot;</span><span class="p">:</span> <span class="n">b_list</span><span class="p">(</span><span class="s2">&quot;rule&quot;</span><span class="p">),</span>  <span class="c1"># Multiple firewall rules</span>
+<a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a>
+<a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a>            <span class="c1"># Nested block (single)</span>
+<a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a>            <span class="s2">&quot;backup&quot;</span><span class="p">:</span> <span class="n">b_single</span><span class="p">(</span><span class="s2">&quot;backup&quot;</span><span class="p">),</span>  <span class="c1"># At most one backup config</span>
+<a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a>        <span class="p">})</span>
+</code></pre></div>
+<p>Corresponding Terraform configuration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;mycloud_server&quot;</span><span class="w"> </span><span class="nv">&quot;web&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="na">name</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;web-server&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="na">port</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="m">443</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="na">enabled</span><span class="w">         </span><span class="o">=</span><span class="w"> </span><span class="no">true</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="na">admin_password</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">var.admin_password</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="na">tags</span><span class="w">            </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;web&quot;, &quot;production&quot;</span><span class="p">]</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span><span class="nb">labels</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="na">env</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;prod&quot;</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="na">team</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;platform&quot;</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">  </span><span class="nb">config</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span><span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">60</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="na">retries</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span>
+<a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="na">debug</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="no">false</span>
+<a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+<a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">  </span><span class="nb">rule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="na">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span>
+<a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">    </span><span class="na">port</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">443</span>
+<a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">    </span><span class="na">source</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.0.0.0/0&quot;</span>
+<a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a>
+<a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w">  </span><span class="nb">rule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="w">    </span><span class="na">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span>
+<a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a><span class="w">    </span><span class="na">port</span><span class="w">     </span><span class="o">=</span><span class="w"> </span><span class="m">80</span>
+<a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">    </span><span class="na">source</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;0.0.0.0/0&quot;</span>
+<a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>
+<a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a><span class="w">  </span><span class="nb">backup</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="w">    </span><span class="na">enabled</span><span class="w">   </span><span class="o">=</span><span class="w"> </span><span class="no">true</span>
+<a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w">    </span><span class="na">schedule</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;daily&quot;</span>
+<a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a><span class="w">    </span><span class="na">retention</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">7</span>
+<a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="p">}</span>
+</code></pre></div>
+<h2 id="key-concepts">Key Concepts<a class="headerlink" href="#key-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="attributes-vs-blocks">Attributes vs Blocks<a class="headerlink" href="#attributes-vs-blocks" title="Permanent link">&para;</a></h3>
+<p><strong>Attributes</strong> are simple key-value pairs:
+- Scalar values (string, number, boolean)
+- Collections (list, map, set)
+- Complex objects (nested attributes)</p>
+<p><strong>Blocks</strong> are named, structured containers:
+- Can contain attributes and other blocks
+- Support nesting modes (list, set, map, single, group)
+- Represented as HCL blocks in Terraform</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Attributes</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;example&quot;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8080</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="na">tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;a&quot;, &quot;b&quot;</span><span class="p">]</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># Blocks</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nb">config</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="na">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">30</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="p">}</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="nb">rule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">  </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">80</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="p">}</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="nb">rule</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">  </span><span class="na">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">443</span>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="required-vs-optional-vs-computed">Required vs Optional vs Computed<a class="headerlink" href="#required-vs-optional-vs-computed" title="Permanent link">&para;</a></h3>
+<p><strong>Required</strong>: User must provide:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Optional</strong>: User may provide, has default:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Optional no default</strong>: User may provide, no default:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">()</span>  <span class="c1"># No default</span>
+</code></pre></div></p>
+<p><strong>Computed</strong>: Provider calculates, user cannot set:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Optional + Computed</strong>: User may provide OR provider will compute:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Provider sets if not provided</span>
+</code></pre></div></p>
+<h3 id="sensitive-data">Sensitive Data<a class="headerlink" href="#sensitive-data" title="Permanent link">&para;</a></h3>
+<p>Mark sensitive attributes to mask them in logs and UI:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>    <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Masked in Terraform output</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;API authentication key&quot;</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">)</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="s2">&quot;password&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Database password&quot;</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="p">)</span>
+</code></pre></div>
+<p>In Terraform output:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a># mycloud_server.web will be created
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>+ resource &quot;mycloud_server&quot; &quot;web&quot; {
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    + name     = &quot;web-server&quot;
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>    + api_key  = (sensitive value)
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    + password = (sensitive value)
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>  }
+</code></pre></div></p>
+<h3 id="validators">Validators<a class="headerlink" href="#validators" title="Permanent link">&para;</a></h3>
+<p>Add custom validation logic to attributes:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">validators</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">65535</span> <span class="ow">or</span> <span class="s2">&quot;Port must be between 1 and 65535&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">22</span> <span class="ow">or</span> <span class="s2">&quot;Port 22 is reserved for SSH&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="p">]</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">)</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>    <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>    <span class="n">validators</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;@&quot;</span> <span class="ow">in</span> <span class="n">x</span> <span class="ow">or</span> <span class="s2">&quot;Must be a valid email address&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>        <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.com&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;.org&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;Must end with .com or .org&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>    <span class="p">]</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p">)</span>
+</code></pre></div>
+<p>Validators return:
+- <code>True</code> if valid
+- Error message string if invalid</p>
+<h2 id="schema-building-patterns">Schema Building Patterns<a class="headerlink" href="#schema-building-patterns" title="Permanent link">&para;</a></h2>
+<h3 id="pattern-1-inline-schema">Pattern 1: Inline Schema<a class="headerlink" href="#pattern-1-inline-schema" title="Permanent link">&para;</a></h3>
+<p>Define schema directly in <code>get_schema()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    <span class="k">return</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">),</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="p">})</span>
+</code></pre></div>
+<h3 id="pattern-2-helper-method">Pattern 2: Helper Method<a class="headerlink" href="#pattern-2-helper-method" title="Permanent link">&para;</a></h3>
+<p>Build schema with helper method for complex schemas:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_build_schema</span><span class="p">()</span>
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">_build_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">),</span>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>    <span class="p">}</span>
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>    <span class="c1"># Add conditional attributes</span>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>    <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">supports_encryption</span><span class="p">:</span>
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>        <span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;encryption_key&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>    <span class="k">return</span> <span class="n">s_resource</span><span class="p">(</span><span class="n">attributes</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="pattern-3-shared-attribute-definitions">Pattern 3: Shared Attribute Definitions<a class="headerlink" href="#pattern-3-shared-attribute-definitions" title="Permanent link">&para;</a></h3>
+<p>Reuse attribute definitions across components:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Common attributes module</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">common_name_attr</span><span class="p">():</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>    <span class="k">return</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Resource name&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>        <span class="n">validators</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">3</span> <span class="ow">or</span> <span class="s2">&quot;Name must be at least 3 characters&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="ow">or</span> <span class="s2">&quot;Name must be alphanumeric&quot;</span><span class="p">,</span>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>        <span class="p">]</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="p">)</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">common_tags_attr</span><span class="p">():</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>    <span class="k">return</span> <span class="n">a_list</span><span class="p">(</span><span class="n">a_str</span><span class="p">(),</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Resource tags&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="c1"># Use in resources</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>    <span class="k">return</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">common_name_attr</span><span class="p">(),</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a>        <span class="s2">&quot;tags&quot;</span><span class="p">:</span> <span class="n">common_tags_attr</span><span class="p">(),</span>
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>        <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="n">a_num</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">),</span>
+<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a>    <span class="p">})</span>
+</code></pre></div>
+<h2 id="type-system-integration">Type System Integration<a class="headerlink" href="#type-system-integration" title="Permanent link">&para;</a></h2>
+<p>Pyvider's schema system integrates with:</p>
+<h3 id="python-types">Python Types<a class="headerlink" href="#python-types" title="Permanent link">&para;</a></h3>
+<p>Attributes map to Python types:
+- <code>a_str()</code> → <code>str</code>
+- <code>a_num()</code> → <code>int | float</code>
+- <code>a_bool()</code> → <code>bool</code>
+- <code>a_list(T)</code> → <code>list[T]</code>
+- <code>a_map(T)</code> → <code>dict[str, T]</code>
+- <code>a_obj({...})</code> → attrs class or dict</p>
+<h3 id="terraform-types-cty">Terraform Types (CTY)<a class="headerlink" href="#terraform-types-cty" title="Permanent link">&para;</a></h3>
+<p>Pyvider converts between Python and Terraform's CTY type system:
+- <code>string</code> ↔ <code>str</code>
+- <code>number</code> ↔ <code>int/float</code>
+- <code>bool</code> ↔ <code>bool</code>
+- <code>list(T)</code> ↔ <code>list[T]</code>
+- <code>map(T)</code> ↔ <code>dict[str, T]</code>
+- <code>object({...})</code> ↔ nested dict/attrs</p>
+<p>This conversion happens automatically in the framework.</p>
+<h2 id="schema-validation">Schema Validation<a class="headerlink" href="#schema-validation" title="Permanent link">&para;</a></h2>
+<p>Schemas are validated at multiple points:</p>
+<ol>
+<li><strong>Build time</strong>: When schema is created</li>
+<li>Structure validation</li>
+<li>
+<p>Type checking</p>
+</li>
+<li>
+<p><strong>Terraform plan</strong>: When user writes configuration</p>
+</li>
+<li>Required attributes present</li>
+<li>Types match</li>
+<li>
+<p>Custom validators pass</p>
+</li>
+<li>
+<p><strong>Provider operations</strong>: When framework calls your code</p>
+</li>
+<li>Data conversion</li>
+<li>Constraint checking</li>
+</ol>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../types/">Types Reference</a> - All available attribute types</li>
+<li><a href="../attributes/">Attributes</a> - Attribute options and behavior</li>
+<li><a href="../blocks/">Blocks</a> - Nested block patterns</li>
+<li><a href="../validators/">Validators</a> - Custom validation</li>
+<li><a href="../sensitive-data/">Sensitive Data</a> - Handling secrets</li>
+<li><a href="../common-patterns/">Common Patterns</a> - Schema patterns</li>
+<li><a href="../best-practices/">Best Practices</a> - Schema design guidelines</li>
+</ul>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Learn about <a href="../types/">all available types</a></li>
+<li>Understand <a href="../attributes/">attribute options</a></li>
+<li>Explore <a href="../blocks/">nested blocks</a></li>
+<li>Add <a href="../validators/">custom validators</a></li>
+<li>See <a href="../common-patterns/">common patterns</a></li>
+</ul>
+<hr />
+<p><strong>Remember</strong>: Schemas are the contract between your provider and Terraform. A well-designed schema makes your provider easy to use and understand.</p>
 
 
 
