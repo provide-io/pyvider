@@ -179,16 +179,47 @@ async def CallFunctionHandler(request: pb.CallFunction.Request, context: Any) ->
 
 async def _call_function_impl(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:
     """Implementation of CallFunction handler."""
-    logger.debug(f"FUNCTION_DISPATCH 📞 Received call for function: '{request.name}'")
+    logger.debug(
+        "CallFunction handler called",
+        operation="call_function",
+        function_name=request.name,
+        argument_count=len(request.arguments),
+    )
+
     response = pb.CallFunction.Response()
     try:
         func_name = request.name
         if not func_name:
-            raise PyviderFunctionError("Function name is required.")
+            logger.error(
+                "Function call attempted without function name",
+                operation="call_function",
+            )
+            raise PyviderFunctionError(
+                "Function name is required.\n\n"
+                "This is an internal error - Terraform should always provide a function name."
+            )
 
         function_obj = hub.get_component("function", func_name)
         if not function_obj or not callable(function_obj):
-            raise PyviderFunctionError(f"Function '{func_name}' not found or not callable.")
+            logger.error(
+                "Function not found or not callable",
+                operation="call_function",
+                function_name=func_name,
+                registered_functions=list(hub.get_components("function").keys())
+                if hub.get_components("function")
+                else [],
+            )
+
+            raise PyviderFunctionError(
+                f"Function '{func_name}' not found or not callable.\n\n"
+                f"Suggestion: Ensure the function is registered using the @function decorator "
+                f"and that component discovery has completed successfully.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Check that the function has the @function decorator\n"
+                f"  2. Verify the function module is imported by the provider\n"
+                f"  3. Run 'pyvider components list' to see registered functions\n"
+                f"  4. Review provider logs for component registration errors"
+            )
 
         func_meta = function_to_dict(function_obj)
         params_meta = func_meta.get("parameters", [])
@@ -204,14 +235,37 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         if variadic_meta:
             # With variadic parameter, we need AT LEAST the required parameters
             if num_provided < num_required:
+                logger.error(
+                    "Function called with too few arguments (variadic)",
+                    operation="call_function",
+                    function_name=func_name,
+                    required_count=num_required,
+                    provided_count=num_provided,
+                    has_variadic=True,
+                )
                 raise PyviderFunctionError(
-                    f"Incorrect number of arguments for {func_name}: expected at least {num_required}, got {num_provided}."
+                    f"Incorrect number of arguments for function '{func_name}'.\n\n"
+                    f"Expected: at least {num_required} arguments (function accepts variadic arguments)\n"
+                    f"Received: {num_provided} arguments\n\n"
+                    f"Suggestion: Provide at least {num_required} arguments. This function accepts "
+                    f"additional variadic arguments beyond the required ones."
                 )
         else:
             # Without variadic parameter, must match exactly
             if num_provided != num_required:
+                logger.error(
+                    "Function called with wrong number of arguments",
+                    operation="call_function",
+                    function_name=func_name,
+                    required_count=num_required,
+                    provided_count=num_provided,
+                    has_variadic=False,
+                )
                 raise PyviderFunctionError(
-                    f"Incorrect number of arguments for {func_name}: expected {num_required}, got {num_provided}."
+                    f"Incorrect number of arguments for function '{func_name}'.\n\n"
+                    f"Expected: {num_required} arguments\n"
+                    f"Received: {num_provided} arguments\n\n"
+                    f"Suggestion: Provide exactly {num_required} arguments to this function."
                 )
 
         native_kwargs, has_unknown = _process_function_arguments(
@@ -221,28 +275,52 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         declared_return_cty_type = func_meta.get("return", {}).get("cty_type", CtyDynamic())
 
         if has_unknown:
-            logger.debug(f"FUNCTION_DISPATCH ⏭️  Short-circuiting '{func_name}' due to unknown argument.")
+            logger.debug(
+                "Function call short-circuited due to unknown argument",
+                operation="call_function",
+                function_name=func_name,
+                reason="unknown_argument",
+            )
             unknown_result = CtyValue.unknown(declared_return_cty_type)
             response.result.CopyFrom(marshal(unknown_result, schema=declared_return_cty_type))
             return response
 
         _inject_capabilities(function_obj, native_kwargs)
 
-        logger.debug(f"FUNCTION_DISPATCH 🚀 Invoking '{func_name}' with kwargs: {list(native_kwargs.keys())}.")
-        logger.debug(f"FUNCTION_DISPATCH 🔍 Function kwargs details: {native_kwargs}")
+        logger.debug(
+            "Invoking function",
+            operation="call_function",
+            function_name=func_name,
+            argument_names=list(native_kwargs.keys()),
+        )
 
         result_py_val = await _invoke_function(function_obj, native_kwargs)
 
         marshalled_result = marshal(result_py_val, schema=declared_return_cty_type)
         response.result.CopyFrom(marshalled_result)
 
-        logger.debug(f"FUNCTION_DISPATCH ✅ Successfully executed '{func_name}'.")
+        logger.info(
+            "Function executed successfully",
+            operation="call_function",
+            function_name=func_name,
+            result_type=type(result_py_val).__name__,
+        )
 
     except PyviderFunctionError as fe:
+        logger.error(
+            "Function execution failed with PyviderFunctionError",
+            operation="call_function",
+            function_name=request.name,
+            error_message=str(fe),
+        )
         response.error.text = str(fe)
     except Exception as e:
         logger.error(
-            f"FUNCTION_DISPATCH 💥 Unhandled error in CallFunctionHandler for '{request.name}'",
+            "Function execution failed with unexpected error",
+            operation="call_function",
+            function_name=request.name,
+            error_type=type(e).__name__,
+            error_message=str(e),
             exc_info=True,
         )
         diag = await create_diagnostic_from_exception(e)
