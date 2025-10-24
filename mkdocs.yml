@@ -148,8 +148,7 @@ nav:
     - 'Managing Resources': 'guides/managing-resources.md'
     - 'Using Data Sources': 'guides/using-data-sources.md'
     - 'Using Functions': 'guides/using-functions.md'
-    - 'Advanced Examples': 'guides/advanced-examples.md'
-    - 'Advanced Usage': 'guides/advanced-usage.md'
+    - 'Advanced Patterns': 'guides/advanced-patterns.md'
 
   - 'Examples & Tutorials':
     - 'Quick Start': 'getting-started/quick-start.md'
