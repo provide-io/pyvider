@@ -7,30 +7,38 @@ This page documents Pyvider's exception hierarchy and error handling patterns fo
 ```mermaid
 graph TB
     E[Exception]
-    E --> PE[PyviderError]
+    E --> FND[FoundationError]
+    FND --> PE[PyviderError]
+    PE --> CE[ConversionError]
+    PE --> FCE[FrameworkConfigurationError]
+    PE --> PLE[PluginError]
+    PE --> PVE[PyviderValueError]
     PE --> PRE[ProviderError]
     PE --> RE[ResourceError]
     PE --> FE[FunctionError]
     PE --> SE[SchemaError]
     PE --> VE[ValidationError]
-    PE --> REG[RegistryError]
+    PE --> REG[ComponentRegistryError]
     PE --> SER[SerializationError]
-    PE --> GE[GrpcError]
-    PE --> FND[FoundationError]
+    PE --> GE[GRPCError]
 
     style PE fill:#f9f,stroke:#333,stroke-width:2px
+    style FND fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
 ## Base Exceptions
 
+!!! note "Foundation Error Hierarchy"
+    All Pyvider exceptions inherit from `FoundationError` (from the `provide.foundation` library), which provides rich error context, automatic telemetry integration, and Terraform diagnostic generation support. You don't need to import or use `FoundationError` directly - use the Pyvider-specific exception classes below.
+
 ### `PyviderError`
 
-Base exception for all Pyvider-specific errors:
+Base exception for all Pyvider-specific errors. Inherits from `FoundationError`:
 
 ```python
 from pyvider.exceptions import PyviderError
 
-class PyviderError(Exception):
+class PyviderError(FoundationError):
     """
     Base exception for all Pyvider errors.
 
@@ -460,13 +468,49 @@ except PyviderError as e:
       show_source: true
       show_bases: true
       members:
+        # Base exceptions
         - PyviderError
+        - PyviderValueError
+        - InvalidTypeError
+        - UnsupportedTypeError
+        - ConversionError
+        - WireFormatError
+        - FrameworkConfigurationError
+        - ComponentConfigurationError
+        - PluginError
+        # Provider exceptions
         - ProviderError
+        - ProviderConfigurationError
+        - ProviderInitializationError
+        # Resource exceptions
         - ResourceError
+        - ResourceNotFoundError
+        - ResourceOperationError
+        - ResourceValidationError
+        - ResourceLifecycleContractError
+        - CapabilityError
+        - DataSourceError
+        # Function exceptions
         - FunctionError
+        - FunctionRegistrationError
+        - FunctionValidationError
+        # Schema exceptions
         - SchemaError
+        - SchemaConversionError
+        - SchemaParseError
+        - SchemaRegistrationError
+        - SchemaValidationError
+        # Validation exceptions
         - ValidationError
-        - RegistryError
+        - AttributeValidationError
+        # Registry exceptions
+        - ComponentRegistryError
+        - ValidatorRegistrationError
+        # Serialization exceptions
         - SerializationError
-        - GrpcError
-        - FoundationError
+        - DeserializationError
+        # gRPC exceptions
+        - GRPCError
+        - GRPCConnectionError
+        - NetworkError
+        - RateLimitError
