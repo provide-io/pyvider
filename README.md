@@ -302,52 +302,14 @@ graph TB
 
 ## 📚 Documentation
 
-### Getting Started
+Full documentation is available at: [https://foundry.provide.io/pyvider/](https://foundry.provide.io/pyvider/)
+
+### Quick Links
 - [Installation Guide](docs/getting-started/installation.md)
 - [Quick Start Tutorial](docs/getting-started/quick-start.md)
-- [Your First Provider](docs/tutorials/first-provider.md)
-
-### Core Concepts
 - [Architecture Overview](docs/core-concepts/architecture.md)
-- [Component Model](docs/core-concepts/component-model.md)
-- [Schema System](docs/core-concepts/schema-system.md)
-
-### Developer Guides
-- [Creating Providers](docs/guides/creating-providers.md)
-- [Creating Resources](docs/guides/creating-resources.md)
-- [Creating Data Sources](docs/guides/creating-data-sources.md)
-- [Creating Functions](docs/guides/creating-functions.md)
-- [Testing](docs/guides/testing.md)
-- [Best Practices](docs/guides/best-practices.md)
-- [Error Handling](docs/guides/error-handling.md)
-- [Logging](docs/guides/logging.md)
-- [Debugging](docs/guides/debugging.md)
-
-### User Guides
-- [Configuration](docs/guides/configuration.md)
-- [Managing Resources](docs/guides/managing-resources.md)
-- [Using Data Sources](docs/guides/using-data-sources.md)
-- [Using Functions](docs/guides/using-functions.md)
-- [Advanced Examples](docs/guides/advanced-examples.md)
-
-### API Reference
-- [Schema API](docs/api-reference/schema.md)
-- [CLI Commands](docs/api-reference/cli.md)
-- [Types](docs/api-reference/types.md)
-
-### Schema Documentation
-- [Schema Overview](docs/schema/overview.md)
-- [Attributes](docs/schema/attributes.md)
-- [Blocks](docs/schema/blocks.md)
-- [Validators](docs/schema/validators.md)
-
-### Capabilities
-- [Capabilities Overview](docs/capabilities/overview.md)
-- [Using Capabilities](docs/capabilities/using-capabilities.md)
-- [Creating Capabilities](docs/capabilities/creating-capabilities.md)
-
-### Development
-- [Roadmap](docs/development/roadmap.md)
+- [API Reference](docs/api/index.md)
+- [Troubleshooting](docs/troubleshooting.md)
 
 ## 🎯 Use Cases
 
@@ -360,14 +322,16 @@ Pyvider excels at:
 - **🤖 ML/AI Infrastructure**: Model deployments, training pipelines, notebooks
 - **🔐 Security Tools**: Certificate management, secret rotation, compliance
 
-## 🚦 Production Ready
+## 🚦 Alpha Status
 
-- **✅ Terraform Certified**: Fully compliant with HashiCorp specifications
-- **🧪 Extensively Tested**: >90% code coverage with property-based testing
-- **⚡ Performance Optimized**: Benchmarked for production workloads
+- **✅ Protocol Compliant**: Implements Terraform Plugin Protocol v6
+- **🧪 Well Tested**: Growing test coverage with property-based testing
+- **⚡ Async Throughout**: Built on modern async Python
 - **🔒 Security First**: Built-in encryption for sensitive state data
 - **📊 Observable**: Structured logging with provide.foundation
 - **🌍 Cross-Platform**: Linux, macOS, Windows support
+
+**Note**: Pyvider is in alpha. APIs may change before 1.0 release.
 
 ## 🤝 Contributing
 
@@ -394,11 +358,11 @@ Apache 2.0 - See [LICENSE](LICENSE) for details.
 
 ## 🔗 Resources
 
-- **Documentation**: [Full Documentation](https://pyvider.readthedocs.io)
-- **Examples**: [Example Providers](examples/)
+- **Documentation**: [https://foundry.provide.io/pyvider/](https://foundry.provide.io/pyvider/)
+- **Examples**: [pyvider-components](https://github.com/provide-io/pyvider-components)
 - **PyPI**: [pyvider on PyPI](https://pypi.org/project/pyvider/)
 - **GitHub**: [Source Code](https://github.com/provide-io/pyvider)
-- **Discord**: [Community Chat](https://discord.gg/pyvider)
+- **Support**: [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ## 🙏 Acknowledgments
 

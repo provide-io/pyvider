@@ -2,10 +2,22 @@
 
 This document outlines planned features and future development directions for Pyvider.
 
+**Project Status**: Alpha (v0.0.x)
+**Target 1.0 Release**: TBD
+
+## Legend
+- 🟢 **Planned** - On roadmap, not started
+- 🟡 **In Progress** - Active development
+- 🔴 **Blocked** - Waiting on dependencies
+- ✅ **Completed** - Available in current version
+
+---
+
 ## Planned CLI Commands
 
-### `pyvider new`
+### `pyvider new` 🟢
 **Status:** Planned
+**Target:** Pre-1.0
 **Description:** Scaffold a new provider project with recommended structure
 
 ```bash
@@ -19,8 +31,9 @@ This would create a new directory with:
 - Test structure with pytest configuration
 - README and documentation templates
 
-### `pyvider build`
+### `pyvider build` 🟢
 **Status:** Planned
+**Target:** Pre-1.0
 **Description:** Build and package provider for distribution
 
 ```bash
@@ -33,10 +46,11 @@ This would:
 - Generate plugin metadata
 - Optionally sign the binary
 
-**Note:** Currently, use `python scripts/build_provider.py` as documented in CLAUDE.md
+**Workaround:** Currently, use `python scripts/build_provider.py` for building providers (see CLAUDE.md)
 
-### `pyvider validate`
+### `pyvider validate` 🟢
 **Status:** Planned
+**Target:** Post-1.0
 **Description:** Validate provider schema and configuration
 
 ```bash
@@ -47,9 +61,48 @@ pyvider validate --with-terraform
 
 ---
 
+---
+
+## Core Framework Roadmap
+
+### 1.0 Release Goals 🟡
+
+**Focus**: API stability, production readiness
+
+- [ ] Finalize core API surface (no breaking changes post-1.0)
+- [ ] Complete protocol v6 implementation (95%+ coverage)
+- [ ] Comprehensive test coverage (>90%)
+- [ ] Performance benchmarking and optimization
+- [ ] Security audit
+- [ ] Complete documentation review
+- [ ] Migration guide from pre-1.0 versions
+
+**Estimated Timeline**: Q1-Q2 2026
+
+---
+
 ## Future Feature Phases
 
-### Phase 3: Telemetry & Monitoring Integration
+### Phase 1: Enhanced Developer Experience 🟢
+**Target**: Pre-1.0
+
+- Better error messages with actionable suggestions
+- Improved type checking and validation
+- Enhanced debugging tools
+- Provider scaffolding (`pyvider new`)
+- Build tooling integration (`pyvider build`)
+
+### Phase 2: Production Hardening 🟡
+**Target**: 1.0 Release
+
+- Comprehensive integration test suite
+- Performance benchmarking framework
+- Memory leak detection and prevention
+- Connection pool management
+- Resource lifecycle cleanup improvements
+
+### Phase 3: Telemetry & Monitoring Integration 🟢
+**Target**: Post-1.0
 
 Leverage provide.foundation's telemetry capabilities for comprehensive observability:
 
@@ -172,4 +225,15 @@ Have ideas for future Pyvider features? We'd love to hear them!
 
 ---
 
+---
+
+## Contributing to the Roadmap
+
+The roadmap is a living document. Priorities may shift based on:
+- Community feedback and use cases
+- Critical bugs or security issues
+- Terraform protocol updates
+- Resource constraints
+
 **Last Updated:** 2025-10-24
+**Next Review:** Monthly

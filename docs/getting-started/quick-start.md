@@ -1,6 +1,6 @@
 # 🚀 Quick Start Guide
 
-Build your first Terraform provider in Python in just 5 minutes! This guide will walk you through creating a simple but functional provider that manages local files.
+Build your first Terraform provider in Python! This guide walks you through creating a simple but functional provider that manages local files.
 
 ## 📋 Prerequisites
 
@@ -8,8 +8,12 @@ Before starting, ensure you have:
 
 - ✅ Python 3.11+ installed
 - ✅ Pyvider installed (`pip install pyvider`)
-- ✅ Terraform installed (for testing)
-- ✅ 5 minutes of your time!
+- ✅ Terraform installed (optional, for testing with real Terraform)
+- ✅ Familiarity with Python async/await
+
+## ⚠️ Alpha Notice
+
+Pyvider is in alpha. The APIs shown here may change before 1.0. This example is tested and working as of version 0.0.1000.
 
 ## 🎯 What We'll Build
 
@@ -22,8 +26,6 @@ We'll create a **LocalFile Provider** that can:
 ## 📝 Step 1: Create the Provider
 
 Create a new file called `local_provider.py`:
-
-<!-- TODO: Verify this example works with current API (last checked: 2025-10-24) -->
 
 ```python
 #!/usr/bin/env python3

@@ -812,13 +812,14 @@ When creating an issue, include:
 
 Visit [https://github.com/provide-io/pyvider/issues](https://github.com/provide-io/pyvider/issues) and create a new issue with the information above.
 
-### 4. Check Existing Documentation
+### 4. Search Existing Issues
 
-- [Debugging Guide](guides/debugging.md) - Detailed debugging workflows
-- [Best Practices](guides/best-practices.md) - Avoid common pitfalls
-- [Error Handling](guides/error-handling.md) - Exception patterns
-- [Testing Providers](guides/testing-providers.md) - Test your provider
-- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Working examples
+Before creating a new issue:
+- Search [existing issues](https://github.com/provide-io/pyvider/issues)
+- Check [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
+- Review the [Debugging Guide](guides/debugging.md)
+- Check [Best Practices](guides/best-practices.md) for common patterns
+- Look at [Pyvider Components](https://github.com/provide-io/pyvider-components) for working examples
 
 ## Related Documentation
 

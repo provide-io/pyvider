@@ -1,20 +1,48 @@
-# 🐍 Welcome to Pyvider!
+# 🐍 What is Pyvider?
 
-Have you ever wanted to manage your infrastructure with the elegance and power of Python? Have you ever dreamed of creating your own Terraform providers, but were intimidated by the complexity of the plugin protocol?
+**Pyvider** is a Python framework for building Terraform providers. It implements the Terraform Plugin Protocol v6, allowing you to create custom Terraform providers using pure Python.
 
-If so, you've come to the right place.
+## 🎯 What Problem Does It Solve?
 
-**Pyvider** is a framework for building Terraform providers in Python. It's designed to be simple, flexible, and fun to use. With `pyvider`, you can create custom providers for your own APIs, services, and devices, and manage them with the same tools and workflows you use for the rest of your infrastructure.
+Traditionally, Terraform providers must be written in Go. This creates barriers for teams and individuals who:
 
-## 🤔 Who is this for?
+- **Prefer Python** over Go
+- **Already have Python expertise** in-house
+- **Want to leverage Python's ecosystem** (thousands of libraries for APIs, databases, cloud services)
+- **Need rapid prototyping** without learning a new language
+- **Have existing Python infrastructure code** they want to wrap as Terraform providers
 
-*   **You're a Python developer** who wants to get into the world of Infrastructure as Code.
-*   **You're a DevOps engineer** who wants to automate the management of your custom infrastructure.
-*   **You're a platform engineer** who wants to build a library of reusable infrastructure components for your team.
-*   **You're a dreamer, a builder, a creator** who wants to bring your ideas to life.
+Pyvider removes these barriers by letting you write providers in Python while maintaining full Terraform compatibility.
 
-## 💖 Our Philosophy
+## 🤔 Who Should Use Pyvider?
 
-We believe that building infrastructure should be a creative and empowering experience. We believe that the tools we use should be simple, elegant, and fun to use. We believe that everyone should have the power to create their own infrastructure, and we're here to help you do it.
+### Perfect For:
+- **Python developers** wanting to create custom Terraform providers
+- **DevOps/Platform engineers** automating internal infrastructure
+- **Teams** with existing Python codebases to expose via Terraform
+- **Educators** teaching infrastructure-as-code concepts
+- **Rapid prototyping** of provider ideas before committing to Go
 
-We're not just building a framework; we're building a community. We're here to support you on your journey, and we're excited to see what you create.
+### Not Ideal For:
+- Public, high-traffic providers (Go may be more performant)
+- Teams already proficient in Go with existing Go provider codebases
+- Extremely latency-sensitive operations (though Pyvider is quite fast)
+
+## 🚀 Key Features
+
+- **Pure Python**: Write providers using familiar Python patterns
+- **Protocol v6**: Latest Terraform plugin protocol
+- **Async by default**: Built on modern async/await Python
+- **Type-safe**: Leverages Python type hints and attrs
+- **Decorator-based**: Simple registration system
+- **Well-tested**: Comprehensive test suite
+
+## ⚠️ Current Status
+
+**Pyvider is in alpha (v0.0.x)**:
+- APIs may change before 1.0
+- Best suited for internal tooling and experimentation
+- Not yet recommended for public providers
+- Active development toward 1.0 release
+
+See the [Roadmap](../development/roadmap.md) for future plans.

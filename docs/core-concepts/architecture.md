@@ -495,6 +495,16 @@ async def create(self, config: Config) -> State:
 - Implement proper read() to detect drift
 - Handle missing resources gracefully
 
+## ⚠️ Alpha Considerations
+
+Pyvider's architecture is stable, but as an alpha project:
+
+- Internal APIs may change before 1.0
+- Performance characteristics are still being optimized
+- Some edge cases may not be fully handled
+
+Report architectural issues or suggestions in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions).
+
 ## 📚 Further Reading
 
 - [Component Model](component-model.md) - Deep dive into component system

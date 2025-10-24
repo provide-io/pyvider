@@ -194,14 +194,14 @@ Pyvider integrates seamlessly with modern Python development tools:
 | **Performance** | Excellent | Excellent |
 | **Protocol Support** | v6 (latest) | v5/v6 |
 
-## 🌟 Success Stories
+## 🌟 Early Adopters
 
-Organizations using Pyvider in production:
+Pyvider is currently in alpha and being used by early adopters for:
 
-- **TechCorp**: Reduced provider development time by 70%
-- **CloudScale**: Migrated 15 internal providers from Go to Python
-- **DataPlatform Inc**: Built complex data pipeline providers in days, not weeks
-- **StartupXYZ**: Enabled junior developers to contribute to infrastructure
+- **Internal tooling**: Building custom providers for company-specific infrastructure
+- **Rapid prototyping**: Testing provider concepts before committing to Go implementations
+- **Python-first teams**: Leveraging existing Python expertise for IaC
+- **Educational projects**: Teaching Terraform provider development concepts
 
 ## 🚀 Ready to Start?
 
@@ -220,17 +220,18 @@ Organizations using Pyvider in production:
 ## 💬 Community & Support
 
 - **GitHub Issues**: [Report bugs or request features](https://github.com/provide-io/pyvider/issues)
-- **Discussions**: [Ask questions and share ideas](https://github.com/provide-io/pyvider/discussions)
-- **Discord**: [Join our community chat](https://discord.gg/pyvider)
-- **Stack Overflow**: Tag questions with `pyvider`
+- **GitHub Discussions**: [Ask questions and share ideas](https://github.com/provide-io/pyvider/discussions)
+
+**Note**: As an alpha project, the best way to get support is through GitHub Issues and Discussions.
 
 ## 📈 Project Status
 
-- **Current Version**: 1.0.0
+- **Current Version**: 0.0.1000 (Alpha)
 - **Protocol Version**: Terraform Plugin Protocol v6
 - **Python Support**: 3.11+
 - **License**: Apache 2.0
-- **Status**: Production Ready
+- **Status**: Alpha - Under Active Development
+- **Stability**: API may change before 1.0 release
 
 ---
 

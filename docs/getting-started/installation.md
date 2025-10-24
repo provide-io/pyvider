@@ -25,13 +25,9 @@ The quickest way to get started with Pyvider:
 ```bash
 # Basic installation
 pip install pyvider
-
-# With all optional dependencies
-pip install pyvider[all]
-
-# For development (includes testing tools)
-pip install pyvider[dev]
 ```
+
+**Note**: Pyvider uses dependency groups (via uv) rather than extras. For development dependencies, see Method 2.
 
 ### Method 2: Using uv (Recommended)
 
@@ -48,27 +44,11 @@ cd my-provider
 # Add Pyvider as a dependency
 uv add pyvider
 
-# For development setup
-uv add --dev pytest pytest-asyncio pytest-cov mypy ruff
+# For development, use sync to include dev dependencies
+uv sync --group dev
 ```
 
-### Method 3: Using Poetry
-
-If you prefer Poetry for dependency management:
-
-```bash
-# Create a new project
-poetry new my-provider
-cd my-provider
-
-# Add Pyvider
-poetry add pyvider
-
-# Add development dependencies
-poetry add --group dev pytest pytest-asyncio pytest-cov mypy ruff
-```
-
-### Method 4: From Source (Advanced)
+### Method 3: From Source (Development)
 
 For contributing or testing the latest features:
 
@@ -77,15 +57,16 @@ For contributing or testing the latest features:
 git clone https://github.com/provide-io/pyvider.git
 cd pyvider
 
-# Set up development environment
-uv sync  # On Windows: .\env.ps1
+# Set up development environment with uv
+uv sync --group dev
 
 # Install in editable mode
-pip install -e .
+uv pip install -e .
 
 # Run tests to verify installation
-pytest
+uv run pytest
 ```
+
 
 ## 🔧 Environment Setup
 
@@ -150,19 +131,17 @@ description = "A Terraform provider built with Pyvider"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyvider>=1.0.0",
+    "pyvider>=0.0.1000",
     "httpx>=0.24.0",  # For HTTP APIs
-    "pydantic>=2.0.0",  # For validation
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0.0",
     "mypy>=1.0.0",
     "ruff>=0.1.0",
-    "black>=23.0.0",
 ]
 
 [build-system]
@@ -409,14 +388,13 @@ Keep Pyvider up to date for the latest features and fixes:
 pip install --upgrade pyvider
 
 # Using uv
-uv add --upgrade pyvider
-
-# Using poetry
-poetry update pyvider
+uv sync --upgrade
 
 # Check current version
 pyvider --version
 ```
+
+**Note**: Pyvider is in alpha. Breaking changes may occur between releases. Check the release notes before upgrading.
 
 ## 📚 Next Steps
 
@@ -433,8 +411,7 @@ If you encounter issues during installation:
 
 - Check the [Troubleshooting Guide](../troubleshooting.md)
 - Search [GitHub Issues](https://github.com/provide-io/pyvider/issues)
-- Ask in our [Discord Community](https://discord.gg/pyvider)
-- Post on [Stack Overflow](https://stackoverflow.com/questions/tagged/pyvider) with tag `pyvider`
+- Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ---
 
