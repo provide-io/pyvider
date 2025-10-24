@@ -106,8 +106,8 @@ async def test_create_vm():
 # Component discovery
 pyvider components list
 
-# Development server
-pyvider provide --debug
+# Launch provider in server mode for local testing
+PYVIDER_LOG_LEVEL=DEBUG pyvider provide --force
 
 # Launch provider service
 pyvider provide
@@ -232,35 +232,36 @@ output "instance_ip" {
 ### 3. Test Your Provider
 
 ```python
-# test_provider.py
+# tests/test_instance.py
 import pytest
-from pyvider.testing import ProviderFixture
+from pyvider.resources.context import ResourceContext
+from my_provider.resources import Instance
 
-@pytest.fixture
-def provider():
-    return ProviderFixture("my_provider")
+@pytest.mark.asyncio
+async def test_instance_lifecycle():
+    resource = Instance()
 
-def test_instance_lifecycle(provider):
     # Create instance
-    result = provider.apply("mycloud_instance", "test", {
-        "name": "test-instance",
-        "ami": "ami-12345"
-    })
-    
-    assert result.state["status"] == "running"
-    assert result.state["id"].startswith("i-")
-    
+    create_ctx = ResourceContext(
+        config=Instance.Config(name="test-instance", ami="ami-12345"),
+    )
+    state, _ = await resource._create_apply(create_ctx)
+
+    assert state
+    assert state.status == "running"
+    assert state.id.startswith("i-")
+
     # Update instance
-    result = provider.apply("mycloud_instance", "test", {
-        "name": "test-instance",
-        "ami": "ami-12345",
-        "size": "t3.xlarge"
-    })
-    
-    assert result.state["size"] == "t3.xlarge"
-    
+    update_ctx = ResourceContext(
+        config=Instance.Config(name="test-instance", ami="ami-12345", size="t3.xlarge"),
+        state=state,
+    )
+    state, _ = await resource._update_apply(update_ctx)
+    assert state.size == "t3.xlarge"
+
     # Destroy instance
-    provider.destroy("mycloud_instance", "test")
+    delete_ctx = ResourceContext(state=state)
+    await resource._delete_apply(delete_ctx)
 ```
 
 ## 🏛️ Architecture

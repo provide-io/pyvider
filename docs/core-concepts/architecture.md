@@ -419,8 +419,10 @@ Every request includes trace IDs for correlation:
 Built-in profiling for optimization:
 
 ```python
+from pyvider.resources.context import ResourceContext
+
 with timed_block(logger, "resource_creation"):
-    state = await resource.create(config)
+    state, _ = await resource._create_apply(ResourceContext(config=config))
 # Logs: [⏱️] resource_creation duration_ms=234.56
 ```
 

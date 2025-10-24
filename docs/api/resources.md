@@ -4,7 +4,7 @@ Base classes and utilities for creating Terraform resources with full CRUD lifec
 
 ## Overview
 
-Resources in Pyvider represent manageable infrastructure with create, read, update, and delete operations.
+Resources in Pyvider represent manageable infrastructure components that Terraform can plan and apply through Pyvider's async lifecycle.
 
 ### Key Components
 
@@ -16,12 +16,16 @@ Resources in Pyvider represent manageable infrastructure with create, read, upda
 
 ### Lifecycle Methods
 
-Resources implement standard lifecycle methods:
-- `create()` - Create new resource instance
-- `read()` - Refresh resource state
-- `update()` - Modify existing resource
-- `delete()` - Remove resource
-- `import_resource()` - Import existing resources (optional)
+Resources interact with Terraform via a plan/apply cycle:
+- `read(ctx: ResourceContext)` — refresh the latest state (called by Terraform refresh and after apply)
+- `plan(ctx)` — framework-provided method that calls `_create/_update/_delete_plan` hooks to build a planned state
+- `apply(ctx)` — framework-provided method that calls `_create_apply/_update_apply/_delete_apply` hooks to enact the plan
+
+Resource authors typically override:
+- `_create(ctx, base_plan)` / `_update(ctx, base_plan)` / `_delete_plan(ctx)` to shape the plan output
+- `_create_apply(ctx)` / `_update_apply(ctx)` / `_delete_apply(ctx)` to perform real API calls and return final state/private state tuples
+
+See `src/pyvider/resources/base.py` for the exact signatures.
 
 ## Module Reference
 

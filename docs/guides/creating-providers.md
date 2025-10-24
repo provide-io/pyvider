@@ -313,8 +313,11 @@ class Server(BaseResource):
             return None
 
         # Get provider instance
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
+        if provider is None:
+            raise RuntimeError("Provider has not been registered in the hub yet.")
 
         # Fetch server from API
         response = await provider.api_client.get(f"/servers/{ctx.state.id}")
@@ -335,8 +338,8 @@ class Server(BaseResource):
         if not ctx.config:
             return None, None
 
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
 
         # Create server via API
         response = await provider.api_client.post("/servers", json={
@@ -361,8 +364,8 @@ class Server(BaseResource):
         if not ctx.config or not ctx.state:
             return None, None
 
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
 
         # Update server via API
         response = await provider.api_client.patch(
@@ -388,8 +391,8 @@ class Server(BaseResource):
         if not ctx.state:
             return
 
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
 
         # Delete server via API
         await provider.api_client.delete(f"/servers/{ctx.state.id}")
@@ -436,8 +439,8 @@ class ImageLookup(BaseDataSource):
         })
 
     async def read(self, config: ImageLookupConfig) -> ImageLookupData:
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
 
         # Search for images
         response = await provider.api_client.get("/images", params={

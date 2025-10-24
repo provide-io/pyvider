@@ -689,14 +689,15 @@ async def test_instance_creation(instance_resource):
 ### Check Registered Components
 
 ```python
-from pyvider.hub import ProviderHub
+# Inspect components registered in the hub
+from pyvider.hub import hub
 
 # List all registered resources
-resources = ProviderHub.get_resources()
+resources = hub.get_components("resource")
 print(f"Registered resources: {list(resources.keys())}")
 
 # Get specific component
-instance_class = ProviderHub.get_resource("instance")
+instance_class = hub.get_component("resource", "instance")
 ```
 
 ### Common Registration Errors

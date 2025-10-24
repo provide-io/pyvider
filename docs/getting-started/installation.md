@@ -228,11 +228,11 @@ python test_installation.py
 # List discovered components
 pyvider components list
 
-# Validate configuration
-pyvider config validate
+# Show effective configuration
+pyvider config show
 
-# Show system information
-pyvider info
+# Inspect launch context / environment
+pyvider launch-context
 ```
 
 ## 🔌 IDE Setup

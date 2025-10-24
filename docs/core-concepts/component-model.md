@@ -543,26 +543,32 @@ stateDiagram-v2
     Active --> [*]: Request complete
 ```
 
-### Resource Instance Lifecycle
+### Resource Invocation Flow
 
 ```python
-# 1. Instantiation (per request)
-resource = hub.get_resource("server")()
+from pyvider.hub import hub
+from pyvider.resources.context import ResourceContext
 
-# 2. Provider injection
-resource.provider = configured_provider
+# 1. Framework looks up the component and instantiates it
+resource_cls = hub.get_component("resource", "server")
+resource = resource_cls()
 
-# 3. Context injection (if needed)
-resource.context = ResourceContext(
-    resource_type="mycloud_server",
-    resource_name="web_server"
+# 2. A ResourceContext is assembled for the current RPC
+ctx = ResourceContext(
+    config=Server.Config(...),
+    state=None,              # or prior state during updates
+    planned_state=None,      # populated during plan()
+    private_state=None,      # decrypted provider state
 )
 
-# 4. Method invocation
-state = await resource.create(config)
+# 3. Terraform plan/apply phases call into hooks
+plan, private = await resource._create(ctx, base_plan={})
+state, private = await resource._create_apply(
+    ResourceContext(config=ctx.config, planned_state=plan, private_state=private)
+)
 
-# 5. Cleanup (automatic)
-# Instance is garbage collected after request
+# 4. read(ctx) is invoked to refresh state after apply or during refresh
+current = await resource.read(ResourceContext(state=state))
 ```
 
 ## 🛡️ Validation
@@ -579,7 +585,7 @@ def validate_resource(cls: type) -> None:
         raise ValidationError("Must inherit from BaseResource")
     
     # Check required methods
-    required = ['create', 'read', 'update', 'delete']
+    required = ['read', '_create_apply', '_update_apply', '_delete_apply']
     for method in required:
         if not hasattr(cls, method):
             raise ValidationError(f"Missing required method: {method}")

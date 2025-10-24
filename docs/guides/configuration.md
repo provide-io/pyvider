@@ -311,14 +311,14 @@ Resources can access provider configuration through the hub:
 ```python
 from pyvider.resources import register_resource, BaseResource
 from pyvider.resources.context import ResourceContext
-from pyvider.hub import ProviderHub
+from pyvider.hub import hub
 
 @register_resource("server")
 class Server(BaseResource):
     async def _create_apply(self, ctx: ResourceContext) -> tuple[ServerState | None, None]:
         """Create server using provider configuration."""
         # Get provider instance
-        provider = ProviderHub.get_provider()
+        provider = hub.get_component("singleton", "provider")
 
         # Access provider config
         api_key = provider.config.api_key

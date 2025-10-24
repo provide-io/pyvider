@@ -148,8 +148,10 @@ class File(BaseResource):
             return None, None
 
         # Get provider config
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+        if provider is None or provider.provider_config is None:
+            raise RuntimeError("Provider is not configured yet.")
         provider_config = provider.provider_config
 
         # Write file
