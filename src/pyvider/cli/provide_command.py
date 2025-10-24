@@ -69,6 +69,13 @@ async def _run_provider_server(magic_cookie: str) -> None:
         _discover_components_once.done = True
 
     try:
+        logger.info(
+            "Provider server initialization started",
+            operation="provider_init",
+            python_version=sys.version.split()[0],
+            platform=sys.platform,
+        )
+
         config = PyviderConfig()
         _configure_telemetry(config)
 
@@ -76,12 +83,40 @@ async def _run_provider_server(magic_cookie: str) -> None:
         from pyvider.common.launch_context import log_launch_context
 
         launch_context = log_launch_context(logger.info)
-        logger.info(f"Provider initialized with launch method: {launch_context.method.value}", domain="system")
+        logger.info(
+            "Provider initialized with launch context",
+            operation="provider_init",
+            launch_method=launch_context.method.value,
+            executable=launch_context.executable_path,
+            domain="system",
+        )
 
+        logger.debug(
+            "Starting component discovery",
+            operation="component_discovery",
+        )
         await _discover_components_once()
+        logger.debug(
+            "Component discovery completed",
+            operation="component_discovery",
+        )
+
+        logger.debug(
+            "Creating provider instance",
+            operation="provider_create",
+        )
         provider_instance = PyviderProvider()
         await provider_instance.setup()
+        logger.debug(
+            "Provider setup completed",
+            operation="provider_setup",
+        )
+
         hub.register("singleton", "provider", provider_instance)
+        logger.debug(
+            "Provider registered in hub",
+            operation="hub_register",
+        )
         protocol = PyviderProtocol()
         handler = ProviderHandler(provider_instance)
 
@@ -92,15 +127,68 @@ async def _run_provider_server(magic_cookie: str) -> None:
             "PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN": config.get("server.timeout_graceful_shutdown", 5),
         }
 
+        logger.info(
+            "Starting RPC plugin server",
+            operation="server_start",
+            magic_cookie_present=bool(magic_cookie),
+            graceful_shutdown_timeout=server_config["PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN"],
+        )
+
         server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
         await server.serve()
-        logger.info("Provider server has shut down gracefully.", domain="system")
+
+        logger.info(
+            "Provider server has shut down gracefully",
+            operation="server_shutdown",
+            domain="system",
+        )
     except Exception as e:
         import logging
 
         logging.basicConfig()
         local_logger = logging.getLogger("pyvider.critical")
-        local_logger.error(f"Provider server failed to start or crashed: {e}", exc_info=True)
+        local_logger.error(
+            "Provider server failed to start or crashed",
+            exc_info=True,
+            extra={
+                "error_type": type(e).__name__,
+                "error_message": str(e),
+                "python_version": sys.version,
+                "platform": sys.platform,
+            },
+        )
+
+        # Enhanced error message for users
+        click.secho("\n" + "═" * 70, fg="red", err=True)
+        click.secho(" ❌  Provider Server Error", fg="red", bold=True, err=True)
+        click.secho("═" * 70, fg="red", err=True)
+        click.secho(
+            f"\nThe provider server failed to start or crashed unexpectedly.\n",
+            fg="white",
+            err=True,
+        )
+        click.secho(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
+        click.secho(f"Error Message: {str(e)}\n", fg="yellow", err=True)
+
+        click.secho("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
+        click.secho("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
+        click.secho("  2. Verify all dependencies are installed: 'uv sync' or 'pip install -e .'", fg="white", err=True)
+        click.secho("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
+        click.secho("  4. Review the full error trace above for specific details", fg="white", err=True)
+        click.secho("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
+
+        click.secho("\nCommon Causes:", fg="cyan", bold=True, err=True)
+        click.secho("  • Missing or incompatible dependencies", fg="white", err=True)
+        click.secho("  • Invalid provider configuration", fg="white", err=True)
+        click.secho("  • Port already in use (if binding to specific port)", fg="white", err=True)
+        click.secho("  • Insufficient permissions", fg="white", err=True)
+        click.secho("  • Corrupted provider binary or package", fg="white", err=True)
+
+        click.secho("\nIf the issue persists:", fg="cyan", bold=True, err=True)
+        click.secho("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
+        click.secho(f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}", fg="white", err=True)
+        click.secho("═" * 70, fg="red", err=True)
+
         sys.exit(1)
 
 
