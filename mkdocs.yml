@@ -172,6 +172,8 @@ nav:
     - 'Capability Marketplace': 'capabilities/capability-marketplace.md'
 
   - 'API Reference':
+    - 'Decorators': 'api-reference/decorators.md'
+    - 'Testing': 'api-reference/testing.md'
     - 'CLI': 'api-reference/cli.md'
     - 'Schema': 'api-reference/schema.md'
     - 'Types': 'api-reference/types.md'
