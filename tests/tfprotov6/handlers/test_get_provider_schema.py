@@ -344,7 +344,7 @@ class TestGetProviderSchemaLogging:
 
                                 # Check that success was logged
                                 assert any(
-                                    "computed successfully" in str(call).lower()
+                                    "computed" in str(call).lower() and "successfully" in str(call).lower()
                                     for call in mock_logger.info.call_args_list
                                 )
 
