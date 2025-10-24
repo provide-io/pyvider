@@ -743,5 +743,5 @@ If you run into issues:
 
 <p align="center">
   🎊 <strong>Congratulations on building your first provider!</strong> 🎊<br>
-  Ready for more? Continue to the <a href="../tutorials/first-provider.md">Complete Tutorial →</a>
+  Ready for more? Check out the <a href="../guides/creating-providers.md">Provider Development Guide →</a>
 </p>
