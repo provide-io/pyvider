@@ -1,8 +1,9 @@
 # Using Capabilities
 
-> **Note**: The capabilities system is currently under active development. This documentation describes the planned functionality.
+Capabilities provide a way to extend components with reusable functionality. They allow you to add common behaviors like authentication, caching, validation, or data transformation to your resources, data sources, and providers.
 
-Capabilities provide a way to extend components with reusable functionality. They allow you to add common behaviors like authentication, logging, or data transformation to your resources, data sources, and providers.
+!!! note "Capabilities Status"
+    The capabilities system is **fully implemented and working**. Provider developers can create and use capabilities in their providers. Some advanced features (like a capability marketplace) are planned for future releases.
 
 ## Overview
 
@@ -36,18 +37,20 @@ class MyResource:
 
 See [Creating Capabilities](creating-capabilities.md) for details on implementing your own capabilities.
 
-## Built-in Capabilities
+## Available Capabilities
 
-Pyvider provides several built-in capabilities:
+Pyvider provides the capability infrastructure (`@register_capability`, `@requires_capability` decorators and `BaseCapability` class), but does not include built-in capability implementations in the core framework.
 
-### Authentication Capability
-Handles authentication flows and token management.
+**Create your own capabilities for:**
+- Authentication flows and token management
+- Caching for expensive operations
+- Request rate limiting
+- Custom validation logic
+- Logging and observability enhancements
+- Retry and error handling patterns
 
-### Logging Capability
-Enhanced logging with structured output and context.
-
-### Caching Capability
-Provides caching for expensive operations.
+**Example capabilities in the community:**
+- See [pyvider-components](https://github.com/provide-io/pyvider-components) for example capability implementations
 
 ## Configuration
 
