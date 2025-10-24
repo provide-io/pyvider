@@ -63,14 +63,27 @@ uv pip install -e .
 
 ### Development Tools
 ```bash
-# pyvider CLI
+# pyvider CLI help
 pyvider --help
 
-# Check component registry
-pyvider components list
+# Component management
+pyvider components list                    # List all components
+pyvider components show resource my_res    # Show component schema
+pyvider components diagnostics             # Show discovery diagnostics
+
+# Configuration
+pyvider config show                        # Display current configuration
+
+# Installation
+pyvider install                            # Install provider for Terraform
+
+# Launch context (for debugging)
+pyvider launch-context                     # Show how pyvider was launched
+pyvider launch-context --format json       # JSON output
 
 # Launch provider service
-pyvider provide
+pyvider provide                            # Start provider server (default command)
+pyvider provide --force                    # Force server mode for testing
 ```
 
 ## Architecture Overview
@@ -78,11 +91,11 @@ pyvider provide
 ### Core Component Model
 Pyvider uses a **hub-based discovery system** where components self-register via decorators:
 
-- **Provider**: Entry point that configures authentication and shared settings (`@provider` decorator)
-- **Resources**: CRUD lifecycle management for infrastructure (`@resource` decorator)  
-- **Data Sources**: Read-only data fetchers (`@data_source` decorator)
-- **Functions**: Callable logic for transformations (`@function` decorator)
-- **Ephemerals**: Short-lived resources with open/renew/close lifecycle (`@ephemeral` decorator)
+- **Provider**: Entry point that configures authentication and shared settings (`@register_provider` decorator)
+- **Resources**: CRUD lifecycle management for infrastructure (`@register_resource` decorator)
+- **Data Sources**: Read-only data fetchers (`@register_data_source` decorator)
+- **Functions**: Callable logic for transformations (`@register_function` decorator)
+- **Ephemerals**: Short-lived resources with open/renew/close lifecycle (`@register_ephemeral_resource` decorator)
 
 ### Protocol Layer
 The `protocols/tfprotov6/` directory implements the Terraform Plugin Protocol v6:
@@ -118,13 +131,16 @@ Reusable, composable components in `capabilities/`:
 ### Component Registration
 Components must use decorators to register with the hub:
 ```python
-from pyvider import provider, resource, data_source, function
+from pyvider.providers import register_provider
+from pyvider.resources import register_resource
+from pyvider.data_sources import register_data_source
+from pyvider.functions import register_function
 
-@provider
+@register_provider("my_provider")
 class MyProvider(Provider):
     pass
 
-@resource  
+@register_resource("my_resource")
 class MyResource(Resource):
     pass
 ```

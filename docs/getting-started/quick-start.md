@@ -627,7 +627,7 @@ You've just built your first Terraform provider in Python! In just a few minutes
 
 When you run your provider, Pyvider:
 
-1. **Discovers Components**: Finds all `@provider`, `@resource`, and `@data_source` decorators
+1. **Discovers Components**: Finds all `@register_provider`, `@register_resource`, and `@register_data_source` decorators
 2. **Generates Schema**: Converts Python types to Terraform schema
 3. **Handles Protocol**: Manages all gRPC communication with Terraform
 4. **Manages State**: Tracks resource state between operations
@@ -636,9 +636,9 @@ When you run your provider, Pyvider:
 ## 📚 Key Concepts Demonstrated
 
 ### 🎯 Decorators
-- `@provider`: Registers your provider class
-- `@resource`: Defines a manageable resource
-- `@data_source`: Creates a read-only data source
+- `@register_provider`: Registers your provider class
+- `@register_resource`: Defines a manageable resource
+- `@register_data_source`: Creates a read-only data source
 
 ### 📋 Schema Definition
 - `@attrs.define`: Creates type-safe configuration classes

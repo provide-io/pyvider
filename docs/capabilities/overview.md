@@ -28,12 +28,12 @@ class CachingCapability(BaseCapability):
         pass
 
 # Apply it to multiple resources
-@resource("server")
+@register_resource("server")
 @use_capability(CachingCapability)
 class Server(BaseResource):
     pass
 
-@resource("database")
+@register_resource("database")
 @use_capability(CachingCapability)
 class Database(BaseResource):
     pass

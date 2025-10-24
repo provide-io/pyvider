@@ -1,12 +1,9 @@
 """Internal utilities for the Pyvider CLI tool."""
 
-import datetime
 from pathlib import Path
 
 from provide.foundation.console import pout
-from provide.foundation.file import atomic_write_text, ensure_dir
-from provide.foundation.process import run
-from provide.foundation.utils import timed_block
+from provide.foundation.file import atomic_write_text
 
 from pyvider.cli.context import PyviderContext
 
@@ -44,82 +41,6 @@ def _find_actual_venv(base_dir: Path) -> Path | None:
             return venv_dir
 
     return None
-
-
-def _run_command(
-    command: list[str] | str,
-    cwd: str | None = None,
-    env: dict[str, str] | None = None,
-    check: bool = True,
-    title: str = "",
-) -> str:
-    cmd_str = " ".join(command)
-    effective_cwd = cwd or Path.cwd()
-
-    log_dir = Path.home() / ".pyvider" / "logs"
-    ensure_dir(log_dir)  # Foundation's safe directory creation
-    log_file_path = log_dir / "prep.log"
-
-    timestamp = datetime.datetime.now().isoformat()
-    log_entry_header = f"--- Log Entry: {timestamp} ---\n"
-    log_entry_cmd = f"Command: {cmd_str}\n"
-    log_entry_cwd = f"CWD: {effective_cwd}\n"
-
-    step_title = title or cmd_str
-    pout(f"⏳ {step_title}...", style="cyan", end="")
-
-    try:
-        with timed_block() as timer:  # type: ignore[call-arg]
-            # Use foundation's process runner with better error handling
-            result = run(
-                command,
-                cwd=effective_cwd,
-                env=env,
-                check=False,  # We handle return codes ourselves
-            )
-        stdout_str, stderr_str = result.stdout, result.stderr
-        return_code = result.returncode
-
-        # Use foundation's safe file operations for atomic logging
-        log_content = (
-            f"{log_entry_header}"
-            f"{log_entry_cmd}"
-            f"{log_entry_cwd}"
-            f"Duration: {timer.elapsed:.2f}s\n"  # type: ignore[attr-defined]
-            f"STDOUT:\n{stdout_str}\n"
-            f"STDERR:\n{stderr_str}\n"
-            f"Return Code: {return_code}\n---\n\n"
-        )
-
-        # Append to existing log file safely
-        existing_content = ""
-        if log_file_path.exists():
-            existing_content = log_file_path.read_text(encoding="utf-8")
-
-        atomic_write_text(log_file_path, existing_content + log_content)
-
-        if check and return_code != 0:
-            pout(" ❌ FAILED", style="red")
-            error_message = f"Command failed with exit code {return_code}. Details in {log_file_path}"
-            pout(error_message, style="red")
-            from provide.foundation.process import ProcessError
-
-            raise ProcessError(
-                f"Command failed with exit code {return_code}",
-                exit_code=return_code,
-                command=command,
-                stdout=stdout_str,
-                stderr=stderr_str,
-            )
-        else:
-            pout(f" ✅ Done ({timer.elapsed:.2f}s)", style="green")  # type: ignore[attr-defined]
-        return stdout_str
-
-    except Exception as e:
-        pout(" ❌ ERROR", style="red")
-        error_message = f"Failed to run command '{cmd_str}': {e}. Details may be in {log_file_path}"
-        pout(error_message, style="red")
-        raise
 
 
 def _place_terraform_provider_script(ctx: PyviderContext) -> None:

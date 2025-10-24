@@ -214,14 +214,15 @@ Create a simple test file to verify component discovery:
 
 ```python
 # test_installation.py
-from pyvider import provider, resource
+from pyvider.providers import register_provider
+from pyvider.resources import register_resource
 
-@provider
+@register_provider("test")
 class TestProvider:
     """Test provider to verify installation"""
     metadata = {"name": "test", "version": "0.1.0"}
 
-@resource
+@register_resource("test_resource")
 class TestResource:
     """Test resource"""
     pass

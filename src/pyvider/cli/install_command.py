@@ -7,9 +7,7 @@ from provide.foundation.console import perr
 from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
-
-# Import the correct command for placing the provider script.
-from pyvider.cli.prep_commands import prep_provider
+from pyvider.cli.utils import _place_terraform_provider_script
 
 
 def is_running_as_binary() -> bool:
@@ -91,9 +89,9 @@ def install_command(ctx: click.Context) -> None:  # noqa: C901
         click.secho("📝 Running in Development Mode.", fg="yellow")
         click.echo("  Placing development wrapper script for Terraform...")
         try:
-            # Invoke the command that places the provider script, not the one
-            # that installs Terraform itself.
-            ctx.invoke(prep_provider)
+            # Directly call the utility to place the provider script.
+            _place_terraform_provider_script(pyvider_ctx)
+            click.secho("✅ Terraform provider script placement complete.", fg="green")
         except Exception as e:
             click.secho(
                 f"\n❌ Failed to place development wrapper script: {e}",
