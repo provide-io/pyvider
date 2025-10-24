@@ -6,7 +6,7 @@ This guide will help you get started with using `pyvider` to manage your infrast
 
 ### Prerequisites
 
-- Python 3.12 or later
+- Python 3.11 or later
 - Terraform 1.0 or later
 
 ### Installing `pyvider`

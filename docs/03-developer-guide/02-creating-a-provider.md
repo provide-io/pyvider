@@ -14,17 +14,34 @@ This will create a new directory called `my-provider` with a basic provider proj
 
 ## 📄 Defining the Provider Schema
 
-The provider schema defines the configuration options for the provider. You can define the provider schema in the `provider.py` file using the `@provider` decorator.
+The provider schema defines the configuration options for the provider. You can define the provider schema in the `provider.py` file using the `@register_provider` decorator.
 
 ```python
-from pyvider.providers import provider, ProviderConfig
+from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
+from pyvider.schema import Attribute
+import attrs
 
-@provider
-class MyProvider(ProviderConfig):
+@register_provider("myprovider")
+class MyProvider(BaseProvider):
     """
     MyProvider is a custom provider that does amazing things.
     """
-    my_api_key: str
+
+    def __init__(self):
+        super().__init__(
+            metadata=ProviderMetadata(
+                name="myprovider",
+                version="1.0.0"
+            )
+        )
+
+    @attrs.define
+    class Config:
+        my_api_key: str = Attribute(
+            required=True,
+            sensitive=True,
+            description="API key for authentication"
+        )
 ```
 
 In this example, we define a provider with a single configuration option, `my_api_key`.
@@ -34,17 +51,35 @@ In this example, we define a provider with a single configuration option, `my_ap
 The provider logic is implemented in the `provider.py` file. The provider logic is responsible for configuring the provider and creating the resources, data sources, and functions.
 
 ```python
-from pyvider.providers import provider, ProviderConfig
+from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
+from pyvider.schema import Attribute
+import attrs
 
-@provider
-class MyProvider(ProviderConfig):
+@register_provider("myprovider")
+class MyProvider(BaseProvider):
     """
     MyProvider is a custom provider that does amazing things.
     """
-    my_api_key: str
 
-    def configure(self):
-        # Initialize the provider with the given configuration.
+    def __init__(self):
+        super().__init__(
+            metadata=ProviderMetadata(
+                name="myprovider",
+                version="1.0.0"
+            )
+        )
+
+    @attrs.define
+    class Config:
+        my_api_key: str = Attribute(
+            required=True,
+            sensitive=True,
+            description="API key for authentication"
+        )
+
+    async def configure(self, config: Config) -> None:
+        """Configure the provider with the given configuration."""
+        # Initialize your API client or other setup
         pass
 ```
 

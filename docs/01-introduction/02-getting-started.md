@@ -4,7 +4,7 @@ This guide will help you get started with `pyvider`.
 
 ## 📦 Installation
 
-To get started with Pyvider, you'll need to have Python 3.12 or later installed. You can install Pyvider using pip:
+To get started with Pyvider, you'll need to have Python 3.11 or later installed. You can install Pyvider using pip:
 
 ```bash
 pip install pyvider

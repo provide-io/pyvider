@@ -6,7 +6,7 @@ Welcome, adventurer, to the exciting world of `pyvider`! In this chapter, we'll 
 
 Before we begin, we need to make sure we have the right tools for the job. You'll need:
 
-*   **Python 3.12 or later:** `pyvider` is built on the latest and greatest version of Python.
+*   **Python 3.11 or later:** `pyvider` requires Python 3.11 or newer.
 *   **Terraform 1.0 or later:** You'll need Terraform to use your `pyvider` provider.
 
 ## 🚀 The First Step: Installation
