@@ -62,33 +62,55 @@ class PyviderConfig(BaseConfig):
     _loaded_from_path: Path | None = attrs_field(default=None, init=False)
 
     def __attrs_post_init__(self) -> None:
-        logger.debug("⚙️  Config: Initializing configuration loader...")
+        logger.debug(
+            "Configuration loader initializing",
+            operation="config_init",
+        )
+
         config_path_override_str = os.environ.get("PYVIDER_CONFIG_FILE")
         config_path = (
             Path(config_path_override_str).resolve() if config_path_override_str else _DEFAULT_CONFIG_FILE
         )
 
-        logger.debug("⚙️  Config: Attempting to load from", path=str(config_path))
+        logger.debug(
+            "Attempting to load configuration file",
+            operation="config_load",
+            config_path=str(config_path),
+            is_override=bool(config_path_override_str),
+        )
+
         try:
             config_data = read_toml(config_path)
             if config_data:  # Only set if file exists and has content
                 object.__setattr__(self, "_config_data", config_data)
                 object.__setattr__(self, "_loaded_from_path", config_path)
-                logger.debug(
-                    "⚙️  Config: Successfully loaded",
-                    path=str(config_path),
-                    keys=list(config_data.keys()),
+                logger.info(
+                    "Configuration file loaded successfully",
+                    operation="config_load",
+                    config_path=str(config_path),
+                    config_keys=list(config_data.keys()),
+                    key_count=len(config_data),
                 )
         except Exception as e:
             logger.warning(
-                "⚙️  Config: Failed to load config file",
-                path=str(config_path),
-                error=e,
+                "Failed to load configuration file, using defaults",
+                operation="config_load",
+                config_path=str(config_path),
+                error_type=type(e).__name__,
+                error_message=str(e),
             )
         else:
-            logger.debug("⚙️  Config: No config file found", path=str(config_path))
+            logger.debug(
+                "No configuration file found, using defaults",
+                operation="config_load",
+                searched_path=str(config_path),
+            )
 
         # Override typed fields with environment variables if present
+        logger.debug(
+            "Loading environment variable overrides",
+            operation="config_env_override",
+        )
         self._load_env_overrides()
 
     def get(self, key: str, default: Any = None) -> Any:

@@ -76,7 +76,10 @@ class EncryptionManager:
         """Initialize the encryption manager."""
         self._key_cache: dict[bytes, bytes] = {}
         self._lock = threading.Lock()
-        logger.debug("Encryption manager initialized")
+        logger.debug(
+            "Encryption manager initialized",
+            operation="encryption_init",
+        )
 
     @resilient()
     def _get_shared_secret(self) -> str:
@@ -186,7 +189,8 @@ class EncryptionManager:
             result = struct.pack("B", VERSION_CURRENT) + salt + nonce + ciphertext
 
             logger.debug(
-                "Encrypted data",
+                "Private state encrypted successfully",
+                operation="encrypt",
                 plaintext_size=len(plaintext),
                 ciphertext_size=len(result),
                 version=VERSION_CURRENT,
@@ -199,8 +203,10 @@ class EncryptionManager:
             raise
         except Exception as e:
             logger.error(
-                "Encryption failed",
-                error=str(e),
+                "Private state encryption failed",
+                operation="encrypt",
+                error_type=type(e).__name__,
+                error_message=str(e),
                 plaintext_size=len(plaintext),
                 exc_info=True,
             )
