@@ -1,16 +1,16 @@
-# 🏗️ Creating Providers
+# Creating Providers
 
-This comprehensive guide walks you through creating production-ready Terraform providers using Pyvider. We'll cover everything from basic setup to advanced features.
+This comprehensive guide walks you through creating production-ready Terraform providers using Pyvider, from basic setup to advanced features.
 
-## 📋 Prerequisites
+## Prerequisites
 
-Before creating a provider, ensure you understand:
+Before creating a provider, you should understand:
 - Basic Terraform concepts (providers, resources, state)
 - Python async/await programming
 - attrs for class definitions
 - Type hints in Python
 
-## 🎯 Provider Anatomy
+## Provider Anatomy
 
 A complete provider consists of several components:
 
@@ -18,757 +18,836 @@ A complete provider consists of several components:
 my_provider/
 ├── __init__.py           # Package initialization
 ├── provider.py           # Provider definition
-├── resources/           # Resource implementations
+├── resources/            # Resource implementations
 │   ├── __init__.py
 │   ├── server.py
 │   └── network.py
-├── data_sources/        # Data source implementations
+├── data_sources/         # Data source implementations
 │   ├── __init__.py
 │   └── images.py
-├── functions/           # Provider functions
+├── functions/            # Provider functions
 │   ├── __init__.py
 │   └── validators.py
-└── tests/              # Test suite
+└── tests/                # Test suite
     ├── __init__.py
     └── test_provider.py
 ```
 
-## 🚀 Step-by-Step Provider Creation
+## Step-by-Step Provider Creation
 
-### Step 1: Define the Provider Class
+### Step 1: Define Provider Class
+
+Create the main provider class with metadata and configuration:
 
 ```python
 # provider.py
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
-from pyvider.schema import Attribute
+from pyvider.schema import s_provider, a_str, a_num, a_bool, PvsSchema
 import attrs
 import httpx
+
+@attrs.define
+class MyCloudConfig:
+    """Provider runtime configuration."""
+    api_key: str
+    api_endpoint: str = "https://api.mycloud.com/v1"
+    region: str = "us-east-1"
+    timeout: int = 30
+    max_retries: int = 3
+    verify_ssl: bool = True
 
 @register_provider("mycloud")
 class MyCloudProvider(BaseProvider):
     """
     MyCloud Infrastructure Provider
-    
-    This provider manages resources in the MyCloud platform.
+
+    Manages resources in the MyCloud platform including compute instances,
+    storage, and networking components.
     """
-    
+
     def __init__(self):
         """Initialize provider with metadata."""
         super().__init__(
             metadata=ProviderMetadata(
                 name="mycloud",
                 version="1.0.0",
-                protocol_version="6"
+                protocol_version="6",
+                description="MyCloud infrastructure provider"
             )
         )
-        self.client = None
-    
-    @attrs.define
-    class Config:
-        """Provider configuration schema."""
-        
-        # Required authentication
-        api_key: str = Attribute(
-            required=True,
-            sensitive=True,
-            description="API key for MyCloud authentication"
-        )
-        
-        # Optional configuration
-        api_endpoint: str = Attribute(
-            default="https://api.mycloud.com/v1",
-            description="MyCloud API endpoint"
-        )
-        
-        region: str = Attribute(
-            default="us-east-1",
-            description="Default region for resources",
-            validators=[
-                OneOf(["us-east-1", "us-west-2", "eu-central-1"])
-            ]
-        )
-        
-        timeout: int = Attribute(
-            default=30,
-            description="API request timeout in seconds",
-            validators=[Range(min=5, max=300)]
-        )
-        
-        max_retries: int = Attribute(
-            default=3,
-            description="Maximum API retry attempts",
-            validators=[Range(min=0, max=10)]
-        )
-    
-    async def configure(self, config: Config) -> None:
+        self.api_client = None
+        self.provider_config: MyCloudConfig | None = None
+
+    def _build_schema(self) -> PvsSchema:
+        """Define provider configuration schema."""
+        return s_provider({
+            # Required authentication
+            "api_key": a_str(
+                required=True,
+                sensitive=True,
+                description="API key for MyCloud authentication"
+            ),
+
+            # Optional configuration
+            "api_endpoint": a_str(
+                default="https://api.mycloud.com/v1",
+                description="MyCloud API endpoint URL"
+            ),
+
+            "region": a_str(
+                default="us-east-1",
+                description="Default region for resources",
+                validators=[
+                    lambda x: x in ["us-east-1", "us-west-2", "eu-central-1"]
+                              or "Invalid region"
+                ]
+            ),
+
+            "timeout": a_num(
+                default=30,
+                description="API request timeout in seconds",
+                validators=[
+                    lambda x: 5 <= x <= 300 or "Timeout must be between 5 and 300 seconds"
+                ]
+            ),
+
+            "max_retries": a_num(
+                default=3,
+                description="Maximum API retry attempts",
+                validators=[
+                    lambda x: 0 <= x <= 10 or "Max retries must be between 0 and 10"
+                ]
+            ),
+
+            "verify_ssl": a_bool(
+                default=True,
+                description="Verify SSL certificates"
+            ),
+        })
+
+    async def configure(self, config: dict) -> None:
         """
-        Configure the provider with validated configuration.
-        
-        This method is called once after provider initialization
-        with the configuration from Terraform.
+        Configure the provider with user settings.
+
+        This method is called by Terraform with the provider configuration
+        from the user's Terraform files.
         """
-        # Create HTTP client with configuration
-        self.client = httpx.AsyncClient(
-            base_url=config.api_endpoint,
+        await super().configure(config)
+
+        # Convert config dict to attrs instance
+        self.provider_config = MyCloudConfig(
+            api_key=config["api_key"],
+            api_endpoint=config.get("api_endpoint", "https://api.mycloud.com/v1"),
+            region=config.get("region", "us-east-1"),
+            timeout=config.get("timeout", 30),
+            max_retries=config.get("max_retries", 3),
+            verify_ssl=config.get("verify_ssl", True),
+        )
+
+        # Initialize API client
+        self.api_client = httpx.AsyncClient(
+            base_url=self.provider_config.api_endpoint,
             headers={
-                "Authorization": f"Bearer {config.api_key}",
-                "X-Region": config.region,
-                "User-Agent": f"terraform-provider-mycloud/{self.metadata.version}"
+                "Authorization": f"Bearer {self.provider_config.api_key}",
+                "User-Agent": f"terraform-provider-mycloud/{self.metadata.version}",
             },
-            timeout=config.timeout,
-            follow_redirects=True
+            timeout=self.provider_config.timeout,
+            verify=self.provider_config.verify_ssl,
         )
-        
-        # Store configuration for resource access
-        self.config = config
-        
-        # Validate authentication
+
+        # Test connection
         try:
-            response = await self.client.get("/auth/validate")
+            response = await self.api_client.get("/health")
             response.raise_for_status()
-        except httpx.HTTPError as e:
-            raise ProviderError(f"Authentication failed: {e}")
-        
-        logger.info("MyCloud provider configured successfully", region=config.region)
-    
-    async def close(self) -> None:
-        """Clean up provider resources."""
-        if self.client:
-            await self.client.aclose()
+        except Exception as e:
+            raise ProviderConfigurationError(f"Failed to connect to MyCloud API: {e}")
 ```
 
-### Step 2: Implement Resources
+**Terraform usage:**
+
+```hcl
+terraform {
+  required_providers {
+    mycloud = {
+      source  = "mycompany/mycloud"
+      version = "~> 1.0"
+    }
+  }
+}
+
+provider "mycloud" {
+  api_key      = var.mycloud_api_key
+  region       = "us-west-2"
+  timeout      = 60
+  max_retries  = 5
+  verify_ssl   = true
+}
+```
+
+### Step 2: Add Provider Methods
+
+Implement optional provider lifecycle methods:
+
+```python
+class MyCloudProvider(BaseProvider):
+    # ... (previous code)
+
+    async def validate_config(self, config: dict) -> list[str]:
+        """
+        Validate provider configuration before use.
+
+        Returns list of validation error messages (empty if valid).
+        """
+        errors = []
+
+        # Validate API key format
+        api_key = config.get("api_key", "")
+        if not api_key.startswith("mck_"):
+            errors.append("API key must start with 'mck_'")
+
+        if len(api_key) < 40:
+            errors.append("API key appears invalid (too short)")
+
+        # Validate endpoint URL
+        endpoint = config.get("api_endpoint", "")
+        if endpoint and not endpoint.startswith("https://"):
+            errors.append("API endpoint must use HTTPS")
+
+        return errors
+
+    async def close(self) -> None:
+        """
+        Cleanup provider resources.
+
+        Called when provider is being shut down.
+        """
+        if self.api_client:
+            await self.api_client.aclose()
+            self.api_client = None
+```
+
+### Step 3: Create Package Structure
+
+Set up your provider package:
+
+```python
+# __init__.py
+"""
+MyCloud Terraform Provider
+
+A Terraform provider for managing MyCloud infrastructure.
+"""
+
+from .provider import MyCloudProvider
+
+__all__ = ["MyCloudProvider"]
+__version__ = "1.0.0"
+```
+
+```python
+# resources/__init__.py
+"""MyCloud resources."""
+
+from .server import Server
+from .network import Network
+
+__all__ = ["Server", "Network"]
+```
+
+```python
+# data_sources/__init__.py
+"""MyCloud data sources."""
+
+from .image import ImageLookup
+
+__all__ = ["ImageLookup"]
+```
+
+### Step 4: Add Resources
+
+Create resource implementations:
 
 ```python
 # resources/server.py
 from pyvider.resources import register_resource, BaseResource
-from pyvider.schema import Attribute
-from pyvider.exceptions import ResourceError
+from pyvider.resources.context import ResourceContext
+from pyvider.schema import s_resource, a_str, a_num, PvsSchema
 import attrs
-from datetime import datetime
+
+@attrs.define
+class ServerConfig:
+    name: str
+    size: str = "small"
+    image: str | None = None
+
+@attrs.define
+class ServerState:
+    id: str
+    name: str
+    size: str
+    image: str
+    ip_address: str
+    status: str
 
 @register_resource("server")
 class Server(BaseResource):
-    """
-    Manages MyCloud server instances.
-    
-    Example:
-        resource "mycloud_server" "web" {
-          name = "web-server-01"
-          type = "t3.medium"
-          image = "ubuntu-22.04"
-          
-          network {
-            vpc_id = mycloud_vpc.main.id
-            subnet_id = mycloud_subnet.public.id
-          }
-          
-          tags = {
-            Environment = "production"
-            Team = "platform"
-          }
-        }
-    """
-    
-    @attrs.define
-    class Config:
-        """Server configuration."""
-        
-        # Required attributes
-        name: str = Attribute(
-            required=True,
-            description="Server name",
-            validators=[
-                Length(min=1, max=63),
-                Regex(r"^[a-z0-9-]+$")
-            ]
+    """Manages a compute server."""
+
+    config_class = ServerConfig
+    state_class = ServerState
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({
+            "name": a_str(required=True, description="Server name"),
+            "size": a_str(default="small", description="Server size"),
+            "image": a_str(description="Image ID"),
+
+            "id": a_str(computed=True, description="Server ID"),
+            "ip_address": a_str(computed=True, description="IP address"),
+            "status": a_str(computed=True, description="Server status"),
+        })
+
+    async def read(self, ctx: ResourceContext) -> ServerState | None:
+        if not ctx.state:
+            return None
+
+        # Get provider instance
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+
+        # Fetch server from API
+        response = await provider.api_client.get(f"/servers/{ctx.state.id}")
+        if response.status_code == 404:
+            return None
+
+        data = response.json()
+        return ServerState(
+            id=ctx.state.id,
+            name=data["name"],
+            size=data["size"],
+            image=data["image"],
+            ip_address=data["ip_address"],
+            status=data["status"],
         )
-        
-        type: str = Attribute(
-            required=True,
-            description="Instance type",
-            validators=[
-                OneOf(["t3.micro", "t3.small", "t3.medium", "t3.large"])
-            ]
-        )
-        
-        image: str = Attribute(
-            required=True,
-            description="Operating system image"
-        )
-        
-        # Optional attributes
-        ssh_key: str = Attribute(
-            description="SSH public key for access"
-        )
-        
-        user_data: str = Attribute(
-            description="Cloud-init user data script"
-        )
-        
-        # Nested block for network configuration
-        network: NetworkConfig = Attribute(
-            required=True,
-            description="Network configuration"
-        )
-        
-        # Complex types
-        tags: dict[str, str] = Attribute(
-            default_factory=dict,
-            description="Resource tags"
-        )
-        
-        security_groups: list[str] = Attribute(
-            default_factory=list,
-            description="Security group IDs"
-        )
-    
-    @attrs.define
-    class NetworkConfig:
-        """Nested network configuration."""
-        vpc_id: str = Attribute(required=True)
-        subnet_id: str = Attribute(required=True)
-        assign_public_ip: bool = Attribute(default=True)
-    
-    @attrs.define
-    class State:
-        """Server state."""
-        
-        # Identifiers
-        id: str = Attribute(
-            computed=True,
-            description="Server ID"
-        )
-        
-        # Configuration echo
-        name: str = Attribute()
-        type: str = Attribute()
-        image: str = Attribute()
-        network: NetworkConfig = Attribute()
-        tags: dict[str, str] = Attribute()
-        security_groups: list[str] = Attribute()
-        
-        # Computed attributes
-        public_ip: str = Attribute(
-            computed=True,
-            description="Public IP address"
-        )
-        
-        private_ip: str = Attribute(
-            computed=True,
-            description="Private IP address"
-        )
-        
-        status: str = Attribute(
-            computed=True,
-            description="Server status"
-        )
-        
-        created_at: str = Attribute(
-            computed=True,
-            description="Creation timestamp"
-        )
-    
-    async def create(self, config: Config) -> State:
-        """Create a new server."""
-        logger.info("Creating server", name=config.name, type=config.type)
-        
-        # Prepare API request
-        request_data = {
-            "name": config.name,
-            "type": config.type,
-            "image": config.image,
-            "vpc_id": config.network.vpc_id,
-            "subnet_id": config.network.subnet_id,
-            "assign_public_ip": config.network.assign_public_ip,
-            "tags": config.tags,
-            "security_groups": config.security_groups
-        }
-        
-        if config.ssh_key:
-            request_data["ssh_key"] = config.ssh_key
-        
-        if config.user_data:
-            request_data["user_data"] = config.user_data
-        
-        try:
-            # Create server via API
-            response = await self.provider.client.post(
-                "/servers",
-                json=request_data
-            )
-            response.raise_for_status()
-            server_data = response.json()
-            
-            # Wait for server to be ready
-            server_id = server_data["id"]
-            server = await self._wait_for_status(server_id, "running")
-            
-            # Return state
-            return State(
-                id=server["id"],
-                name=server["name"],
-                type=server["type"],
-                image=server["image"],
-                network=config.network,
-                tags=server.get("tags", {}),
-                security_groups=server.get("security_groups", []),
-                public_ip=server.get("public_ip", ""),
-                private_ip=server["private_ip"],
-                status=server["status"],
-                created_at=server["created_at"]
-            )
-            
-        except httpx.HTTPError as e:
-            raise ResourceError(f"Failed to create server: {e}")
-    
-    async def read(self, state: State) -> State | None:
-        """Read current server state."""
-        try:
-            response = await self.provider.client.get(f"/servers/{state.id}")
-            
-            if response.status_code == 404:
-                return None  # Server no longer exists
-            
-            response.raise_for_status()
-            server = response.json()
-            
-            # Update state with current values
-            return State(
-                id=server["id"],
-                name=server["name"],
-                type=server["type"],
-                image=server["image"],
-                network=state.network,  # Preserve network config
-                tags=server.get("tags", {}),
-                security_groups=server.get("security_groups", []),
-                public_ip=server.get("public_ip", ""),
-                private_ip=server["private_ip"],
-                status=server["status"],
-                created_at=server["created_at"]
-            )
-            
-        except httpx.HTTPError as e:
-            raise ResourceError(f"Failed to read server: {e}")
-    
-    async def update(self, config: Config, state: State) -> State:
-        """Update server configuration."""
-        updates = {}
-        
-        # Check what needs updating
-        if config.tags != state.tags:
-            updates["tags"] = config.tags
-        
-        if config.security_groups != state.security_groups:
-            updates["security_groups"] = config.security_groups
-        
-        if config.type != state.type:
-            # Instance type change requires stop/modify/start
-            await self._resize_instance(state.id, config.type)
-        
-        if updates:
-            try:
-                response = await self.provider.client.patch(
-                    f"/servers/{state.id}",
-                    json=updates
-                )
-                response.raise_for_status()
-            except httpx.HTTPError as e:
-                raise ResourceError(f"Failed to update server: {e}")
-        
-        # Read and return current state
-        return await self.read(state)
-    
-    async def delete(self, state: State) -> None:
-        """Delete the server."""
-        try:
-            response = await self.provider.client.delete(f"/servers/{state.id}")
-            
-            if response.status_code == 404:
-                return  # Already deleted
-            
-            response.raise_for_status()
-            
-            # Wait for deletion to complete
-            await self._wait_for_deletion(state.id)
-            
-        except httpx.HTTPError as e:
-            raise ResourceError(f"Failed to delete server: {e}")
-    
-    async def import_resource(self, resource_id: str) -> State:
-        """Import existing server into Terraform state."""
-        try:
-            response = await self.provider.client.get(f"/servers/{resource_id}")
-            response.raise_for_status()
-            server = response.json()
-            
-            # Reconstruct state from API data
-            return State(
-                id=server["id"],
-                name=server["name"],
-                type=server["type"],
-                image=server["image"],
-                network=NetworkConfig(
-                    vpc_id=server["vpc_id"],
-                    subnet_id=server["subnet_id"],
-                    assign_public_ip=bool(server.get("public_ip"))
-                ),
-                tags=server.get("tags", {}),
-                security_groups=server.get("security_groups", []),
-                public_ip=server.get("public_ip", ""),
-                private_ip=server["private_ip"],
-                status=server["status"],
-                created_at=server["created_at"]
-            )
-            
-        except httpx.HTTPError as e:
-            raise ResourceError(f"Failed to import server {resource_id}: {e}")
-    
-    # Helper methods
-    async def _wait_for_status(self, server_id: str, target_status: str, timeout: int = 300):
-        """Wait for server to reach target status."""
-        start_time = datetime.now()
-        
-        while (datetime.now() - start_time).total_seconds() < timeout:
-            response = await self.provider.client.get(f"/servers/{server_id}")
-            response.raise_for_status()
-            server = response.json()
-            
-            if server["status"] == target_status:
-                return server
-            
-            if server["status"] == "error":
-                raise ResourceError(f"Server entered error state: {server.get('error_message')}")
-            
-            await asyncio.sleep(5)
-        
-        raise ResourceError(f"Timeout waiting for server to reach {target_status} status")
-    
-    async def _wait_for_deletion(self, server_id: str, timeout: int = 120):
-        """Wait for server deletion to complete."""
-        start_time = datetime.now()
-        
-        while (datetime.now() - start_time).total_seconds() < timeout:
-            response = await self.provider.client.get(f"/servers/{server_id}")
-            
-            if response.status_code == 404:
-                return  # Successfully deleted
-            
-            await asyncio.sleep(5)
-        
-        raise ResourceError("Timeout waiting for server deletion")
-    
-    async def _resize_instance(self, server_id: str, new_type: str):
-        """Resize instance type."""
-        # Stop instance
-        await self.provider.client.post(f"/servers/{server_id}/stop")
-        await self._wait_for_status(server_id, "stopped")
-        
-        # Change type
-        response = await self.provider.client.patch(
-            f"/servers/{server_id}",
-            json={"type": new_type}
+
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[ServerState | None, None]:
+        if not ctx.config:
+            return None, None
+
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+
+        # Create server via API
+        response = await provider.api_client.post("/servers", json={
+            "name": ctx.config.name,
+            "size": ctx.config.size,
+            "image": ctx.config.image or "ubuntu-22.04",
+            "region": provider.provider_config.region,
+        })
+        response.raise_for_status()
+
+        data = response.json()
+        return ServerState(
+            id=data["id"],
+            name=data["name"],
+            size=data["size"],
+            image=data["image"],
+            ip_address=data["ip_address"],
+            status=data["status"],
+        ), None
+
+    async def _update_apply(self, ctx: ResourceContext) -> tuple[ServerState | None, None]:
+        if not ctx.config or not ctx.state:
+            return None, None
+
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+
+        # Update server via API
+        response = await provider.api_client.patch(
+            f"/servers/{ctx.state.id}",
+            json={
+                "name": ctx.config.name,
+                "size": ctx.config.size,
+            }
         )
         response.raise_for_status()
-        
-        # Start instance
-        await self.provider.client.post(f"/servers/{server_id}/start")
-        await self._wait_for_status(server_id, "running")
+
+        data = response.json()
+        return ServerState(
+            id=ctx.state.id,
+            name=data["name"],
+            size=data["size"],
+            image=ctx.state.image,  # Image can't change
+            ip_address=data["ip_address"],
+            status=data["status"],
+        ), None
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        if not ctx.state:
+            return
+
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+
+        # Delete server via API
+        await provider.api_client.delete(f"/servers/{ctx.state.id}")
 ```
 
-### Step 3: Add Data Sources
+### Step 5: Add Data Sources
 
 ```python
-# data_sources/images.py
+# data_sources/image.py
 from pyvider.data_sources import register_data_source, BaseDataSource
-from pyvider.schema import Attribute
+from pyvider.schema import s_data_source, a_str, PvsSchema
 import attrs
 
-@register_data_source("images")
-class Images(BaseDataSource):
-    """
-    Data source for available server images.
-    
-    Example:
-        data "mycloud_images" "ubuntu" {
-          filter = "ubuntu-*"
-          architecture = "x86_64"
-          most_recent = true
-        }
-    """
-    
-    @attrs.define
-    class Config:
-        """Query configuration."""
-        filter: str = Attribute(
-            default="*",
-            description="Name filter pattern"
-        )
-        
-        architecture: str = Attribute(
-            default="x86_64",
-            description="CPU architecture",
-            validators=[OneOf(["x86_64", "arm64"])]
-        )
-        
-        most_recent: bool = Attribute(
-            default=False,
-            description="Return only the most recent image"
-        )
-    
-    @attrs.define
-    class State:
-        """Query results."""
-        images: list[dict] = Attribute(
-            computed=True,
-            description="List of matching images"
-        )
-        
-        total: int = Attribute(
-            computed=True,
-            description="Total number of matching images"
-        )
-    
-    async def read(self, config: Config) -> State:
-        """Fetch image data."""
-        params = {
-            "filter": config.filter,
-            "architecture": config.architecture
-        }
-        
-        response = await self.provider.client.get("/images", params=params)
+@attrs.define
+class ImageLookupConfig:
+    name_filter: str
+    os_type: str = "linux"
+
+@attrs.define
+class ImageLookupData:
+    id: str
+    image_id: str
+    name: str
+    os_type: str
+    version: str
+
+@register_data_source("image")
+class ImageLookup(BaseDataSource):
+    """Looks up operating system images."""
+
+    config_class = ImageLookupConfig
+    data_class = ImageLookupData
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        return s_data_source({
+            "name_filter": a_str(required=True, description="Image name filter"),
+            "os_type": a_str(default="linux", description="OS type"),
+
+            "id": a_str(computed=True, description="Data source ID"),
+            "image_id": a_str(computed=True, description="Image ID"),
+            "name": a_str(computed=True, description="Image name"),
+            "version": a_str(computed=True, description="Image version"),
+        })
+
+    async def read(self, config: ImageLookupConfig) -> ImageLookupData:
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+
+        # Search for images
+        response = await provider.api_client.get("/images", params={
+            "name": config.name_filter,
+            "os_type": config.os_type,
+        })
         response.raise_for_status()
-        
-        images = response.json()["images"]
-        
-        if config.most_recent and images:
-            # Sort by creation date and take the most recent
-            images = sorted(
-                images,
-                key=lambda x: x["created_at"],
-                reverse=True
-            )[:1]
-        
-        return State(
-            images=[
-                {
-                    "id": img["id"],
-                    "name": img["name"],
-                    "version": img["version"],
-                    "architecture": img["architecture"],
-                    "created_at": img["created_at"]
-                }
-                for img in images
-            ],
-            total=len(images)
+
+        images = response.json()
+        if not images:
+            raise DataSourceError(f"No image found matching '{config.name_filter}'")
+
+        # Return most recent
+        image = images[0]
+        return ImageLookupData(
+            id=image["id"],
+            image_id=image["id"],
+            name=image["name"],
+            os_type=image["os_type"],
+            version=image["version"],
         )
 ```
 
-## 🧪 Testing Your Provider
+### Step 6: Add Provider Functions
+
+```python
+# functions/validators.py
+from pyvider.functions import register_function, BaseFunction
+from pyvider.schema import s_function, a_str, a_bool, PvsSchema
+import re
+
+@register_function("validate_server_name")
+class ValidateServerName(BaseFunction):
+    """Validates server name format."""
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        return s_function(
+            parameters=[
+                a_str(description="Server name to validate"),
+            ],
+            return_type=a_bool(description="Whether name is valid"),
+        )
+
+    async def call(self, name: str) -> bool:
+        # Must be alphanumeric with hyphens, 3-63 chars
+        pattern = r'^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'
+        return bool(re.match(pattern, name))
+```
+
+## Advanced Provider Features
+
+### Error Handling
+
+Implement comprehensive error handling:
+
+```python
+from pyvider.exceptions import (
+    ProviderError,
+    ProviderConfigurationError,
+    ResourceNotFoundError,
+    APIError,
+)
+
+class MyCloudProvider(BaseProvider):
+    async def configure(self, config: dict) -> None:
+        try:
+            await super().configure(config)
+
+            # Validate API key
+            if not await self._validate_api_key(config["api_key"]):
+                raise ProviderConfigurationError("Invalid API key")
+
+            # Initialize client
+            self.api_client = self._create_client(config)
+
+            # Test connection
+            await self._test_connection()
+
+        except httpx.HTTPError as e:
+            raise ProviderConfigurationError(f"Failed to connect: {e}")
+        except Exception as e:
+            raise ProviderError(f"Provider configuration failed: {e}")
+
+    async def _validate_api_key(self, api_key: str) -> bool:
+        """Validate API key format and permissions."""
+        if not api_key.startswith("mck_"):
+            return False
+
+        # Test API key
+        try:
+            response = await self.api_client.get("/auth/validate")
+            return response.status_code == 200
+        except Exception:
+            return False
+
+    async def _test_connection(self) -> None:
+        """Test API connectivity."""
+        try:
+            response = await self.api_client.get("/health")
+            response.raise_for_status()
+        except httpx.HTTPError as e:
+            raise ProviderConfigurationError(
+                f"Health check failed: {e}. "
+                f"Verify API endpoint and network connectivity."
+            )
+```
+
+### Retry Logic
+
+Add automatic retries for transient failures:
+
+```python
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
+
+class MyCloudProvider(BaseProvider):
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type(httpx.HTTPStatusError),
+    )
+    async def _api_request(self, method: str, path: str, **kwargs):
+        """Make API request with automatic retry."""
+        response = await self.api_client.request(method, path, **kwargs)
+
+        # Don't retry client errors (4xx)
+        if 400 <= response.status_code < 500:
+            response.raise_for_status()
+
+        # Retry server errors (5xx) and network issues
+        if response.status_code >= 500:
+            response.raise_for_status()
+
+        return response
+```
+
+### Rate Limiting
+
+Implement rate limiting:
+
+```python
+import asyncio
+from datetime import datetime, timedelta
+
+class MyCloudProvider(BaseProvider):
+    def __init__(self):
+        super().__init__(...)
+        self.rate_limiter = RateLimiter(
+            max_requests=100,
+            time_window=timedelta(minutes=1)
+        )
+
+    async def _api_request(self, method: str, path: str, **kwargs):
+        """Make rate-limited API request."""
+        await self.rate_limiter.acquire()
+        return await self.api_client.request(method, path, **kwargs)
+
+class RateLimiter:
+    def __init__(self, max_requests: int, time_window: timedelta):
+        self.max_requests = max_requests
+        self.time_window = time_window
+        self.requests = []
+
+    async def acquire(self):
+        """Wait if rate limit reached."""
+        now = datetime.now()
+
+        # Remove old requests
+        self.requests = [
+            req_time for req_time in self.requests
+            if now - req_time < self.time_window
+        ]
+
+        # Wait if limit reached
+        if len(self.requests) >= self.max_requests:
+            oldest = min(self.requests)
+            wait_time = (oldest + self.time_window - now).total_seconds()
+            if wait_time > 0:
+                await asyncio.sleep(wait_time)
+
+        self.requests.append(now)
+```
+
+### Caching
+
+Add response caching:
+
+```python
+from functools import lru_cache
+import time
+
+class MyCloudProvider(BaseProvider):
+    def __init__(self):
+        super().__init__(...)
+        self.cache = {}
+
+    async def get_with_cache(
+        self,
+        path: str,
+        ttl: int = 300,
+        **kwargs
+    ):
+        """Get resource with caching."""
+        cache_key = f"{path}:{kwargs}"
+
+        # Check cache
+        if cache_key in self.cache:
+            cached_at, data = self.cache[cache_key]
+            if time.time() - cached_at < ttl:
+                return data
+
+        # Fetch fresh data
+        response = await self.api_client.get(path, **kwargs)
+        data = response.json()
+
+        # Cache result
+        self.cache[cache_key] = (time.time(), data)
+
+        return data
+```
+
+### Logging
+
+Add structured logging:
+
+```python
+from provide.foundation import get_logger
+
+class MyCloudProvider(BaseProvider):
+    def __init__(self):
+        super().__init__(...)
+        self.logger = get_logger(__name__)
+
+    async def configure(self, config: dict) -> None:
+        self.logger.info(
+            "Configuring MyCloud provider",
+            region=config.get("region"),
+            endpoint=config.get("api_endpoint"),
+        )
+
+        await super().configure(config)
+
+        self.logger.info("Provider configured successfully")
+
+    async def _api_request(self, method: str, path: str, **kwargs):
+        self.logger.debug(
+            "API request",
+            method=method,
+            path=path,
+        )
+
+        try:
+            response = await self.api_client.request(method, path, **kwargs)
+
+            self.logger.debug(
+                "API response",
+                method=method,
+                path=path,
+                status=response.status_code,
+            )
+
+            return response
+        except Exception as e:
+            self.logger.error(
+                "API request failed",
+                method=method,
+                path=path,
+                error=str(e),
+            )
+            raise
+```
+
+## Testing Your Provider
+
+### Unit Tests
 
 ```python
 # tests/test_provider.py
 import pytest
-from pyvider.testing import ProviderTestCase
-import httpx
-from unittest.mock import AsyncMock, patch
+from my_provider.provider import MyCloudProvider
 
-class TestMyCloudProvider(ProviderTestCase):
-    """Test suite for MyCloud provider."""
-    
-    @pytest.fixture
-    async def configured_provider(self):
-        """Provide a configured provider instance."""
-        from my_provider.provider import MyCloudProvider
-        
-        provider = MyCloudProvider()
-        
-        # Mock HTTP client
-        with patch.object(provider, 'client', new=AsyncMock(spec=httpx.AsyncClient)):
-            # Mock auth validation
-            provider.client.get.return_value.raise_for_status = AsyncMock()
-            
-            await provider.configure(
-                MyCloudProvider.Config(
-                    api_key="test-key",
-                    region="us-east-1"
-                )
-            )
-            
-            yield provider
-    
-    async def test_provider_configuration(self, configured_provider):
-        """Test provider configures correctly."""
-        assert configured_provider.config.api_key == "test-key"
-        assert configured_provider.config.region == "us-east-1"
-        assert configured_provider.client is not None
-    
-    async def test_server_create(self, configured_provider):
-        """Test server resource creation."""
-        from my_provider.resources.server import Server
-        
-        server = Server()
-        server.provider = configured_provider
-        
-        # Mock API responses
-        configured_provider.client.post.return_value.json.return_value = {
-            "id": "srv-123",
-            "status": "pending"
-        }
-        
-        configured_provider.client.get.return_value.json.return_value = {
-            "id": "srv-123",
-            "name": "test-server",
-            "type": "t3.medium",
-            "image": "ubuntu-22.04",
-            "status": "running",
-            "private_ip": "10.0.1.5",
-            "public_ip": "203.0.113.42",
-            "created_at": "2024-01-15T10:00:00Z"
-        }
-        
-        # Create server
-        config = Server.Config(
-            name="test-server",
-            type="t3.medium",
-            image="ubuntu-22.04",
-            network=Server.NetworkConfig(
-                vpc_id="vpc-123",
-                subnet_id="subnet-456"
-            )
-        )
-        
-        state = await server.create(config)
-        
-        # Verify state
-        assert state.id == "srv-123"
-        assert state.status == "running"
-        assert state.public_ip == "203.0.113.42"
+@pytest.fixture
+def provider():
+    return MyCloudProvider()
+
+@pytest.mark.asyncio
+async def test_provider_configuration(provider):
+    """Test provider configuration."""
+    config = {
+        "api_key": "mck_test_key_1234567890abcdefghijklmnop",
+        "region": "us-east-1",
+    }
+
+    await provider.configure(config)
+
+    assert provider.provider_config.api_key == config["api_key"]
+    assert provider.provider_config.region == config["region"]
+    assert provider.api_client is not None
+
+@pytest.mark.asyncio
+async def test_provider_validation():
+    """Test configuration validation."""
+    provider = MyCloudProvider()
+
+    # Invalid API key
+    errors = await provider.validate_config({
+        "api_key": "invalid_key",
+    })
+
+    assert len(errors) > 0
+    assert any("API key" in err for err in errors)
 ```
 
-## 🎨 Best Practices
-
-### 1. Provider Design
-
-- **Single Responsibility**: Provider handles authentication and configuration only
-- **Shared Client**: Create reusable API client for all resources
-- **Configuration Validation**: Validate all inputs in the schema
-- **Graceful Degradation**: Handle API failures gracefully
-
-### 2. Resource Implementation
-
-- **Idempotency**: All operations must be idempotent
-- **Drift Detection**: Implement proper `read()` to detect changes
-- **Partial Updates**: Only update changed attributes
-- **Error Context**: Provide detailed error messages
-
-### 3. State Management
-
-- **Minimal State**: Store only essential information
-- **Computed Attributes**: Mark generated values as computed
-- **Sensitive Data**: Use private state for secrets
-- **Import Support**: Always implement import functionality
-
-### 4. Performance
-
-- **Async Operations**: Use async/await for all I/O
-- **Connection Pooling**: Reuse HTTP connections
-- **Retries**: Implement exponential backoff
-- **Timeouts**: Set reasonable timeouts
-
-## 🔐 Security Considerations
-
-### Handling Sensitive Data
+### Integration Tests
 
 ```python
-@attrs.define
-class Config:
-    # Mark sensitive attributes
-    api_key: str = Attribute(
-        required=True,
-        sensitive=True  # Won't be logged
+# tests/test_integration.py
+import pytest
+import os
+
+@pytest.mark.skipif(
+    not os.getenv("MYCLOUD_API_KEY"),
+    reason="Requires MYCLOUD_API_KEY environment variable"
+)
+@pytest.mark.asyncio
+async def test_real_api_connection():
+    """Test connection to real API."""
+    provider = MyCloudProvider()
+
+    config = {
+        "api_key": os.getenv("MYCLOUD_API_KEY"),
+        "region": "us-east-1",
+    }
+
+    await provider.configure(config)
+
+    # Test health check
+    response = await provider.api_client.get("/health")
+    assert response.status_code == 200
+```
+
+## Best Practices
+
+### 1. Version Your Provider
+
+```python
+metadata=ProviderMetadata(
+    name="mycloud",
+    version="1.0.0",  # Semantic versioning
+    protocol_version="6",
+)
+```
+
+### 2. Document Configuration Options
+
+```python
+"api_key": a_str(
+    required=True,
+    sensitive=True,
+    description=(
+        "API key for MyCloud authentication. "
+        "Get your key from https://mycloud.com/settings/api"
     )
-    
-    # Use private state for runtime secrets
-    _session_token: str = field(default=None, init=False)
+)
 ```
 
-### Input Validation
+### 3. Validate Early
 
 ```python
-@attrs.define
-class Config:
-    email: str = Attribute(
-        required=True,
-        validators=[
-            Email(),  # Validate email format
-            NoSQLInjection(),  # Prevent injection
-        ]
-    )
+async def validate_config(self, config: dict) -> list[str]:
+    """Validate before attempting to use config."""
+    errors = []
+
+    # Check all requirements
+    if not config.get("api_key"):
+        errors.append("api_key is required")
+
+    return errors
 ```
 
-## 📚 Advanced Features
-
-### Custom Validators
+### 4. Handle Cleanup
 
 ```python
-def validate_cidr(value: str) -> None:
-    """Validate CIDR notation."""
-    import ipaddress
-    try:
-        ipaddress.ip_network(value)
-    except ValueError as e:
-        raise ValueError(f"Invalid CIDR: {e}")
-
-@attrs.define
-class Config:
-    cidr_block: str = Attribute(
-        required=True,
-        validators=[validate_cidr]
-    )
+async def close(self) -> None:
+    """Always cleanup resources."""
+    if self.api_client:
+        await self.api_client.aclose()
 ```
 
-### Dynamic Schema
+### 5. Use Type Hints
 
 ```python
-@register_resource("dynamic_table")
-class DynamicTable(BaseResource):
-    @classmethod
-    def get_schema(cls) -> PvsSchema:
-        """Generate schema dynamically."""
-        # Load schema from external source
-        schema_def = load_schema_from_api()
-        return build_schema(schema_def)
+async def configure(self, config: dict) -> None:
+    self.provider_config: MyCloudConfig = MyCloudConfig(**config)
 ```
 
-### Provider Capabilities
+## Complete Example
 
-```python
-@register_provider("advanced")
-class AdvancedProvider(BaseProvider):
-    def __init__(self):
-        super().__init__(
-            metadata=ProviderMetadata(
-                name="advanced",
-                version="1.0.0",
-                capabilities=ProviderCapabilities(
-                    plan_destroy=True,
-                    move_resource_state=True,
-                    get_provider_schema_optional=False
-                )
-            )
-        )
-```
+See the full example provider at:
+- [GitHub: pyvider-components/providers/mycloud](https://github.com/provide-io/pyvider-components)
 
-## 🚀 Next Steps
+## See Also
 
-- [Creating Resources](creating-resources.md) - Deep dive into resources
-- [Creating Data Sources](creating-data-sources.md) - Implementing data sources
-- [Testing Providers](testing-providers.md) - Comprehensive testing
-- [Debugging](debugging.md) - Troubleshooting providers
-
----
-
-<p align="center">
-  Ready to build? Check out <a href="https://github.com/provide-io/pyvider-components/tree/main/examples">100+ Working Examples →</a>
-</p>
+- [Creating Resources](creating-resources.md) - Resource implementation
+- [Creating Data Sources](creating-data-sources.md) - Data source implementation
+- [Creating Functions](creating-functions.md) - Function implementation
+- [Testing Providers](testing-providers.md) - Testing strategies
+- [Best Practices](best-practices.md) - Production patterns
