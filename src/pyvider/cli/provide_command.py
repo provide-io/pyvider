@@ -163,16 +163,18 @@ async def _run_provider_server(magic_cookie: str) -> None:
         click.secho(" ❌  Provider Server Error", fg="red", bold=True, err=True)
         click.secho("═" * 70, fg="red", err=True)
         click.secho(
-            f"\nThe provider server failed to start or crashed unexpectedly.\n",
+            "\nThe provider server failed to start or crashed unexpectedly.\n",
             fg="white",
             err=True,
         )
         click.secho(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
-        click.secho(f"Error Message: {str(e)}\n", fg="yellow", err=True)
+        click.secho(f"Error Message: {e!s}\n", fg="yellow", err=True)
 
         click.secho("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
         click.secho("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
-        click.secho("  2. Verify all dependencies are installed: 'uv sync' or 'pip install -e .'", fg="white", err=True)
+        click.secho(
+            "  2. Verify all dependencies are installed: 'uv sync' or 'pip install -e .'", fg="white", err=True
+        )
         click.secho("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
         click.secho("  4. Review the full error trace above for specific details", fg="white", err=True)
         click.secho("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
@@ -186,7 +188,11 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         click.secho("\nIf the issue persists:", fg="cyan", bold=True, err=True)
         click.secho("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
-        click.secho(f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}", fg="white", err=True)
+        click.secho(
+            f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}",
+            fg="white",
+            err=True,
+        )
         click.secho("═" * 70, fg="red", err=True)
 
         sys.exit(1)

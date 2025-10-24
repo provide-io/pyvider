@@ -35,7 +35,23 @@ from pyvider.resources.context import ResourceContext
 async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any]:
     resource_class = hub.get_component("resource", type_name)
     if not resource_class:
-        err = ResourceError(f"Resource type '{type_name}' not registered")
+        logger.error(
+            "Resource type not found during apply operation",
+            operation="apply_resource_change",
+            resource_type=type_name,
+            registered_resources=list(hub.get_components("resource").keys()) if hub.get_components("resource") else [],
+        )
+
+        err = ResourceError(
+            f"Resource type '{type_name}' not registered.\n\n"
+            f"Suggestion: Ensure the resource is registered using the @resource decorator "
+            f"and that component discovery has completed successfully.\n\n"
+            f"Troubleshooting:\n"
+            f"  1. Check that the resource class has the @resource decorator\n"
+            f"  2. Verify the resource module is imported by the provider\n"
+            f"  3. Run 'pyvider components list' to see registered resources\n"
+            f"  4. Review provider logs for component registration errors"
+        )
         err.add_context("resource.type_name", type_name)
         err.add_context("terraform.summary", "Unknown resource type")
         err.add_context(
@@ -45,7 +61,24 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
 
     provider_instance = hub.get_component("singleton", "provider")
     if not provider_instance:
-        raise RuntimeError("Provider instance not found in hub.")
+        logger.error(
+            "Provider instance not found in hub during apply operation",
+            operation="apply_resource_change",
+            resource_type=type_name,
+        )
+        raise RuntimeError(
+            "Provider instance not found in hub.\n\n"
+            "This is an internal framework error. The provider should be registered "
+            "during server initialization.\n\n"
+            "Suggestion: Report this issue - it indicates a provider initialization problem."
+        )
+
+    logger.debug(
+        "Resource and provider instances retrieved for apply",
+        operation="apply_resource_change",
+        resource_type=type_name,
+    )
+
     return resource_class, provider_instance
 
 
@@ -60,7 +93,13 @@ async def _unmarshal_request_data(
 
 
 async def _process_private_state(resource_class: Any, planned_private: bytes) -> Any | None:
-    logger.debug(f"Processing private state. planned_private: {planned_private}")
+    logger.debug(
+        "Processing private state for apply operation",
+        operation="process_private_state",
+        has_private_data=bool(planned_private),
+        private_data_size=len(planned_private) if planned_private else 0,
+    )
+
     private_state_instance = None
     if (
         hasattr(resource_class, "private_state_class")
@@ -71,8 +110,32 @@ async def _process_private_state(resource_class: Any, planned_private: bytes) ->
             decrypted_private_bytes = decrypt(planned_private)
             private_data = msgpack.unpackb(decrypted_private_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
+
+            logger.debug(
+                "Private state deserialized successfully",
+                operation="process_private_state",
+                private_state_class=resource_class.private_state_class.__name__,
+            )
+
         except Exception as e:
-            err = ResourceError("Failed to deserialize private state from plan.")
+            logger.error(
+                "Failed to deserialize private state from plan",
+                operation="process_private_state",
+                error_type=type(e).__name__,
+                error_message=str(e),
+                exc_info=True,
+            )
+
+            err = ResourceError(
+                f"Failed to deserialize private state from plan: {e}\n\n"
+                f"Suggestion: This usually indicates a mismatch between the state encryption key "
+                f"or corrupted private state data.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Verify PYVIDER_PRIVATE_STATE_SHARED_SECRET hasn't changed\n"
+                f"  2. Check if the private state schema has changed incompatibly\n"
+                f"  3. Review the original error: {type(e).__name__}: {e}\n"
+                f"  4. Consider destroying and recreating the resource if schema changed"
+            )
             err.add_context("private_state.error", str(e))
             err.add_context("terraform.summary", "Private state deserialization failed")
             err.add_context(
@@ -171,6 +234,16 @@ async def _apply_resource_change_impl(
 ) -> pb.ApplyResourceChange.Response:
     response = pb.ApplyResourceChange.Response()
     resource_context = None
+
+    logger.debug(
+        "ApplyResourceChange handler called",
+        operation="apply_resource_change",
+        resource_type=request.type_name,
+        has_prior_state=bool(request.prior_state.msgpack),
+        has_config=bool(request.config.msgpack),
+        has_planned_state=bool(request.planned_state.msgpack),
+    )
+
     try:
         resource_class, provider_instance = await _get_resource_and_provider_instances(request.type_name)
         resource_schema = resource_class.get_schema()
@@ -194,8 +267,22 @@ async def _apply_resource_change_impl(
             provider_instance,
         )
 
+        logger.debug(
+            "Invoking resource apply method",
+            operation="apply_resource_change",
+            resource_type=request.type_name,
+        )
+
         resource_handler = resource_class()
         new_state_attrs, new_private_state_attrs = await resource_handler.apply(resource_context)
+
+        logger.info(
+            "Resource apply completed successfully",
+            operation="apply_resource_change",
+            resource_type=request.type_name,
+            has_new_state=new_state_attrs is not None,
+            has_new_private_state=new_private_state_attrs is not None,
+        )
 
         _handle_apply_result(
             new_state_attrs,
@@ -206,9 +293,25 @@ async def _apply_resource_change_impl(
         )
 
     except (CtyValidationError, PyviderError) as e:
+        logger.error(
+            "ApplyResourceChange failed with framework error",
+            operation="apply_resource_change",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
+        logger.error(
+            "ApplyResourceChange failed with unexpected error",
+            operation="apply_resource_change",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 

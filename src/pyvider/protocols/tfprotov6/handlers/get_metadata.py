@@ -110,7 +110,7 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
         )
 
         error_detail = (
-            f"Failed to discover provider metadata: {str(e)}\n\n"
+            f"Failed to discover provider metadata: {e!s}\n\n"
             f"Suggestion: Ensure all resources, data sources, and functions are properly registered "
             f"using @resource, @data_source, and @function decorators.\n\n"
             f"Troubleshooting:\n"
@@ -118,7 +118,7 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
             f"  2. Verify that the hub discovery process completed successfully\n"
             f"  3. Review provider logs for component registration errors\n"
             f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG\n\n"
-            f"Error details: {type(e).__name__}: {str(e)}"
+            f"Error details: {type(e).__name__}: {e!s}"
         )
 
         return pb.GetMetadata.Response(

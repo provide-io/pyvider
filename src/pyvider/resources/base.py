@@ -104,7 +104,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             # Re-raise other TypeErrors as they indicate real problems
             # Extract field information for better error messages
             provided_fields = list(kwargs.keys())
-            target_fields_list = [f.name for f in attrs.fields(target_cls)]
             required_fields = [f.name for f in attrs.fields(target_cls) if f.default == attrs.NOTHING]
             missing_fields = [f for f in required_fields if f not in provided_fields]
 

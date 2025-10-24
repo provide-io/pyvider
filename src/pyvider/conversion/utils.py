@@ -31,12 +31,11 @@ def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyVa
             elif not attribute_types[key].equal(inferred_type):
                 attribute_types[key] = CtyDynamic()
 
-    optional_keys_list: list[str] = [
-        key for key in all_keys if not all(key in item for item in dict_list)
-    ]
+    optional_keys_list: list[str] = [key for key in all_keys if not all(key in item for item in dict_list)]
 
     unified_object_type = CtyObject(
-        attribute_types=attribute_types, optional_attributes=optional_keys_list  # type: ignore[arg-type]
+        attribute_types=attribute_types,
+        optional_attributes=optional_keys_list,  # type: ignore[arg-type]
     )
 
     final_list_type = CtyList(element_type=unified_object_type)
