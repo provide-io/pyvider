@@ -65,6 +65,8 @@ theme:
 # Plugins
 plugins:
   - search
+  - macros:
+      include_dir: ../provide-foundry/shared-theme/data
   - mkdocstrings:
       default_handler: python
       handlers:
@@ -77,9 +79,13 @@ plugins:
             show_symbol_type_heading: true
             show_symbol_type_toc: true
             show_signature_annotations: true
+            signature_crossrefs: true
             show_bases: true
+            show_inheritance_diagram: false
             merge_init_into_class: true
             separate_signature: true
+            members_order: source
+            inherited_members: true
 
 # Markdown Extensions
 markdown_extensions:
@@ -99,6 +105,16 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - toc:
       permalink: true
+
+extra_css:
+  - ../provide-foundry/shared-theme/stylesheets/provide-theme.css
+  - ../provide-foundry/shared-theme/stylesheets/termynal.css
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+  - ../provide-foundry/shared-theme/javascripts/mermaid-init.js
+  - ../provide-foundry/shared-theme/javascripts/termynal.js
+  - ../provide-foundry/shared-theme/javascripts/custom.js
 
 # Navigation Structure
 nav:
