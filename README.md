@@ -70,13 +70,13 @@ class GeneratePassword:
 ### 🔒 Type-Safe Schema Definition
 ```python
 import attrs
-from pyvider.schema import Schema, Attribute
+from pyvider.schema import a_str, a_map
 
 @attrs.define
 class VMConfig:
-    name: str = Attribute(required=True, description="VM instance name")
-    size: str = Attribute(default="medium", description="Instance size")
-    tags: dict[str, str] = Attribute(description="Resource tags")
+    name: str = a_str(required=True, description="VM instance name")
+    size: str = a_str(default="medium", description="Instance size")
+    tags: dict[str, str] = a_map(a_str(), description="Resource tags")
 ```
 
 ### 🧪 Comprehensive Testing
