@@ -637,7 +637,7 @@ Ready to dive deeper? Check out:
 - **[First Provider Tutorial](../tutorials/first-provider.md)** - Complete walkthrough with advanced features
 - **[Architecture Guide](../core-concepts/architecture.md)** - Understand Pyvider's internals
 - **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
-- **[Testing Guide](../api-reference/testing.md)** - Write comprehensive tests
+- **[Testing Guide](../guides/testing.md)** - Write comprehensive tests
 
 ## 💡 Tips for Success
 

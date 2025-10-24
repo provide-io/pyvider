@@ -314,21 +314,21 @@ graph TB
 
 ### Developer Guides
 - [Creating Providers](docs/guides/creating-providers.md)
-- [Creating Resources](docs/guides/03-creating-a-resource.md)
-- [Creating Data Sources](docs/guides/04-creating-a-data-source.md)
-- [Creating Functions](docs/guides/05-creating-a-function.md)
-- [Testing](docs/guides/06-testing.md)
-- [Best Practices](docs/guides/07-best-practices.md)
-- [Error Handling](docs/guides/09-error-handling.md)
-- [Logging](docs/guides/10-logging.md)
-- [Debugging](docs/guides/11-debugging.md)
+- [Creating Resources](docs/guides/creating-resources.md)
+- [Creating Data Sources](docs/guides/creating-data-sources.md)
+- [Creating Functions](docs/guides/creating-functions.md)
+- [Testing](docs/guides/testing.md)
+- [Best Practices](docs/guides/best-practices.md)
+- [Error Handling](docs/guides/error-handling.md)
+- [Logging](docs/guides/logging.md)
+- [Debugging](docs/guides/debugging.md)
 
 ### User Guides
-- [Configuration](docs/guides/02-configuration.md)
-- [Managing Resources](docs/guides/03-managing-resources.md)
-- [Using Data Sources](docs/guides/04-using-data-sources.md)
-- [Using Functions](docs/guides/05-using-functions.md)
-- [Advanced Examples](docs/guides/06-advanced-examples.md)
+- [Configuration](docs/guides/configuration.md)
+- [Managing Resources](docs/guides/managing-resources.md)
+- [Using Data Sources](docs/guides/using-data-sources.md)
+- [Using Functions](docs/guides/using-functions.md)
+- [Advanced Examples](docs/guides/advanced-examples.md)
 
 ### API Reference
 - [Schema API](docs/api-reference/schema.md)
@@ -336,15 +336,15 @@ graph TB
 - [Types](docs/api-reference/types.md)
 
 ### Schema Documentation
-- [Schema Overview](docs/schema/01-overview.md)
-- [Attributes](docs/schema/03-attributes.md)
-- [Blocks](docs/schema/04-blocks.md)
-- [Validators](docs/schema/05-validators.md)
+- [Schema Overview](docs/schema/overview.md)
+- [Attributes](docs/schema/attributes.md)
+- [Blocks](docs/schema/blocks.md)
+- [Validators](docs/schema/validators.md)
 
 ### Capabilities
-- [Capabilities Overview](docs/capabilities/01-overview.md)
-- [Using Capabilities](docs/capabilities/02-using-capabilities.md)
-- [Creating Capabilities](docs/capabilities/03-creating-capabilities.md)
+- [Capabilities Overview](docs/capabilities/overview.md)
+- [Using Capabilities](docs/capabilities/using-capabilities.md)
+- [Creating Capabilities](docs/capabilities/creating-capabilities.md)
 
 ### Development
 - [Roadmap](docs/development/roadmap.md)

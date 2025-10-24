@@ -720,7 +720,7 @@ class TestServer(ComponentTestCase):
 - [Architecture Overview](architecture.md) - System architecture
 - [Schema System](schema-system.md) - Schema definition and validation
 - [Creating Providers](../guides/creating-providers.md) - Provider development guide
-- [Building Resources](../guides/building-resources.md) - Resource implementation guide
+- [Creating Resources](../guides/creating-resources.md) - Resource implementation guide
 
 ---
 

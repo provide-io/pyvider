@@ -762,10 +762,10 @@ class AdvancedProvider(BaseProvider):
 
 ## 🚀 Next Steps
 
-- [Building Resources](building-resources.md) - Deep dive into resources
-- [Data Sources](data-sources.md) - Implementing data sources
-- [Testing Guide](../api-reference/testing.md) - Comprehensive testing
-- [Debugging](../advanced/debugging.md) - Troubleshooting providers
+- [Creating Resources](creating-resources.md) - Deep dive into resources
+- [Creating Data Sources](creating-data-sources.md) - Implementing data sources
+- [Testing Guide](testing.md) - Comprehensive testing
+- [Debugging](debugging.md) - Troubleshooting providers
 
 ---
 

@@ -499,8 +499,7 @@ async def create(self, config: Config) -> State:
 
 - [Component Model](component-model.md) - Deep dive into component system
 - [Schema System](schema-system.md) - Advanced schema features
-- [Protocol Details](protocol.md) - Protocol implementation specifics
-- [State Management](../advanced/state-management.md) - Advanced state handling
+- [Schema System](../schema/overview.md) - Schema documentation
 
 ---
 
