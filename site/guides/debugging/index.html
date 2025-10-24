@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#debugging" class="md-skip">
+        <a href="#debugging-pyvider-providers" class="md-skip">
           Skip to content
         </a>
       
@@ -1111,36 +1111,648 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#why-provider-debugging-is-different" class="md-nav__link">
     <span class="md-ellipsis">
-      📄 Overview
+      Why Provider Debugging is Different
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#using-the-debugger" class="md-nav__link">
+  <a href="#quick-reference" class="md-nav__link">
     <span class="md-ellipsis">
-      🚀 Using the Debugger
+      Quick Reference
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#logging" class="md-nav__link">
+  <a href="#setting-up-your-debug-environment" class="md-nav__link">
     <span class="md-ellipsis">
-      📝 Logging
+      Setting Up Your Debug Environment
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setting Up Your Debug Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Environment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ide-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      IDE Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      Required Tools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#log-based-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Log-Based Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Log-Based Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#understanding-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Log Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setting-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setting Log Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reading-structured-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reading Structured Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filtering Logs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-debugging-with-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: Debugging with Logs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-debugging-with-python-debugger" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive Debugging with Python Debugger
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interactive Debugging with Python Debugger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-breakpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using breakpoint()
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugger-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugger Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-async-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Async Code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conditional-breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conditional Breakpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inspecting Context
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-with-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging with Terraform
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging with Terraform">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#terraform-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Terraform Log Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-terraform-debug-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding Terraform Debug Output
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-terraform-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Terraform Errors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-provider-communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Provider Communication
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#common-debugging-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common Debugging Scenarios
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Debugging Scenarios">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scenario-1-my-resource-isnt-being-created" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 1: "My resource isn't being created"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-2-state-drift-isnt-detected" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 2: "State drift isn't detected"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-3-provider-crashes-on-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 3: "Provider crashes on apply"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-4-slow-performance-hangs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 4: "Slow performance / hangs"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scenario-5-schema-validation-errors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scenario 5: "Schema validation errors"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-state-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging State Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging State Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspecting-terraform-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inspecting Terraform State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-state-transitions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Understanding State Transitions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-private-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Private State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-inconsistency-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      State Inconsistency Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-schema-problems" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Schema Problems
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Schema Problems">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validating-schema-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Validating Schema Definition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-schema-with-terraform" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing Schema with Terraform
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-conversion-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type Conversion Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#measuring-operation-times" class="md-nav__link">
+    <span class="md-ellipsis">
+      Measuring Operation Times
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profiling-with-py-spy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profiling with py-spy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#finding-memory-leaks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Finding Memory Leaks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-and-api-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network and API Debugging
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network and API Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-request-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Request Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capturing-http-traffic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capturing HTTP Traffic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-api-calls-separately" class="md-nav__link">
+    <span class="md-ellipsis">
+      Testing API Calls Separately
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Tests
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-tests-in-debug-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Tests in Debug Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging-async-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Async Tests
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-pytest-fixtures-for-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using pytest Fixtures for Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-debugging-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      Advanced Debugging Techniques
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Debugging Techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#system-call-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      System Call Tracing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grpc-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      gRPC Inspection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#thread-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Thread Debugging
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-tools-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Tools Reference
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#tracing" class="md-nav__link">
+  <a href="#common-error-messages-decoded" class="md-nav__link">
     <span class="md-ellipsis">
-      🔬 Tracing
+      Common Error Messages Decoded
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Error Messages Decoded">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plugin-did-not-respond" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Plugin did not respond"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-inconsistency" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Schema inconsistency"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attribute-not-found-in-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Attribute not found in schema"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-deadline-exceeded" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Context deadline exceeded"
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#could-not-load-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      "Could not load plugin"
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Checklist
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related Documentation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#learn-by-debugging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Learn by Debugging
     </span>
   </a>
   
@@ -2464,22 +3076,992 @@
   
 
 
-<h1 id="debugging">🐛 Debugging<a class="headerlink" href="#debugging" title="Permanent link">&para;</a></h1>
-<p>This guide provides tips and tricks for debugging your <code>pyvider</code> provider.</p>
-<h2 id="overview">📄 Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Debugging <code>pyvider</code> providers can be tricky, but there are a few tools and techniques that can help.</p>
-<h2 id="using-the-debugger">🚀 Using the Debugger<a class="headerlink" href="#using-the-debugger" title="Permanent link">&para;</a></h2>
-<p>You can use the <code>pdb</code> debugger to debug your provider. To do this, you'll need to set the <code>TF_REATTACH_PROVIDERS</code> environment variable to <code>true</code>. This will prevent Terraform from killing the provider process when it's finished.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_REATTACH_PROVIDERS</span><span class="o">=</span><span class="nb">true</span>
+<h1 id="debugging-pyvider-providers">Debugging Pyvider Providers<a class="headerlink" href="#debugging-pyvider-providers" title="Permanent link">&para;</a></h1>
+<p>This guide provides comprehensive debugging techniques and workflows for troubleshooting Pyvider providers. Whether you're tracking down a subtle bug or dealing with a complete failure, these strategies will help you identify and fix issues quickly.</p>
+<h2 id="why-provider-debugging-is-different">Why Provider Debugging is Different<a class="headerlink" href="#why-provider-debugging-is-different" title="Permanent link">&para;</a></h2>
+<p>Debugging Terraform providers presents unique challenges:</p>
+<ul>
+<li><strong>Process separation</strong>: Provider runs as a separate process from Terraform</li>
+<li><strong>gRPC communication</strong>: Terraform communicates with providers via gRPC protocol</li>
+<li><strong>Async operations</strong>: Most provider code is async, requiring special debugging techniques</li>
+<li><strong>State management</strong>: Issues can involve complex state transitions</li>
+<li><strong>Limited feedback</strong>: Terraform's output may not show full provider errors</li>
+</ul>
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Best Debugging Approach</th>
+<th>Section</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logic errors, wrong behavior</td>
+<td>Python debugger (<code>breakpoint()</code>)</td>
+<td><a href="#interactive-debugging-with-python-debugger">Interactive Debugging</a></td>
+</tr>
+<tr>
+<td>Provider crashes</td>
+<td>Terraform logs (<code>TF_LOG=DEBUG</code>)</td>
+<td><a href="#debugging-with-terraform">Debugging with Terraform</a></td>
+</tr>
+<tr>
+<td>API/HTTP issues</td>
+<td>httpx logging</td>
+<td><a href="#network-and-api-debugging">Network Debugging</a></td>
+</tr>
+<tr>
+<td>Slow performance</td>
+<td>Logging with timing, py-spy</td>
+<td><a href="#performance-debugging">Performance Debugging</a></td>
+</tr>
+<tr>
+<td>Schema errors</td>
+<td>Minimal config testing</td>
+<td><a href="#debugging-schema-problems">Schema Debugging</a></td>
+</tr>
+<tr>
+<td>State inconsistencies</td>
+<td>State inspection, logs</td>
+<td><a href="#debugging-state-issues">State Debugging</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="setting-up-your-debug-environment">Setting Up Your Debug Environment<a class="headerlink" href="#setting-up-your-debug-environment" title="Permanent link">&para;</a></h2>
+<h3 id="development-environment">Development Environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h3>
+<p>Set up your environment for effective debugging:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Install in editable mode</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>/path/to/pyvider-provider
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Set debug environment variables</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_LOG_LEVEL</span><span class="o">=</span>DEBUG
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>DEBUG
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG_PATH</span><span class="o">=</span>./terraform-debug.log
 </code></pre></div>
-<p>You can then attach to the provider process with <code>pdb</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python<span class="w"> </span>-m<span class="w"> </span>pdb<span class="w"> </span>-p<span class="w"> </span>&lt;pid&gt;
+<h3 id="ide-configuration">IDE Configuration<a class="headerlink" href="#ide-configuration" title="Permanent link">&para;</a></h3>
+<p><strong>VS Code</strong> (<code>launch.json</code>):
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.2.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;configurations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">{</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Debug Provider&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&quot;request&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;launch&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;pyvider.cli&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">      </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;provide&quot;</span><span class="p">],</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="nt">&quot;env&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">        </span><span class="nt">&quot;PYVIDER_LOG_LEVEL&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEBUG&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="nt">&quot;TF_LOG&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DEBUG&quot;</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="p">},</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="nt">&quot;justMyCode&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="p">}</span>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="p">]</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">}</span>
+</code></pre></div></p>
+<p><strong>PyCharm</strong>:
+1. Run → Edit Configurations → Add Python configuration
+2. Module: <code>pyvider.cli</code>
+3. Parameters: <code>provide</code>
+4. Environment variables: <code>PYVIDER_LOG_LEVEL=DEBUG;TF_LOG=DEBUG</code></p>
+<h3 id="required-tools">Required Tools<a class="headerlink" href="#required-tools" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Debugging tools</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pip<span class="w"> </span>install<span class="w"> </span>ipdb<span class="w">  </span><span class="c1"># Enhanced debugger</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pip<span class="w"> </span>install<span class="w"> </span>py-spy<span class="w">  </span><span class="c1"># Performance profiler</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># System tools (macOS)</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>brew<span class="w"> </span>install<span class="w"> </span>httpie<span class="w">  </span><span class="c1"># HTTP testing</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="c1"># System tools (Linux)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>apt-get<span class="w"> </span>install<span class="w"> </span>strace<span class="w">  </span><span class="c1"># System call tracing</span>
 </code></pre></div>
-<h2 id="logging">📝 Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
-<p>You can use the logging system to get more information about what's happening in your provider. See the <a href="../logging/">Logging</a> documentation for more information.</p>
-<h2 id="tracing">🔬 Tracing<a class="headerlink" href="#tracing" title="Permanent link">&para;</a></h2>
-<p>You can use a tool like <code>strace</code> or <code>dtruss</code> to trace the system calls that your provider is making. This can be useful for debugging low-level issues.
-```</p>
+<h2 id="log-based-debugging">Log-Based Debugging<a class="headerlink" href="#log-based-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="understanding-log-levels">Understanding Log Levels<a class="headerlink" href="#understanding-log-levels" title="Permanent link">&para;</a></h3>
+<p>Pyvider uses structured logging with multiple levels:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># In your provider code</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">provide.foundation</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Detailed debugging information&quot;</span><span class="p">)</span>  <span class="c1"># Development</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Important state changes&quot;</span><span class="p">)</span>  <span class="c1"># Normal operations</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Recoverable issues&quot;</span><span class="p">)</span>  <span class="c1"># Potential problems</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failures requiring attention&quot;</span><span class="p">)</span>  <span class="c1"># Errors</span>
+</code></pre></div>
+<h3 id="setting-log-levels">Setting Log Levels<a class="headerlink" href="#setting-log-levels" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Provider log level</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_LOG_LEVEL</span><span class="o">=</span>DEBUG
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Terraform log level</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>TRACE<span class="w">  </span><span class="c1"># Most verbose</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>DEBUG<span class="w">  </span><span class="c1"># Detailed</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>INFO<span class="w">   </span><span class="c1"># Normal</span>
+</code></pre></div>
+<h3 id="reading-structured-logs">Reading Structured Logs<a class="headerlink" href="#reading-structured-logs" title="Permanent link">&para;</a></h3>
+<p>Pyvider logs are structured with key-value pairs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>2025-10-24 10:30:15 DEBUG Read file content filename=/tmp/test.txt content_length=42 content_hash=a1b2c3d4
+</code></pre></div>
+<p><strong>Key fields to look for:</strong>
+- <code>filename</code>, <code>path</code> - What file is being accessed
+- <code>resource_type</code>, <code>resource_id</code> - Which resource
+- <code>operation</code> - What operation (create, read, update, delete)
+- <code>error</code> - Error messages
+- <code>content_hash</code>, <code>content_length</code> - Data verification</p>
+<h3 id="filtering-logs">Filtering Logs<a class="headerlink" href="#filtering-logs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Show only ERROR logs</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>grep<span class="w"> </span><span class="s2">&quot;ERROR&quot;</span><span class="w"> </span>terraform-debug.log
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Show logs for specific resource</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>grep<span class="w"> </span><span class="s2">&quot;pyvider_file_content&quot;</span><span class="w"> </span>terraform-debug.log
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># Show specific operation</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>grep<span class="w"> </span><span class="s2">&quot;operation=create&quot;</span><span class="w"> </span>terraform-debug.log
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="c1"># Show logs with timing</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>grep<span class="w"> </span><span class="s2">&quot;duration&quot;</span><span class="w"> </span>terraform-debug.log
+</code></pre></div>
+<h3 id="example-debugging-with-logs">Example: Debugging with Logs<a class="headerlink" href="#example-debugging-with-logs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;pyvider_example&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExampleResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>            <span class="s2">&quot;Create operation starting&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>            <span class="n">resource_type</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">resource_type</span><span class="p">,</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>            <span class="n">config</span><span class="o">=</span><span class="n">base_plan</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>        <span class="p">)</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>            <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span><span class="n">base_plan</span><span class="p">)</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>                <span class="s2">&quot;Resource created successfully&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>                <span class="n">resource_id</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>                <span class="n">duration_ms</span><span class="o">=</span><span class="n">result</span><span class="o">.</span><span class="n">duration</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>            <span class="p">)</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>            <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">base_plan</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">id</span><span class="p">},</span> <span class="kc">None</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>                <span class="s2">&quot;Failed to create resource&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>                <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>                <span class="n">error_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>                <span class="n">config</span><span class="o">=</span><span class="n">base_plan</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>            <span class="p">)</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>            <span class="k">raise</span>
+</code></pre></div>
+<h2 id="interactive-debugging-with-python-debugger">Interactive Debugging with Python Debugger<a class="headerlink" href="#interactive-debugging-with-python-debugger" title="Permanent link">&para;</a></h2>
+<h3 id="using-breakpoint">Using breakpoint()<a class="headerlink" href="#using-breakpoint" title="Permanent link">&para;</a></h3>
+<p>The simplest way to debug is using Python's built-in <code>breakpoint()</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="c1"># Pause execution here</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="c1"># Inspect variables</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="c1"># (Pdb) print(base_plan)</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="c1"># (Pdb) print(ctx.config)</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="c1"># (Pdb) print(ctx.state)</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span><span class="n">base_plan</span><span class="p">)</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div>
+<h3 id="debugger-commands">Debugger Commands<a class="headerlink" href="#debugger-commands" title="Permanent link">&para;</a></h3>
+<p>When paused at a breakpoint:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Navigation</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="n">n</span>  <span class="c1"># Next line</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">s</span>  <span class="c1"># Step into function</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">c</span>  <span class="c1"># Continue execution</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="n">r</span>  <span class="c1"># Return from current function</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Inspection</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="n">p</span> <span class="n">variable_name</span>  <span class="c1"># Print variable</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="n">pp</span> <span class="n">variable_name</span>  <span class="c1"># Pretty-print variable</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="n">l</span>  <span class="c1"># List code around current line</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="n">w</span>  <span class="c1"># Show stack trace</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="c1"># Breakpoints</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="n">b</span> <span class="n">line_number</span>  <span class="c1"># Set breakpoint at line</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="n">b</span> <span class="n">function_name</span>  <span class="c1"># Set breakpoint at function</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="n">cl</span>  <span class="c1"># Clear all breakpoints</span>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="c1"># Other</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="n">h</span>  <span class="c1"># Help</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="n">q</span>  <span class="c1"># Quit debugger</span>
+</code></pre></div>
+<h3 id="debugging-async-code">Debugging Async Code<a class="headerlink" href="#debugging-async-code" title="Permanent link">&para;</a></h3>
+<p>Special considerations for async debugging:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>    <span class="c1"># Set breakpoint before await</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="c1"># When you hit this breakpoint, you can:</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>    <span class="c1"># - Step over the await with &#39;n&#39;</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>    <span class="c1"># - Step into the async function with &#39;s&#39;</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_resource</span><span class="p">(</span><span class="n">base_plan</span><span class="p">)</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>    <span class="c1"># Set another breakpoint to inspect result</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>    <span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div>
+<h3 id="conditional-breakpoints">Conditional Breakpoints<a class="headerlink" href="#conditional-breakpoints" title="Permanent link">&para;</a></h3>
+<p>Break only when a condition is met:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">filename</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">filename</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="c1"># Only break for specific files</span>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="k">if</span> <span class="n">filename</span> <span class="o">==</span> <span class="s2">&quot;/tmp/debug-this.txt&quot;</span><span class="p">:</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        <span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="n">content</span> <span class="o">=</span> <span class="n">safe_read_text</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>    <span class="k">return</span> <span class="n">FileContentState</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="inspecting-context">Inspecting Context<a class="headerlink" href="#inspecting-context" title="Permanent link">&para;</a></h3>
+<p>When debugging, inspect the resource context:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># At breakpoint</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Inspect configuration</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">pp</span> <span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="vm">__dict__</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="p">{</span><span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/test.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello&#39;</span><span class="p">}</span>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># Inspect state (if exists)</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="n">pp</span> <span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="s2">&quot;No state&quot;</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="p">{</span><span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="s1">&#39;/tmp/test.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;content&#39;</span><span class="p">:</span> <span class="s1">&#39;Hello&#39;</span><span class="p">,</span> <span class="s1">&#39;exists&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="c1"># Inspect resource type</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="nb">print</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">resource_type</span><span class="p">)</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="s1">&#39;pyvider_file_content&#39;</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="c1"># Check private state</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="p">(</span><span class="n">Pdb</span><span class="p">)</span> <span class="nb">print</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">private_state</span><span class="p">)</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="sa">b</span><span class="s1">&#39;encrypted_data...&#39;</span>
+</code></pre></div>
+<h2 id="debugging-with-terraform">Debugging with Terraform<a class="headerlink" href="#debugging-with-terraform" title="Permanent link">&para;</a></h2>
+<h3 id="terraform-log-levels">Terraform Log Levels<a class="headerlink" href="#terraform-log-levels" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># TRACE: Maximum verbosity (includes gRPC)</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>TRACE
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># DEBUG: Detailed information</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>DEBUG
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># INFO: High-level information</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>INFO
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="c1"># Save logs to file</span>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG_PATH</span><span class="o">=</span>./terraform.log
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="c1"># Run Terraform</span>
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>terraform<span class="w"> </span>apply
+</code></pre></div>
+<h3 id="understanding-terraform-debug-output">Understanding Terraform Debug Output<a class="headerlink" href="#understanding-terraform-debug-output" title="Permanent link">&para;</a></h3>
+<p>Key patterns to look for:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># Provider startup
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>[DEBUG] plugin: starting plugin: path=.terraform/plugins/...
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a># gRPC communication
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>[TRACE] provider.terraform-provider-pyvider: Received request: ...
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a># Schema retrieval
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>[DEBUG] plugin: plugin process exited: ...
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a># Resource operations
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>[DEBUG] pyvider_file_content.example: apply started
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>[DEBUG] pyvider_file_content.example: apply complete
+</code></pre></div>
+<h3 id="common-terraform-errors">Common Terraform Errors<a class="headerlink" href="#common-terraform-errors" title="Permanent link">&para;</a></h3>
+<p><strong>"Plugin did not respond"</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Error: Failed to instantiate provider
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>The plugin encountered an error, and failed to respond to the plugin.(*GRPCProvider).ReadResource call.
+</code></pre></div></p>
+<p><strong>Cause</strong>: Provider crashed or hung</p>
+<p><strong>Debug steps:</strong>
+1. Check provider logs for stack trace
+2. Verify async operations aren't blocking
+3. Add <code>breakpoint()</code> before failure point</p>
+<p><strong>"Schema inconsistency"</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Error: Inconsistent result after apply
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>When applying changes to pyvider_file_content.example, provider produced an unexpected new value
+</code></pre></div></p>
+<p><strong>Cause</strong>: State returned doesn't match schema</p>
+<p><strong>Debug steps:</strong>
+1. Log the state being returned
+2. Verify all computed attributes are set
+3. Check for type mismatches</p>
+<h3 id="debugging-provider-communication">Debugging Provider Communication<a class="headerlink" href="#debugging-provider-communication" title="Permanent link">&para;</a></h3>
+<p>Watch gRPC communication:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Maximum verbosity for gRPC</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>TRACE
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GRPC_GO_LOG_VERBOSITY_LEVEL</span><span class="o">=</span><span class="m">99</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GRPC_GO_LOG_SEVERITY_LEVEL</span><span class="o">=</span>info
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>terraform<span class="w"> </span>apply<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;grpc&quot;</span>
+</code></pre></div>
+<h2 id="common-debugging-scenarios">Common Debugging Scenarios<a class="headerlink" href="#common-debugging-scenarios" title="Permanent link">&para;</a></h2>
+<h3 id="scenario-1-my-resource-isnt-being-created">Scenario 1: "My resource isn't being created"<a class="headerlink" href="#scenario-1-my-resource-isnt-being-created" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: <code>terraform apply</code> completes but resource doesn't exist</p>
+<p><strong>Debug workflow:</strong></p>
+<ol>
+<li>
+<p><strong>Check Terraform output for errors</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>terraform<span class="w"> </span>apply<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span>error
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Enable debug logging</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">TF_LOG</span><span class="o">=</span>DEBUG
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_LOG_LEVEL</span><span class="o">=</span>DEBUG
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>terraform<span class="w"> </span>apply
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Add logging to _create method</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;_create called&quot;</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">base_plan</span><span class="p">)</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="nb">breakpoint</span><span class="p">()</span>  <span class="c1"># Pause to inspect</span>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>    <span class="c1"># ... rest of method</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Verify the operation is called</strong></p>
+</li>
+<li>Check logs for "_create called"</li>
+<li>
+<p>If not called, check schema/config</p>
+</li>
+<li>
+<p><strong>Test with minimal config</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;pyvider_file_content&quot;</span><span class="w"> </span><span class="nv">&quot;test&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">  </span><span class="na">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/tmp/test.txt&quot;</span>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">  </span><span class="na">content</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="p">}</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Check for swallowed exceptions</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Create failed&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="k">raise</span>  <span class="c1"># Don&#39;t swallow!</span>
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="scenario-2-state-drift-isnt-detected">Scenario 2: "State drift isn't detected"<a class="headerlink" href="#scenario-2-state-drift-isnt-detected" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: Manual changes not detected by <code>terraform plan</code></p>
+<p><strong>Debug workflow:</strong></p>
+<ol>
+<li>
+<p><strong>Check read() implementation</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;read() called&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="c1"># Should return None if resource doesn&#39;t exist</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="c1"># Should return updated state if changed</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Verify read() returns correct state</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>    <span class="n">current</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">fetch_current_state</span><span class="p">()</span>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>        <span class="s2">&quot;Comparing states&quot;</span><span class="p">,</span>
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>        <span class="n">terraform_state</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">,</span>
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>        <span class="n">current_state</span><span class="o">=</span><span class="n">current</span><span class="o">.</span><span class="vm">__dict__</span>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>    <span class="p">)</span>
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>    <span class="k">return</span> <span class="n">current</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Test manually</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Create resource</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>terraform<span class="w"> </span>apply
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># Modify manually</span>
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;changed&quot;</span><span class="w"> </span>&gt;<span class="w"> </span>/tmp/test.txt
+<a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+<a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># Should show drift</span>
+<a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>terraform<span class="w"> </span>plan
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="scenario-3-provider-crashes-on-apply">Scenario 3: "Provider crashes on apply"<a class="headerlink" href="#scenario-3-provider-crashes-on-apply" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: Provider process exits unexpectedly</p>
+<p><strong>Debug workflow:</strong></p>
+<ol>
+<li>
+<p><strong>Find the stack trace</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Check Terraform logs</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>cat<span class="w"> </span>terraform.log<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-A<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="s2">&quot;Traceback&quot;</span>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Check provider logs</span>
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">PYVIDER_LOG_LEVEL</span><span class="o">=</span>DEBUG
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>terraform<span class="w"> </span>apply<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-B<span class="w"> </span><span class="m">5</span><span class="w"> </span>-A<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="s2">&quot;Error&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Identify the failing method</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Add try/except with logging</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting create&quot;</span><span class="p">)</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create succeeded&quot;</span><span class="p">)</span>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>        <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Create failed&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">traceback</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>        <span class="k">raise</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Use debugger to catch exception</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="n">sys</span><span class="o">.</span><span class="n">settrace</span><span class="p">(</span><span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># Enable full tracebacks</span>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>    <span class="nb">breakpoint</span><span class="p">()</span>  <span class="c1"># Will stop before crash</span>
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="scenario-4-slow-performance-hangs">Scenario 4: "Slow performance / hangs"<a class="headerlink" href="#scenario-4-slow-performance-hangs" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: Operations take very long or hang indefinitely</p>
+<p><strong>Debug workflow:</strong></p>
+<ol>
+<li>
+<p><strong>Add timing logs</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create starting&quot;</span><span class="p">)</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>    <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create completed&quot;</span><span class="p">,</span> <span class="n">duration_seconds</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+<a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Check for blocking operations</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># Bad: Blocking in async function</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># BLOCKS entire event loop!</span>
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>
+<a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="c1"># Good: Use async sleep</span>
+<a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Profile with py-spy</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># Find provider process</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>terraform-provider-pyvider
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="c1"># Profile it</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>py-spy<span class="w"> </span>top<span class="w"> </span>--pid<span class="w"> </span>&lt;provider_pid&gt;
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="c1"># Generate flamegraph</span>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>py-spy<span class="w"> </span>record<span class="w"> </span>--pid<span class="w"> </span>&lt;provider_pid&gt;<span class="w"> </span>--output<span class="w"> </span>profile.svg
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Check for connection issues</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># Add timeout to HTTP clients</span>
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a><span class="bp">self</span><span class="o">.</span><span class="n">http_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">)</span>
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="scenario-5-schema-validation-errors">Scenario 5: "Schema validation errors"<a class="headerlink" href="#scenario-5-schema-validation-errors" title="Permanent link">&para;</a></h3>
+<p><strong>Symptoms</strong>: "Attribute not found" or type errors</p>
+<p><strong>Debug workflow:</strong></p>
+<ol>
+<li>
+<p><strong>Compare schema to config</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>    <span class="n">schema</span> <span class="o">=</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># Must match Terraform</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>    <span class="p">})</span>
+<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Schema defined&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>    <span class="k">return</span> <span class="n">schema</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Test with minimal config</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># Start simple</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;pyvider_file_content&quot;</span><span class="w"> </span><span class="nv">&quot;test&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">  </span><span class="na">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/tmp/test.txt&quot;</span>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">  </span><span class="na">content</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="p">}</span>
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="c1"># Add attributes one at a time</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Validate attribute names match</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># In _create, log what you received</span>
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received attributes&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">base_plan</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>    <span class="c1"># Should match schema exactly</span>
+</code></pre></div></p>
+</li>
+</ol>
+<h2 id="debugging-state-issues">Debugging State Issues<a class="headerlink" href="#debugging-state-issues" title="Permanent link">&para;</a></h2>
+<h3 id="inspecting-terraform-state">Inspecting Terraform State<a class="headerlink" href="#inspecting-terraform-state" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="c1"># Show entire state</span>
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>terraform<span class="w"> </span>show
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="c1"># Show specific resource</span>
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>terraform<span class="w"> </span>show<span class="w"> </span>-json<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.values.root_module.resources[] | select(.address==&quot;pyvider_file_content.test&quot;)&#39;</span>
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>
+<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="c1"># Show state file directly</span>
+<a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a>cat<span class="w"> </span>terraform.tfstate<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq<span class="w"> </span><span class="s1">&#39;.resources[]&#39;</span>
+</code></pre></div>
+<h3 id="understanding-state-transitions">Understanding State Transitions<a class="headerlink" href="#understanding-state-transitions" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>        <span class="s2">&quot;State transition&quot;</span><span class="p">,</span>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>        <span class="n">old_state</span><span class="o">=</span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span> <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">state</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>        <span class="n">new_plan</span><span class="o">=</span><span class="n">base_plan</span><span class="p">,</span>
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>        <span class="n">differences</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compute_diff</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">)</span>
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>    <span class="p">)</span>
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>    <span class="k">return</span> <span class="n">result</span><span class="p">,</span> <span class="kc">None</span>
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="k">def</span><span class="w"> </span><span class="nf">_compute_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">old</span><span class="p">,</span> <span class="n">new</span><span class="p">):</span>
+<a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Helper to show what changed.&quot;&quot;&quot;</span>
+<a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">old</span><span class="p">:</span>
+<a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a>        <span class="k">return</span> <span class="s2">&quot;creating&quot;</span>
+<a id="__codelineno-37-16" name="__codelineno-37-16" href="#__codelineno-37-16"></a>    <span class="n">changes</span> <span class="o">=</span> <span class="p">{}</span>
+<a id="__codelineno-37-17" name="__codelineno-37-17" href="#__codelineno-37-17"></a>    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">new</span><span class="p">:</span>
+<a id="__codelineno-37-18" name="__codelineno-37-18" href="#__codelineno-37-18"></a>        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">!=</span> <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+<a id="__codelineno-37-19" name="__codelineno-37-19" href="#__codelineno-37-19"></a>            <span class="n">changes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;old&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">old</span><span class="p">,</span> <span class="n">key</span><span class="p">),</span> <span class="s2">&quot;new&quot;</span><span class="p">:</span> <span class="n">new</span><span class="p">[</span><span class="n">key</span><span class="p">]}</span>
+<a id="__codelineno-37-20" name="__codelineno-37-20" href="#__codelineno-37-20"></a>    <span class="k">return</span> <span class="n">changes</span>
+</code></pre></div>
+<h3 id="debugging-private-state">Debugging Private State<a class="headerlink" href="#debugging-private-state" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrivateState</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>    <span class="c1"># Decrypt and inspect private state</span>
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">private_state</span><span class="p">:</span>
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>            <span class="n">decrypted</span> <span class="o">=</span> <span class="n">PrivateState</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">private_state</span><span class="p">)</span>
+<a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Private state contents&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">decrypted</span><span class="p">)</span>
+<a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Failed to decrypt private state&quot;</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>
+<a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a>    <span class="k">return</span> <span class="n">current_state</span>
+</code></pre></div>
+<h3 id="state-inconsistency-debugging">State Inconsistency Debugging<a class="headerlink" href="#state-inconsistency-debugging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>    <span class="c1"># Return state must include ALL attributes from schema</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>    <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>        <span class="o">**</span><span class="n">base_plan</span><span class="p">,</span>  <span class="c1"># Include all config</span>
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a>        <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">result</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+<a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a>        <span class="s2">&quot;exists&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>  <span class="c1"># Computed attribute</span>
+<a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a>        <span class="s2">&quot;content_hash&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_hash</span><span class="p">(</span><span class="n">base_plan</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]),</span>  <span class="c1"># Computed</span>
+<a id="__codelineno-39-10" name="__codelineno-39-10" href="#__codelineno-39-10"></a>    <span class="p">}</span>
+<a id="__codelineno-39-11" name="__codelineno-39-11" href="#__codelineno-39-11"></a>
+<a id="__codelineno-39-12" name="__codelineno-39-12" href="#__codelineno-39-12"></a>    <span class="c1"># Log for verification</span>
+<a id="__codelineno-39-13" name="__codelineno-39-13" href="#__codelineno-39-13"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-39-14" name="__codelineno-39-14" href="#__codelineno-39-14"></a>        <span class="s2">&quot;Returning state&quot;</span><span class="p">,</span>
+<a id="__codelineno-39-15" name="__codelineno-39-15" href="#__codelineno-39-15"></a>        <span class="n">state_keys</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+<a id="__codelineno-39-16" name="__codelineno-39-16" href="#__codelineno-39-16"></a>        <span class="n">schema_attrs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_schema</span><span class="p">()</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<a id="__codelineno-39-17" name="__codelineno-39-17" href="#__codelineno-39-17"></a>    <span class="p">)</span>
+<a id="__codelineno-39-18" name="__codelineno-39-18" href="#__codelineno-39-18"></a>
+<a id="__codelineno-39-19" name="__codelineno-39-19" href="#__codelineno-39-19"></a>    <span class="k">return</span> <span class="n">state</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div>
+<h2 id="debugging-schema-problems">Debugging Schema Problems<a class="headerlink" href="#debugging-schema-problems" title="Permanent link">&para;</a></h2>
+<h3 id="validating-schema-definition">Validating Schema Definition<a class="headerlink" href="#validating-schema-definition" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="nd">@classmethod</span>
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PvsSchema</span><span class="p">:</span>
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>    <span class="n">schema</span> <span class="o">=</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span>
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>            <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a>            <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path to the file&quot;</span><span class="p">,</span>
+<a id="__codelineno-40-7" name="__codelineno-40-7" href="#__codelineno-40-7"></a>            <span class="n">validators</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-40-8" name="__codelineno-40-8" href="#__codelineno-40-8"></a>                <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="ow">not</span> <span class="n">x</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;Use relative paths&quot;</span>
+<a id="__codelineno-40-9" name="__codelineno-40-9" href="#__codelineno-40-9"></a>            <span class="p">]</span>
+<a id="__codelineno-40-10" name="__codelineno-40-10" href="#__codelineno-40-10"></a>        <span class="p">),</span>
+<a id="__codelineno-40-11" name="__codelineno-40-11" href="#__codelineno-40-11"></a>        <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-40-12" name="__codelineno-40-12" href="#__codelineno-40-12"></a>        <span class="s2">&quot;exists&quot;</span><span class="p">:</span> <span class="n">a_bool</span><span class="p">(</span><span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-40-13" name="__codelineno-40-13" href="#__codelineno-40-13"></a>    <span class="p">})</span>
+<a id="__codelineno-40-14" name="__codelineno-40-14" href="#__codelineno-40-14"></a>
+<a id="__codelineno-40-15" name="__codelineno-40-15" href="#__codelineno-40-15"></a>    <span class="c1"># Debug: Print schema</span>
+<a id="__codelineno-40-16" name="__codelineno-40-16" href="#__codelineno-40-16"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Schema created&quot;</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-40-17" name="__codelineno-40-17" href="#__codelineno-40-17"></a>        <span class="n">k</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;required&quot;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">required</span><span class="p">,</span> <span class="s2">&quot;computed&quot;</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">computed</span><span class="p">}</span>
+<a id="__codelineno-40-18" name="__codelineno-40-18" href="#__codelineno-40-18"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<a id="__codelineno-40-19" name="__codelineno-40-19" href="#__codelineno-40-19"></a>    <span class="p">})</span>
+<a id="__codelineno-40-20" name="__codelineno-40-20" href="#__codelineno-40-20"></a>
+<a id="__codelineno-40-21" name="__codelineno-40-21" href="#__codelineno-40-21"></a>    <span class="k">return</span> <span class="n">schema</span>
+</code></pre></div>
+<h3 id="testing-schema-with-terraform">Testing Schema with Terraform<a class="headerlink" href="#testing-schema-with-terraform" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Test required attributes</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;pyvider_file_content&quot;</span><span class="w"> </span><span class="nv">&quot;test_required&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="c1">  # Missing required attribute - should error</span>
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="w">  </span><span class="na">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/tmp/test.txt&quot;</span>
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="c1">  # content missing!</span>
+<a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="p">}</span>
+<a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a>
+<a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a><span class="c1"># Test computed attributes</span>
+<a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;pyvider_file_content&quot;</span><span class="w"> </span><span class="nv">&quot;test_computed&quot;</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a><span class="w">  </span><span class="na">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;/tmp/test.txt&quot;</span>
+<a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a><span class="w">  </span><span class="na">content</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;test&quot;</span>
+<a id="__codelineno-41-12" name="__codelineno-41-12" href="#__codelineno-41-12"></a><span class="c1">  # Don&#39;t set computed attributes</span>
+<a id="__codelineno-41-13" name="__codelineno-41-13" href="#__codelineno-41-13"></a><span class="c1">  # exists = true  # This should error</span>
+<a id="__codelineno-41-14" name="__codelineno-41-14" href="#__codelineno-41-14"></a><span class="p">}</span>
+</code></pre></div>
+<h3 id="type-conversion-debugging">Type Conversion Debugging<a class="headerlink" href="#type-conversion-debugging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>    <span class="c1"># Log types received</span>
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received types&quot;</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a>        <span class="n">k</span><span class="p">:</span> <span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">base_plan</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>    <span class="p">})</span>
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>    <span class="c1"># Verify types match schema</span>
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base_plan</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;filename is not string!&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">base_plan</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]))</span>
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>    <span class="k">return</span> <span class="n">base_plan</span><span class="p">,</span> <span class="kc">None</span>
+</code></pre></div>
+<h2 id="performance-debugging">Performance Debugging<a class="headerlink" href="#performance-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="measuring-operation-times">Measuring Operation Times<a class="headerlink" href="#measuring-operation-times" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">wraps</span>
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">timed</span><span class="p">(</span><span class="n">operation_name</span><span class="p">):</span>
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to time operations.&quot;&quot;&quot;</span>
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">decorator</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a>        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+<a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a>            <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a>            <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a>                <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a>                <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a>                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation_name</span><span class="si">}</span><span class="s2"> completed&quot;</span><span class="p">,</span>
+<a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a>                    <span class="n">duration_ms</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+<a id="__codelineno-43-16" name="__codelineno-43-16" href="#__codelineno-43-16"></a>                <span class="p">)</span>
+<a id="__codelineno-43-17" name="__codelineno-43-17" href="#__codelineno-43-17"></a>                <span class="k">return</span> <span class="n">result</span>
+<a id="__codelineno-43-18" name="__codelineno-43-18" href="#__codelineno-43-18"></a>            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-43-19" name="__codelineno-43-19" href="#__codelineno-43-19"></a>                <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+<a id="__codelineno-43-20" name="__codelineno-43-20" href="#__codelineno-43-20"></a>                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+<a id="__codelineno-43-21" name="__codelineno-43-21" href="#__codelineno-43-21"></a>                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation_name</span><span class="si">}</span><span class="s2"> failed&quot;</span><span class="p">,</span>
+<a id="__codelineno-43-22" name="__codelineno-43-22" href="#__codelineno-43-22"></a>                    <span class="n">duration_ms</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">),</span>
+<a id="__codelineno-43-23" name="__codelineno-43-23" href="#__codelineno-43-23"></a>                    <span class="n">error</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<a id="__codelineno-43-24" name="__codelineno-43-24" href="#__codelineno-43-24"></a>                <span class="p">)</span>
+<a id="__codelineno-43-25" name="__codelineno-43-25" href="#__codelineno-43-25"></a>                <span class="k">raise</span>
+<a id="__codelineno-43-26" name="__codelineno-43-26" href="#__codelineno-43-26"></a>        <span class="k">return</span> <span class="n">wrapper</span>
+<a id="__codelineno-43-27" name="__codelineno-43-27" href="#__codelineno-43-27"></a>    <span class="k">return</span> <span class="n">decorator</span>
+<a id="__codelineno-43-28" name="__codelineno-43-28" href="#__codelineno-43-28"></a>
+<a id="__codelineno-43-29" name="__codelineno-43-29" href="#__codelineno-43-29"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;pyvider_example&quot;</span><span class="p">)</span>
+<a id="__codelineno-43-30" name="__codelineno-43-30" href="#__codelineno-43-30"></a><span class="k">class</span><span class="w"> </span><span class="nc">ExampleResource</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-43-31" name="__codelineno-43-31" href="#__codelineno-43-31"></a>
+<a id="__codelineno-43-32" name="__codelineno-43-32" href="#__codelineno-43-32"></a>    <span class="nd">@timed</span><span class="p">(</span><span class="s2">&quot;read&quot;</span><span class="p">)</span>
+<a id="__codelineno-43-33" name="__codelineno-43-33" href="#__codelineno-43-33"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">):</span>
+<a id="__codelineno-43-34" name="__codelineno-43-34" href="#__codelineno-43-34"></a>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_state</span><span class="p">()</span>
+<a id="__codelineno-43-35" name="__codelineno-43-35" href="#__codelineno-43-35"></a>
+<a id="__codelineno-43-36" name="__codelineno-43-36" href="#__codelineno-43-36"></a>    <span class="nd">@timed</span><span class="p">(</span><span class="s2">&quot;create&quot;</span><span class="p">)</span>
+<a id="__codelineno-43-37" name="__codelineno-43-37" href="#__codelineno-43-37"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">,</span> <span class="n">base_plan</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<a id="__codelineno-43-38" name="__codelineno-43-38" href="#__codelineno-43-38"></a>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_do_create</span><span class="p">(</span><span class="n">base_plan</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="profiling-with-py-spy">Profiling with py-spy<a class="headerlink" href="#profiling-with-py-spy" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="c1"># Real-time profiling</span>
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>py-spy<span class="w"> </span>top<span class="w"> </span>--pid<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span>terraform-provider-pyvider<span class="k">)</span>
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>
+<a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a><span class="c1"># Generate flame graph</span>
+<a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>py-spy<span class="w"> </span>record<span class="w"> </span>-o<span class="w"> </span>profile.svg<span class="w"> </span>--pid<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span>terraform-provider-pyvider<span class="k">)</span>
+<a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>
+<a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="c1"># Record for specific duration</span>
+<a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>py-spy<span class="w"> </span>record<span class="w"> </span>-o<span class="w"> </span>profile.svg<span class="w"> </span>--duration<span class="w"> </span><span class="m">60</span><span class="w"> </span>--pid<span class="w"> </span>&lt;pid&gt;
+</code></pre></div>
+<h3 id="finding-memory-leaks">Finding Memory Leaks<a class="headerlink" href="#finding-memory-leaks" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">tracemalloc</span>
+<a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>
+<a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyProvider</span><span class="p">(</span><span class="n">BaseProvider</span><span class="p">):</span>
+<a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a>
+<a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProviderConfig</span><span class="p">):</span>
+<a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>        <span class="c1"># Start tracking</span>
+<a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a>        <span class="n">tracemalloc</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a>
+<a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">cleanup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a>        <span class="c1"># Get memory statistics</span>
+<a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a>        <span class="n">snapshot</span> <span class="o">=</span> <span class="n">tracemalloc</span><span class="o">.</span><span class="n">take_snapshot</span><span class="p">()</span>
+<a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a>        <span class="n">top_stats</span> <span class="o">=</span> <span class="n">snapshot</span><span class="o">.</span><span class="n">statistics</span><span class="p">(</span><span class="s1">&#39;lineno&#39;</span><span class="p">)</span>
+<a id="__codelineno-45-13" name="__codelineno-45-13" href="#__codelineno-45-13"></a>
+<a id="__codelineno-45-14" name="__codelineno-45-14" href="#__codelineno-45-14"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Memory usage top 10:&quot;</span><span class="p">)</span>
+<a id="__codelineno-45-15" name="__codelineno-45-15" href="#__codelineno-45-15"></a>        <span class="k">for</span> <span class="n">stat</span> <span class="ow">in</span> <span class="n">top_stats</span><span class="p">[:</span><span class="mi">10</span><span class="p">]:</span>
+<a id="__codelineno-45-16" name="__codelineno-45-16" href="#__codelineno-45-16"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stat</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="network-and-api-debugging">Network and API Debugging<a class="headerlink" href="#network-and-api-debugging" title="Permanent link">&para;</a></h2>
+<h3 id="http-request-logging">HTTP Request Logging<a class="headerlink" href="#http-request-logging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
+<a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyProvider</span><span class="p">(</span><span class="n">BaseProvider</span><span class="p">):</span>
+<a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>
+<a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">ProviderConfig</span><span class="p">):</span>
+<a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>        <span class="c1"># Enable HTTP logging</span>
+<a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">http_client</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">(</span>
+<a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>            <span class="n">event_hooks</span><span class="o">=</span><span class="p">{</span>
+<a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a>                <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_request</span><span class="p">],</span>
+<a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a>                <span class="s2">&quot;response&quot;</span><span class="p">:</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_response</span><span class="p">],</span>
+<a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a>            <span class="p">}</span>
+<a id="__codelineno-46-12" name="__codelineno-46-12" href="#__codelineno-46-12"></a>        <span class="p">)</span>
+<a id="__codelineno-46-13" name="__codelineno-46-13" href="#__codelineno-46-13"></a>
+<a id="__codelineno-46-14" name="__codelineno-46-14" href="#__codelineno-46-14"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_log_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+<a id="__codelineno-46-15" name="__codelineno-46-15" href="#__codelineno-46-15"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-46-16" name="__codelineno-46-16" href="#__codelineno-46-16"></a>            <span class="s2">&quot;HTTP request&quot;</span><span class="p">,</span>
+<a id="__codelineno-46-17" name="__codelineno-46-17" href="#__codelineno-46-17"></a>            <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+<a id="__codelineno-46-18" name="__codelineno-46-18" href="#__codelineno-46-18"></a>            <span class="n">url</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">),</span>
+<a id="__codelineno-46-19" name="__codelineno-46-19" href="#__codelineno-46-19"></a>            <span class="n">headers</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+<a id="__codelineno-46-20" name="__codelineno-46-20" href="#__codelineno-46-20"></a>        <span class="p">)</span>
+<a id="__codelineno-46-21" name="__codelineno-46-21" href="#__codelineno-46-21"></a>
+<a id="__codelineno-46-22" name="__codelineno-46-22" href="#__codelineno-46-22"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_log_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<a id="__codelineno-46-23" name="__codelineno-46-23" href="#__codelineno-46-23"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-46-24" name="__codelineno-46-24" href="#__codelineno-46-24"></a>            <span class="s2">&quot;HTTP response&quot;</span><span class="p">,</span>
+<a id="__codelineno-46-25" name="__codelineno-46-25" href="#__codelineno-46-25"></a>            <span class="n">status</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span>
+<a id="__codelineno-46-26" name="__codelineno-46-26" href="#__codelineno-46-26"></a>            <span class="n">duration_ms</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">elapsed</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
+<a id="__codelineno-46-27" name="__codelineno-46-27" href="#__codelineno-46-27"></a>        <span class="p">)</span>
+</code></pre></div>
+<h3 id="capturing-http-traffic">Capturing HTTP Traffic<a class="headerlink" href="#capturing-http-traffic" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a><span class="c1"># Using mitmproxy</span>
+<a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>mitmproxy<span class="w"> </span>--mode<span class="w"> </span>transparent
+<a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>
+<a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="c1"># Or charles proxy</span>
+<a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>charles-proxy
+<a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a>
+<a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a><span class="c1"># Configure provider to use proxy</span>
+<a id="__codelineno-47-8" name="__codelineno-47-8" href="#__codelineno-47-8"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTP_PROXY</span><span class="o">=</span>http://localhost:8080
+<a id="__codelineno-47-9" name="__codelineno-47-9" href="#__codelineno-47-9"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HTTPS_PROXY</span><span class="o">=</span>http://localhost:8080
+</code></pre></div>
+<h3 id="testing-api-calls-separately">Testing API Calls Separately<a class="headerlink" href="#testing-api-calls-separately" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="c1"># Test API calls outside Terraform</span>
+<a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
+<a id="__codelineno-48-4" name="__codelineno-48-4" href="#__codelineno-48-4"></a>
+<a id="__codelineno-48-5" name="__codelineno-48-5" href="#__codelineno-48-5"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_api</span><span class="p">():</span>
+<a id="__codelineno-48-6" name="__codelineno-48-6" href="#__codelineno-48-6"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+<a id="__codelineno-48-7" name="__codelineno-48-7" href="#__codelineno-48-7"></a>        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+<a id="__codelineno-48-8" name="__codelineno-48-8" href="#__codelineno-48-8"></a>            <span class="s2">&quot;https://api.example.com/resource&quot;</span><span class="p">,</span>
+<a id="__codelineno-48-9" name="__codelineno-48-9" href="#__codelineno-48-9"></a>            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span><span class="p">}</span>
+<a id="__codelineno-48-10" name="__codelineno-48-10" href="#__codelineno-48-10"></a>        <span class="p">)</span>
+<a id="__codelineno-48-11" name="__codelineno-48-11" href="#__codelineno-48-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+<a id="__codelineno-48-12" name="__codelineno-48-12" href="#__codelineno-48-12"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+<a id="__codelineno-48-13" name="__codelineno-48-13" href="#__codelineno-48-13"></a>
+<a id="__codelineno-48-14" name="__codelineno-48-14" href="#__codelineno-48-14"></a><span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">test_api</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="debugging-tests">Debugging Tests<a class="headerlink" href="#debugging-tests" title="Permanent link">&para;</a></h2>
+<h3 id="running-tests-in-debug-mode">Running Tests in Debug Mode<a class="headerlink" href="#running-tests-in-debug-mode" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># Run with debugger</span>
+<a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a>pytest<span class="w"> </span>tests/test_my_resource.py<span class="w"> </span>--pdb
+<a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a>
+<a id="__codelineno-49-4" name="__codelineno-49-4" href="#__codelineno-49-4"></a><span class="c1"># Stop at first failure</span>
+<a id="__codelineno-49-5" name="__codelineno-49-5" href="#__codelineno-49-5"></a>pytest<span class="w"> </span>tests/<span class="w"> </span>-x<span class="w"> </span>--pdb
+<a id="__codelineno-49-6" name="__codelineno-49-6" href="#__codelineno-49-6"></a>
+<a id="__codelineno-49-7" name="__codelineno-49-7" href="#__codelineno-49-7"></a><span class="c1"># Verbose output</span>
+<a id="__codelineno-49-8" name="__codelineno-49-8" href="#__codelineno-49-8"></a>pytest<span class="w"> </span>tests/<span class="w"> </span>-vv
+<a id="__codelineno-49-9" name="__codelineno-49-9" href="#__codelineno-49-9"></a>
+<a id="__codelineno-49-10" name="__codelineno-49-10" href="#__codelineno-49-10"></a><span class="c1"># Show print statements</span>
+<a id="__codelineno-49-11" name="__codelineno-49-11" href="#__codelineno-49-11"></a>pytest<span class="w"> </span>tests/<span class="w"> </span>-s
+</code></pre></div>
+<h3 id="debugging-async-tests">Debugging Async Tests<a class="headerlink" href="#debugging-async-tests" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pytest</span>
+<a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a>
+<a id="__codelineno-50-3" name="__codelineno-50-3" href="#__codelineno-50-3"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">asyncio</span>
+<a id="__codelineno-50-4" name="__codelineno-50-4" href="#__codelineno-50-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_create</span><span class="p">():</span>
+<a id="__codelineno-50-5" name="__codelineno-50-5" href="#__codelineno-50-5"></a>    <span class="n">resource</span> <span class="o">=</span> <span class="n">FileContentResource</span><span class="p">()</span>
+<a id="__codelineno-50-6" name="__codelineno-50-6" href="#__codelineno-50-6"></a>
+<a id="__codelineno-50-7" name="__codelineno-50-7" href="#__codelineno-50-7"></a>    <span class="c1"># Add breakpoint</span>
+<a id="__codelineno-50-8" name="__codelineno-50-8" href="#__codelineno-50-8"></a>    <span class="nb">breakpoint</span><span class="p">()</span>
+<a id="__codelineno-50-9" name="__codelineno-50-9" href="#__codelineno-50-9"></a>
+<a id="__codelineno-50-10" name="__codelineno-50-10" href="#__codelineno-50-10"></a>    <span class="c1"># Step through async code</span>
+<a id="__codelineno-50-11" name="__codelineno-50-11" href="#__codelineno-50-11"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resource</span><span class="o">.</span><span class="n">_create</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="n">plan</span><span class="p">)</span>
+<a id="__codelineno-50-12" name="__codelineno-50-12" href="#__codelineno-50-12"></a>
+<a id="__codelineno-50-13" name="__codelineno-50-13" href="#__codelineno-50-13"></a>    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</code></pre></div>
+<h3 id="using-pytest-fixtures-for-debugging">Using pytest Fixtures for Debugging<a class="headerlink" href="#using-pytest-fixtures-for-debugging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span>
+<a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">debug_ctx</span><span class="p">(</span><span class="n">capsys</span><span class="p">):</span>
+<a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Fixture that prints context for debugging.&quot;&quot;&quot;</span>
+<a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_debug</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+<a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Context: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="vm">__dict__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Config: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="vm">__dict__</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-51-7" name="__codelineno-51-7" href="#__codelineno-51-7"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;State: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="vm">__dict__</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">ctx</span><span class="o">.</span><span class="n">state</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-51-8" name="__codelineno-51-8" href="#__codelineno-51-8"></a>    <span class="k">return</span> <span class="n">_debug</span>
+<a id="__codelineno-51-9" name="__codelineno-51-9" href="#__codelineno-51-9"></a>
+<a id="__codelineno-51-10" name="__codelineno-51-10" href="#__codelineno-51-10"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">test_with_debug</span><span class="p">(</span><span class="n">debug_ctx</span><span class="p">):</span>
+<a id="__codelineno-51-11" name="__codelineno-51-11" href="#__codelineno-51-11"></a>    <span class="n">ctx</span> <span class="o">=</span> <span class="n">make_context</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<a id="__codelineno-51-12" name="__codelineno-51-12" href="#__codelineno-51-12"></a>    <span class="n">debug_ctx</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>  <span class="c1"># Print for inspection</span>
+<a id="__codelineno-51-13" name="__codelineno-51-13" href="#__codelineno-51-13"></a>
+<a id="__codelineno-51-14" name="__codelineno-51-14" href="#__codelineno-51-14"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resource</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+<a id="__codelineno-51-15" name="__codelineno-51-15" href="#__codelineno-51-15"></a>    <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+</code></pre></div>
+<h2 id="advanced-debugging-techniques">Advanced Debugging Techniques<a class="headerlink" href="#advanced-debugging-techniques" title="Permanent link">&para;</a></h2>
+<h3 id="system-call-tracing">System Call Tracing<a class="headerlink" href="#system-call-tracing" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a><span class="c1"># macOS</span>
+<a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>sudo<span class="w"> </span>dtruss<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span>terraform-provider-pyvider<span class="k">)</span>
+<a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>
+<a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a><span class="c1"># Linux</span>
+<a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>strace<span class="w"> </span>-p<span class="w"> </span><span class="k">$(</span>pgrep<span class="w"> </span>-f<span class="w"> </span>terraform-provider-pyvider<span class="k">)</span>
+<a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a>
+<a id="__codelineno-52-7" name="__codelineno-52-7" href="#__codelineno-52-7"></a><span class="c1"># Follow child processes</span>
+<a id="__codelineno-52-8" name="__codelineno-52-8" href="#__codelineno-52-8"></a>strace<span class="w"> </span>-f<span class="w"> </span>-p<span class="w"> </span>&lt;pid&gt;
+<a id="__codelineno-52-9" name="__codelineno-52-9" href="#__codelineno-52-9"></a>
+<a id="__codelineno-52-10" name="__codelineno-52-10" href="#__codelineno-52-10"></a><span class="c1"># Filter for file operations</span>
+<a id="__codelineno-52-11" name="__codelineno-52-11" href="#__codelineno-52-11"></a>strace<span class="w"> </span>-e<span class="w"> </span><span class="nv">trace</span><span class="o">=</span>open,read,write<span class="w"> </span>-p<span class="w"> </span>&lt;pid&gt;
+</code></pre></div>
+<h3 id="grpc-inspection">gRPC Inspection<a class="headerlink" href="#grpc-inspection" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a><span class="c1"># Install grpcurl</span>
+<a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>brew<span class="w"> </span>install<span class="w"> </span>grpcurl<span class="w">  </span><span class="c1"># macOS</span>
+<a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>apt-get<span class="w"> </span>install<span class="w"> </span>grpcurl<span class="w">  </span><span class="c1"># Linux</span>
+<a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a>
+<a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a><span class="c1"># List services</span>
+<a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a>grpcurl<span class="w"> </span>-plaintext<span class="w"> </span>localhost:50051<span class="w"> </span>list
+<a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a>
+<a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a><span class="c1"># Call method directly</span>
+<a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>grpcurl<span class="w"> </span>-plaintext<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;{&quot;resource_type&quot;:&quot;pyvider_file_content&quot;}&#39;</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-53-10" name="__codelineno-53-10" href="#__codelineno-53-10"></a><span class="w">  </span>localhost:50051<span class="w"> </span>tfplugin6.Provider/GetSchema
+</code></pre></div>
+<h3 id="thread-debugging">Thread Debugging<a class="headerlink" href="#thread-debugging" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>
+<a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">debug_threads</span><span class="p">():</span>
+<a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Print all active threads.&quot;&quot;&quot;</span>
+<a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>    <span class="k">for</span> <span class="n">thread</span> <span class="ow">in</span> <span class="n">threading</span><span class="o">.</span><span class="n">enumerate</span><span class="p">():</span>
+<a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a>            <span class="s2">&quot;Active thread&quot;</span><span class="p">,</span>
+<a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>            <span class="n">name</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-54-9" name="__codelineno-54-9" href="#__codelineno-54-9"></a>            <span class="n">daemon</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">daemon</span><span class="p">,</span>
+<a id="__codelineno-54-10" name="__codelineno-54-10" href="#__codelineno-54-10"></a>            <span class="n">alive</span><span class="o">=</span><span class="n">thread</span><span class="o">.</span><span class="n">is_alive</span><span class="p">()</span>
+<a id="__codelineno-54-11" name="__codelineno-54-11" href="#__codelineno-54-11"></a>        <span class="p">)</span>
+<a id="__codelineno-54-12" name="__codelineno-54-12" href="#__codelineno-54-12"></a>
+<a id="__codelineno-54-13" name="__codelineno-54-13" href="#__codelineno-54-13"></a><span class="c1"># Call when debugging hangs</span>
+<a id="__codelineno-54-14" name="__codelineno-54-14" href="#__codelineno-54-14"></a><span class="n">debug_threads</span><span class="p">()</span>
+</code></pre></div>
+<h2 id="debugging-tools-reference">Debugging Tools Reference<a class="headerlink" href="#debugging-tools-reference" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Problem Type</th>
+<th>Tool</th>
+<th>Command/Usage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logic errors</td>
+<td>Python debugger</td>
+<td><code>breakpoint()</code> in code</td>
+</tr>
+<tr>
+<td>Async issues</td>
+<td>ipdb</td>
+<td><code>import ipdb; ipdb.set_trace()</code></td>
+</tr>
+<tr>
+<td>Terraform communication</td>
+<td>TF_LOG</td>
+<td><code>export TF_LOG=DEBUG</code></td>
+</tr>
+<tr>
+<td>HTTP/API issues</td>
+<td>httpx logging</td>
+<td>Enable event hooks</td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>py-spy</td>
+<td><code>py-spy top --pid &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td>Memory leaks</td>
+<td>tracemalloc</td>
+<td><code>tracemalloc.start()</code></td>
+</tr>
+<tr>
+<td>System calls</td>
+<td>strace/dtruss</td>
+<td><code>strace -p &lt;pid&gt;</code></td>
+</tr>
+<tr>
+<td>gRPC inspection</td>
+<td>grpcurl</td>
+<td><code>grpcurl localhost:50051 list</code></td>
+</tr>
+<tr>
+<td>Network traffic</td>
+<td>mitmproxy</td>
+<td><code>mitmproxy</code></td>
+</tr>
+<tr>
+<td>Test failures</td>
+<td>pytest --pdb</td>
+<td><code>pytest --pdb -x</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="common-error-messages-decoded">Common Error Messages Decoded<a class="headerlink" href="#common-error-messages-decoded" title="Permanent link">&para;</a></h2>
+<h3 id="plugin-did-not-respond">"Plugin did not respond"<a class="headerlink" href="#plugin-did-not-respond" title="Permanent link">&para;</a></h3>
+<p><strong>Meaning</strong>: Provider process crashed or hung
+<strong>Check</strong>: Stack traces in logs, blocking operations, infinite loops</p>
+<h3 id="schema-inconsistency">"Schema inconsistency"<a class="headerlink" href="#schema-inconsistency" title="Permanent link">&para;</a></h3>
+<p><strong>Meaning</strong>: State doesn't match schema definition
+<strong>Check</strong>: All computed attributes set, types match, no extra fields</p>
+<h3 id="attribute-not-found-in-schema">"Attribute not found in schema"<a class="headerlink" href="#attribute-not-found-in-schema" title="Permanent link">&para;</a></h3>
+<p><strong>Meaning</strong>: Config references undefined attribute
+<strong>Check</strong>: Attribute names in schema vs Terraform config</p>
+<h3 id="context-deadline-exceeded">"Context deadline exceeded"<a class="headerlink" href="#context-deadline-exceeded" title="Permanent link">&para;</a></h3>
+<p><strong>Meaning</strong>: Operation timed out
+<strong>Check</strong>: Blocking I/O, slow API calls, infinite loops</p>
+<h3 id="could-not-load-plugin">"Could not load plugin"<a class="headerlink" href="#could-not-load-plugin" title="Permanent link">&para;</a></h3>
+<p><strong>Meaning</strong>: Provider binary not found or not executable
+<strong>Check</strong>: Installation, file permissions, PATH</p>
+<h2 id="debugging-checklist">Debugging Checklist<a class="headerlink" href="#debugging-checklist" title="Permanent link">&para;</a></h2>
+<p>When troubleshooting an issue, work through this checklist systematically:</p>
+<ul>
+<li>[ ] <strong>Enable debug logging</strong>: <code>export TF_LOG=DEBUG PYVIDER_LOG_LEVEL=DEBUG</code></li>
+<li>[ ] <strong>Check Terraform output</strong>: Look for obvious errors</li>
+<li>[ ] <strong>Review provider logs</strong>: Check for exceptions and warnings</li>
+<li>[ ] <strong>Verify schema</strong>: Ensure schema matches Terraform config</li>
+<li>[ ] <strong>Test with minimal config</strong>: Simplify to isolate the issue</li>
+<li>[ ] <strong>Add logging</strong>: Instrument the failing operation</li>
+<li>[ ] <strong>Use breakpoints</strong>: Step through the code if needed</li>
+<li>[ ] <strong>Check async operations</strong>: Ensure no blocking I/O</li>
+<li>[ ] <strong>Verify state handling</strong>: Check state transitions</li>
+<li>[ ] <strong>Test lifecycle individually</strong>: Test create/read/update/delete separately</li>
+<li>[ ] <strong>Check external dependencies</strong>: Test API calls independently</li>
+<li>[ ] <strong>Review test coverage</strong>: Ensure scenario is tested</li>
+</ul>
+<h2 id="related-documentation">Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../logging/">Logging Guide</a> - Structured logging details</li>
+<li><a href="../error-handling/">Error Handling</a> - Exception handling patterns</li>
+<li><a href="../testing-providers/">Testing Providers</a> - Testing strategies</li>
+<li><a href="../best-practices/">Best Practices</a> - Avoiding common issues</li>
+<li><a href="../../troubleshooting/">Troubleshooting</a> - Common problems and solutions</li>
+</ul>
+<h2 id="learn-by-debugging">Learn by Debugging<a class="headerlink" href="#learn-by-debugging" title="Permanent link">&para;</a></h2>
+<p>The best way to learn debugging is to practice. Try these exercises:</p>
+<ol>
+<li><strong>Add intentional bugs</strong> to pyvider-components examples and practice finding them</li>
+<li><strong>Debug existing tests</strong> - Run tests with <code>--pdb</code> and explore</li>
+<li><strong>Profile operations</strong> - Use py-spy on working code to understand performance</li>
+<li><strong>Trace system calls</strong> - Use strace/dtruss to see what your provider actually does</li>
+</ol>
+<p>Check out <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a> for working code to practice with!</p>
+<hr />
+<p><strong>Remember</strong>: Debugging is a skill that improves with practice. Start with simple logging, escalate to interactive debugging when needed, and always work systematically from symptoms to root cause.</p>
 
 
 
