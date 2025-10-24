@@ -8,23 +8,16 @@ This module verifies that all enhanced protocol handlers provide:
 """
 
 import msgpack
+from provide.testkit.mocking import MagicMock, patch
 import pytest
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
 
-from pyvider.exceptions import DataSourceError, ResourceError
+from pyvider.exceptions import ResourceError
 from pyvider.protocols.tfprotov6.handlers.apply_resource_change import (
     _get_resource_and_provider_instances,
 )
 from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 from pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource import (
     _close_ephemeral_resource_impl,
-)
-from pyvider.protocols.tfprotov6.handlers.configure_provider import (
-    _configure_provider_impl,
-)
-from pyvider.protocols.tfprotov6.handlers.get_metadata import _get_metadata_impl
-from pyvider.protocols.tfprotov6.handlers.get_provider_schema import (
-    _get_provider_schema_impl,
 )
 from pyvider.protocols.tfprotov6.handlers.import_resource_state import (
     _import_resource_state_impl,
@@ -92,26 +85,25 @@ class TestDataSourceErrorMessages:
         request = pb.ReadDataSource.Request(type_name="test_data_source")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag.return_value = pb.Diagnostic(
-                    severity=pb.Diagnostic.ERROR, summary="Test", detail="Test"
-                )
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
+            "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
+        ) as mock_diag:
+            mock_hub.get_component.return_value = None
+            mock_diag.return_value = pb.Diagnostic(
+                severity=pb.Diagnostic.ERROR, summary="Test", detail="Test"
+            )
 
-                response = await _read_data_source_impl(request, context=None)
+            response = await _read_data_source_impl(request, context=None)
 
-                # Handler catches exception and converts to diagnostic
-                assert len(response.diagnostics) > 0
-                # Verify the exception that was passed to create_diagnostic_from_exception
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "Suggestion:" in error_message
-                assert "Troubleshooting:" in error_message
-                assert "@data_source decorator" in error_message
-                assert "PYVIDER_LOG_LEVEL=DEBUG" in error_message
+            # Handler catches exception and converts to diagnostic
+            assert len(response.diagnostics) > 0
+            # Verify the exception that was passed to create_diagnostic_from_exception
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "Suggestion:" in error_message
+            assert "Troubleshooting:" in error_message
+            assert "@data_source decorator" in error_message
+            assert "PYVIDER_LOG_LEVEL=DEBUG" in error_message
 
     @pytest.mark.asyncio
     async def test_validate_data_resource_missing_has_troubleshooting(self):
@@ -203,7 +195,9 @@ class TestEphemeralResourceErrorMessages:
                 called_exception = mock_diag.call_args[0][0]
                 error_message = str(called_exception)
                 assert "Troubleshooting:" in error_message
-                steps = [line for line in error_message.split("\n") if line.strip().startswith(("1.", "2.", "3."))]
+                steps = [
+                    line for line in error_message.split("\n") if line.strip().startswith(("1.", "2.", "3."))
+                ]
                 assert len(steps) >= 2  # At least 2 troubleshooting steps
 
     @pytest.mark.asyncio
@@ -212,9 +206,7 @@ class TestEphemeralResourceErrorMessages:
         request = pb.ValidateEphemeralResourceConfig.Request(type_name="test_ephemeral")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub"
-        ) as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub") as mock_hub:
             with patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.create_diagnostic_from_exception"
             ) as mock_diag:
@@ -241,11 +233,11 @@ class TestFunctionErrorMessages:
 
             result = await _call_function_impl(request, context=None)
 
-            assert len(result.error.diagnostics) > 0
-            error_detail = result.error.diagnostics[0].detail
-            assert "Suggestion:" in error_detail
-            assert "@function decorator" in error_detail
-            assert "pyvider components list" in error_detail
+            assert result.error.text
+            error_text = result.error.text
+            assert "Suggestion:" in error_text
+            assert "@function decorator" in error_text
+            assert "pyvider components list" in error_text
 
 
 class TestUnimplementedHandlerMessages:
@@ -268,9 +260,7 @@ class TestUnimplementedHandlerMessages:
     @pytest.mark.asyncio
     async def test_move_resource_state_has_workaround(self):
         """Test that move handler provides workaround."""
-        request = pb.MoveResourceState.Request(
-            source_type_name="source", target_type_name="target"
-        )
+        request = pb.MoveResourceState.Request(source_type_name="source", target_type_name="target")
 
         response = await _move_resource_state_impl(request, context=None)
 

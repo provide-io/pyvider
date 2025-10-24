@@ -9,19 +9,11 @@ structured logging with:
 """
 
 import msgpack
-import pytest
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
+import pytest
 
-from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 from pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource import (
     _close_ephemeral_resource_impl,
-)
-from pyvider.protocols.tfprotov6.handlers.configure_provider import (
-    _configure_provider_impl,
-)
-from pyvider.protocols.tfprotov6.handlers.get_metadata import _get_metadata_impl
-from pyvider.protocols.tfprotov6.handlers.get_provider_schema import (
-    _get_provider_schema_impl,
 )
 from pyvider.protocols.tfprotov6.handlers.import_resource_state import (
     _import_resource_state_impl,
@@ -35,10 +27,6 @@ from pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource import (
 from pyvider.protocols.tfprotov6.handlers.read_data_source import (
     _read_data_source_impl,
 )
-from pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource import (
-    _renew_ephemeral_resource_impl,
-)
-from pyvider.protocols.tfprotov6.handlers.stop_provider import _stop_provider_impl
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     _upgrade_resource_state_impl,
 )
@@ -81,9 +69,7 @@ class TestOperationFieldPresence:
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
@@ -103,9 +89,7 @@ class TestOperationFieldPresence:
         request = pb.OpenEphemeralResource.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
@@ -125,9 +109,7 @@ class TestOperationFieldPresence:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
             await _upgrade_resource_state_impl(request, context=None)
 
             assert mock_logger.debug.called
@@ -169,21 +151,20 @@ class TestErrorLogging:
 
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.logger"
-        ) as mock_logger:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub"
-            ) as mock_hub:
-                mock_hub.get_component.return_value = None
+        ) as mock_logger, patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub"
+        ) as mock_hub:
+            mock_hub.get_component.return_value = None
 
-                try:
-                    await _validate_ephemeral_resource_config_impl(request, context=None)
-                except Exception:
-                    pass
+            try:
+                await _validate_ephemeral_resource_config_impl(request, context=None)
+            except Exception:
+                pass
 
-                assert mock_logger.error.called
-                call_kwargs = mock_logger.error.call_args[1]
-                assert "error_type" in call_kwargs
-                assert "resource_type" in call_kwargs
+            assert mock_logger.error.called
+            call_kwargs = mock_logger.error.call_args[1]
+            assert "error_type" in call_kwargs
+            assert "resource_type" in call_kwargs
 
 
 class TestSuccessLogging:
@@ -202,9 +183,7 @@ class TestSuccessLogging:
         mock_instance.close = AsyncMock()
         mock_class.return_value = mock_instance
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.hub") as mock_hub:
                 mock_hub.get_component.return_value = mock_class
 
@@ -222,9 +201,7 @@ class TestSuccessLogging:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
             await _upgrade_resource_state_impl(request, context=None)
 
             # Should log info on success
@@ -242,9 +219,7 @@ class TestWarningLogging:
         """Test that import_resource_state logs warning for unimplemented feature."""
         request = pb.ImportResourceState.Request(type_name="test_resource", id="test-id")
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.import_resource_state.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.import_resource_state.logger") as mock_logger:
             await _import_resource_state_impl(request, context=None)
 
             # Should log warning for not implemented
@@ -256,9 +231,7 @@ class TestWarningLogging:
     @pytest.mark.asyncio
     async def test_move_resource_state_logs_warning(self):
         """Test that move_resource_state logs warning for unimplemented feature."""
-        request = pb.MoveResourceState.Request(
-            source_type_name="source", target_type_name="target"
-        )
+        request = pb.MoveResourceState.Request(source_type_name="source", target_type_name="target")
 
         with patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.logger") as mock_logger:
             await _move_resource_state_impl(request, context=None)
@@ -278,9 +251,7 @@ class TestLogLevelConsistency:
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
@@ -298,9 +269,7 @@ class TestLogLevelConsistency:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
             await _upgrade_resource_state_impl(request, context=None)
 
             # Success should be logged with info
@@ -353,9 +322,7 @@ class TestContextualInformation:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
             await _upgrade_resource_state_impl(request, context=None)
 
             call_kwargs = mock_logger.debug.call_args[1]
@@ -368,9 +335,7 @@ class TestContextualInformation:
         request = pb.OpenEphemeralResource.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger"
-        ) as mock_logger:
+        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
                 with patch(
                     "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.create_diagnostic_from_exception"
