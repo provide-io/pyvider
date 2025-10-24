@@ -54,6 +54,10 @@
     
       <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="../../../provide-foundry/shared-theme/stylesheets/provide-theme.css">
+    
+      <link rel="stylesheet" href="../../../provide-foundry/shared-theme/stylesheets/termynal.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -2522,8 +2526,8 @@ protocol (via DynamicValue) and the framework's internal CtyValue representation
 
 <a href="#pyvider.conversion.marshal" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">marshal</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">value</span><span class="p">:</span> <span class="n">CtyValue</span> <span class="o">|</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PvsType</span> <span class="o">|</span> <span class="n">CtyType</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pb</span><span class="o">.</span><span class="n">DynamicValue</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">value</span><span class="p">:</span> <span class="n"><span title="pyvider.cty.CtyValue">CtyValue</span></span> <span class="o">|</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            PvsType (pyvider.schema.types.PvsType)" href="../schema/types/#pyvider.schema.types.PvsType">PvsType</a></span> <span class="o">|</span> <span class="n"><span title="pyvider.cty.CtyType">CtyType</span></span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pyvider.protocols.tfprotov6.protobuf.DynamicValue">DynamicValue</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2581,8 +2585,8 @@ protocol (via DynamicValue) and the framework's internal CtyValue representation
 
 <a href="#pyvider.conversion.unmarshal" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">unmarshal</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dv</span><span class="p">:</span> <span class="n">DynamicValue</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n">PvsType</span> <span class="o">|</span> <span class="n">CtyType</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CtyValue</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dv</span><span class="p">:</span> <span class="n"><span title="pyvider.protocols.tfprotov6.protobuf.DynamicValue">DynamicValue</span></span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">schema</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            PvsType (pyvider.schema.types.PvsType)" href="../schema/types/#pyvider.schema.types.PvsType">PvsType</a></span> <span class="o">|</span> <span class="n"><span title="pyvider.cty.CtyType">CtyType</span></span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pyvider.cty.CtyValue">CtyValue</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2637,7 +2641,7 @@ protocol (via DynamicValue) and the framework's internal CtyValue representation
   </span>
 
 <a href="#pyvider.conversion.pvs_schema_to_proto" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">pvs_schema_to_proto</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n">PvsSchema</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pb</span><span class="o">.</span><span class="n">Schema</span>
+<div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">pvs_schema_to_proto</span><span class="p">(</span><span class="n">schema</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="            PvsSchema (pyvider.schema.types.PvsSchema)" href="../schema/types/#pyvider.schema.types.PvsSchema">PvsSchema</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pyvider.protocols.tfprotov6.protobuf.Schema">Schema</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2669,8 +2673,8 @@ protocol (via DynamicValue) and the framework's internal CtyValue representation
 
 <a href="#pyvider.conversion.unify_and_validate_list_of_objects" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="doc-signature highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">unify_and_validate_list_of_objects</span><span class="p">(</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dict_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CtyValue</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">dict_list</span><span class="p">:</span> <span class="n"><span title="list">list</span></span><span class="p">[</span><span class="n"><span title="dict">dict</span></span><span class="p">[</span><span class="n"><span title="str">str</span></span><span class="p">,</span> <span class="n"><span title="typing.Any">Any</span></span><span class="p">]],</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="pyvider.cty.CtyValue">CtyValue</span></span>
 </code></pre></div>
 
     <div class="doc doc-contents ">
@@ -2815,6 +2819,14 @@ and returns a validated CtyValue representing a CtyList(CtyObject).</p>
     
     
       <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../../../provide-foundry/shared-theme/javascripts/mermaid-init.js"></script>
+      
+        <script src="../../../provide-foundry/shared-theme/javascripts/termynal.js"></script>
+      
+        <script src="../../../provide-foundry/shared-theme/javascripts/custom.js"></script>
       
     
   </body>
