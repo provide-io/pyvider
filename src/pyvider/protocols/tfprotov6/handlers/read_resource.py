@@ -2,6 +2,7 @@ import time
 from typing import Any
 
 import msgpack
+from provide.foundation import logger
 from provide.foundation.errors import resilient
 
 from pyvider.common.encryption import decrypt
@@ -42,14 +43,59 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
     """Implementation of ReadResource handler."""
     response = pb.ReadResource.Response()
     resource_context = None
+
+    logger.debug(
+        "ReadResource handler called",
+        operation="read_resource",
+        resource_type=request.type_name,
+        has_current_state=bool(request.current_state.msgpack),
+        has_private_state=bool(request.private),
+    )
+
     try:
         resource_class = hub.get_component("resource", request.type_name)
         if not resource_class:
-            raise ValueError(f"Resource type '{request.type_name}' not registered")
+            logger.error(
+                "Resource type not found during read operation",
+                operation="read_resource",
+                resource_type=request.type_name,
+                registered_resources=list(hub.get_components("resource").keys())
+                if hub.get_components("resource")
+                else [],
+            )
+
+            err = ResourceError(
+                f"Resource type '{request.type_name}' not registered.\n\n"
+                f"Suggestion: Ensure the resource is registered using the @resource decorator "
+                f"and that component discovery has completed successfully.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Check that the resource class has the @resource decorator\n"
+                f"  2. Verify the resource module is imported by the provider\n"
+                f"  3. Run 'pyvider components list' to see registered resources\n"
+                f"  4. Review provider logs for component registration errors"
+            )
+            err.add_context("resource.type_name", request.type_name)
+            raise err
 
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:
-            raise RuntimeError("Provider instance not found in hub.")
+            logger.error(
+                "Provider instance not found in hub during read operation",
+                operation="read_resource",
+                resource_type=request.type_name,
+            )
+            raise RuntimeError(
+                "Provider instance not found in hub.\n\n"
+                "This is an internal framework error. The provider should be registered "
+                "during server initialization.\n\n"
+                "Suggestion: Report this issue - it indicates a provider initialization problem."
+            )
+
+        logger.debug(
+            "Resource and provider instances retrieved for read",
+            operation="read_resource",
+            resource_type=request.type_name,
+        )
 
         resource_schema = resource_class.get_schema()
         prior_state_cty = unmarshal(request.current_state, schema=resource_schema.block)
@@ -62,11 +108,52 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
             and request.private
         ):
             try:
+                logger.debug(
+                    "Deserializing private state for read operation",
+                    operation="read_resource",
+                    resource_type=request.type_name,
+                    private_state_size=len(request.private),
+                )
+
                 decrypted_bytes = decrypt(request.private)
                 private_data = msgpack.unpackb(decrypted_bytes, raw=False)
                 private_state_instance = resource_class.private_state_class(**private_data)
+
+                logger.debug(
+                    "Private state deserialized successfully",
+                    operation="read_resource",
+                    resource_type=request.type_name,
+                )
+
             except Exception as e:
-                raise ResourceError(f"Failed to deserialize private state for {request.type_name}.") from e
+                logger.error(
+                    "Failed to deserialize private state during read",
+                    operation="read_resource",
+                    resource_type=request.type_name,
+                    error_type=type(e).__name__,
+                    error_message=str(e),
+                    exc_info=True,
+                )
+
+                err = ResourceError(
+                    f"Failed to deserialize private state for resource '{request.type_name}': {e}\n\n"
+                    f"Suggestion: This usually indicates a mismatch between the state encryption key "
+                    f"or corrupted private state data.\n\n"
+                    f"Troubleshooting:\n"
+                    f"  1. Verify PYVIDER_PRIVATE_STATE_SHARED_SECRET hasn't changed\n"
+                    f"  2. Check if the private state schema has changed incompatibly\n"
+                    f"  3. Review the original error: {type(e).__name__}: {e}\n"
+                    f"  4. Consider destroying and recreating the resource if schema changed"
+                )
+                err.add_context("resource.type_name", request.type_name)
+                err.add_context("private_state.error", str(e))
+                raise err from e
+
+        logger.debug(
+            "Invoking resource read method",
+            operation="read_resource",
+            resource_type=request.type_name,
+        )
 
         resource_handler = resource_class()
         resource_context = ResourceContext(
@@ -83,15 +170,44 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
             new_state_cty = validator_type.validate(raw_state_dict)
             marshalled_new_state = marshal(new_state_cty, schema=resource_schema.block)
             response.new_state.msgpack = marshalled_new_state.msgpack
+
+            logger.info(
+                "Resource read completed successfully with new state",
+                operation="read_resource",
+                resource_type=request.type_name,
+                state_fields=list(raw_state_dict.keys()),
+            )
         else:
             response.new_state.msgpack = b"\xc0"
+
+            logger.info(
+                "Resource read completed - resource no longer exists",
+                operation="read_resource",
+                resource_type=request.type_name,
+            )
 
         response.private = request.private
 
     except PyviderError as e:
+        logger.error(
+            "ReadResource failed with framework error",
+            operation="read_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
+        logger.error(
+            "ReadResource failed with unexpected error",
+            operation="read_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 
