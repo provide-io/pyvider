@@ -129,10 +129,10 @@ def prep_dev(ctx: PyviderContext) -> None:
         sys.exit(1)
 
     try:
-        _run_command(["uv", "venv"], cwd=project_root, title="Creating virtual environment")
+        _run_command(["uv", "venv"], cwd=str(project_root), title="Creating virtual environment")
         _run_command(
             ["uv", "sync", "--all-groups", "--dev"],
-            cwd=project_root,
+            cwd=str(project_root),
             title="Syncing dependencies",
         )
         _run_command(

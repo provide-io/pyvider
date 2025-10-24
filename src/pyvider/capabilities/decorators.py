@@ -1,10 +1,12 @@
 import asyncio
 from collections.abc import Callable
 from functools import wraps
-from typing import Any
+from typing import Any, TypeVar
 
 from pyvider.exceptions import ResourceError
 from pyvider.hub import hub
+
+F = TypeVar("F", bound=Callable[..., Any])
 
 
 def register_capability(name: str) -> Callable[[type], type]:
@@ -18,7 +20,7 @@ def register_capability(name: str) -> Callable[[type], type]:
     return decorator
 
 
-def requires_capability(func: Callable) -> Callable:
+def requires_capability(func: F) -> F:
     """
     Decorator that automatically injects a component's parent capability
     instance as a keyword argument into the decorated method.
