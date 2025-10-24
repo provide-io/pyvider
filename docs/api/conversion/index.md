@@ -264,9 +264,9 @@ cty_values = batch_convert(values, CtyNumber())
 
 ```python
 class MyResource(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Automatic conversion happens here
-        # config is already converted from CTY to Python
+        # ctx.config is already converted from CTY to Python
 
         # Do work...
         result = await self.api.create(...)
@@ -274,8 +274,8 @@ class MyResource(BaseResource):
         # Return state - will be converted to CTY automatically
         return State(
             id=result.id,
-            name=config.name
-        )
+            name=ctx.config.name
+        ), None
 ```
 
 ### Data Source Output

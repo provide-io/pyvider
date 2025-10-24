@@ -26,10 +26,11 @@ resource "mycloud_backup_policy" "db_backup" {
 **Provider Implementation:**
 ```python
 class BackupPolicy(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # The depends_on is handled by Terraform
         # Resource creation happens after dependencies
-        return await self._create_backup_policy(config)
+        state = await self._create_backup_policy(ctx.config)
+        return state, None
 ```
 
 ### `count` - Multiple Instances
@@ -342,12 +343,13 @@ class TaggableCapability:
 # Apply to resources
 @register_resource("server", capabilities=["taggable"])
 class Server(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         tags = self.capabilities.taggable.build_tags(
-            config.tags,
+            ctx.config.tags,
             {"ResourceType": "Server"}
         )
         # Use tags in creation...
+        return State(...), None
 ```
 
 ## Advanced Validation
@@ -465,20 +467,20 @@ def test_firewall_rule_validation(port, protocol):
 
 ```python
 class ServerGroup(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         """Create multiple servers efficiently."""
         # Batch API call
         servers = await self.provider.api.create_servers_batch(
             [
-                {"name": f"{config.name}-{i}", "size": config.size}
-                for i in range(config.count)
+                {"name": f"{ctx.config.name}-{i}", "size": ctx.config.size}
+                for i in range(ctx.config.count)
             ]
         )
 
         return State(
             server_ids=[s.id for s in servers],
             count=len(servers)
-        )
+        ), None
 ```
 
 ### Caching and Memoization
@@ -511,20 +513,20 @@ class ApiKey(BaseResource):
         """Encrypted state storage."""
         encrypted_key: str = a_str()
 
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, PrivateState | None]:
         # Generate API key
         api_key = await self.provider.generate_api_key()
 
         # Store encrypted
-        self.private_state = self.PrivateState(
+        private_state = self.PrivateState(
             encrypted_key=encrypt_value(api_key.secret)
         )
 
         return State(
             id=api_key.id,
-            name=config.name,
+            name=ctx.config.name,
             # Don't store secret in regular state
-        )
+        ), private_state
 
     async def read(self, state: State) -> State:
         # Decrypt when needed

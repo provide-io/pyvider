@@ -25,11 +25,11 @@ from pyvider.capabilities import requires_capability
 class MyResource:
     """A resource that requires authentication capability."""
 
-    async def create(self, config):
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Access capability through self.capabilities
         auth_token = await self.capabilities.authentication.get_token()
         # Use the token to create resource
-        pass
+        return State(...), None
 ```
 
 ## Creating Custom Capabilities

@@ -309,14 +309,14 @@ raise ValidationError(
 ### 4. Structured Error Handling
 
 ```python
-async def create(self, config: Config) -> State:
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     """Create resource with structured error handling."""
     try:
         # Validate inputs first
-        self._validate_config(config)
+        self._validate_config(ctx.config)
 
         # Attempt creation
-        result = await self._create_resource(config)
+        result = await self._create_resource(ctx.config)
 
         # Validate result
         if not result.id:

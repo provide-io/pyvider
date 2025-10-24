@@ -94,11 +94,11 @@ import structlog
 logger = structlog.get_logger()
 
 class MyResource(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Bind context to all logs in this method
         log = logger.bind(
             resource_type="mycloud_server",
-            resource_name=config.name,
+            resource_name=ctx.config.name,
             operation="create"
         )
 
@@ -148,13 +148,13 @@ from pyvider.observability import get_tracer
 tracer = get_tracer("my_provider")
 
 class MyResource(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Start a span for the operation
         with tracer.start_as_current_span(
             "resource.create",
             attributes={
                 "resource.type": "server",
-                "resource.name": config.name,
+                "resource.name": ctx.config.name,
                 "provider.name": "mycloud"
             }
         ) as span:
@@ -214,11 +214,11 @@ from pyvider.observability import timed
 
 class MyResource(BaseResource):
     @timed("resource.create")
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         """Create method with automatic timing."""
         # Method execution time automatically recorded
-        result = await self._create_impl(config)
-        return result
+        result = await self._create_impl(ctx.config)
+        return result, None
 
     @timed("api.call", include_args=True)
     async def api_call(self, method: str, endpoint: str):
