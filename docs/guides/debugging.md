@@ -22,7 +22,7 @@ python -m pdb -p <pid>
 
 ## 📝 Logging
 
-You can use the logging system to get more information about what's happening in your provider. See the [Logging](./10-logging.md) documentation for more information.
+You can use the logging system to get more information about what's happening in your provider. See the [Logging](logging.md) documentation for more information.
 
 ## 🔬 Tracing
 

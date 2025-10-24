@@ -52,5 +52,5 @@ The `Block` class accepts the following arguments:
 -   `computed`: A boolean indicating whether the block is computed.
 -   `sensitive`: A boolean indicating whether the block is sensitive.
 -   `description`: A description of the block.
--   `validators`: A list of validators to apply to the block. See the [Validators](./05-validators.md) documentation for a list of available validators.
+-   `validators`: A list of validators to apply to the block. See the [Validators](validators.md) documentation for a list of available validators.
 ```

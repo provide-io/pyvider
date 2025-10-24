@@ -38,11 +38,11 @@ In this example, we define an attribute named `my_attribute` with a type of `str
 The `Attribute` class accepts the following arguments:
 
 -   `name`: The name of the attribute.
--   `type`: The type of the attribute. See the [Types](./02-types.md) documentation for a list of available types.
+-   `type`: The type of the attribute. See the [Types](types.md) documentation for a list of available types.
 -   `required`: A boolean indicating whether the attribute is required.
 -   `optional`: A boolean indicating whether the attribute is optional.
 -   `computed`: A boolean indicating whether the attribute is computed.
 -   `sensitive`: A boolean indicating whether the attribute is sensitive.
 -   `description`: A description of the attribute.
--   `validators`: A list of validators to apply to the attribute. See the [Validators](./05-validators.md) documentation for a list of available validators.
+-   `validators`: A list of validators to apply to the attribute. See the [Validators](validators.md) documentation for a list of available validators.
 ```
