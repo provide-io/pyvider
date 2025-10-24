@@ -71,7 +71,8 @@
       "Bash(uv run pytest:*)",
       "Bash(uv run ruff:*)",
       "Bash(uv run mypy:*)",
-      "WebFetch(domain:pypi.org)"
+      "WebFetch(domain:pypi.org)",
+      "Bash(ls:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

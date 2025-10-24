@@ -311,26 +311,43 @@ graph TB
 - [Architecture Overview](docs/core-concepts/architecture.md)
 - [Component Model](docs/core-concepts/component-model.md)
 - [Schema System](docs/core-concepts/schema-system.md)
-- [Protocol Implementation](docs/core-concepts/protocol.md)
 
 ### Developer Guides
 - [Creating Providers](docs/guides/creating-providers.md)
-- [Building Resources](docs/guides/building-resources.md)
-- [Data Sources](docs/guides/data-sources.md)
-- [Provider Functions](docs/guides/provider-functions.md)
-- [Ephemeral Resources](docs/guides/ephemeral-resources.md)
+- [Creating Resources](docs/guides/03-creating-a-resource.md)
+- [Creating Data Sources](docs/guides/04-creating-a-data-source.md)
+- [Creating Functions](docs/guides/05-creating-a-function.md)
+- [Testing](docs/guides/06-testing.md)
+- [Best Practices](docs/guides/07-best-practices.md)
+- [Error Handling](docs/guides/09-error-handling.md)
+- [Logging](docs/guides/10-logging.md)
+- [Debugging](docs/guides/11-debugging.md)
+
+### User Guides
+- [Configuration](docs/guides/02-configuration.md)
+- [Managing Resources](docs/guides/03-managing-resources.md)
+- [Using Data Sources](docs/guides/04-using-data-sources.md)
+- [Using Functions](docs/guides/05-using-functions.md)
+- [Advanced Examples](docs/guides/06-advanced-examples.md)
 
 ### API Reference
-- [Decorators](docs/api-reference/decorators.md)
 - [Schema API](docs/api-reference/schema.md)
 - [CLI Commands](docs/api-reference/cli.md)
-- [Testing Utilities](docs/api-reference/testing.md)
+- [Types](docs/api-reference/types.md)
 
-### Advanced Topics
-- [Capabilities System](docs/advanced/capabilities.md)
-- [State Encryption](docs/advanced/state-management.md)
-- [Performance Tuning](docs/advanced/performance.md)
-- [Debugging Providers](docs/advanced/debugging.md)
+### Schema Documentation
+- [Schema Overview](docs/schema/01-overview.md)
+- [Attributes](docs/schema/03-attributes.md)
+- [Blocks](docs/schema/04-blocks.md)
+- [Validators](docs/schema/05-validators.md)
+
+### Capabilities
+- [Capabilities Overview](docs/capabilities/01-overview.md)
+- [Using Capabilities](docs/capabilities/02-using-capabilities.md)
+- [Creating Capabilities](docs/capabilities/03-creating-capabilities.md)
+
+### Development
+- [Roadmap](docs/development/roadmap.md)
 
 ## 🎯 Use Cases
 
