@@ -23,6 +23,8 @@ We'll create a **LocalFile Provider** that can:
 
 Create a new file called `local_provider.py`:
 
+<!-- TODO: Verify this example works with current API (last checked: 2025-10-24) -->
+
 ```python
 #!/usr/bin/env python3
 """
