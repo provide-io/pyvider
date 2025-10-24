@@ -363,7 +363,7 @@
           
   
   
-  API Reference (Auto-generated)
+  API Reference
 
         </a>
       </li>
@@ -1891,44 +1891,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#built-in-capabilities" class="md-nav__link">
+  <a href="#available-capabilities" class="md-nav__link">
     <span class="md-ellipsis">
-      Built-in Capabilities
+      Available Capabilities
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Built-in Capabilities">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Capability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#logging-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Logging Capability
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#caching-capability" class="md-nav__link">
-    <span class="md-ellipsis">
-      Caching Capability
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2111,7 +2078,7 @@
   
   
   <span class="md-ellipsis">
-    API Reference (Auto-generated)
+    API Reference
     
   </span>
   
@@ -2122,7 +2089,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            API Reference (Auto-generated)
+            API Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2670,10 +2637,11 @@
 
 
 <h1 id="using-capabilities">Using Capabilities<a class="headerlink" href="#using-capabilities" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Note</strong>: The capabilities system is currently under active development. This documentation describes the planned functionality.</p>
-</blockquote>
-<p>Capabilities provide a way to extend components with reusable functionality. They allow you to add common behaviors like authentication, logging, or data transformation to your resources, data sources, and providers.</p>
+<p>Capabilities provide a way to extend components with reusable functionality. They allow you to add common behaviors like authentication, caching, validation, or data transformation to your resources, data sources, and providers.</p>
+<div class="admonition note">
+<p class="admonition-title">Capabilities Status</p>
+<p>The capabilities system is <strong>fully implemented and working</strong>. Provider developers can create and use capabilities in their providers. Some advanced features (like a capability marketplace) are planned for future releases.</p>
+</div>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Capabilities in Pyvider work through the decorator system and can be applied to:
 - Providers
@@ -2698,14 +2666,17 @@
 </code></pre></div>
 <h2 id="creating-custom-capabilities">Creating Custom Capabilities<a class="headerlink" href="#creating-custom-capabilities" title="Permanent link">&para;</a></h2>
 <p>See <a href="../creating-capabilities/">Creating Capabilities</a> for details on implementing your own capabilities.</p>
-<h2 id="built-in-capabilities">Built-in Capabilities<a class="headerlink" href="#built-in-capabilities" title="Permanent link">&para;</a></h2>
-<p>Pyvider provides several built-in capabilities:</p>
-<h3 id="authentication-capability">Authentication Capability<a class="headerlink" href="#authentication-capability" title="Permanent link">&para;</a></h3>
-<p>Handles authentication flows and token management.</p>
-<h3 id="logging-capability">Logging Capability<a class="headerlink" href="#logging-capability" title="Permanent link">&para;</a></h3>
-<p>Enhanced logging with structured output and context.</p>
-<h3 id="caching-capability">Caching Capability<a class="headerlink" href="#caching-capability" title="Permanent link">&para;</a></h3>
-<p>Provides caching for expensive operations.</p>
+<h2 id="available-capabilities">Available Capabilities<a class="headerlink" href="#available-capabilities" title="Permanent link">&para;</a></h2>
+<p>Pyvider provides the capability infrastructure (<code>@register_capability</code>, <code>@requires_capability</code> decorators and <code>BaseCapability</code> class), but does not include built-in capability implementations in the core framework.</p>
+<p><strong>Create your own capabilities for:</strong>
+- Authentication flows and token management
+- Caching for expensive operations
+- Request rate limiting
+- Custom validation logic
+- Logging and observability enhancements
+- Retry and error handling patterns</p>
+<p><strong>Example capabilities in the community:</strong>
+- See <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a> for example capability implementations</p>
 <h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
 <p>Capabilities can be configured through the <code>pyvider.toml</code> configuration file:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># pyvider.toml</span>

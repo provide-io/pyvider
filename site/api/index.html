@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pyvider-api" class="md-skip">
+        <a href="#api-reference" class="md-skip">
           Skip to content
         </a>
       
@@ -363,7 +363,7 @@
           
   
   
-  API Reference (Auto-generated)
+  API Reference
 
         </a>
       </li>
@@ -1982,7 +1982,7 @@
   
   
   <span class="md-ellipsis">
-    API Reference (Auto-generated)
+    API Reference
     
   </span>
   
@@ -1993,7 +1993,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            API Reference (Auto-generated)
+            API Reference
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2052,6 +2052,390 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#when-to-use-this-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      When to Use This Reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="When to Use This Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#for-building-providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Building Providers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for-framework-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      For Framework Development
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Modules
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Core Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Core Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    <span class="md-ellipsis">
+      Common
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hub" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hub
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Component Types
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component Types">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#providers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Providers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ephemeral-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ephemeral Resources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-system-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type System &amp; Validation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Type System &amp; Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      Schema
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#exceptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Exceptions
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Handling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conversion-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conversion ⚠️ Advanced
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#protocols-internal" class="md-nav__link">
+    <span class="md-ellipsis">
+      Protocols 🔒 Internal
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#observability_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Observability
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-vs-internal-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public vs Internal APIs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Public vs Internal APIs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#public-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public APIs ✅
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-apis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal APIs ⚠️
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation Conventions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Documentation Conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#type-annotations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type Annotations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#return-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      Return Types
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-provider-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Provider Setup
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Resource
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-help" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      Module List
+    </span>
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#pyvider" class="md-nav__link">
@@ -2591,7 +2975,205 @@
   
 
 
-<h1 id="pyvider-api">PyVider API<a class="headerlink" href="#pyvider-api" title="Permanent link">&para;</a></h1>
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<p>Complete API documentation for Pyvider's public and internal interfaces.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This section provides detailed API documentation for Pyvider's modules, classes, and functions. The API reference is a combination of:</p>
+<ul>
+<li><strong>Manual documentation</strong>: Curated guides for key APIs with examples and best practices</li>
+<li><strong>Auto-generated documentation</strong>: Extracted from Python docstrings using mkdocstrings</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">API Stability - Alpha Software</p>
+<p>Pyvider is currently in alpha (v0.0.x). While we strive for stability, the API may change before the 1.0 release. Breaking changes will be documented in release notes.</p>
+<p><strong>Public API Stability:</strong>
+- ✅ <strong>Stable</strong>: Decorator API (<code>@register_resource</code>, <code>@register_provider</code>, etc.)
+- ✅ <strong>Stable</strong>: Schema factory functions (<code>s_resource</code>, <code>a_str</code>, <code>a_num</code>, etc.)
+- ✅ <strong>Stable</strong>: Base classes (<code>BaseResource</code>, <code>BaseProvider</code>, <code>BaseDataSource</code>, etc.)
+- ⚠️ <strong>Evolving</strong>: Internal conversion and protocol handlers
+- ⚠️ <strong>Experimental</strong>: Advanced features marked in documentation</p>
+</div>
+<h2 id="when-to-use-this-reference">When to Use This Reference<a class="headerlink" href="#when-to-use-this-reference" title="Permanent link">&para;</a></h2>
+<h3 id="for-building-providers">For Building Providers<a class="headerlink" href="#for-building-providers" title="Permanent link">&para;</a></h3>
+<p>Most provider developers should start with the <strong><a href="../guides/creating-providers/">Guides</a></strong> section, which provides task-oriented tutorials. Use the API reference when you need:</p>
+<ul>
+<li>Detailed parameter information for specific functions</li>
+<li>Complete list of available schema types and validators</li>
+<li>Exception hierarchy for error handling</li>
+<li>Metrics available for monitoring</li>
+</ul>
+<h3 id="for-framework-development">For Framework Development<a class="headerlink" href="#for-framework-development" title="Permanent link">&para;</a></h3>
+<p>If you're contributing to Pyvider or building advanced integrations, the API reference documents internal interfaces. However, note that internal APIs are subject to change.</p>
+<h2 id="api-modules">API Modules<a class="headerlink" href="#api-modules" title="Permanent link">&para;</a></h2>
+<h3 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">&para;</a></h3>
+<h4 id="cli"><a href="cli/">CLI</a><a class="headerlink" href="#cli" title="Permanent link">&para;</a></h4>
+<p>Command-line interface for the <code>pyvider</code> command. Includes commands for component management, configuration, installation, and provider service launching.</p>
+<p><strong>Key commands:</strong> <code>provide</code>, <code>components list</code>, <code>config show</code>, <code>install</code>, <code>launch-context</code></p>
+<h4 id="common"><a href="common/">Common</a><a class="headerlink" href="#common" title="Permanent link">&para;</a></h4>
+<p>Shared utilities, configuration management, encryption, and context handling used across all modules.</p>
+<p><strong>Key exports:</strong> <code>PyviderConfig</code>, <code>OperationContext</code>, <code>LaunchContext</code>, encryption utilities</p>
+<h4 id="hub"><a href="hub/">Hub</a><a class="headerlink" href="#hub" title="Permanent link">&para;</a></h4>
+<p>Component registry and discovery system. Manages registration and lifecycle of all provider components.</p>
+<p><strong>Key exports:</strong> <code>ComponentRegistry</code>, <code>ComponentDiscovery</code>, validators</p>
+<h3 id="component-types">Component Types<a class="headerlink" href="#component-types" title="Permanent link">&para;</a></h3>
+<h4 id="providers"><a href="providers/">Providers</a><a class="headerlink" href="#providers" title="Permanent link">&para;</a></h4>
+<p>Provider implementation, configuration, and capabilities.</p>
+<p><strong>Key exports:</strong> <code>BaseProvider</code>, <code>ProviderMetadata</code>, <code>@register_provider</code>, <code>ProviderContext</code></p>
+<h4 id="resources"><a href="resources/">Resources</a><a class="headerlink" href="#resources" title="Permanent link">&para;</a></h4>
+<p>Resource components with full CRUD lifecycle management.</p>
+<p><strong>Key exports:</strong> <code>BaseResource</code>, <code>ResourceContext</code>, <code>@register_resource</code>, <code>PrivateState</code></p>
+<h4 id="data-sources"><a href="data_sources/">Data Sources</a><a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h4>
+<p>Read-only data source components for querying existing infrastructure.</p>
+<p><strong>Key exports:</strong> <code>BaseDataSource</code>, <code>@register_data_source</code></p>
+<h4 id="functions"><a href="functions/">Functions</a><a class="headerlink" href="#functions" title="Permanent link">&para;</a></h4>
+<p>Provider functions for data transformation and computation.</p>
+<p><strong>Key exports:</strong> <code>BaseFunction</code>, <code>@register_function</code>, function adapters</p>
+<h4 id="ephemeral-resources"><a href="ephemerals/">Ephemeral Resources</a><a class="headerlink" href="#ephemeral-resources" title="Permanent link">&para;</a></h4>
+<p>Short-lived resources with open/renew/close lifecycle (e.g., temporary credentials, connections).</p>
+<p><strong>Key exports:</strong> <code>BaseEphemeralResource</code>, <code>@register_ephemeral_resource</code>, <code>EphemeralResourceContext</code></p>
+<h3 id="type-system-validation">Type System &amp; Validation<a class="headerlink" href="#type-system-validation" title="Permanent link">&para;</a></h3>
+<h4 id="schema"><a href="schema/">Schema</a><a class="headerlink" href="#schema" title="Permanent link">&para;</a></h4>
+<p>Type-safe schema definition system with factory functions for attributes, blocks, and validators.</p>
+<p><strong>Key exports:</strong> <code>s_resource()</code>, <code>s_data_source()</code>, <code>s_provider()</code>, <code>a_str()</code>, <code>a_num()</code>, <code>b_list()</code>, etc.</p>
+<h4 id="exceptions"><a href="exceptions/">Exceptions</a><a class="headerlink" href="#exceptions" title="Permanent link">&para;</a></h4>
+<p>Comprehensive exception hierarchy for error handling and diagnostics.</p>
+<p><strong>Key exports:</strong> <code>PyviderError</code>, <code>ResourceError</code>, <code>ProviderError</code>, <code>ValidationError</code>, <code>SchemaError</code></p>
+<h3 id="data-handling">Data Handling<a class="headerlink" href="#data-handling" title="Permanent link">&para;</a></h3>
+<h4 id="conversion-advanced"><a href="conversion/">Conversion</a> ⚠️ Advanced<a class="headerlink" href="#conversion-advanced" title="Permanent link">&para;</a></h4>
+<p>Bidirectional type conversion between Python and Terraform's CTY type system.</p>
+<p><strong>Key exports:</strong> <code>cty_to_native</code>, <code>marshal</code>, <code>unmarshal</code>, <code>pvs_schema_to_proto</code></p>
+<div class="admonition note">
+<p class="admonition-title">Advanced API</p>
+<p>Most users don't need to use conversion functions directly - Pyvider handles conversions automatically.</p>
+</div>
+<h4 id="protocols-internal"><a href="protocols/">Protocols</a> 🔒 Internal<a class="headerlink" href="#protocols-internal" title="Permanent link">&para;</a></h4>
+<p>Terraform Plugin Protocol v6 implementation and gRPC handlers.</p>
+<p><strong>Note:</strong> This is an internal module. Provider developers should use high-level component APIs instead.</p>
+<h3 id="observability">Observability<a class="headerlink" href="#observability" title="Permanent link">&para;</a></h3>
+<h4 id="observability_1"><a href="observability/">Observability</a><a class="headerlink" href="#observability_1" title="Permanent link">&para;</a></h4>
+<p>Built-in metrics for monitoring provider operations, resource lifecycle, and performance.</p>
+<p><strong>Key exports:</strong> <code>resource_create_total</code>, <code>handler_duration</code>, <code>function_calls</code>, etc. (33+ metrics)</p>
+<h2 id="public-vs-internal-apis">Public vs Internal APIs<a class="headerlink" href="#public-vs-internal-apis" title="Permanent link">&para;</a></h2>
+<h3 id="public-apis">Public APIs ✅<a class="headerlink" href="#public-apis" title="Permanent link">&para;</a></h3>
+<p>These APIs are designed for provider developers and are relatively stable:</p>
+<ul>
+<li><strong>Decorators</strong>: <code>@register_provider</code>, <code>@register_resource</code>, <code>@register_data_source</code>, <code>@register_function</code>, <code>@register_ephemeral_resource</code>, <code>@register_capability</code></li>
+<li><strong>Base Classes</strong>: <code>BaseProvider</code>, <code>BaseResource</code>, <code>BaseDataSource</code>, <code>BaseFunction</code>, <code>BaseEphemeralResource</code></li>
+<li><strong>Schema Factories</strong>: <code>s_resource()</code>, <code>s_data_source()</code>, <code>s_provider()</code>, <code>a_*()</code>, <code>b_*()</code> functions</li>
+<li><strong>Context Objects</strong>: <code>ResourceContext</code>, <code>ProviderContext</code>, <code>EphemeralResourceContext</code></li>
+<li><strong>Exceptions</strong>: All exception classes in <code>pyvider.exceptions</code></li>
+</ul>
+<h3 id="internal-apis">Internal APIs ⚠️<a class="headerlink" href="#internal-apis" title="Permanent link">&para;</a></h3>
+<p>These APIs are used by the framework itself and may change without notice:</p>
+<ul>
+<li><strong>Conversion functions</strong>: Internal type conversion (unless you're debugging)</li>
+<li><strong>Protocol handlers</strong>: gRPC handler implementations</li>
+<li><strong>Hub internals</strong>: Component registration implementation details</li>
+<li><strong>Private state</strong>: Internal encryption mechanism</li>
+</ul>
+<p><strong>Use internal APIs only when:</strong>
+- Building framework extensions
+- Debugging complex issues
+- Contributing to Pyvider core</p>
+<h2 id="documentation-conventions">Documentation Conventions<a class="headerlink" href="#documentation-conventions" title="Permanent link">&para;</a></h2>
+<h3 id="type-annotations">Type Annotations<a class="headerlink" href="#type-annotations" title="Permanent link">&para;</a></h3>
+<p>All API functions include Python type hints. For example:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create_apply</span><span class="p">(</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">State</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">...</span>
+</code></pre></div>
+<h3 id="return-types">Return Types<a class="headerlink" href="#return-types" title="Permanent link">&para;</a></h3>
+<p>Many resource methods return tuples like <code>tuple[State | None, PrivateState | None]</code>:
+- First element: Public state (visible in Terraform)
+- Second element: Private state (encrypted, never shown to users)</p>
+<h3 id="async-methods">Async Methods<a class="headerlink" href="#async-methods" title="Permanent link">&para;</a></h3>
+<p>Most component methods are async. Always use <code>await</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Correct</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">state</span> <span class="o">=</span> <span class="k">await</span> <span class="n">resource</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Wrong - will return a coroutine, not the result!</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">state</span> <span class="o">=</span> <span class="n">resource</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span>  <span class="c1"># ❌</span>
+</code></pre></div>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<h3 id="basic-provider-setup">Basic Provider Setup<a class="headerlink" href="#basic-provider-setup" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.providers</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_provider</span><span class="p">,</span> <span class="n">BaseProvider</span><span class="p">,</span> <span class="n">ProviderMetadata</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">s_provider</span><span class="p">,</span> <span class="n">a_str</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nd">@register_provider</span><span class="p">(</span><span class="s2">&quot;mycloud&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCloudProvider</span><span class="p">(</span><span class="n">BaseProvider</span><span class="p">):</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="n">metadata</span><span class="o">=</span><span class="n">ProviderMetadata</span><span class="p">(</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mycloud&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                <span class="n">protocol_version</span><span class="o">=</span><span class="s2">&quot;6&quot;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            <span class="p">)</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>        <span class="p">)</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_build_schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        <span class="k">return</span> <span class="n">s_provider</span><span class="p">({</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>            <span class="s2">&quot;api_key&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sensitive</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>            <span class="s2">&quot;region&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;us-east-1&quot;</span><span class="p">),</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>        <span class="p">})</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;api_key&quot;</span><span class="p">]</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">region</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">&quot;region&quot;</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="basic-resource">Basic Resource<a class="headerlink" href="#basic-resource" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.resources</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_resource</span><span class="p">,</span> <span class="n">BaseResource</span><span class="p">,</span> <span class="n">ResourceContext</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pyvider.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">s_resource</span><span class="p">,</span> <span class="n">a_str</span><span class="p">,</span> <span class="n">a_num</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">attrs</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nd">@attrs</span><span class="o">.</span><span class="n">define</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">class</span><span class="w"> </span><span class="nc">ServerConfig</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;small&quot;</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="nd">@attrs</span><span class="o">.</span><span class="n">define</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="k">class</span><span class="w"> </span><span class="nc">ServerState</span><span class="p">:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="n">size</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>    <span class="n">ip_address</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="nd">@register_resource</span><span class="p">(</span><span class="s2">&quot;server&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="k">class</span><span class="w"> </span><span class="nc">Server</span><span class="p">(</span><span class="n">BaseResource</span><span class="p">):</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>    <span class="n">config_class</span> <span class="o">=</span> <span class="n">ServerConfig</span>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>    <span class="n">state_class</span> <span class="o">=</span> <span class="n">ServerState</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>    <span class="nd">@classmethod</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_schema</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>        <span class="k">return</span> <span class="n">s_resource</span><span class="p">({</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;small&quot;</span><span class="p">),</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            <span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>            <span class="s2">&quot;ip_address&quot;</span><span class="p">:</span> <span class="n">a_str</span><span class="p">(</span><span class="n">computed</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>        <span class="p">})</span>
+<a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>
+<a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_create_apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">ResourceContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ServerState</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a>        <span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">create_server</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+<a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>        <span class="k">return</span> <span class="n">ServerState</span><span class="p">(</span>
+<a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>            <span class="nb">id</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+<a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a>            <span class="n">name</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a>            <span class="n">size</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+<a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a>            <span class="n">ip_address</span><span class="o">=</span><span class="n">server</span><span class="o">.</span><span class="n">public_ip</span>
+<a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a>        <span class="p">),</span> <span class="kc">None</span>
+</code></pre></div>
+<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Guides</strong>: Start with <a href="../guides/creating-providers/">developer guides</a> for task-oriented tutorials</li>
+<li><strong>Examples</strong>: See <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a> for 100+ working examples</li>
+<li><strong>Issues</strong>: Report bugs at <a href="https://github.com/provide-io/pyvider/issues">GitHub Issues</a></li>
+<li><strong>Discussions</strong>: Ask questions at <a href="https://github.com/provide-io/pyvider/discussions">GitHub Discussions</a></li>
+</ul>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>Found an error in the API documentation? See our <a href="../contributing/guidelines/">Contributing Guidelines</a> for how to submit improvements.</p>
+<hr />
+<h2 id="module-list">Module List<a class="headerlink" href="#module-list" title="Permanent link">&para;</a></h2>
+<p>Below is the complete auto-generated API documentation for the <code>pyvider</code> package:</p>
 
 
 <div class="doc doc-object doc-module">
