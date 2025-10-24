@@ -2,353 +2,310 @@
 
 Bidirectional type conversion between Python objects and Terraform's type system (CTY).
 
+!!! warning "Advanced API - Internal Use"
+    **Most users don't need to use the conversion API directly.** Pyvider automatically handles all data conversion between Python types and Terraform's wire format. This API is documented for advanced use cases like debugging, custom type handling, or integration with other systems.
+
 ## Overview
 
 The conversion layer handles all data transformation between:
-- **Python types** ↔ **CTY values** (Terraform's type system)
-- **Protocol buffers** ↔ **Python objects**
-- **Schema definitions** ↔ **Protocol schema**
+- **Python native types** (str, int, dict, list, etc.) ↔ **CTY values** (Terraform's type system)
+- **Protocol buffers** (DynamicValue) ↔ **CTY values**
+- **Pyvider schemas** (PvsSchema) ↔ **Protocol buffers** (Schema)
 
-Most users won't need to interact with the conversion layer directly, as Pyvider handles conversions automatically. However, this module is useful for advanced use cases and custom type implementations.
+When you write provider code, Pyvider automatically:
+1. Unmarshals incoming protocol buffer messages to CTY values
+2. Converts CTY values to Python native types matching your `@attrs.define` classes
+3. Converts Python native types back to CTY values
+4. Marshals CTY values to protocol buffer messages
+
+## Available Functions
+
+```python
+from pyvider.conversion import (
+    # CTY to Python conversion
+    cty_to_native,
+    infer_cty_type_from_raw,
+
+    # Protocol buffer marshaling
+    marshal,
+    unmarshal,
+    marshal_value,
+    unmarshal_value,
+
+    # Schema conversion
+    pvs_schema_to_proto,
+
+    # Utility functions
+    unify_and_validate_list_of_objects,
+)
+```
 
 ## Core Functions
 
 ### `cty_to_native(cty_value) -> Any`
 
-Converts a CTY value to its Python native equivalent:
+Converts a CTY value to its Python native equivalent.
 
+**Parameters:**
+- `cty_value` - A CTY value from the `pyvider.cty` package
+
+**Returns:**
+- Python native type (str, int, float, bool, dict, list, None)
+
+**Example:**
 ```python
 from pyvider.conversion import cty_to_native
-from pyvider_cty import CtyString, CtyNumber, CtyList
+from pyvider.cty import CtyString, CtyNumber, CtyObject
 
-# Simple conversions
+# This is handled automatically by Pyvider, but for reference:
 string_val = cty_to_native(CtyString("hello"))  # -> "hello"
 number_val = cty_to_native(CtyNumber(42))       # -> 42
-bool_val = cty_to_native(CtyBool(True))        # -> True
 
-# Collection conversions
-list_val = cty_to_native(CtyList([CtyString("a"), CtyString("b")]))
-# -> ["a", "b"]
-
-map_val = cty_to_native(CtyMap({
-    "key1": CtyString("value1"),
-    "key2": CtyNumber(123)
+# Nested structures
+obj_val = cty_to_native(CtyObject({
+    "name": CtyString("test"),
+    "count": CtyNumber(5)
 }))
-# -> {"key1": "value1", "key2": 123}
+# -> {"name": "test", "count": 5}
 ```
 
-### `native_to_cty(value, cty_type) -> CtyValue`
+!!! note "CTY Type System"
+    The CTY (Terraform's type system) types come from the `pyvider.cty` package, which is an internal dependency. You should not import from `pyvider.cty` or `pyvider-cty` directly unless you're doing advanced debugging or integration work.
 
-Converts Python native values to CTY:
+### `infer_cty_type_from_raw(value) -> CtyType`
 
+Infers the appropriate CTY type from a raw Python value.
+
+**Parameters:**
+- `value` - Any Python value
+
+**Returns:**
+- A CTY type that can represent the value
+
+**Example:**
 ```python
-from pyvider.conversion import native_to_cty
-from pyvider_cty import CtyString, CtyList, CtyObject
+from pyvider.conversion import infer_cty_type_from_raw
 
-# Simple conversion
-cty_str = native_to_cty("hello", CtyString())  # -> CtyString("hello")
-
-# List conversion
-cty_list = native_to_cty(
-    [1, 2, 3],
-    CtyList(CtyNumber())
-)  # -> CtyList([CtyNumber(1), CtyNumber(2), CtyNumber(3)])
-
-# Object conversion
-cty_obj = native_to_cty(
-    {"name": "test", "count": 5},
-    CtyObject({
-        "name": CtyString(),
-        "count": CtyNumber()
-    })
-)
+# Infer types from Python values
+str_type = infer_cty_type_from_raw("hello")       # -> CtyString type
+num_type = infer_cty_type_from_raw(42)            # -> CtyNumber type
+list_type = infer_cty_type_from_raw([1, 2, 3])    # -> CtyList(CtyNumber) type
 ```
 
-## Complex Nested Structures
+## Protocol Buffer Marshaling
 
-### Converting Nested Objects
+### `marshal(cty_value, cty_type) -> DynamicValue`
 
-```python
-from pyvider.conversion import cty_to_native, native_to_cty
-from pyvider_cty import CtyObject, CtyList, CtyString, CtyNumber
+Marshals a CTY value into a protocol buffer `DynamicValue` for transmission to Terraform.
 
-# Define a complex nested structure type
-server_type = CtyObject({
-    "name": CtyString(),
-    "config": CtyObject({
-        "cpu": CtyNumber(),
-        "memory": CtyNumber(),
-        "disks": CtyList(CtyObject({
-            "device": CtyString(),
-            "size_gb": CtyNumber()
-        }))
-    }),
-    "tags": CtyMap(CtyString())
-})
+**Parameters:**
+- `cty_value` - CTY value to marshal
+- `cty_type` - CTY type of the value
 
-# Python data
-server_data = {
-    "name": "web-server",
-    "config": {
-        "cpu": 4,
-        "memory": 16,
-        "disks": [
-            {"device": "/dev/sda", "size_gb": 100},
-            {"device": "/dev/sdb", "size_gb": 500}
-        ]
-    },
-    "tags": {
-        "environment": "production",
-        "team": "platform"
-    }
-}
+**Returns:**
+- Protocol buffer `DynamicValue`
 
-# Convert to CTY
-cty_server = native_to_cty(server_data, server_type)
+**Use case:** Internal framework function called when sending data to Terraform.
 
-# Convert back to native
-native_server = cty_to_native(cty_server)
-assert native_server == server_data
-```
+### `unmarshal(dynamic_value, cty_type) -> CtyValue`
 
-## Handling Special Values
+Unmarshals a protocol buffer `DynamicValue` into a CTY value.
 
-### Unknown Values
+**Parameters:**
+- `dynamic_value` - Protocol buffer `DynamicValue` from Terraform
+- `cty_type` - Expected CTY type
 
-During Terraform planning, some values may be unknown:
+**Returns:**
+- CTY value
 
-```python
-from pyvider.conversion import cty_to_native, is_unknown
-from pyvider_cty import CtyUnknown, CtyString
+**Use case:** Internal framework function called when receiving data from Terraform.
 
-# Check if a value is unknown
-unknown_val = CtyUnknown(CtyString())
-if is_unknown(unknown_val):
-    # Handle unknown value
-    # Usually, defer computation until apply phase
-    pass
+### `marshal_value(cty_value, cty_type) -> DynamicValue`
 
-# Convert unknown (returns None by default)
-native_val = cty_to_native(unknown_val)  # -> None
-```
+Function-specific variant of marshal for function calls.
 
-### Null Values
+### `unmarshal_value(dynamic_value, cty_type) -> CtyValue`
 
-```python
-from pyvider.conversion import cty_to_native, is_null
-from pyvider_cty import CtyNull
-
-# Check if a value is null
-null_val = CtyNull()
-if is_null(null_val):
-    # Handle null value
-    pass
-
-# Convert null
-native_val = cty_to_native(null_val)  # -> None
-```
-
-## Custom Type Converters
-
-For custom types not covered by default conversions:
-
-```python
-from pyvider.conversion import register_converter
-from datetime import datetime
-from pyvider_cty import CtyString
-
-class DateTimeConverter:
-    """Custom converter for datetime objects."""
-
-    @staticmethod
-    def to_cty(value: datetime) -> CtyString:
-        """Convert datetime to CTY string."""
-        return CtyString(value.isoformat())
-
-    @staticmethod
-    def from_cty(cty_value: CtyString) -> datetime:
-        """Convert CTY string to datetime."""
-        return datetime.fromisoformat(cty_to_native(cty_value))
-
-# Register the converter
-register_converter(datetime, DateTimeConverter)
-
-# Now datetime objects can be converted
-now = datetime.now()
-cty_time = native_to_cty(now, CtyString())
-native_time = cty_to_native(cty_time)
-```
+Function-specific variant of unmarshal for function calls.
 
 ## Schema Conversion
 
-Converting between Pyvider schemas and protocol schemas:
+### `pvs_schema_to_proto(pvs_schema) -> proto.Schema`
 
+Converts a Pyvider schema to a protocol buffer schema for transmission to Terraform.
+
+**Parameters:**
+- `pvs_schema` - Pyvider schema (from `s_resource()`, `s_data_source()`, etc.)
+
+**Returns:**
+- Protocol buffer `Schema` message
+
+**Example:**
 ```python
-from pyvider.conversion import SchemaAdapter
 from pyvider.schema import s_resource, a_str, a_num
+from pyvider.conversion import pvs_schema_to_proto
 
-# Create a Pyvider schema
+# Define a Pyvider schema
 pvs_schema = s_resource({
     "name": a_str(required=True),
     "count": a_num(default=1)
 })
 
-# Convert to protocol schema
-adapter = SchemaAdapter()
-proto_schema = adapter.to_proto(pvs_schema)
-
-# Convert back to Pyvider schema
-pvs_schema_back = adapter.from_proto(proto_schema)
+# Convert to protocol buffer format (done automatically by framework)
+proto_schema = pvs_schema_to_proto(pvs_schema)
 ```
 
-## Protocol Buffer Marshaling
+## Utility Functions
 
-For direct protocol buffer handling:
+### `unify_and_validate_list_of_objects(objects_list, object_type) -> list`
 
-```python
-from pyvider.conversion import Marshaler
-from pyvider.protocols.tfprotov6.protobuf import tfplugin6_pb2
+Validates and unifies a list of objects to ensure consistent structure.
 
-# Create a marshaler
-marshaler = Marshaler()
+**Parameters:**
+- `objects_list` - List of dictionary objects
+- `object_type` - Expected CTY object type
 
-# Marshal Python data to protocol buffer
-data = {"name": "test", "enabled": True}
-proto_value = marshaler.marshal(data)
+**Returns:**
+- Validated and unified list of objects
 
-# Unmarshal protocol buffer to Python
-native_data = marshaler.unmarshal(proto_value)
-```
+**Use case:** Internal validation for list attributes with object elements.
 
-## Error Handling
+## How Pyvider Uses Conversion
+
+Here's what happens behind the scenes when your resource is called:
 
 ```python
-from pyvider.conversion import ConversionError
+@register_resource("server")
+class Server(BaseResource):
+    @attrs.define
+    class Config:
+        name: str
+        count: int = 1
 
-try:
-    # Attempt conversion
-    result = native_to_cty("not a number", CtyNumber())
-except ConversionError as e:
-    print(f"Conversion failed: {e.message}")
-    print(f"Details: {e.details}")
-```
+    @attrs.define
+    class State:
+        id: str
+        name: str
+        count: int
 
-## Performance Considerations
-
-### Caching Converted Schemas
-
-```python
-from functools import lru_cache
-from pyvider.conversion import SchemaAdapter
-
-@lru_cache(maxsize=128)
-def get_converted_schema(schema_hash):
-    """Cache converted schemas for performance."""
-    adapter = SchemaAdapter()
-    return adapter.to_proto(build_schema())
-```
-
-### Batch Conversions
-
-```python
-from pyvider.conversion import batch_convert
-
-# Convert multiple values efficiently
-values = [1, 2, 3, 4, 5]
-cty_values = batch_convert(values, CtyNumber())
-```
-
-## Common Patterns
-
-### Resource State Conversion
-
-```python
-class MyResource(BaseResource):
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Automatic conversion happens here
-        # ctx.config is already converted from CTY to Python
+        # 1. Terraform sends protocol buffer DynamicValue
+        # 2. Pyvider unmarshals it: unmarshal(dynamic_value, cty_type) -> CtyValue
+        # 3. Pyvider converts: cty_to_native(cty_value) -> dict
+        # 4. Pyvider creates: Config(**dict) -> ctx.config
 
-        # Do work...
-        result = await self.api.create(...)
+        # Your code receives ctx.config as a properly typed Config instance
+        server = await create_server(ctx.config.name, ctx.config.count)
 
-        # Return state - will be converted to CTY automatically
-        return State(
-            id=result.id,
-            name=ctx.config.name
-        ), None
+        # 5. You return State instance
+        state = State(id=server.id, name=server.name, count=server.count)
+
+        # 6. Pyvider converts: attrs.asdict(state) -> dict
+        # 7. Pyvider converts: native_to_cty(dict, cty_type) -> CtyValue (internal)
+        # 8. Pyvider marshals: marshal(cty_value, cty_type) -> DynamicValue
+        # 9. Pyvider sends protocol buffer to Terraform
+
+        return state, None
 ```
 
-### Data Source Output
+**You write steps 4-5. Pyvider handles steps 1-3 and 6-9 automatically.**
+
+## Advanced Use Cases
+
+### Debugging Data Conversion
+
+If you need to debug what's being sent/received:
 
 ```python
-class MyDataSource(BaseDataSource):
-    async def read(self, config: Config) -> State:
-        # Fetch data
-        data = await self.api.list_items()
+from pyvider.conversion import cty_to_native, marshal
+import structlog
 
-        # Complex conversion handled automatically
-        return State(
-            items=[
-                {"id": item.id, "name": item.name}
-                for item in data
-            ]
+logger = structlog.get_logger()
+
+@register_resource("server")
+class Server(BaseResource):
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+        # Log the config as it was received
+        logger.debug(
+            "Received config",
+            config=attrs.asdict(ctx.config),
+            config_type=type(ctx.config).__name__
         )
+
+        # ... your implementation ...
+
+        state = State(id="srv-123", name=ctx.config.name)
+
+        # Log the state being returned
+        logger.debug(
+            "Returning state",
+            state=attrs.asdict(state),
+            state_type=type(state).__name__
+        )
+
+        return state, None
 ```
 
-## Testing Conversions
+### Custom Type Handling
+
+For most cases, attrs with Python type hints is sufficient. However, if you need custom serialization:
 
 ```python
-import pytest
-from pyvider.conversion import cty_to_native, native_to_cty
-from pyvider_cty import CtyString, CtyList
+from datetime import datetime
+import attrs
 
-def test_round_trip_conversion():
-    """Test that conversions are reversible."""
-    original = ["a", "b", "c"]
-    cty_type = CtyList(CtyString())
+@attrs.define
+class ServerState:
+    id: str
+    created_at: datetime  # datetime will be auto-converted to ISO string
 
-    # Convert to CTY and back
-    cty_val = native_to_cty(original, cty_type)
-    result = cty_to_native(cty_val)
-
-    assert result == original
-
-def test_nested_conversion():
-    """Test nested structure conversion."""
-    data = {
-        "users": [
-            {"name": "Alice", "age": 30},
-            {"name": "Bob", "age": 25}
-        ]
-    }
-
-    cty_type = CtyObject({
-        "users": CtyList(CtyObject({
-            "name": CtyString(),
-            "age": CtyNumber()
-        }))
-    })
-
-    cty_val = native_to_cty(data, cty_type)
-    result = cty_to_native(cty_val)
-
-    assert result == data
+    @created_at.default
+    def _default_created_at(self):
+        return datetime.utcnow()
 ```
+
+Pyvider automatically handles common Python types like `datetime`, `Decimal`, `UUID`, etc.
+
+## Type Mappings
+
+| Python Type | CTY Type | Example |
+|-------------|----------|---------|
+| `str` | `CtyString` | `"hello"` |
+| `int` | `CtyNumber` | `42` |
+| `float` | `CtyNumber` | `3.14` |
+| `bool` | `CtyBool` | `True` |
+| `None` | `CtyNull` | `None` |
+| `dict` | `CtyObject` | `{"key": "value"}` |
+| `list` | `CtyList` or `CtyTuple` | `[1, 2, 3]` |
+| `set` | `CtySet` | `{1, 2, 3}` |
+| `datetime` | `CtyString` (ISO 8601) | `"2024-01-15T10:30:00Z"` |
+| `UUID` | `CtyString` | `"550e8400-e29b-41d4-a716-446655440000"` |
+| `Decimal` | `CtyNumber` | `123.45` |
+
+## Known Limitations
+
+1. **No circular references**: CTY values cannot contain circular references
+2. **No mixed-type lists**: All list elements must be the same type
+3. **Map keys must be strings**: CTY maps only support string keys
+4. **No arbitrary Python objects**: Only JSON-compatible types are supported
 
 ## Related Documentation
 
-- [Schema System](../../core-concepts/schema-system.md) - Schema definition and types
-- [Component Model](../../core-concepts/component-model.md) - How components use conversion
-- [Creating Resources](../../guides/creating-resources.md) - Practical conversion examples
+- [Schema System](../../core-concepts/schema-system.md) - Define schemas without touching conversion
+- [Component Model](../../core-concepts/component-model.md) - How components use conversion internally
+- [Creating Resources](../../guides/creating-resources.md) - Practical examples without conversion code
 
 ## Module Reference
 
 ::: pyvider.conversion
     options:
-      show_source: true
-      show_root_heading: true
-      members_order: source
-      show_if_no_docstring: false
-      filters:
-        - "!^_"
-        - "^__init__$"
+      show_source: false
+      members:
+        - cty_to_native
+        - infer_cty_type_from_raw
+        - marshal
+        - unmarshal
+        - marshal_value
+        - unmarshal_value
+        - pvs_schema_to_proto
+        - unify_and_validate_list_of_objects
