@@ -58,7 +58,8 @@ class TestFunctionDispatch:
 
         assert response.error.text
         assert "Incorrect number of arguments" in response.error.text
-        assert "expected 2, got 1" in response.error.text
+        assert "Expected: 2 arguments" in response.error.text
+        assert "Received: 1 arguments" in response.error.text
 
     async def test_dispatch_fails_with_wrong_arg_type(self):
         """TDD: Handler returns a type validation error for mismatched types."""

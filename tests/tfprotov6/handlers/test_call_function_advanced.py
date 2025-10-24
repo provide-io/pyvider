@@ -261,7 +261,8 @@ class TestCallFunctionImplIntegration:
                 # Should have error about incorrect argument count
                 assert response.HasField("error")
                 assert "Incorrect number of arguments" in response.error.text
-                assert "expected 2, got 1" in response.error.text
+                assert "Expected: 2 arguments" in response.error.text
+                assert "Received: 1 arguments" in response.error.text
 
     @pytest.mark.asyncio
     async def test_impl_validates_minimum_args_with_variadic(self):
@@ -290,7 +291,8 @@ class TestCallFunctionImplIntegration:
                 response = await _call_function_impl(request, context=None)
 
                 assert response.HasField("error")
-                assert "expected at least 1, got 0" in response.error.text
+                assert "Expected: at least 1 arguments" in response.error.text
+                assert "Received: 0 arguments" in response.error.text
 
     @pytest.mark.asyncio
     async def test_impl_short_circuits_on_unknown_arguments(self):
