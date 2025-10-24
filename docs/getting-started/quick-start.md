@@ -161,7 +161,7 @@ class File(BaseResource):
         if config.path.startswith("/"):
             errors.append("Path must be relative, not absolute")
         return errors
-    
+
     async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
         """Create a new file (apply phase)."""
         if not ctx.config:
@@ -368,120 +368,9 @@ if __name__ == "__main__":
     main()
 ```
 
-## 🧪 Step 2: Test the Provider Locally
+## 🧪 Step 2: Test the Provider
 
-Create a test file `test_provider.py`:
-
-```python
-#!/usr/bin/env python3
-"""Test the local file provider."""
-
-import asyncio
-from pathlib import Path
-import tempfile
-import shutil
-
-async def test_provider():
-    """Test provider operations."""
-    # Create a temporary directory for testing
-    with tempfile.TemporaryDirectory() as tmpdir:
-        print(f"📁 Testing in: {tmpdir}")
-        
-        # Import our provider components
-        from local_provider import LocalProvider, File, FileContent
-        
-        # Create provider instance
-        provider = LocalProvider()
-        provider.config = LocalProvider.Config(
-            base_directory=tmpdir,
-            create_directories=True
-        )
-        
-        # Test creating a file
-        print("\n✅ Testing file creation...")
-        file_resource = File()
-        file_resource.provider = provider
-        
-        config = File.Config(
-            path="test/hello.txt",
-            content="Hello, Terraform!",
-            permissions="644"
-        )
-        
-        state = await file_resource.create(config)
-        print(f"  Created: {state.path}")
-        print(f"  Content: {state.content}")
-        print(f"  Checksum: {state.checksum}")
-        
-        # Verify file exists
-        actual_path = Path(tmpdir) / "test/hello.txt"
-        assert actual_path.exists()
-        assert actual_path.read_text() == "Hello, Terraform!"
-        
-        # Test reading the file
-        print("\n📖 Testing file read...")
-        read_state = await file_resource.read(state)
-        assert read_state is not None
-        assert read_state.content == "Hello, Terraform!"
-        
-        # Test updating the file
-        print("\n🔄 Testing file update...")
-        new_config = File.Config(
-            path="test/hello.txt",
-            content="Updated content!",
-            permissions="600"
-        )
-        
-        updated_state = await file_resource.update(new_config, state)
-        assert updated_state.content == "Updated content!"
-        assert actual_path.read_text() == "Updated content!"
-        
-        # Test data source
-        print("\n📊 Testing data source...")
-        data_source = FileContent()
-        data_source.provider = provider
-        
-        ds_config = FileContent.Config(path="test/hello.txt")
-        ds_state = await data_source.read(ds_config)
-        assert ds_state.exists
-        assert ds_state.content == "Updated content!"
-        
-        # Test deletion
-        print("\n🗑️ Testing file deletion...")
-        await file_resource.delete(updated_state)
-        assert not actual_path.exists()
-        
-        print("\n✨ All tests passed!")
-
-if __name__ == "__main__":
-    asyncio.run(test_provider())
-```
-
-Run the test:
-
-```bash
-python test_provider.py
-```
-
-You should see:
-```
-📁 Testing in: /tmp/tmp_xyz123
-
-✅ Testing file creation...
-  Created: /tmp/tmp_xyz123/test/hello.txt
-  Content: Hello, Terraform!
-  Checksum: 3b7e72f9c8a5d4e2f1a6b8c9d0e3f4g5h6i7j8k9
-
-📖 Testing file read...
-
-🔄 Testing file update...
-
-📊 Testing data source...
-
-🗑️ Testing file deletion...
-
-✨ All tests passed!
-```
+You can test your provider using Terraform directly, or use pyvider-components' test utilities. For this quick start, we'll use Terraform.
 
 ## 🔧 Step 3: Use with Terraform
 
@@ -520,7 +409,7 @@ resource "local_file" "readme" {
   path    = "README.md"
   content = <<-EOT
     # My Application
-    
+
     Configuration file: ${local_file.config.path}
     Checksum: ${local_file.config.checksum}
     Size: ${local_file.config.size} bytes
@@ -551,7 +440,7 @@ output "files_created" {
 
 ## 🚀 Step 4: Package and Run the Provider
 
-### Option 1: Development Mode
+### Development Mode
 
 For development, run the provider directly:
 
@@ -565,7 +454,7 @@ terraform plan
 terraform apply
 ```
 
-### Option 2: Build and Install
+### Build and Install
 
 Package the provider for distribution using the Flavor build system:
 
@@ -619,12 +508,11 @@ debug = false
 
 ## 🎉 Congratulations!
 
-You've just built your first Terraform provider in Python! In just a few minutes, you've:
+You've just built your first Terraform provider in Python! You've:
 
 - ✅ Created a complete provider with configuration
 - ✅ Implemented a full CRUD resource (File)
 - ✅ Added a data source (FileContent)
-- ✅ Tested the provider locally
 - ✅ Used it with real Terraform configuration
 
 ## 🔍 What's Happening Behind the Scenes?
@@ -632,29 +520,31 @@ You've just built your first Terraform provider in Python! In just a few minutes
 When you run your provider, Pyvider:
 
 1. **Discovers Components**: Finds all `@register_provider`, `@register_resource`, and `@register_data_source` decorators
-2. **Generates Schema**: Converts Python types to Terraform schema
+2. **Generates Schema**: Converts Python types to Terraform schema using `get_schema()` methods
 3. **Handles Protocol**: Manages all gRPC communication with Terraform
-4. **Manages State**: Tracks resource state between operations
-5. **Provides Type Safety**: Ensures data matches your type definitions
+4. **Manages State**: Tracks resource state between operations via `ResourceContext`
+5. **Provides Type Safety**: Ensures data matches your `@attrs.define` type definitions
 
 ## 📚 Key Concepts Demonstrated
 
 ### 🎯 Decorators
-- `@register_provider`: Registers your provider class
-- `@register_resource`: Defines a manageable resource
-- `@register_data_source`: Creates a read-only data source
+- `@register_provider("name")`: Registers your provider class
+- `@register_resource("name")`: Defines a manageable resource
+- `@register_data_source("name")`: Creates a read-only data source
 
 ### 📋 Schema Definition
-- `@attrs.define`: Creates type-safe configuration classes
-- `Attribute()`: Defines schema fields with validation
+- `@attrs.define`: Creates type-safe configuration and state classes
+- `config_class` / `state_class`: Links attrs classes to resources
+- `get_schema()`: Defines Terraform schema using factory functions
 - `computed=True`: Fields calculated by the provider
 - `required=True`: Fields that must be provided
 
 ### 🔄 Resource Lifecycle
-- `create()`: Called when resource is first created
-- `read()`: Refreshes resource state
-- `update()`: Modifies existing resource
-- `delete()`: Removes resource
+- `_create_apply()`: Called during `terraform apply` to create resources
+- `read()`: Refreshes resource state during planning and refresh
+- `_update_apply()`: Called during `terraform apply` to modify resources
+- `_delete_apply()`: Called during `terraform destroy` to remove resources
+- `ResourceContext`: Provides access to config, state, and provider information
 
 ## 🚦 Next Steps
 
@@ -665,54 +555,96 @@ Now that you understand the basics:
 Add more features to your local file provider:
 
 ```python
-@resource
-class Directory:
+@register_resource("directory")
+class Directory(BaseResource):
     """Manages a local directory."""
-    # Implementation here
+    config_class = DirectoryConfig
+    state_class = DirectoryState
 
-@function
-class HashFile:
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({
+            "path": a_str(required=True),
+            "mode": a_str(default="755"),
+        })
+    # ... implementation ...
+
+@register_function(name="hash_file")
+class HashFile(BaseFunction):
     """Computes hash of a file."""
-    # Implementation here
+    # ... implementation ...
 ```
 
 ### 2. Add Error Handling
 
 ```python
-async def create(self, config: Config) -> State:
+async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
+    """Create a new file with error handling."""
+    if not ctx.config:
+        return None, None
+
     try:
-        # ... file operations ...
+        file_path = Path(ctx.config.path)
+        file_path.write_text(ctx.config.content)
     except PermissionError:
-        raise ResourceError("Insufficient permissions")
+        raise ResourceError("Insufficient permissions to create file")
     except OSError as e:
         raise ResourceError(f"Failed to create file: {e}")
+
+    # ... return state ...
 ```
 
 ### 3. Add Validation
 
+Use `_validate_config()` for custom validation logic:
+
 ```python
-@attrs.define
-class Config:
-    path: str = Attribute(
-        required=True,
-        validators=[
-            lambda x: not x.startswith("/"),  # No absolute paths
-            lambda x: ".." not in x,  # No parent directory access
-        ]
-    )
+async def _validate_config(self, config: FileConfig) -> list[str]:
+    """Validate file configuration."""
+    errors = []
+
+    # Path validation
+    if config.path.startswith("/"):
+        errors.append("Path must be relative, not absolute")
+    if ".." in config.path:
+        errors.append("Path cannot contain '..' for security reasons")
+
+    # Content validation
+    if len(config.content) > 1_000_000:  # 1MB limit
+        errors.append("File content cannot exceed 1MB")
+
+    # Permission validation
+    try:
+        int(config.permissions, 8)
+    except ValueError:
+        errors.append("Permissions must be valid octal notation (e.g., '644')")
+
+    return errors
 ```
 
 ### 4. Add Import Support
 
 ```python
-async def import_resource(self, resource_id: str) -> State:
+async def import_state(self, resource_id: str) -> FileState | None:
     """Import existing file into Terraform state."""
     file_path = Path(resource_id)
+
     if not file_path.exists():
         raise ResourceError(f"File not found: {resource_id}")
-    
+
     content = file_path.read_text()
-    # ... return state ...
+    mode = file_path.stat().st_mode
+    permissions = oct(mode)[-3:]
+    checksum = hashlib.sha256(content.encode()).hexdigest()
+
+    return FileState(
+        id=resource_id,
+        path=resource_id,
+        content=content,
+        permissions=permissions,
+        checksum=checksum,
+        size=len(content)
+    )
 ```
 
 ## 📖 Learn More
@@ -723,14 +655,17 @@ Ready to dive deeper? Check out:
 - **[Architecture Guide](../core-concepts/architecture.md)** - Understand Pyvider's internals
 - **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
 - **[Testing Providers](../guides/testing-providers.md)** - Write comprehensive tests
+- **[Best Practices](../guides/best-practices.md)** - Production-ready patterns
 
 ## 💡 Tips for Success
 
 1. **Start Simple**: Begin with basic resources before adding complexity
-2. **Test Early**: Write tests as you develop
-3. **Use Type Hints**: Leverage Python's type system for safety
-4. **Handle Errors**: Provide clear error messages for users
-5. **Document Well**: Add docstrings to all components
+2. **Test Incrementally**: Test each component as you develop
+3. **Use Type Hints**: Leverage Python's type system for safety and IDE support
+4. **Handle Errors Gracefully**: Provide clear error messages for users
+5. **Document Thoroughly**: Add docstrings to all components and schema descriptions
+6. **Validate Early**: Use `_validate_config()` to catch issues before apply
+7. **Follow Conventions**: Match Terraform naming patterns (snake_case for resources)
 
 ## 🆘 Getting Help
 
@@ -738,8 +673,7 @@ If you run into issues:
 
 - Check the [Troubleshooting Guide](../troubleshooting.md)
 - Search [GitHub Issues](https://github.com/provide-io/pyvider/issues)
-- Join our [Discord Community](https://discord.gg/pyvider)
-- Ask on [Stack Overflow](https://stackoverflow.com/questions/tagged/pyvider)
+- Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ---
 
