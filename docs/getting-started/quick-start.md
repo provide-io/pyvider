@@ -34,17 +34,25 @@ import hashlib
 import attrs
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
 from pyvider.resources import register_resource, BaseResource
+from pyvider.resources.context import ResourceContext
 from pyvider.data_sources import register_data_source, BaseDataSource
-from pyvider.schema import Attribute
+from pyvider.schema import s_provider, s_resource, s_data_source, a_str, a_num, a_bool, PvsSchema
 
 # ============================================
 # PROVIDER DEFINITION
 # ============================================
 
+@attrs.define
+class ProviderConfig:
+    """Provider configuration."""
+    base_directory: str = "."
+    create_directories: bool = True
+
+
 @register_provider("local")
 class LocalProvider(BaseProvider):
     """Provider for managing local files."""
-    
+
     def __init__(self):
         super().__init__(
             metadata=ProviderMetadata(
@@ -53,158 +61,207 @@ class LocalProvider(BaseProvider):
                 protocol_version="6"
             )
         )
-    
-    @attrs.define
-    class Config:
-        """Provider configuration."""
-        base_directory: str = Attribute(
-            default=".",
-            description="Base directory for file operations"
-        )
-        create_directories: bool = Attribute(
-            default=True,
-            description="Automatically create parent directories"
+        # Provider config will be set by configure()
+        self.provider_config: ProviderConfig | None = None
+
+    def _build_schema(self) -> PvsSchema:
+        """Define provider schema."""
+        return s_provider({
+            "base_directory": a_str(
+                default=".",
+                description="Base directory for file operations"
+            ),
+            "create_directories": a_bool(
+                default=True,
+                description="Automatically create parent directories"
+            ),
+        })
+
+    async def configure(self, config: dict) -> None:
+        """Configure the provider with the given configuration."""
+        await super().configure(config)
+        # Convert config dict to attrs instance
+        self.provider_config = ProviderConfig(
+            base_directory=config.get("base_directory", "."),
+            create_directories=config.get("create_directories", True),
         )
 
 # ============================================
 # FILE RESOURCE
 # ============================================
 
+@attrs.define
+class FileConfig:
+    """File resource configuration."""
+    path: str
+    content: str
+    permissions: str = "644"
+
+
+@attrs.define
+class FileState:
+    """File resource state."""
+    id: str
+    path: str
+    content: str
+    permissions: str
+    checksum: str
+    size: int
+
+
 @register_resource("file")
 class File(BaseResource):
     """Manages a local text file."""
+
+    config_class = FileConfig
+    state_class = FileState
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define resource schema."""
+        return s_resource({
+            # Configuration attributes
+            "path": a_str(
+                required=True,
+                description="Path to the file (relative to base directory)"
+            ),
+            "content": a_str(
+                required=True,
+                description="Content to write to the file"
+            ),
+            "permissions": a_str(
+                default="644",
+                description="File permissions (octal notation)"
+            ),
+
+            # Computed attributes (set by provider)
+            "id": a_str(
+                computed=True,
+                description="Unique identifier for the file"
+            ),
+            "checksum": a_str(
+                computed=True,
+                description="SHA256 checksum of the content"
+            ),
+            "size": a_num(
+                computed=True,
+                description="File size in bytes"
+            ),
+        })
+
+    async def _validate_config(self, config: FileConfig) -> list[str]:
+        """Validate configuration."""
+        errors = []
+        if ".." in config.path:
+            errors.append("Path cannot contain '..' for security reasons")
+        if config.path.startswith("/"):
+            errors.append("Path must be relative, not absolute")
+        return errors
     
-    @attrs.define
-    class Config:
-        """File resource configuration."""
-        path: str = Attribute(
-            required=True,
-            description="Path to the file (relative to base directory)"
-        )
-        content: str = Attribute(
-            required=True,
-            description="Content to write to the file"
-        )
-        permissions: str = Attribute(
-            default="644",
-            description="File permissions (octal notation)"
-        )
-    
-    @attrs.define
-    class State:
-        """File resource state."""
-        id: str = Attribute(
-            computed=True,
-            description="Unique identifier for the file"
-        )
-        path: str = Attribute(
-            description="Absolute path to the file"
-        )
-        content: str = Attribute(
-            description="Current file content"
-        )
-        permissions: str = Attribute(
-            description="Current file permissions"
-        )
-        checksum: str = Attribute(
-            computed=True,
-            description="SHA256 checksum of the content"
-        )
-        size: int = Attribute(
-            computed=True,
-            description="File size in bytes"
-        )
-    
-    async def create(self, config: Config) -> State:
-        """Create a new file."""
-        # Get provider configuration
-        provider_config = self.provider.config
-        base_dir = Path(provider_config.base_directory)
-        
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
+        """Create a new file (apply phase)."""
+        if not ctx.config:
+            return None, None
+
+        # Get provider configuration from hub
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+        provider_config = provider.provider_config
+
         # Construct full path
-        file_path = base_dir / config.path
-        
+        base_dir = Path(provider_config.base_directory)
+        file_path = base_dir / ctx.config.path
+
         # Create parent directories if needed
         if provider_config.create_directories:
             file_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Write the file
-        file_path.write_text(config.content)
-        
+        file_path.write_text(ctx.config.content)
+
         # Set permissions
-        octal_perms = int(config.permissions, 8)
+        octal_perms = int(ctx.config.permissions, 8)
         file_path.chmod(octal_perms)
-        
+
         # Calculate checksum
-        checksum = hashlib.sha256(config.content.encode()).hexdigest()
-        
+        checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
+
         # Return state
-        return State(
+        return FileState(
             id=str(file_path.absolute()),
             path=str(file_path.absolute()),
-            content=config.content,
-            permissions=config.permissions,
+            content=ctx.config.content,
+            permissions=ctx.config.permissions,
             checksum=checksum,
-            size=len(config.content)
-        )
-    
-    async def read(self, state: State) -> State | None:
+            size=len(ctx.config.content)
+        ), None
+
+    async def read(self, ctx: ResourceContext) -> FileState | None:
         """Read the current state of the file."""
-        file_path = Path(state.path)
-        
+        if not ctx.state:
+            return None
+
+        file_path = Path(ctx.state.path)
+
         # Check if file exists
         if not file_path.exists():
             return None  # File was deleted outside of Terraform
-        
+
         # Read current content
         content = file_path.read_text()
-        
+
         # Get current permissions
         mode = file_path.stat().st_mode
         permissions = oct(mode)[-3:]
-        
+
         # Calculate checksum
         checksum = hashlib.sha256(content.encode()).hexdigest()
-        
+
         # Return updated state
-        return State(
-            id=state.id,
-            path=state.path,
+        return FileState(
+            id=ctx.state.id,
+            path=ctx.state.path,
             content=content,
             permissions=permissions,
             checksum=checksum,
             size=len(content)
         )
-    
-    async def update(self, config: Config, state: State) -> State:
-        """Update an existing file."""
-        file_path = Path(state.path)
-        
+
+    async def _update_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
+        """Update an existing file (apply phase)."""
+        if not ctx.config or not ctx.state:
+            return None, None
+
+        file_path = Path(ctx.state.path)
+
         # Update content if changed
-        if config.content != state.content:
-            file_path.write_text(config.content)
-        
+        if ctx.config.content != ctx.state.content:
+            file_path.write_text(ctx.config.content)
+
         # Update permissions if changed
-        if config.permissions != state.permissions:
-            octal_perms = int(config.permissions, 8)
+        if ctx.config.permissions != ctx.state.permissions:
+            octal_perms = int(ctx.config.permissions, 8)
             file_path.chmod(octal_perms)
-        
+
         # Calculate new checksum
-        checksum = hashlib.sha256(config.content.encode()).hexdigest()
-        
+        checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
+
         # Return updated state
-        return State(
-            id=state.id,
-            path=state.path,
-            content=config.content,
-            permissions=config.permissions,
+        return FileState(
+            id=ctx.state.id,
+            path=ctx.state.path,
+            content=ctx.config.content,
+            permissions=ctx.config.permissions,
             checksum=checksum,
-            size=len(config.content)
-        )
-    
-    async def delete(self, state: State) -> None:
-        """Delete the file."""
-        file_path = Path(state.path)
+            size=len(ctx.config.content)
+        ), None
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        """Delete the file (apply phase)."""
+        if not ctx.state:
+            return
+
+        file_path = Path(ctx.state.path)
         if file_path.exists():
             file_path.unlink()
 
@@ -212,52 +269,76 @@ class File(BaseResource):
 # FILE DATA SOURCE
 # ============================================
 
+@attrs.define
+class FileContentConfig:
+    """Data source configuration."""
+    path: str
+
+
+@attrs.define
+class FileContentData:
+    """Data source result."""
+    id: str
+    content: str
+    size: int
+    checksum: str
+    exists: bool
+
+
 @register_data_source("file_content")
 class FileContent(BaseDataSource):
     """Reads content from an existing file."""
-    
-    @attrs.define
-    class Config:
-        """Data source configuration."""
-        path: str = Attribute(
-            required=True,
-            description="Path to the file to read"
-        )
-    
-    @attrs.define
-    class State:
-        """Data source state."""
-        id: str = Attribute(
-            computed=True,
-            description="File path as ID"
-        )
-        content: str = Attribute(
-            computed=True,
-            description="File content"
-        )
-        size: int = Attribute(
-            computed=True,
-            description="File size in bytes"
-        )
-        checksum: str = Attribute(
-            computed=True,
-            description="SHA256 checksum"
-        )
-        exists: bool = Attribute(
-            computed=True,
-            description="Whether the file exists"
-        )
-    
-    async def read(self, config: Config) -> State:
+
+    config_class = FileContentConfig
+    data_class = FileContentData
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define data source schema."""
+        return s_data_source({
+            # Configuration (input)
+            "path": a_str(
+                required=True,
+                description="Path to the file to read"
+            ),
+
+            # Computed outputs
+            "id": a_str(
+                computed=True,
+                description="File path as ID"
+            ),
+            "content": a_str(
+                computed=True,
+                description="File content"
+            ),
+            "size": a_num(
+                computed=True,
+                description="File size in bytes"
+            ),
+            "checksum": a_str(
+                computed=True,
+                description="SHA256 checksum"
+            ),
+            "exists": a_bool(
+                computed=True,
+                description="Whether the file exists"
+            ),
+        })
+
+    async def read(self, config: FileContentConfig) -> FileContentData:
         """Read file content."""
-        provider_config = self.provider.config
+        # Get provider configuration
+        from pyvider.hub import ProviderHub
+        provider = ProviderHub.get_provider()
+        provider_config = provider.provider_config
+
         base_dir = Path(provider_config.base_directory)
         file_path = base_dir / config.path
-        
+
         if file_path.exists():
             content = file_path.read_text()
             checksum = hashlib.sha256(content.encode()).hexdigest()
-            return State(
+            return FileContentData(
                 id=str(file_path.absolute()),
                 content=content,
                 size=len(content),
@@ -265,7 +346,7 @@ class FileContent(BaseDataSource):
                 exists=True
             )
         else:
-            return State(
+            return FileContentData(
                 id=str(file_path.absolute()),
                 content="",
                 size=0,

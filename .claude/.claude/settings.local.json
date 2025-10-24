@@ -12,7 +12,8 @@
       "Bash(fi)",
       "Bash(done)",
       "Bash(for file in /Users/tim/code/gh/provide-io/flavorpack/pyproject.toml /Users/tim/code/gh/provide-io/messometer/pyproject.toml /Users/tim/code/gh/provide-io/plating/pyproject.toml /Users/tim/code/gh/provide-io/provide-foundation/pyproject.toml /Users/tim/code/gh/provide-io/provide-testkit/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-cty/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-hcl/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-rpcplugin/pyproject.toml /Users/tim/code/gh/provide-io/tofusoup/pyproject.toml /Users/tim/code/gh/provide-io/wrknv/pyproject.toml)",
-      "Bash(do echo \"=== $file ===\")"
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(for file in /Users/tim/code/gh/provide-io/flavorpack/pyproject.toml /Users/tim/code/gh/provide-io/messometer/pyproject.toml /Users/tim/code/gh/provide-io/plating/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-cty/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-hcl/pyproject.toml /Users/tim/code/gh/provide-io/pyvider-rpcplugin/pyproject.toml /Users/tim/code/gh/provide-io/tofusoup/pyproject.toml /Users/tim/code/gh/provide-io/wrknv/pyproject.toml /Users/tim/code/gh/provide-io/pyvider/pyproject.toml /Users/tim/code/gh/provide-io/provide-foundation/pyproject.toml)"
     ],
     "deny": [],
     "ask": []
