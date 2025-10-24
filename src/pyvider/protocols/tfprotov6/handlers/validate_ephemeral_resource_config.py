@@ -39,12 +39,31 @@ async def _validate_ephemeral_resource_config_impl(
     request: pb.ValidateEphemeralResourceConfig.Request, context: Any
 ) -> pb.ValidateEphemeralResourceConfig.Response:
     """Implementation of ValidateEphemeralResourceConfig handler."""
-    logger.debug(f"EPHEMERAL 🔎 Validating config for '{request.type_name}'")
+    logger.debug(
+        "Starting ephemeral resource config validation",
+        operation="validate_ephemeral_resource_config",
+        resource_type=request.type_name,
+    )
+
     response = pb.ValidateEphemeralResourceConfig.Response()
     try:
         resource_class = hub.get_component("ephemeral_resource", request.type_name)
         if not resource_class:
-            raise ValueError(f"Ephemeral resource type '{request.type_name}' not found.")
+            logger.error(
+                "Ephemeral resource type not found during validation",
+                operation="validate_ephemeral_resource_config",
+                resource_type=request.type_name,
+                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys()) if hub.get_components("ephemeral_resource") else [],
+            )
+            raise ValueError(
+                f"Ephemeral resource type '{request.type_name}' not found.\n\n"
+                f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Check that the ephemeral resource class has the @ephemeral decorator\n"
+                f"  2. Verify the ephemeral resource module is imported by the provider\n"
+                f"  3. Run 'pyvider components list' to see registered ephemeral resources\n"
+                f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+            )
 
         schema = resource_class.get_schema()
         config_cty = unmarshal(request.config, schema=schema.block)
@@ -57,22 +76,43 @@ async def _validate_ephemeral_resource_config_impl(
         resource_instance = resource_class()
         validation_errors = await resource_instance.validate(config_instance)
 
-        for err_msg in validation_errors:
-            diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary=err_msg)
-            response.diagnostics.append(diag)
+        if validation_errors:
+            logger.warning(
+                "Ephemeral resource configuration validation failed",
+                operation="validate_ephemeral_resource_config",
+                resource_type=request.type_name,
+                error_count=len(validation_errors),
+            )
+            for err_msg in validation_errors:
+                diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary=err_msg)
+                response.diagnostics.append(diag)
+        else:
+            logger.debug(
+                "Ephemeral resource configuration validation succeeded",
+                operation="validate_ephemeral_resource_config",
+                resource_type=request.type_name,
+            )
 
     except (CtyValidationError, PyviderError) as e:
+        logger.error(
+            "Ephemeral resource validation failed with known error",
+            operation="validate_ephemeral_resource_config",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
         logger.error(
-            f"EPHEMERAL 💥 Unhandled error validating '{request.type_name}'",
+            "Ephemeral resource validation failed with unexpected error",
+            operation="validate_ephemeral_resource_config",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
             exc_info=True,
         )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 
-    logger.debug(
-        f"EPHEMERAL 🔎 Validation for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
-    )
     return response

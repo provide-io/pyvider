@@ -43,10 +43,14 @@ async def _get_functions_once() -> dict[str, Function]:
 
     async with _cache_lock:
         if _cached_functions is not None:
-            logger.debug("🧰🔍✅ Returning cached function definitions.")
+            logger.debug(
+                "Returning cached function definitions",
+                operation="get_functions",
+                function_count=len(_cached_functions),
+            )
             return _cached_functions
 
-        logger.debug("🧰🔍🔄 Computing and caching function definitions for the first time...")
+        logger.debug("Computing and caching function definitions", operation="get_functions")
 
         from pyvider.hub import hub
 
@@ -61,11 +65,22 @@ async def _get_functions_once() -> dict[str, Function]:
                     if proto_func:
                         functions[name] = proto_func
             except Exception as e:
-                logger.error(f"🧰🔍❌ Failed to process function '{name}': {e}", exc_info=True)
+                logger.error(
+                    "Failed to process function during metadata collection",
+                    operation="get_functions",
+                    function_name=name,
+                    error_type=type(e).__name__,
+                    error_message=str(e),
+                    exc_info=True,
+                )
                 # Optionally add a diagnostic here if you want to report this to Terraform
 
         _cached_functions = functions
-        logger.info(f"🧰🔍✅ Cached {len(_cached_functions)} function definitions.")
+        logger.info(
+            "Cached function definitions successfully",
+            operation="get_functions",
+            function_count=len(_cached_functions),
+        )
         return _cached_functions
 
 
@@ -94,13 +109,27 @@ async def _get_functions_impl(request: pb.GetFunctions.Request, context: Any) ->
         functions = await _get_functions_once()
         return GetFunctions.Response(functions=functions, diagnostics=[])
     except Exception as e:
-        logger.error(f"🧰🔍💥 Unhandled error in GetFunctions: {e}", exc_info=True)
+        logger.error(
+            "Failed to retrieve function definitions",
+            operation="get_functions",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         return GetFunctions.Response(
             diagnostics=[
                 Diagnostic(
                     severity=Diagnostic.ERROR,
-                    summary="GetFunctions error",
-                    detail=f"Internal error: {e}",
+                    summary="Function discovery failed",
+                    detail=(
+                        f"Failed to retrieve function definitions: {e}\n\n"
+                        "Suggestion: Check that functions are properly registered using the @function decorator.\n\n"
+                        "Troubleshooting:\n"
+                        "  1. Verify function modules are imported by the provider\n"
+                        "  2. Check provider logs for function registration errors\n"
+                        "  3. Run 'pyvider components list' to see registered functions\n"
+                        "  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+                    ),
                 )
             ]
         )

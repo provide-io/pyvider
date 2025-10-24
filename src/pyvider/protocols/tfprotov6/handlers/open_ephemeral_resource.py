@@ -43,12 +43,33 @@ async def _open_ephemeral_resource_impl(
     request: pb.OpenEphemeralResource.Request, context: Any
 ) -> pb.OpenEphemeralResource.Response:
     """Implementation of OpenEphemeralResource handler."""
-    logger.debug(f"EPHEMERAL 📖 Opening resource '{request.type_name}'")
+    logger.debug(
+        "Starting ephemeral resource open operation",
+        operation="open_ephemeral_resource",
+        resource_type=request.type_name,
+    )
+
     response = pb.OpenEphemeralResource.Response()
     try:
         resource_class = hub.get_component("ephemeral_resource", request.type_name)
         if not resource_class:
-            raise ValueError(f"Ephemeral resource type '{request.type_name}' not found.")
+            logger.error(
+                "Ephemeral resource type not found during open operation",
+                operation="open_ephemeral_resource",
+                resource_type=request.type_name,
+                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys()) if hub.get_components("ephemeral_resource") else [],
+            )
+            raise ValueError(
+                f"Ephemeral resource type '{request.type_name}' not found.\n\n"
+                f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator "
+                f"and that component discovery has completed successfully.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Check that the ephemeral resource class has the @ephemeral decorator\n"
+                f"  2. Verify the ephemeral resource module is imported by the provider\n"
+                f"  3. Run 'pyvider components list' to see registered ephemeral resources\n"
+                f"  4. Review provider logs for component registration errors\n"
+                f"  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+            )
 
         schema = resource_class.get_schema()
         config_cty = unmarshal(request.config, schema=schema.block)
@@ -70,15 +91,35 @@ async def _open_ephemeral_resource_impl(
         if renew_at:
             response.renew_at.CopyFrom(datetime_to_proto(renew_at))
 
+        logger.info(
+            "Ephemeral resource open completed successfully",
+            operation="open_ephemeral_resource",
+            resource_type=request.type_name,
+            has_result=result_obj is not None,
+            has_private_state=private_state_obj is not None,
+            has_renew_at=renew_at is not None,
+        )
+
     except (CtyValidationError, PyviderError) as e:
+        logger.error(
+            "Ephemeral resource open failed with known error",
+            operation="open_ephemeral_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
-        logger.error(f"EPHEMERAL 💥 Unhandled error opening '{request.type_name}'", exc_info=True)
+        logger.error(
+            "Ephemeral resource open failed with unexpected error",
+            operation="open_ephemeral_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 
-    logger.debug(
-        f"EPHEMERAL 📖 Open for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
-    )
     return response

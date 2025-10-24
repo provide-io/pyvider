@@ -39,34 +39,38 @@ async def StopProviderHandler(request: pb.StopProvider.Request, context: Any) ->
 async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) -> pb.StopProvider.Response:
     """Implementation of StopProvider handler."""
     try:
-        logger.info("🛎️🔒✅ StopProvider RPC received. Initiating provider shutdown...")
+        logger.info("StopProvider RPC received, initiating graceful shutdown", operation="stop_provider")
 
         server_instance = RPCPluginServer.get_instance()
 
         if server_instance:
-            logger.debug("🛎️🔧 Calling server_instance.stop() for graceful shutdown...")
+            logger.debug("Calling server stop for graceful shutdown", operation="stop_provider")
             # The stop() method is now responsible for the full shutdown sequence,
             # including resolving _serving_future.
             await server_instance.stop()
-            logger.info("🛎️🔧✅ Provider server_instance.stop() completed.")
+            logger.info("Provider server stop completed successfully", operation="stop_provider")
         else:
             logger.warning(
-                "🛎️⚠️ No active RPCPluginServer instance found during StopProvider. Plugin might not have started correctly."
+                "No active RPCPluginServer instance found during stop",
+                operation="stop_provider",
             )
 
         # The plugin process should exit naturally after asyncio.run() in __main__.py completes,
         # which happens when server.serve() (and thus server.stop()) finishes.
         # No need for explicit sys.exit() here, as that can be too abrupt.
 
-        # Terraform doesn't typically expect a message on stderr for successful StopProvider,
-        # but logging is good.
-        logger.info("🛎️🔒✅ StopProvider handler finished. Returning response to Terraform.")
+        logger.info("StopProvider handler completed successfully", operation="stop_provider")
         return pb.StopProvider.Response()
 
     except Exception as e:
         # Log any error during the StopProvider handling itself
-        error_msg = f"Unexpected error during StopProvider handling: {e}"
-        logger.error(f"🛎️❗❌ {error_msg}", exc_info=True)
+        logger.error(
+            "Unexpected error during provider stop",
+            operation="stop_provider",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         # Return an error diagnostic if possible, though Terraform might just kill the plugin
         # if this handler itself fails badly or times out.
         # Since StopProvider.Response has no diagnostics field, we can only log.

@@ -39,15 +39,40 @@ async def _close_ephemeral_resource_impl(
     request: pb.CloseEphemeralResource.Request, context: Any
 ) -> pb.CloseEphemeralResource.Response:
     """Implementation of CloseEphemeralResource handler."""
-    logger.debug(f"EPHEMERAL 🔒 Closing resource '{request.type_name}'")
+    logger.debug(
+        "Starting ephemeral resource close operation",
+        operation="close_ephemeral_resource",
+        resource_type=request.type_name,
+    )
+
     response = pb.CloseEphemeralResource.Response()
     try:
         resource_class = hub.get_component("ephemeral_resource", request.type_name)
         if not resource_class:
-            raise ValueError(f"Ephemeral resource type '{request.type_name}' not found.")
+            logger.error(
+                "Ephemeral resource type not found during close operation",
+                operation="close_ephemeral_resource",
+                resource_type=request.type_name,
+                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys()) if hub.get_components("ephemeral_resource") else [],
+            )
+            raise ValueError(
+                f"Ephemeral resource type '{request.type_name}' not found.\n\n"
+                f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator.\n\n"
+                f"Troubleshooting:\n"
+                f"  1. Verify the ephemeral resource module is imported\n"
+                f"  2. Run 'pyvider components list' to see registered ephemeral resources\n"
+                f"  3. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+            )
         if not resource_class.private_state_class:
+            logger.error(
+                "Ephemeral resource missing private_state_class",
+                operation="close_ephemeral_resource",
+                resource_type=request.type_name,
+            )
             raise ResourceError(
-                f"Resource '{request.type_name}' does not define a private_state_class, cannot close."
+                f"Resource '{request.type_name}' does not define a private_state_class, cannot close.\n\n"
+                f"Suggestion: Ephemeral resources must define a private_state_class for lifecycle management.\n\n"
+                f"Documentation: See ephemeral resource documentation for private state usage."
             )
 
         private_data = msgpack.unpackb(request.private, raw=False)
@@ -58,15 +83,32 @@ async def _close_ephemeral_resource_impl(
 
         await resource_instance.close(ctx)
 
+        logger.info(
+            "Ephemeral resource close completed successfully",
+            operation="close_ephemeral_resource",
+            resource_type=request.type_name,
+        )
+
     except PyviderError as e:
+        logger.error(
+            "Ephemeral resource close failed with known error",
+            operation="close_ephemeral_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
-        logger.error(f"EPHEMERAL 💥 Unhandled error closing '{request.type_name}'", exc_info=True)
+        logger.error(
+            "Ephemeral resource close failed with unexpected error",
+            operation="close_ephemeral_resource",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 
-    logger.debug(
-        f"EPHEMERAL 🔒 Close for '{request.type_name}' complete. Diagnostics: {len(response.diagnostics)}"
-    )
     return response
