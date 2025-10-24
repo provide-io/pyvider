@@ -89,15 +89,43 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     The core, expensive computation logic for building the provider schema.
     This function is now only ever called once.
     """
-    logger.debug("Computing and caching provider schema for the first time...")
+    logger.debug(
+        "Computing provider schema for the first time",
+        operation="compute_schema",
+    )
+
     diagnostics = []
     try:
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:
-            raise RuntimeError("Provider instance not found in hub. Setup may have failed.")
+            logger.error(
+                "Provider instance not found during schema computation",
+                operation="compute_schema",
+            )
+            raise RuntimeError(
+                "Provider instance not found in hub.\n\n"
+                "This indicates the provider's setup() method may have failed or "
+                "the provider was not properly registered.\n\n"
+                "Troubleshooting:\n"
+                "  1. Ensure the provider class has the @provider decorator\n"
+                "  2. Verify the provider's setup() method completed successfully\n"
+                "  3. Check provider logs for initialization errors\n"
+                "  4. Verify component discovery completed without errors"
+            )
+
+        logger.debug(
+            "Converting provider schema to protocol buffer format",
+            operation="compute_schema",
+            provider_name=provider_instance.metadata.name,
+        )
 
         provider_schema = provider_instance.schema
         provider_proto_schema = await pvs_schema_to_proto(provider_schema)
+
+        logger.debug(
+            "Collecting component schemas",
+            operation="compute_schema",
+        )
 
         resource_schemas = await _collect_resource_schemas(diagnostics)
         data_source_schemas = await _collect_data_source_schemas(diagnostics)
@@ -110,17 +138,46 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
             functions=functions,
             diagnostics=diagnostics,
         )
-        logger.info("Provider schema has been computed successfully.")
+
+        logger.info(
+            "Provider schema computed and cached successfully",
+            operation="compute_schema",
+            provider_name=provider_instance.metadata.name,
+            resource_count=len(resource_schemas),
+            data_source_count=len(data_source_schemas),
+            function_count=len(functions),
+            warning_count=len([d for d in diagnostics if d.severity == pb.Diagnostic.WARNING]),
+        )
+
         return response
 
     except Exception as e:
-        logger.error(f"Failed to compute provider schema: {e}", exc_info=True)
+        logger.error(
+            "Failed to compute provider schema",
+            operation="compute_schema",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
+
+        error_detail = (
+            f"Failed to compute provider schema: {e}\n\n"
+            f"Suggestion: This usually indicates an issue with provider initialization "
+            f"or schema definition.\n\n"
+            f"Troubleshooting:\n"
+            f"  1. Check that all resources/data sources have valid schema definitions\n"
+            f"  2. Verify component discovery completed successfully\n"
+            f"  3. Review provider logs for initialization errors\n"
+            f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG\n\n"
+            f"Error details: {type(e).__name__}: {e}"
+        )
+
         return pb.GetProviderSchema.Response(
             diagnostics=[
                 pb.Diagnostic(
                     severity=pb.Diagnostic.ERROR,
-                    summary="Failed to compute provider schema",
-                    detail=str(e),
+                    summary="Provider schema computation failed",
+                    detail=error_detail,
                 )
             ]
         )
@@ -152,7 +209,11 @@ async def _get_provider_schema_impl(
 ) -> pb.GetProviderSchema.Response:
     """Implementation of GetProviderSchema handler."""
     global _schema_future
-    logger.debug("GetProviderSchema handler called, checking cache future.")
+    logger.debug(
+        "GetProviderSchema handler called",
+        operation="get_provider_schema",
+        cache_exists=_schema_future is not None,
+    )
 
     # Use a lock to protect the initial creation of the Future object itself.
     # This is a very short-lived lock.
