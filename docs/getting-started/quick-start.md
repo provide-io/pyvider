@@ -482,15 +482,17 @@ terraform apply
 
 ### Option 2: Build and Install
 
-Package the provider for distribution:
+Package the provider for distribution using the Flavor build system:
 
 ```bash
-# Build the provider binary
-pyvider build --output terraform-provider-local
+# Build the provider binary using the build script
+# (See CLAUDE.md and scripts/build_provider.py for details)
+python scripts/build_provider.py
 
+# The built provider binary will be in the dist/ directory
 # Move to Terraform plugin directory
 mkdir -p ~/.terraform.d/plugins/example.com/tutorial/local/0.1.0/linux_amd64
-mv terraform-provider-local ~/.terraform.d/plugins/example.com/tutorial/local/0.1.0/linux_amd64/
+cp dist/terraform-provider-local ~/.terraform.d/plugins/example.com/tutorial/local/0.1.0/linux_amd64/
 
 # Now Terraform can find it
 terraform init

@@ -101,11 +101,8 @@ pyvider components list
 # Development server
 pyvider provide --debug
 
-# Schema validation
-pyvider schema validate
-
-# Package for distribution
-pyvider build
+# Launch provider service
+pyvider provide
 ```
 
 ## 📦 Installation
