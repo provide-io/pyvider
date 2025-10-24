@@ -1,14 +1,14 @@
 # 🚀 Quick Start Guide
 
-Build your first Terraform provider in Python! This guide walks you through creating a simple but functional provider that manages local files.
+Build your first Terraform provider in Python! This guide walks you through creating a simple but functional provider in about 5 minutes.
 
 ## 📋 Prerequisites
 
 Before starting, ensure you have:
 
 - ✅ Python 3.11+ installed
-- ✅ Pyvider installed (`pip install pyvider`)
-- ✅ Terraform installed (optional, for testing with real Terraform)
+- ✅ Pyvider installed (`pip install pyvider` or `uv add pyvider`)
+- ✅ Basic understanding of Terraform concepts
 - ✅ Familiarity with Python async/await
 
 ## ⚠️ Alpha Notice
@@ -29,16 +29,13 @@ Create a new file called `local_provider.py`:
 
 ```python
 #!/usr/bin/env python3
-"""
-Local File Provider - A simple Terraform provider for managing local files.
-"""
+"""Local File Provider - A simple Terraform provider for managing local files."""
 
 from pathlib import Path
 import hashlib
 import attrs
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
-from pyvider.resources import register_resource, BaseResource
-from pyvider.resources.context import ResourceContext
+from pyvider.resources import register_resource, BaseResource, ResourceContext
 from pyvider.data_sources import register_data_source, BaseDataSource
 from pyvider.schema import s_provider, s_resource, s_data_source, a_str, a_num, a_bool, PvsSchema
 
@@ -65,7 +62,6 @@ class LocalProvider(BaseProvider):
                 protocol_version="6"
             )
         )
-        # Provider config will be set by configure()
         self.provider_config: ProviderConfig | None = None
 
     def _build_schema(self) -> PvsSchema:
@@ -82,9 +78,8 @@ class LocalProvider(BaseProvider):
         })
 
     async def configure(self, config: dict) -> None:
-        """Configure the provider with the given configuration."""
+        """Configure the provider."""
         await super().configure(config)
-        # Convert config dict to attrs instance
         self.provider_config = ProviderConfig(
             base_directory=config.get("base_directory", "."),
             create_directories=config.get("create_directories", True),
@@ -99,7 +94,6 @@ class FileConfig:
     """File resource configuration."""
     path: str
     content: str
-    permissions: str = "644"
 
 
 @attrs.define
@@ -108,7 +102,6 @@ class FileState:
     id: str
     path: str
     content: str
-    permissions: str
     checksum: str
     size: int
 
@@ -127,25 +120,21 @@ class File(BaseResource):
             # Configuration attributes
             "path": a_str(
                 required=True,
-                description="Path to the file (relative to base directory)"
+                description="Path to the file"
             ),
             "content": a_str(
                 required=True,
-                description="Content to write to the file"
-            ),
-            "permissions": a_str(
-                default="644",
-                description="File permissions (octal notation)"
+                description="Content to write"
             ),
 
-            # Computed attributes (set by provider)
+            # Computed attributes
             "id": a_str(
                 computed=True,
-                description="Unique identifier for the file"
+                description="File identifier"
             ),
             "checksum": a_str(
                 computed=True,
-                description="SHA256 checksum of the content"
+                description="SHA256 checksum"
             ),
             "size": a_num(
                 computed=True,
@@ -153,115 +142,71 @@ class File(BaseResource):
             ),
         })
 
-    async def _validate_config(self, config: FileConfig) -> list[str]:
-        """Validate configuration."""
-        errors = []
-        if ".." in config.path:
-            errors.append("Path cannot contain '..' for security reasons")
-        if config.path.startswith("/"):
-            errors.append("Path must be relative, not absolute")
-        return errors
-
     async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
-        """Create a new file (apply phase)."""
+        """Create a new file."""
         if not ctx.config:
             return None, None
 
-        # Get provider configuration from hub
+        # Get provider config
         from pyvider.hub import ProviderHub
         provider = ProviderHub.get_provider()
         provider_config = provider.provider_config
 
-        # Construct full path
-        base_dir = Path(provider_config.base_directory)
-        file_path = base_dir / ctx.config.path
-
-        # Create parent directories if needed
+        # Write file
+        file_path = Path(provider_config.base_directory) / ctx.config.path
         if provider_config.create_directories:
             file_path.parent.mkdir(parents=True, exist_ok=True)
-
-        # Write the file
         file_path.write_text(ctx.config.content)
 
-        # Set permissions
-        octal_perms = int(ctx.config.permissions, 8)
-        file_path.chmod(octal_perms)
-
-        # Calculate checksum
-        checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
-
         # Return state
+        checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
         return FileState(
             id=str(file_path.absolute()),
             path=str(file_path.absolute()),
             content=ctx.config.content,
-            permissions=ctx.config.permissions,
             checksum=checksum,
             size=len(ctx.config.content)
         ), None
 
     async def read(self, ctx: ResourceContext) -> FileState | None:
-        """Read the current state of the file."""
+        """Read current file state."""
         if not ctx.state:
             return None
 
         file_path = Path(ctx.state.path)
-
-        # Check if file exists
         if not file_path.exists():
-            return None  # File was deleted outside of Terraform
+            return None  # File deleted outside Terraform
 
-        # Read current content
         content = file_path.read_text()
-
-        # Get current permissions
-        mode = file_path.stat().st_mode
-        permissions = oct(mode)[-3:]
-
-        # Calculate checksum
         checksum = hashlib.sha256(content.encode()).hexdigest()
 
-        # Return updated state
         return FileState(
             id=ctx.state.id,
             path=ctx.state.path,
             content=content,
-            permissions=permissions,
             checksum=checksum,
             size=len(content)
         )
 
     async def _update_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
-        """Update an existing file (apply phase)."""
+        """Update file content."""
         if not ctx.config or not ctx.state:
             return None, None
 
         file_path = Path(ctx.state.path)
+        file_path.write_text(ctx.config.content)
 
-        # Update content if changed
-        if ctx.config.content != ctx.state.content:
-            file_path.write_text(ctx.config.content)
-
-        # Update permissions if changed
-        if ctx.config.permissions != ctx.state.permissions:
-            octal_perms = int(ctx.config.permissions, 8)
-            file_path.chmod(octal_perms)
-
-        # Calculate new checksum
         checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
-
-        # Return updated state
         return FileState(
             id=ctx.state.id,
             path=ctx.state.path,
             content=ctx.config.content,
-            permissions=ctx.config.permissions,
             checksum=checksum,
             size=len(ctx.config.content)
         ), None
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
-        """Delete the file (apply phase)."""
+        """Delete the file."""
         if not ctx.state:
             return
 
@@ -270,111 +215,17 @@ class File(BaseResource):
             file_path.unlink()
 
 # ============================================
-# FILE DATA SOURCE
-# ============================================
-
-@attrs.define
-class FileContentConfig:
-    """Data source configuration."""
-    path: str
-
-
-@attrs.define
-class FileContentData:
-    """Data source result."""
-    id: str
-    content: str
-    size: int
-    checksum: str
-    exists: bool
-
-
-@register_data_source("file_content")
-class FileContent(BaseDataSource):
-    """Reads content from an existing file."""
-
-    config_class = FileContentConfig
-    data_class = FileContentData
-
-    @classmethod
-    def get_schema(cls) -> PvsSchema:
-        """Define data source schema."""
-        return s_data_source({
-            # Configuration (input)
-            "path": a_str(
-                required=True,
-                description="Path to the file to read"
-            ),
-
-            # Computed outputs
-            "id": a_str(
-                computed=True,
-                description="File path as ID"
-            ),
-            "content": a_str(
-                computed=True,
-                description="File content"
-            ),
-            "size": a_num(
-                computed=True,
-                description="File size in bytes"
-            ),
-            "checksum": a_str(
-                computed=True,
-                description="SHA256 checksum"
-            ),
-            "exists": a_bool(
-                computed=True,
-                description="Whether the file exists"
-            ),
-        })
-
-    async def read(self, config: FileContentConfig) -> FileContentData:
-        """Read file content."""
-        # Get provider configuration
-        from pyvider.hub import ProviderHub
-        provider = ProviderHub.get_provider()
-        provider_config = provider.provider_config
-
-        base_dir = Path(provider_config.base_directory)
-        file_path = base_dir / config.path
-
-        if file_path.exists():
-            content = file_path.read_text()
-            checksum = hashlib.sha256(content.encode()).hexdigest()
-            return FileContentData(
-                id=str(file_path.absolute()),
-                content=content,
-                size=len(content),
-                checksum=checksum,
-                exists=True
-            )
-        else:
-            return FileContentData(
-                id=str(file_path.absolute()),
-                content="",
-                size=0,
-                checksum="",
-                exists=False
-            )
-
-# ============================================
 # MAIN ENTRY POINT
 # ============================================
 
 if __name__ == "__main__":
-    # This allows the provider to be run directly
     from pyvider.cli import main
     main()
 ```
 
-## 🧪 Step 2: Test the Provider
+## 🔧 Step 2: Create Terraform Configuration
 
-You can test your provider using Terraform directly, or use pyvider-components' test utilities. For this quick start, we'll use Terraform.
-
-## 🔧 Step 3: Use with Terraform
-
-Create a Terraform configuration `main.tf`:
+Create `main.tf` in the same directory:
 
 ```hcl
 terraform {
@@ -386,286 +237,103 @@ terraform {
   }
 }
 
-# Configure the provider
 provider "local" {
   base_directory     = "./managed_files"
   create_directories = true
 }
 
-# Create a file resource
 resource "local_file" "config" {
   path    = "config/app.conf"
   content = <<-EOT
     # Application Configuration
     app_name = "MyApp"
     version = "1.0.0"
-    debug = false
-  EOT
-  permissions = "644"
-}
-
-# Create another file that references the first
-resource "local_file" "readme" {
-  path    = "README.md"
-  content = <<-EOT
-    # My Application
-
-    Configuration file: ${local_file.config.path}
-    Checksum: ${local_file.config.checksum}
-    Size: ${local_file.config.size} bytes
   EOT
 }
 
-# Read an existing file
-data "local_file_content" "license" {
-  path = "../LICENSE"
-}
-
-# Output values
 output "config_checksum" {
   value = local_file.config.checksum
 }
-
-output "license_exists" {
-  value = data.local_file_content.license.exists
-}
-
-output "files_created" {
-  value = [
-    local_file.config.path,
-    local_file.readme.path
-  ]
-}
 ```
 
-## 🚀 Step 4: Package and Run the Provider
-
-### Development Mode
-
-For development, run the provider directly:
+## 🚀 Step 3: Run the Provider
 
 ```bash
-# Start the provider in development mode
-pyvider provide --debug
+# Make the provider executable
+chmod +x local_provider.py
+
+# Run directly for testing
+python local_provider.py provide &
 
 # In another terminal, run Terraform
-terraform init -upgrade
+terraform init
 terraform plan
 terraform apply
+
+# Check the created file
+cat managed_files/config/app.conf
 ```
 
-### Build and Install
-
-Package the provider for distribution using the Flavor build system:
-
-```bash
-# Build the provider binary using the build script
-# (See CLAUDE.md and scripts/build_provider.py for details)
-python scripts/build_provider.py
-
-# The built provider binary will be in the dist/ directory
-# Move to Terraform plugin directory
-mkdir -p ~/.terraform.d/plugins/example.com/tutorial/local/0.1.0/linux_amd64
-cp dist/terraform-provider-local ~/.terraform.d/plugins/example.com/tutorial/local/0.1.0/linux_amd64/
-
-# Now Terraform can find it
-terraform init
-terraform apply
-```
-
-## 📊 Step 5: Verify Results
+## 📊 Expected Output
 
 After running `terraform apply`, you should see:
 
 ```
-Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 Outputs:
 
 config_checksum = "a3f5c7d9e1b3..."
-license_exists = true
-files_created = [
-  "./managed_files/config/app.conf",
-  "./managed_files/README.md"
-]
 ```
 
-Check the created files:
-
-```bash
-$ tree managed_files/
-managed_files/
-├── config/
-│   └── app.conf
-└── README.md
-
-$ cat managed_files/config/app.conf
-# Application Configuration
-app_name = "MyApp"
-version = "1.0.0"
-debug = false
-```
+And the file `managed_files/config/app.conf` will exist with your content.
 
 ## 🎉 Congratulations!
 
 You've just built your first Terraform provider in Python! You've:
 
-- ✅ Created a complete provider with configuration
-- ✅ Implemented a full CRUD resource (File)
-- ✅ Added a data source (FileContent)
-- ✅ Used it with real Terraform configuration
+- ✅ Created a provider with configuration
+- ✅ Implemented a full CRUD resource
+- ✅ Used it with real Terraform
 
-## 🔍 What's Happening Behind the Scenes?
+## 🔍 What's Happening?
 
 When you run your provider, Pyvider:
 
-1. **Discovers Components**: Finds all `@register_provider`, `@register_resource`, and `@register_data_source` decorators
-2. **Generates Schema**: Converts Python types to Terraform schema using `get_schema()` methods
-3. **Handles Protocol**: Manages all gRPC communication with Terraform
-4. **Manages State**: Tracks resource state between operations via `ResourceContext`
-5. **Provides Type Safety**: Ensures data matches your `@attrs.define` type definitions
-
-## 📚 Key Concepts Demonstrated
-
-### 🎯 Decorators
-- `@register_provider("name")`: Registers your provider class
-- `@register_resource("name")`: Defines a manageable resource
-- `@register_data_source("name")`: Creates a read-only data source
-
-### 📋 Schema Definition
-- `@attrs.define`: Creates type-safe configuration and state classes
-- `config_class` / `state_class`: Links attrs classes to resources
-- `get_schema()`: Defines Terraform schema using factory functions
-- `computed=True`: Fields calculated by the provider
-- `required=True`: Fields that must be provided
-
-### 🔄 Resource Lifecycle
-- `_create_apply()`: Called during `terraform apply` to create resources
-- `read()`: Refreshes resource state during planning and refresh
-- `_update_apply()`: Called during `terraform apply` to modify resources
-- `_delete_apply()`: Called during `terraform destroy` to remove resources
-- `ResourceContext`: Provides access to config, state, and provider information
+1. **Discovers Components**: Finds all `@register_*` decorators
+2. **Generates Schema**: Converts Python types to Terraform schema
+3. **Handles Protocol**: Manages gRPC communication with Terraform
+4. **Manages State**: Tracks resource state between operations
+5. **Provides Type Safety**: Ensures data matches your `@attrs.define` classes
 
 ## 🚦 Next Steps
 
-Now that you understand the basics:
+Now that you understand the basics, explore:
 
-### 1. Enhance the Provider
-
-Add more features to your local file provider:
-
-```python
-@register_resource("directory")
-class Directory(BaseResource):
-    """Manages a local directory."""
-    config_class = DirectoryConfig
-    state_class = DirectoryState
-
-    @classmethod
-    def get_schema(cls) -> PvsSchema:
-        return s_resource({
-            "path": a_str(required=True),
-            "mode": a_str(default="755"),
-        })
-    # ... implementation ...
-
-@register_function(name="hash_file")
-class HashFile(BaseFunction):
-    """Computes hash of a file."""
-    # ... implementation ...
-```
-
-### 2. Add Error Handling
-
-```python
-async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
-    """Create a new file with error handling."""
-    if not ctx.config:
-        return None, None
-
-    try:
-        file_path = Path(ctx.config.path)
-        file_path.write_text(ctx.config.content)
-    except PermissionError:
-        raise ResourceError("Insufficient permissions to create file")
-    except OSError as e:
-        raise ResourceError(f"Failed to create file: {e}")
-
-    # ... return state ...
-```
-
-### 3. Add Validation
-
-Use `_validate_config()` for custom validation logic:
-
-```python
-async def _validate_config(self, config: FileConfig) -> list[str]:
-    """Validate file configuration."""
-    errors = []
-
-    # Path validation
-    if config.path.startswith("/"):
-        errors.append("Path must be relative, not absolute")
-    if ".." in config.path:
-        errors.append("Path cannot contain '..' for security reasons")
-
-    # Content validation
-    if len(config.content) > 1_000_000:  # 1MB limit
-        errors.append("File content cannot exceed 1MB")
-
-    # Permission validation
-    try:
-        int(config.permissions, 8)
-    except ValueError:
-        errors.append("Permissions must be valid octal notation (e.g., '644')")
-
-    return errors
-```
-
-### 4. Add Import Support
-
-```python
-async def import_state(self, resource_id: str) -> FileState | None:
-    """Import existing file into Terraform state."""
-    file_path = Path(resource_id)
-
-    if not file_path.exists():
-        raise ResourceError(f"File not found: {resource_id}")
-
-    content = file_path.read_text()
-    mode = file_path.stat().st_mode
-    permissions = oct(mode)[-3:]
-    checksum = hashlib.sha256(content.encode()).hexdigest()
-
-    return FileState(
-        id=resource_id,
-        path=resource_id,
-        content=content,
-        permissions=permissions,
-        checksum=checksum,
-        size=len(content)
-    )
-```
-
-## 📖 Learn More
-
-Ready to dive deeper? Check out:
-
-- **[Pyvider Components Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-- **[Architecture Guide](../core-concepts/architecture.md)** - Understand Pyvider's internals
+### Learn Core Concepts
+- **[Architecture Overview](../core-concepts/architecture.md)** - Understand how Pyvider works
+- **[Component Model](../core-concepts/component-model.md)** - Deep dive into components
 - **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
+
+### Build Real Providers
+- **[Creating Providers](../guides/creating-providers.md)** - Comprehensive provider guide
+- **[Creating Resources](../guides/creating-resources.md)** - Advanced resource patterns
 - **[Testing Providers](../guides/testing-providers.md)** - Write comprehensive tests
 - **[Best Practices](../guides/best-practices.md)** - Production-ready patterns
+
+### See Examples
+- **[Pyvider Components](https://github.com/provide-io/pyvider-components)** - 100+ working examples including:
+  - Resources: file_content, local_directory, timed_token
+  - Data Sources: env_variables, http_api, lens_jq
+  - Functions: String, numeric, and JQ operations
 
 ## 💡 Tips for Success
 
 1. **Start Simple**: Begin with basic resources before adding complexity
 2. **Test Incrementally**: Test each component as you develop
-3. **Use Type Hints**: Leverage Python's type system for safety and IDE support
-4. **Handle Errors Gracefully**: Provide clear error messages for users
-5. **Document Thoroughly**: Add docstrings to all components and schema descriptions
-6. **Validate Early**: Use `_validate_config()` to catch issues before apply
-7. **Follow Conventions**: Match Terraform naming patterns (snake_case for resources)
+3. **Use Type Hints**: Leverage Python's type system for safety
+4. **Handle Errors Gracefully**: Provide clear error messages
+5. **Document Thoroughly**: Add docstrings and schema descriptions
 
 ## 🆘 Getting Help
 
@@ -678,6 +346,6 @@ If you run into issues:
 ---
 
 <p align="center">
-  🎊 <strong>Congratulations on building your first provider!</strong> 🎊<br>
-  Ready for more? Check out the <a href="../guides/creating-providers.md">Provider Development Guide →</a>
+  🎊 <strong>Ready to build more?</strong> 🎊<br>
+  Check out the <a href="../guides/creating-providers.md">Complete Provider Development Guide →</a>
 </p>
