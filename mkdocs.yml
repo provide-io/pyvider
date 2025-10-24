@@ -103,15 +103,89 @@ markdown_extensions:
 # Navigation Structure
 nav:
   - 'Home': 'index.md'
+
   - 'Getting Started':
+    - 'What is Pyvider': 'getting-started/what-is-pyvider.md'
     - 'Installation': 'getting-started/installation.md'
     - 'Quick Start': 'getting-started/quick-start.md'
+
   - 'Core Concepts':
     - 'Architecture': 'core-concepts/architecture.md'
-  - 'Guides':
+    - 'Component Model': 'core-concepts/component-model.md'
+    - 'Schema System': 'core-concepts/schema-system.md'
+
+  - 'Developer Guides':
     - 'Creating Providers': 'guides/creating-providers.md'
-  - 'Tutorials': []
+    - 'Creating Resources': 'guides/creating-resources.md'
+    - 'Creating Data Sources': 'guides/creating-data-sources.md'
+    - 'Creating Functions': 'guides/creating-functions.md'
+    - 'Testing': 'guides/testing.md'
+    - 'Best Practices': 'guides/best-practices.md'
+    - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
+    - 'Error Handling': 'guides/error-handling.md'
+    - 'Logging': 'guides/logging.md'
+    - 'Debugging': 'guides/debugging.md'
+
+  - 'User Guides':
+    - 'Configuration': 'guides/configuration.md'
+    - 'Managing Resources': 'guides/managing-resources.md'
+    - 'Using Data Sources': 'guides/using-data-sources.md'
+    - 'Using Functions': 'guides/using-functions.md'
+    - 'Advanced Examples': 'guides/advanced-examples.md'
+    - 'Advanced Usage': 'guides/advanced-usage.md'
+
+  - 'Tutorials':
+    - 'Your First Provider': 'tutorials/first-provider.md'
+    - 'JQ Components':
+      - 'Introduction': 'tutorials/jq-components/01-introduction.md'
+      - 'The JQ Function': 'tutorials/jq-components/02-the-jq-function.md'
+      - 'The JQ Data Source': 'tutorials/jq-components/03-the-jq-data-source.md'
+      - 'Testing': 'tutorials/jq-components/04-testing-the-jq-components.md'
+    - 'HTTP API Provider':
+      - 'Introduction': 'tutorials/http-api/01-introduction.md'
+      - 'HTTP API Data Source': 'tutorials/http-api/02-the-http-api-data-source.md'
+      - 'Testing': 'tutorials/http-api/03-testing-the-http-api-data-source.md'
+    - 'File Content Resource':
+      - 'Introduction': 'tutorials/file-content/01-introduction.md'
+      - 'File Content Resource': 'tutorials/file-content/02-the-file-content-resource.md'
+      - 'Testing': 'tutorials/file-content/03-testing-the-file-content-resource.md'
+
+  - 'Schema System':
+    - 'Overview': 'schema/overview.md'
+    - 'Types': 'schema/types.md'
+    - 'Attributes': 'schema/attributes.md'
+    - 'Blocks': 'schema/blocks.md'
+    - 'Validators': 'schema/validators.md'
+    - 'Computed Attributes': 'schema/computed-attributes.md'
+    - 'Sensitive Data': 'schema/sensitive-data.md'
+    - 'Schema by Example': 'schema/schema-by-example.md'
+    - 'Common Patterns': 'schema/common-patterns.md'
+    - 'Best Practices': 'schema/best-practices.md'
+
+  - 'Capabilities':
+    - 'Overview': 'capabilities/overview.md'
+    - 'Using Capabilities': 'capabilities/using-capabilities.md'
+    - 'Creating Capabilities': 'capabilities/creating-capabilities.md'
+    - 'Bundling Components': 'capabilities/bundling-components.md'
+    - 'Capability Lifecycle': 'capabilities/capability-lifecycle.md'
+    - 'Capability Composition': 'capabilities/capability-composition.md'
+    - 'Capability Marketplace': 'capabilities/capability-marketplace.md'
+
   - 'API Reference':
     - 'CLI': 'api-reference/cli.md'
     - 'Schema': 'api-reference/schema.md'
     - 'Types': 'api-reference/types.md'
+    - 'Provider API': 'api-reference/01-provider-api.md'
+    - 'Resource API': 'api-reference/02-resource-api.md'
+    - 'Data Source API': 'api-reference/03-data-source-api.md'
+    - 'Function API': 'api-reference/04-function-api.md'
+    - 'Hub API': 'api-reference/05-hub-api.md'
+
+  - 'Contributing':
+    - 'Guidelines': 'contributing/guidelines.md'
+    - 'Code of Conduct': 'contributing/code-of-conduct.md'
+
+  - 'Development':
+    - 'Roadmap': 'development/roadmap.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
