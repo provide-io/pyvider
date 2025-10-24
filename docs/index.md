@@ -41,45 +41,54 @@ Understand Pyvider's foundation
 - [Architecture](core-concepts/architecture.md) - System design and data flow
 - [Component Model](core-concepts/component-model.md) - Hub-based discovery system
 - [Schema System](core-concepts/schema-system.md) - Type-safe data modeling
-- [Protocol Implementation](core-concepts/protocol.md) - Terraform Plugin Protocol v6
 
 ### 📖 [Developer Guides](guides/creating-providers.md)
 Deep dives into building providers
 - [Creating Providers](guides/creating-providers.md) - Provider configuration and lifecycle
-- [Building Resources](guides/building-resources.md) - CRUD operations and state management
-- [Data Sources](guides/data-sources.md) - Read-only data fetching
-- [Provider Functions](guides/provider-functions.md) - Callable transformations
-- [Ephemeral Resources](guides/ephemeral-resources.md) - Short-lived resources
+- [Creating Resources](guides/03-creating-a-resource.md) - CRUD operations and state management
+- [Creating Data Sources](guides/04-creating-a-data-source.md) - Read-only data fetching
+- [Creating Functions](guides/05-creating-a-function.md) - Callable transformations
+- [Testing](guides/06-testing.md) - Testing strategies and best practices
+- [Best Practices](guides/07-best-practices.md) - Production-ready patterns
+- [Error Handling](guides/09-error-handling.md) - Robust error management
+- [Logging](guides/10-logging.md) - Structured logging with foundation
+- [Debugging](guides/11-debugging.md) - Troubleshooting providers
 
 ### 🎓 [Tutorials](tutorials/first-provider.md)
 Learn by building real providers
 - [Your First Provider](tutorials/first-provider.md) - Complete provider from scratch
-- [Cloud Provider Example](tutorials/cloud-provider.md) - AWS-style provider implementation
-- [Database Provider](tutorials/database-provider.md) - Managing database resources
-- [API Provider](tutorials/api-provider.md) - RESTful API integration
+- [JQ Components](tutorials/jq-components/01-introduction.md) - Build jq function and data source
+- [HTTP API](tutorials/http-api/01-introduction.md) - RESTful API integration
+- [File Content](tutorials/file-content/01-introduction.md) - Managing file resources
 
-### 📘 [API Reference](api-reference/decorators.md)
+### 📘 [API Reference](api-reference/schema.md)
 Complete API documentation
-- [Decorators](api-reference/decorators.md) - `@provider`, `@resource`, `@data_source`, `@function`
 - [Schema API](api-reference/schema.md) - Attributes, blocks, and validation
 - [CLI Commands](api-reference/cli.md) - Command-line interface reference
-- [Testing Utilities](api-reference/testing.md) - Test fixtures and helpers
 - [Types](api-reference/types.md) - CTY type system reference
 
-### 🔬 [Advanced Topics](advanced/capabilities.md)
-Master advanced features
-- [Capabilities System](advanced/capabilities.md) - Extending providers with plugins
-- [State Management](advanced/state-management.md) - Private state and encryption
-- [Performance Optimization](advanced/performance.md) - Tuning for production
-- [Debugging Strategies](advanced/debugging.md) - Troubleshooting providers
-- [Security Best Practices](advanced/security.md) - Secure provider development
+### 📦 [Schema System](schema/01-overview.md)
+Type-safe data modeling
+- [Overview](schema/01-overview.md) - Schema system introduction
+- [Types](schema/02-types.md) - Available schema types
+- [Attributes](schema/03-attributes.md) - Attribute definitions
+- [Blocks](schema/04-blocks.md) - Nested blocks
+- [Validators](schema/05-validators.md) - Input validation
+
+### 🔌 [Capabilities](capabilities/01-overview.md)
+Extending providers with plugins
+- [Overview](capabilities/01-overview.md) - Capabilities system introduction
+- [Using Capabilities](capabilities/02-using-capabilities.md) - Apply capabilities to components
+- [Creating Capabilities](capabilities/03-creating-capabilities.md) - Build custom capabilities
 
 ### 🤝 [Contributing](contributing/guidelines.md)
 Join the Pyvider community
 - [Contribution Guidelines](contributing/guidelines.md) - How to contribute
-- [Development Setup](contributing/development.md) - Setting up your dev environment
 - [Code of Conduct](contributing/code-of-conduct.md) - Community standards
-- [Release Process](contributing/releases.md) - How we ship updates
+
+### 🔮 [Development](development/roadmap.md)
+Project roadmap and planned features
+- [Roadmap](development/roadmap.md) - Future features and CLI commands
 
 ## 🎯 Quick Navigation
 
@@ -90,35 +99,35 @@ Join the Pyvider community
     <h4>🏗️ Providers</h4>
     <ul>
       <li><a href="guides/creating-providers.md">Creating Providers</a></li>
-      <li><a href="api-reference/decorators.md#provider">@provider decorator</a></li>
-      <li><a href="core-concepts/component-model.md#providers">Provider Lifecycle</a></li>
+      <li><a href="guides/08-provider-lifecycle.md">Provider Lifecycle</a></li>
+      <li><a href="core-concepts/component-model.md">Component Model</a></li>
     </ul>
   </div>
-  
+
   <div class="card">
     <h4>📦 Resources</h4>
     <ul>
-      <li><a href="guides/building-resources.md">Building Resources</a></li>
-      <li><a href="api-reference/decorators.md#resource">@resource decorator</a></li>
-      <li><a href="advanced/state-management.md">State Management</a></li>
+      <li><a href="guides/03-creating-a-resource.md">Creating Resources</a></li>
+      <li><a href="guides/03-managing-resources.md">Managing Resources</a></li>
+      <li><a href="schema/01-overview.md">Schema System</a></li>
     </ul>
   </div>
-  
+
   <div class="card">
     <h4>📊 Data Sources</h4>
     <ul>
-      <li><a href="guides/data-sources.md">Data Source Guide</a></li>
-      <li><a href="api-reference/decorators.md#data_source">@data_source decorator</a></li>
-      <li><a href="tutorials/api-provider.md">API Integration</a></li>
+      <li><a href="guides/04-creating-a-data-source.md">Creating Data Sources</a></li>
+      <li><a href="guides/04-using-data-sources.md">Using Data Sources</a></li>
+      <li><a href="tutorials/http-api/01-introduction.md">API Integration Tutorial</a></li>
     </ul>
   </div>
-  
+
   <div class="card">
     <h4>⚡ Functions</h4>
     <ul>
-      <li><a href="guides/provider-functions.md">Provider Functions</a></li>
-      <li><a href="api-reference/decorators.md#function">@function decorator</a></li>
-      <li><a href="tutorials/first-provider.md#functions">Function Examples</a></li>
+      <li><a href="guides/05-creating-a-function.md">Creating Functions</a></li>
+      <li><a href="guides/05-using-functions.md">Using Functions</a></li>
+      <li><a href="tutorials/jq-components/02-the-jq-function.md">JQ Function Example</a></li>
     </ul>
   </div>
 </div>
@@ -126,10 +135,10 @@ Join the Pyvider community
 ### By Task
 
 - **"I want to build my first provider"** → [Quick Start](getting-started/quick-start.md)
-- **"I need to integrate with a REST API"** → [API Provider Tutorial](tutorials/api-provider.md)
-- **"How do I test my provider?"** → [Testing Guide](api-reference/testing.md)
-- **"I need to debug an issue"** → [Debugging Strategies](advanced/debugging.md)
-- **"How do I handle sensitive data?"** → [State Encryption](advanced/state-management.md)
+- **"I need to integrate with a REST API"** → [HTTP API Tutorial](tutorials/http-api/01-introduction.md)
+- **"How do I test my provider?"** → [Testing Guide](guides/06-testing.md)
+- **"I need to debug an issue"** → [Debugging Guide](guides/11-debugging.md)
+- **"How do I handle errors properly?"** → [Error Handling](guides/09-error-handling.md)
 - **"I want to contribute"** → [Contributing Guidelines](contributing/guidelines.md)
 
 ## 🚦 Prerequisites
