@@ -380,4 +380,4 @@ class Instance(BaseResource):
 - [Creating Resources](../guides/creating-resources.md) - Resource implementation guide
 - [Creating Data Sources](../guides/creating-data-sources.md) - Data source guide
 - [Creating Functions](../guides/creating-functions.md) - Function development guide
-- [Schema API](schema.md) - Schema system reference
+- [Schema API](../api/schema/index.md) - Schema system reference

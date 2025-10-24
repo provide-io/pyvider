@@ -19,4 +19,4 @@ The schema system includes:
 - Type system integration
 - Best practices and examples
 
-For current schema documentation, see the [API Reference](../api-reference/schema.md).
+For current schema documentation, see the [API Reference](../api/schema/index.md) and [Schema System documentation](../schema/overview.md).

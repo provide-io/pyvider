@@ -12,13 +12,13 @@
         <meta name="author" content="provide.io">
       
       
-        <link rel="canonical" href="https://foundry.provide.io/pyvider/api-reference/decorators/">
+        <link rel="canonical" href="https://foundry.provide.io/pyvider/guides/using-decorators/">
       
       
-        <link rel="prev" href="../../capabilities/capability-marketplace/">
+        <link rel="prev" href="../creating-functions/">
       
       
-        <link rel="next" href="../testing/">
+        <link rel="next" href="../testing-providers/">
       
       
       <link rel="icon" href="../../assets/favicon.ico">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Decorators - PyVider Documentation</title>
+        <title>Using Decorators - PyVider Documentation</title>
       
     
     
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Decorators
+              Using Decorators
             
           </span>
         </div>
@@ -279,11 +279,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../guides/creating-providers/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../creating-providers/" class="md-tabs__link">
           
   
   
@@ -303,7 +305,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/configuration/" class="md-tabs__link">
+        <a href="../configuration/" class="md-tabs__link">
           
   
   
@@ -323,11 +325,11 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/first-provider/" class="md-tabs__link">
+        <a href="../../getting-started/quick-start/" class="md-tabs__link">
           
   
   
-  Tutorials
+  Examples & Tutorials
 
         </a>
       </li>
@@ -379,17 +381,15 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../api/" class="md-tabs__link">
           
   
   
-  API Reference
+  API Reference (Auto-generated)
 
         </a>
       </li>
@@ -776,28 +776,31 @@
       
   
   
+    
   
   
+  
     
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
@@ -810,7 +813,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Developer Guides
@@ -824,7 +827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/creating-providers/" class="md-nav__link">
+      <a href="../creating-providers/" class="md-nav__link">
         
   
   
@@ -847,7 +850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/creating-resources/" class="md-nav__link">
+      <a href="../creating-resources/" class="md-nav__link">
         
   
   
@@ -870,7 +873,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/creating-data-sources/" class="md-nav__link">
+      <a href="../creating-data-sources/" class="md-nav__link">
         
   
   
@@ -893,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/creating-functions/" class="md-nav__link">
+      <a href="../creating-functions/" class="md-nav__link">
         
   
   
@@ -913,15 +916,269 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../guides/testing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Using Decorators
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
-    Testing
+    Using Decorators
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-decorators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider Decorators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provider Decorators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      @register_provider
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-decorators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Decorators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Decorators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_resource" class="md-nav__link">
+    <span class="md-ellipsis">
+      @register_resource
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-source-decorators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Source Decorators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Source Decorators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_data_source" class="md-nav__link">
+    <span class="md-ellipsis">
+      @register_data_source
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#function-decorators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Function Decorators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Function Decorators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_function" class="md-nav__link">
+    <span class="md-ellipsis">
+      @register_function
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ephemeral-resource-decorators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Ephemeral Resource Decorators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ephemeral Resource Decorators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_ephemeral" class="md-nav__link">
+    <span class="md-ellipsis">
+      @register_ephemeral
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Best Practices
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Naming Conventions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#type-safety" class="md-nav__link">
+    <span class="md-ellipsis">
+      Type Safety
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#async-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Async Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Documentation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      See Also
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing Providers
     
   </span>
   
@@ -939,7 +1196,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/best-practices/" class="md-nav__link">
+      <a href="../best-practices/" class="md-nav__link">
         
   
   
@@ -962,7 +1219,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/provider-lifecycle/" class="md-nav__link">
+      <a href="../provider-lifecycle/" class="md-nav__link">
         
   
   
@@ -985,7 +1242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/error-handling/" class="md-nav__link">
+      <a href="../error-handling/" class="md-nav__link">
         
   
   
@@ -1008,7 +1265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/logging/" class="md-nav__link">
+      <a href="../logging/" class="md-nav__link">
         
   
   
@@ -1031,7 +1288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/debugging/" class="md-nav__link">
+      <a href="../debugging/" class="md-nav__link">
         
   
   
@@ -1106,7 +1363,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../configuration/" class="md-nav__link">
         
   
   
@@ -1129,7 +1386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/managing-resources/" class="md-nav__link">
+      <a href="../managing-resources/" class="md-nav__link">
         
   
   
@@ -1152,7 +1409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/using-data-sources/" class="md-nav__link">
+      <a href="../using-data-sources/" class="md-nav__link">
         
   
   
@@ -1175,7 +1432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/using-functions/" class="md-nav__link">
+      <a href="../using-functions/" class="md-nav__link">
         
   
   
@@ -1198,7 +1455,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/advanced-examples/" class="md-nav__link">
+      <a href="../advanced-examples/" class="md-nav__link">
         
   
   
@@ -1221,7 +1478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/advanced-usage/" class="md-nav__link">
+      <a href="../advanced-usage/" class="md-nav__link">
         
   
   
@@ -1274,7 +1531,7 @@
   
   
   <span class="md-ellipsis">
-    Tutorials
+    Examples & Tutorials
     
   </span>
   
@@ -1285,7 +1542,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Tutorials
+            Examples & Tutorials
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1296,80 +1553,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/first-provider/" class="md-nav__link">
+      <a href="../../getting-started/quick-start/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Your First Provider
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    JQ Components
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_2">
-            <span class="md-nav__icon md-icon"></span>
-            JQ Components
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/jq-components/01-introduction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Introduction
+    Quick Start
     
   </span>
   
@@ -1387,315 +1576,17 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/jq-components/02-the-jq-function/" class="md-nav__link">
+      <a href="https://github.com/provide-io/pyvider-components" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    The JQ Function
+    Pyvider Components (External)
     
   </span>
   
 
       </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/jq-components/03-the-jq-data-source/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    The JQ Data Source
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/jq-components/04-testing-the-jq-components/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Testing
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_3" >
-        
-          
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    HTTP API Provider
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_3">
-            <span class="md-nav__icon md-icon"></span>
-            HTTP API Provider
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/http-api/01-introduction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Introduction
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/http-api/02-the-http-api-data-source/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    HTTP API Data Source
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/http-api/03-testing-the-http-api-data-source/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Testing
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    
-    
-    
-    
-      
-      
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
-            
-  
-  
-  <span class="md-ellipsis">
-    File Content Resource
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_4">
-            <span class="md-nav__icon md-icon"></span>
-            File Content Resource
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/file-content/01-introduction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Introduction
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/file-content/02-the-file-content-resource/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    File Content Resource
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../tutorials/file-content/03-testing-the-file-content-resource/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Testing
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
     </li>
   
 
@@ -2207,36 +2098,33 @@
       
   
   
-    
   
   
-  
     
     
     
     
-      
-        
-        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" checked>
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
-    API Reference
+    API Reference (Auto-generated)
     
   </span>
   
@@ -2244,10 +2132,10 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
-            API Reference
+            API Reference (Auto-generated)
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2255,269 +2143,15 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Decorators
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    Decorators
-    
-  </span>
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#provider-decorators" class="md-nav__link">
-    <span class="md-ellipsis">
-      Provider Decorators
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Provider Decorators">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#register_provider" class="md-nav__link">
-    <span class="md-ellipsis">
-      @register_provider
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resource-decorators" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resource Decorators
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resource Decorators">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#register_resource" class="md-nav__link">
-    <span class="md-ellipsis">
-      @register_resource
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data-source-decorators" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Source Decorators
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Data Source Decorators">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#register_data_source" class="md-nav__link">
-    <span class="md-ellipsis">
-      @register_data_source
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#function-decorators" class="md-nav__link">
-    <span class="md-ellipsis">
-      Function Decorators
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Function Decorators">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#register_function" class="md-nav__link">
-    <span class="md-ellipsis">
-      @register_function
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#ephemeral-resource-decorators" class="md-nav__link">
-    <span class="md-ellipsis">
-      Ephemeral Resource Decorators
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Ephemeral Resource Decorators">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#register_ephemeral" class="md-nav__link">
-    <span class="md-ellipsis">
-      @register_ephemeral
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      Best Practices
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Best Practices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#naming-conventions" class="md-nav__link">
-    <span class="md-ellipsis">
-      Naming Conventions
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#type-safety" class="md-nav__link">
-    <span class="md-ellipsis">
-      Type Safety
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#async-methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      Async Methods
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#documentation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Documentation
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      See Also
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="../testing/" class="md-nav__link">
+      <a href="../../api/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Testing
+    Overview
     
   </span>
   
@@ -2535,7 +2169,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
+      <a href="../../api/cli/" class="md-nav__link">
         
   
   
@@ -2558,7 +2192,145 @@
   
   
     <li class="md-nav__item">
-      <a href="../schema/" class="md-nav__link">
+      <a href="../../api/common/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Common
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/hub/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Hub
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/providers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Providers
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Resources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/data_sources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data Sources
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/schema/" class="md-nav__link">
         
   
   
@@ -2581,12 +2353,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../types/" class="md-nav__link">
+      <a href="../../api/conversion/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Types
+    Conversion
     
   </span>
   
@@ -2604,104 +2376,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../01-provider-api/" class="md-nav__link">
+      <a href="../../api/protocols/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Provider API
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../02-resource-api/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Resource API
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-data-source-api/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Data Source API
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-function-api/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Function API
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../05-hub-api/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    Hub API
+    Protocols
     
   </span>
   
@@ -3244,11 +2924,11 @@
 </code></pre></div>
 <h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../../guides/creating-providers/">Creating Providers</a> - Complete provider development guide</li>
-<li><a href="../../guides/creating-resources/">Creating Resources</a> - Resource implementation guide</li>
-<li><a href="../../guides/creating-data-sources/">Creating Data Sources</a> - Data source guide</li>
-<li><a href="../../guides/creating-functions/">Creating Functions</a> - Function development guide</li>
-<li><a href="../schema/">Schema API</a> - Schema system reference</li>
+<li><a href="../creating-providers/">Creating Providers</a> - Complete provider development guide</li>
+<li><a href="../creating-resources/">Creating Resources</a> - Resource implementation guide</li>
+<li><a href="../creating-data-sources/">Creating Data Sources</a> - Data source guide</li>
+<li><a href="../creating-functions/">Creating Functions</a> - Function development guide</li>
+<li><a href="../../api/schema/">Schema API</a> - Schema system reference</li>
 </ul>
 
 

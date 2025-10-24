@@ -634,10 +634,10 @@ async def import_resource(self, resource_id: str) -> State:
 
 Ready to dive deeper? Check out:
 
-- **[First Provider Tutorial](../tutorials/first-provider.md)** - Complete walkthrough with advanced features
+- **[Pyvider Components Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
 - **[Architecture Guide](../core-concepts/architecture.md)** - Understand Pyvider's internals
 - **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
-- **[Testing Guide](../guides/testing.md)** - Write comprehensive tests
+- **[Testing Providers](../guides/testing-providers.md)** - Write comprehensive tests
 
 ## 💡 Tips for Success
 

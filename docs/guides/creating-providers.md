@@ -764,11 +764,11 @@ class AdvancedProvider(BaseProvider):
 
 - [Creating Resources](creating-resources.md) - Deep dive into resources
 - [Creating Data Sources](creating-data-sources.md) - Implementing data sources
-- [Testing Guide](testing.md) - Comprehensive testing
+- [Testing Providers](testing-providers.md) - Comprehensive testing
 - [Debugging](debugging.md) - Troubleshooting providers
 
 ---
 
 <p align="center">
-  Ready to build? Start with the <a href="../tutorials/first-provider.md">First Provider Tutorial →</a>
+  Ready to build? Check out <a href="https://github.com/provide-io/pyvider-components/tree/main/examples">100+ Working Examples →</a>
 </p>

@@ -119,7 +119,8 @@ nav:
     - 'Creating Resources': 'guides/creating-resources.md'
     - 'Creating Data Sources': 'guides/creating-data-sources.md'
     - 'Creating Functions': 'guides/creating-functions.md'
-    - 'Testing': 'guides/testing.md'
+    - 'Using Decorators': 'guides/using-decorators.md'
+    - 'Testing Providers': 'guides/testing-providers.md'
     - 'Best Practices': 'guides/best-practices.md'
     - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
     - 'Error Handling': 'guides/error-handling.md'
@@ -134,21 +135,9 @@ nav:
     - 'Advanced Examples': 'guides/advanced-examples.md'
     - 'Advanced Usage': 'guides/advanced-usage.md'
 
-  - 'Tutorials':
-    - 'Your First Provider': 'tutorials/first-provider.md'
-    - 'JQ Components':
-      - 'Introduction': 'tutorials/jq-components/01-introduction.md'
-      - 'The JQ Function': 'tutorials/jq-components/02-the-jq-function.md'
-      - 'The JQ Data Source': 'tutorials/jq-components/03-the-jq-data-source.md'
-      - 'Testing': 'tutorials/jq-components/04-testing-the-jq-components.md'
-    - 'HTTP API Provider':
-      - 'Introduction': 'tutorials/http-api/01-introduction.md'
-      - 'HTTP API Data Source': 'tutorials/http-api/02-the-http-api-data-source.md'
-      - 'Testing': 'tutorials/http-api/03-testing-the-http-api-data-source.md'
-    - 'File Content Resource':
-      - 'Introduction': 'tutorials/file-content/01-introduction.md'
-      - 'File Content Resource': 'tutorials/file-content/02-the-file-content-resource.md'
-      - 'Testing': 'tutorials/file-content/03-testing-the-file-content-resource.md'
+  - 'Examples & Tutorials':
+    - 'Quick Start': 'getting-started/quick-start.md'
+    - 'Pyvider Components (External)': 'https://github.com/provide-io/pyvider-components'
 
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
@@ -171,17 +160,18 @@ nav:
     - 'Capability Composition': 'capabilities/capability-composition.md'
     - 'Capability Marketplace': 'capabilities/capability-marketplace.md'
 
-  - 'API Reference':
-    - 'Decorators': 'api-reference/decorators.md'
-    - 'Testing': 'api-reference/testing.md'
-    - 'CLI': 'api-reference/cli.md'
-    - 'Schema': 'api-reference/schema.md'
-    - 'Types': 'api-reference/types.md'
-    - 'Provider API': 'api-reference/01-provider-api.md'
-    - 'Resource API': 'api-reference/02-resource-api.md'
-    - 'Data Source API': 'api-reference/03-data-source-api.md'
-    - 'Function API': 'api-reference/04-function-api.md'
-    - 'Hub API': 'api-reference/05-hub-api.md'
+  - 'API Reference (Auto-generated)':
+    - 'Overview': 'api/index.md'
+    - 'CLI': 'api/cli.md'
+    - 'Common': 'api/common.md'
+    - 'Hub': 'api/hub.md'
+    - 'Providers': 'api/providers/index.md'
+    - 'Resources': 'api/resources.md'
+    - 'Data Sources': 'api/data_sources.md'
+    - 'Functions': 'api/functions.md'
+    - 'Schema': 'api/schema/index.md'
+    - 'Conversion': 'api/conversion/index.md'
+    - 'Protocols': 'api/protocols/index.md'
 
   - 'Contributing':
     - 'Guidelines': 'contributing/guidelines.md'

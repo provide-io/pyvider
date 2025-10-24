@@ -34,7 +34,7 @@ Our documentation is organized to help you quickly find what you need:
 New to Pyvider? Start here!
 - [Installation](getting-started/installation.md) - Set up Pyvider in your environment
 - [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
-- [First Provider Tutorial](tutorials/first-provider.md) - Comprehensive walkthrough
+- [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
 
 ### 🏛️ [Core Concepts](core-concepts/architecture.md)
 Understand Pyvider's foundation
@@ -48,24 +48,25 @@ Deep dives into building providers
 - [Creating Resources](guides/creating-resources.md) - CRUD operations and state management
 - [Creating Data Sources](guides/creating-data-sources.md) - Read-only data fetching
 - [Creating Functions](guides/creating-functions.md) - Callable transformations
-- [Testing](guides/testing.md) - Testing strategies and best practices
+- [Testing Providers](guides/testing-providers.md) - Testing strategies and best practices
 - [Best Practices](guides/best-practices.md) - Production-ready patterns
 - [Error Handling](guides/error-handling.md) - Robust error management
 - [Logging](guides/logging.md) - Structured logging with foundation
 - [Debugging](guides/debugging.md) - Troubleshooting providers
 
-### 🎓 [Tutorials](tutorials/first-provider.md)
+### 🎓 [Examples & Tutorials](getting-started/quick-start.md)
 Learn by building real providers
-- [Your First Provider](tutorials/first-provider.md) - Complete provider from scratch
-- [JQ Components](tutorials/jq-components/01-introduction.md) - Build jq function and data source
-- [HTTP API](tutorials/http-api/01-introduction.md) - RESTful API integration
-- [File Content](tutorials/file-content/01-introduction.md) - Managing file resources
+- [Quick Start Guide](getting-started/quick-start.md) - Build your first provider in 5 minutes
+- [Pyvider Components Examples](https://github.com/provide-io/pyvider-components/tree/main/examples) - 100+ working examples
+  - Resources: file_content, local_directory, timed_token
+  - Data Sources: env_variables, http_api, lens_jq
+  - Functions: String, numeric, and JQ operations
 
-### 📘 [API Reference](api-reference/schema.md)
+### 📘 [API Reference](api/index.md)
 Complete API documentation
-- [Schema API](api-reference/schema.md) - Attributes, blocks, and validation
-- [CLI Commands](api-reference/cli.md) - Command-line interface reference
-- [Types](api-reference/types.md) - CTY type system reference
+- [Schema API](api/schema/index.md) - Attributes, blocks, and validation
+- [CLI Commands](api/cli.md) - Command-line interface reference
+- [Common Types](api/common.md) - Type system reference
 
 ### 📦 [Schema System](schema/overview.md)
 Type-safe data modeling
@@ -118,7 +119,7 @@ Project roadmap and planned features
     <ul>
       <li><a href="guides/creating-data-sources.md">Creating Data Sources</a></li>
       <li><a href="guides/using-data-sources.md">Using Data Sources</a></li>
-      <li><a href="tutorials/http-api/01-introduction.md">API Integration Tutorial</a></li>
+      <li><a href="https://github.com/provide-io/pyvider-components/tree/main/examples/data_source">API Integration Examples</a></li>
     </ul>
   </div>
 
@@ -127,7 +128,7 @@ Project roadmap and planned features
     <ul>
       <li><a href="guides/creating-functions.md">Creating Functions</a></li>
       <li><a href="guides/using-functions.md">Using Functions</a></li>
-      <li><a href="tutorials/jq-components/02-the-jq-function.md">JQ Function Example</a></li>
+      <li><a href="https://github.com/provide-io/pyvider-components/tree/main/examples/function">Function Examples</a></li>
     </ul>
   </div>
 </div>
@@ -135,11 +136,29 @@ Project roadmap and planned features
 ### By Task
 
 - **"I want to build my first provider"** → [Quick Start](getting-started/quick-start.md)
-- **"I need to integrate with a REST API"** → [HTTP API Tutorial](tutorials/http-api/01-introduction.md)
-- **"How do I test my provider?"** → [Testing Guide](guides/testing.md)
+- **"I need to integrate with a REST API"** → [HTTP API Examples](https://github.com/provide-io/pyvider-components/tree/main/examples/data_source/http_api)
+- **"How do I test my provider?"** → [Testing Providers](guides/testing-providers.md)
 - **"I need to debug an issue"** → [Debugging Guide](guides/debugging.md)
 - **"How do I handle errors properly?"** → [Error Handling](guides/error-handling.md)
 - **"I want to contribute"** → [Contributing Guidelines](contributing/guidelines.md)
+
+## 📦 Ready-to-Use Components
+
+Looking for pre-built components? Check out **[pyvider-components](https://github.com/provide-io/pyvider-components)**!
+
+The pyvider-components repository provides a comprehensive collection of production-ready components:
+
+- **Resources**: file_content, local_directory, timed_token, and more
+- **Data Sources**: env_variables, file_info, http_api, lens_jq, and more
+- **Functions**: String manipulation, numeric operations, JQ transformations, and more
+- **100+ Working Examples**: Complete Terraform configurations with documentation
+- **Installation**: `pip install pyvider-components`
+
+Perfect for:
+- Learning by example
+- Quick prototyping
+- Production use
+- Understanding best practices
 
 ## 🚦 Prerequisites
 
