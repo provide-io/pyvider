@@ -1,30 +1,39 @@
-# Decorators API Reference
+# Using Decorators
 
-This page documents the core decorators used to register components in Pyvider.
+Pyvider uses decorators to register components with the hub-based discovery system. This guide shows how to use each decorator type correctly.
 
 ## Overview
 
-Pyvider uses decorators to register components with the hub-based discovery system. All components must be decorated to be recognized by the framework.
+All Pyvider components use decorators for registration:
+- `@register_provider` - Register providers
+- `@register_resource` - Register resources
+- `@register_data_source` - Register data sources
+- `@register_function` - Register functions
+- `@register_ephemeral` - Register ephemeral resources
+- `@register_capability` - Register capabilities
 
-## Provider Decorators
+## Provider Decorator
 
-### `@register_provider`
+### `@register_provider(name: str)`
 
 Registers a provider class with the Pyvider hub.
 
-**Signature:**
-```python
-def register_provider(name: str) -> Callable
-```
-
 **Parameters:**
-- `name` (str): The provider name used in Terraform configurations
+- `name` - Provider name used in Terraform (e.g., `"mycloud"`)
 
-**Example:**
+**Complete Example:**
+
 ```python
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
-from pyvider.schema import Attribute
+from pyvider.schema import s_provider, a_str, PvsSchema
 import attrs
+
+@attrs.define
+class MyCloudConfig:
+    """Provider runtime configuration."""
+    api_key: str
+    region: str = "us-east-1"
+    timeout: int = 30
 
 @register_provider("mycloud")
 class MyCloudProvider(BaseProvider):
@@ -38,346 +47,687 @@ class MyCloudProvider(BaseProvider):
                 protocol_version="6"
             )
         )
+        self.api_client = None
+        self.provider_config: MyCloudConfig | None = None
 
-    @attrs.define
-    class Config:
-        api_key: str = Attribute(
-            required=True,
-            sensitive=True,
-            description="API key for authentication"
-        )
-        region: str = Attribute(
-            default="us-east-1",
-            description="Default region"
+    def _build_schema(self) -> PvsSchema:
+        """Define provider configuration schema."""
+        return s_provider({
+            "api_key": a_str(
+                required=True,
+                sensitive=True,
+                description="API key for authentication"
+            ),
+            "region": a_str(
+                default="us-east-1",
+                description="Default region for resources"
+            ),
+            "timeout": a_num(
+                default=30,
+                description="API request timeout in seconds"
+            ),
+        })
+
+    async def configure(self, config: dict) -> None:
+        """Configure the provider with user settings."""
+        await super().configure(config)
+
+        # Convert config dict to attrs instance
+        self.provider_config = MyCloudConfig(
+            api_key=config["api_key"],
+            region=config.get("region", "us-east-1"),
+            timeout=config.get("timeout", 30),
         )
 
-    async def configure(self, config: Config) -> None:
-        """Configure the provider."""
-        # Initialize API client, etc.
-        pass
+        # Initialize API client
+        self.api_client = MyCloudAPIClient(
+            api_key=self.provider_config.api_key,
+            region=self.provider_config.region,
+            timeout=self.provider_config.timeout,
+        )
 ```
 
-**Usage in Terraform:**
+**Terraform usage:**
 ```hcl
 provider "mycloud" {
   api_key = var.api_key
   region  = "us-west-2"
+  timeout = 60
 }
 ```
 
-## Resource Decorators
+## Resource Decorator
 
-### `@register_resource`
+### `@register_resource(name: str)`
 
 Registers a resource class with the Pyvider hub.
 
-**Signature:**
-```python
-def register_resource(name: str) -> Callable
-```
-
 **Parameters:**
-- `name` (str): The resource type name (without provider prefix)
+- `name` - Resource type name without provider prefix (e.g., `"instance"`)
 
-**Example:**
+**Complete Example:**
+
 ```python
 from pyvider.resources import register_resource, BaseResource
-from pyvider.schema import Attribute
+from pyvider.resources.context import ResourceContext
+from pyvider.schema import s_resource, a_str, a_num, PvsSchema
 import attrs
+
+@attrs.define
+class InstanceConfig:
+    """Resource configuration from user."""
+    name: str
+    size: str = "t2.micro"
+    ami: str | None = None
+
+@attrs.define
+class InstanceState:
+    """Resource state managed by provider."""
+    id: str
+    name: str
+    size: str
+    ami: str
+    public_ip: str
+    status: str
 
 @register_resource("instance")
 class Instance(BaseResource):
     """Cloud compute instance resource."""
 
-    @attrs.define
-    class Config:
-        name: str = Attribute(required=True, description="Instance name")
-        size: str = Attribute(default="t2.micro", description="Instance size")
-        ami: str = Attribute(required=True, description="AMI ID")
+    config_class = InstanceConfig
+    state_class = InstanceState
 
-    @attrs.define
-    class State:
-        id: str = Attribute(computed=True, description="Instance ID")
-        public_ip: str = Attribute(computed=True, description="Public IP")
-        status: str = Attribute(computed=True, description="Instance status")
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define Terraform schema."""
+        return s_resource({
+            # User inputs
+            "name": a_str(required=True, description="Instance name"),
+            "size": a_str(default="t2.micro", description="Instance size"),
+            "ami": a_str(description="AMI ID (defaults to latest)"),
 
-    async def create(self, config: Config) -> State:
-        """Create the instance."""
-        # Create instance via API
-        return State(
-            id=f"i-{config.name}",
-            public_ip="203.0.113.42",
-            status="running"
+            # Provider outputs
+            "id": a_str(computed=True, description="Instance ID"),
+            "public_ip": a_str(computed=True, description="Public IP address"),
+            "status": a_str(computed=True, description="Instance status"),
+        })
+
+    async def _validate_config(self, config: InstanceConfig) -> list[str]:
+        """Validate configuration."""
+        errors = []
+        valid_sizes = ["t2.micro", "t2.small", "t2.medium", "t3.micro"]
+        if config.size not in valid_sizes:
+            errors.append(f"size must be one of: {', '.join(valid_sizes)}")
+        return errors
+
+    async def read(self, ctx: ResourceContext) -> InstanceState | None:
+        """Refresh instance state from API."""
+        if not ctx.state:
+            return None
+
+        # Fetch from API
+        instance = await self.api.get_instance(ctx.state.id)
+        if not instance:
+            return None  # Instance deleted
+
+        return InstanceState(
+            id=ctx.state.id,
+            name=instance.name,
+            size=instance.size,
+            ami=instance.ami,
+            public_ip=instance.public_ip,
+            status=instance.status,
         )
 
-    async def read(self, state: State) -> State | None:
-        """Read the instance state."""
-        # Check if instance exists
-        return state
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[InstanceState | None, None]:
+        """Create instance (apply phase)."""
+        if not ctx.config:
+            return None, None
 
-    async def update(self, config: Config, state: State) -> State:
-        """Update the instance."""
-        # Update instance via API
-        return state
+        # Create via API
+        instance = await self.api.create_instance(
+            name=ctx.config.name,
+            size=ctx.config.size,
+            ami=ctx.config.ami or "ami-latest",
+        )
 
-    async def delete(self, state: State) -> None:
-        """Delete the instance."""
-        # Delete instance via API
-        pass
+        return InstanceState(
+            id=instance.id,
+            name=instance.name,
+            size=instance.size,
+            ami=instance.ami,
+            public_ip=instance.public_ip,
+            status=instance.status,
+        ), None
+
+    async def _update_apply(self, ctx: ResourceContext) -> tuple[InstanceState | None, None]:
+        """Update instance (apply phase)."""
+        if not ctx.config or not ctx.state:
+            return None, None
+
+        # Update via API
+        instance = await self.api.update_instance(
+            id=ctx.state.id,
+            name=ctx.config.name,
+            size=ctx.config.size,
+        )
+
+        return InstanceState(
+            id=ctx.state.id,
+            name=instance.name,
+            size=instance.size,
+            ami=ctx.state.ami,  # AMI can't change
+            public_ip=instance.public_ip,
+            status=instance.status,
+        ), None
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
+        """Delete instance (apply phase)."""
+        if not ctx.state:
+            return
+
+        await self.api.delete_instance(ctx.state.id)
 ```
 
-**Usage in Terraform:**
+**Terraform usage:**
 ```hcl
 resource "mycloud_instance" "web" {
   name = "web-server"
   size = "t3.large"
   ami  = "ami-12345678"
 }
+
+output "instance_ip" {
+  value = mycloud_instance.web.public_ip
+}
 ```
 
-## Data Source Decorators
+## Data Source Decorator
 
-### `@register_data_source`
+### `@register_data_source(name: str)`
 
 Registers a data source class with the Pyvider hub.
 
-**Signature:**
-```python
-def register_data_source(name: str) -> Callable
-```
-
 **Parameters:**
-- `name` (str): The data source type name (without provider prefix)
+- `name` - Data source type name without provider prefix (e.g., `"ami"`)
 
-**Example:**
+**Complete Example:**
+
 ```python
 from pyvider.data_sources import register_data_source, BaseDataSource
-from pyvider.schema import Attribute
+from pyvider.schema import s_data_source, a_str, a_list, PvsSchema
 import attrs
 
-@register_data_source("image")
-class Image(BaseDataSource):
-    """Cloud machine image data source."""
+@attrs.define
+class AMILookupConfig:
+    """Data source configuration (input)."""
+    name_filter: str
+    owner: str = "amazon"
 
-    @attrs.define
-    class Config:
-        name_filter: str = Attribute(
-            required=True,
-            description="Name filter for images"
+@attrs.define
+class AMILookupData:
+    """Data source result (output)."""
+    id: str
+    ami_id: str
+    name: str
+    description: str
+    architecture: str
+    creation_date: str
+
+@register_data_source("ami")
+class AMILookup(BaseDataSource):
+    """Looks up AMI information."""
+
+    config_class = AMILookupConfig
+    data_class = AMILookupData
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define data source schema."""
+        return s_data_source({
+            # Inputs
+            "name_filter": a_str(
+                required=True,
+                description="AMI name filter pattern"
+            ),
+            "owner": a_str(
+                default="amazon",
+                description="AMI owner"
+            ),
+
+            # Outputs
+            "id": a_str(computed=True, description="Data source ID"),
+            "ami_id": a_str(computed=True, description="AMI ID"),
+            "name": a_str(computed=True, description="AMI name"),
+            "description": a_str(computed=True, description="AMI description"),
+            "architecture": a_str(computed=True, description="Architecture"),
+            "creation_date": a_str(computed=True, description="Creation date"),
+        })
+
+    async def read(self, config: AMILookupConfig) -> AMILookupData:
+        """Query API for AMI information."""
+        # Search for AMI
+        amis = await self.api.search_amis(
+            name_filter=config.name_filter,
+            owner=config.owner,
         )
-        most_recent: bool = Attribute(
-            default=True,
-            description="Return most recent image"
-        )
 
-    @attrs.define
-    class Data:
-        id: str = Attribute(computed=True, description="Image ID")
-        name: str = Attribute(computed=True, description="Image name")
-        created_at: str = Attribute(computed=True, description="Creation timestamp")
+        if not amis:
+            raise DataSourceError(f"No AMI found matching '{config.name_filter}'")
 
-    async def read(self, config: Config) -> Data:
-        """Read image data from API."""
-        # Query API for images
-        return Data(
-            id="ami-12345678",
-            name="ubuntu-22.04",
-            created_at="2024-01-01T00:00:00Z"
+        # Return most recent
+        ami = amis[0]
+        return AMILookupData(
+            id=ami.id,
+            ami_id=ami.id,
+            name=ami.name,
+            description=ami.description,
+            architecture=ami.architecture,
+            creation_date=ami.creation_date,
         )
 ```
 
-**Usage in Terraform:**
+**Terraform usage:**
 ```hcl
-data "mycloud_image" "ubuntu" {
-  name_filter = "ubuntu-22.04"
-  most_recent = true
+data "mycloud_ami" "ubuntu" {
+  name_filter = "ubuntu-*-22.04-*"
+  owner       = "canonical"
 }
 
 resource "mycloud_instance" "web" {
-  ami = data.mycloud_image.ubuntu.id
+  ami  = data.mycloud_ami.ubuntu.ami_id
+  name = "web-server"
 }
 ```
 
-## Function Decorators
+## Function Decorator
 
-### `@register_function`
+### `@register_function(name: str)`
 
-Registers a provider function with the Pyvider hub.
-
-**Signature:**
-```python
-def register_function(name: str) -> Callable
-```
+Registers a function class with the Pyvider hub.
 
 **Parameters:**
-- `name` (str): The function name
+- `name` - Function name (e.g., `"base64_encode"`)
 
-**Example:**
+**Complete Example:**
+
 ```python
 from pyvider.functions import register_function, BaseFunction
-from pyvider.schema import Attribute
-import attrs
-import hashlib
+from pyvider.schema import s_function, a_str, PvsSchema
+import base64
 
-@register_function("hash")
-class HashFunction(BaseFunction):
-    """Compute hash of input string."""
+@register_function("base64_encode")
+class Base64EncodeFunction(BaseFunction):
+    """Encodes a string to base64."""
 
-    @attrs.define
-    class Parameters:
-        input: str = Attribute(required=True, description="Input string")
-        algorithm: str = Attribute(
-            default="sha256",
-            description="Hash algorithm"
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define function signature."""
+        return s_function(
+            parameters=[
+                a_str(description="String to encode"),
+            ],
+            return_type=a_str(description="Base64-encoded string"),
         )
 
-    @attrs.define
-    class Result:
-        output: str = Attribute(computed=True, description="Hash output")
-
-    async def call(self, params: Parameters) -> Result:
-        """Compute the hash."""
-        if params.algorithm == "sha256":
-            hash_obj = hashlib.sha256(params.input.encode())
-        elif params.algorithm == "md5":
-            hash_obj = hashlib.md5(params.input.encode())
-        else:
-            raise ValueError(f"Unsupported algorithm: {params.algorithm}")
-
-        return Result(output=hash_obj.hexdigest())
+    async def call(self, input: str) -> str:
+        """Execute the function."""
+        encoded = base64.b64encode(input.encode()).decode()
+        return encoded
 ```
 
-**Usage in Terraform:**
+**Terraform usage:**
 ```hcl
 locals {
-  config_hash = provider::mycloud::hash({
-    input     = "my-config-string"
-    algorithm = "sha256"
-  }).output
+  encoded = provider::mycloud::base64_encode("Hello, World!")
+  # Result: "SGVsbG8sIFdvcmxkIQ=="
 }
 ```
 
-## Ephemeral Resource Decorators
+## Ephemeral Resource Decorator
 
-### `@register_ephemeral`
+### `@register_ephemeral(name: str)`
 
 Registers an ephemeral resource class with the Pyvider hub.
 
-**Signature:**
-```python
-def register_ephemeral(name: str) -> Callable
-```
-
 **Parameters:**
-- `name` (str): The ephemeral resource type name (without provider prefix)
+- `name` - Ephemeral resource type name (e.g., `"token"`)
 
-**Example:**
+**Complete Example:**
+
 ```python
 from pyvider.ephemerals import register_ephemeral, BaseEphemeral
-from pyvider.schema import Attribute
+from pyvider.schema import s_ephemeral, a_str, a_num, PvsSchema
 import attrs
+
+@attrs.define
+class TokenConfig:
+    """Ephemeral configuration."""
+    scope: str
+    ttl: int = 3600
+
+@attrs.define
+class TokenData:
+    """Ephemeral data."""
+    token: str
+    expires_at: str
 
 @register_ephemeral("token")
 class Token(BaseEphemeral):
-    """Temporary authentication token."""
+    """Generates temporary access tokens."""
 
-    @attrs.define
-    class Config:
-        scope: str = Attribute(required=True, description="Token scope")
-        ttl: int = Attribute(default=3600, description="Time to live in seconds")
+    config_class = TokenConfig
+    data_class = TokenData
 
-    @attrs.define
-    class Data:
-        token: str = Attribute(
-            computed=True,
-            sensitive=True,
-            description="Authentication token"
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        """Define ephemeral schema."""
+        return s_ephemeral({
+            # Inputs
+            "scope": a_str(required=True, description="Token scope"),
+            "ttl": a_num(default=3600, description="Time to live in seconds"),
+
+            # Outputs
+            "token": a_str(computed=True, sensitive=True, description="Access token"),
+            "expires_at": a_str(computed=True, description="Expiration timestamp"),
+        })
+
+    async def open(self, config: TokenConfig) -> TokenData:
+        """Create ephemeral resource."""
+        # Generate token
+        token = await self.api.create_token(
+            scope=config.scope,
+            ttl=config.ttl,
         )
-        expires_at: str = Attribute(
-            computed=True,
-            description="Expiration timestamp"
+
+        return TokenData(
+            token=token.value,
+            expires_at=token.expires_at,
         )
 
-    async def open(self, config: Config) -> Data:
-        """Generate a new token."""
-        # Request token from API
-        return Data(
-            token="tok_abcdef123456",
-            expires_at="2024-01-01T01:00:00Z"
+    async def renew(self, config: TokenConfig, data: TokenData) -> TokenData:
+        """Renew ephemeral resource."""
+        # Refresh token
+        token = await self.api.refresh_token(data.token)
+
+        return TokenData(
+            token=token.value,
+            expires_at=token.expires_at,
         )
 
-    async def renew(self, config: Config, data: Data) -> Data:
-        """Renew the token."""
-        # Renew token via API
-        return data
-
-    async def close(self, data: Data) -> None:
-        """Revoke the token."""
-        # Revoke token via API
-        pass
+    async def close(self, data: TokenData) -> None:
+        """Cleanup ephemeral resource."""
+        # Revoke token
+        await self.api.revoke_token(data.token)
 ```
 
-**Usage in Terraform:**
+**Terraform usage:**
 ```hcl
 ephemeral "mycloud_token" "api" {
-  scope = "read:write"
+  scope = "read:api"
   ttl   = 7200
 }
 
-resource "mycloud_instance" "web" {
+resource "mycloud_api_call" "data" {
   token = ephemeral.mycloud_token.api.token
+  # Token is automatically revoked when no longer needed
 }
+```
+
+## Capability Decorator
+
+### `@register_capability`
+
+Registers a capability class with the Pyvider hub.
+
+**Complete Example:**
+
+```python
+from pyvider.capabilities import register_capability, BaseCapability
+import time
+
+@register_capability
+class CachingCapability(BaseCapability):
+    """Adds response caching to components."""
+
+    def __init__(self, ttl: int = 300):
+        self.ttl = ttl
+        self.cache = {}
+
+    async def setup(self):
+        """Initialize capability."""
+        self.cache.clear()
+
+    async def teardown(self):
+        """Cleanup capability."""
+        self.cache.clear()
+
+    async def get(self, key: str):
+        """Get from cache."""
+        if key in self.cache:
+            entry = self.cache[key]
+            if time.time() < entry["expires"]:
+                return entry["value"]
+            else:
+                del self.cache[key]
+        return None
+
+    async def set(self, key: str, value):
+        """Set in cache."""
+        self.cache[key] = {
+            "value": value,
+            "expires": time.time() + self.ttl,
+        }
+```
+
+**Usage with resources:**
+
+```python
+from pyvider.capabilities import use_capability
+
+@register_resource("instance")
+@use_capability(CachingCapability(ttl=600))
+class Instance(BaseResource):
+    """Instance with caching."""
+    pass
+```
+
+## Decorator Combinations
+
+### Multiple Decorators
+
+You can combine decorators:
+
+```python
+@register_resource("server")
+@use_capability(CachingCapability())
+@use_capability(MetricsCapability())
+class Server(BaseResource):
+    """Server with caching and metrics."""
+    pass
+```
+
+### Conditional Registration
+
+Register components conditionally:
+
+```python
+import os
+
+# Only register in certain environments
+if os.getenv("ENABLE_BETA_FEATURES"):
+    @register_resource("beta_feature")
+    class BetaFeature(BaseResource):
+        pass
 ```
 
 ## Best Practices
 
-### Naming Conventions
-
-1. **Provider names**: Use lowercase, hyphen-separated names (e.g., `my-cloud`)
-2. **Resource names**: Use singular nouns (e.g., `instance`, not `instances`)
-3. **Data source names**: Use singular nouns describing the data (e.g., `image`)
-4. **Function names**: Use verb or descriptive names (e.g., `hash`, `validate`)
-
-### Type Safety
-
-Always use `attrs.define` for Config, State, Data, Parameters, and Result classes:
+### 1. Use Descriptive Names
 
 ```python
-@attrs.define
-class Config:
-    # Configuration attributes
+# ✅ Good: Clear, descriptive name
+@register_resource("compute_instance")
+class ComputeInstance(BaseResource):
+    pass
+
+# ❌ Bad: Vague name
+@register_resource("thing")
+class Thing(BaseResource):
     pass
 ```
 
-### Async Methods
-
-All lifecycle methods should be async:
+### 2. Register in Component Modules
 
 ```python
-async def create(self, config: Config) -> State:
-    # Implementation
-    pass
-```
-
-### Documentation
-
-Always include docstrings:
-
-```python
+# my_provider/resources/instance.py
 @register_resource("instance")
 class Instance(BaseResource):
-    """
-    Cloud compute instance resource.
+    """Keep decorator with class definition."""
+    pass
+```
 
-    Manages virtual machine instances in MyCloud.
-    """
+### 3. Follow Naming Conventions
+
+```python
+# Provider name: lowercase, no underscores
+@register_provider("mycloud")  # ✅
+
+# Resource/data source: lowercase with underscores
+@register_resource("compute_instance")  # ✅
+@register_data_source("ami_lookup")     # ✅
+
+# Function: lowercase with underscores
+@register_function("base64_encode")     # ✅
+```
+
+### 4. One Decorator Per Component
+
+```python
+# ✅ Good: One decorator per class
+@register_resource("instance")
+class Instance(BaseResource):
+    pass
+
+# ❌ Bad: Don't register same class multiple times
+@register_resource("instance")
+@register_resource("server")  # Don't do this
+class Instance(BaseResource):
+    pass
+```
+
+### 5. Import Decorators from Correct Module
+
+```python
+# ✅ Good: Import from correct module
+from pyvider.resources import register_resource
+from pyvider.data_sources import register_data_source
+from pyvider.functions import register_function
+
+# ❌ Bad: Don't import from pyvider.decorators (doesn't exist)
+```
+
+## Common Patterns
+
+### Provider with Multiple Resources
+
+```python
+# provider.py
+@register_provider("mycloud")
+class MyCloudProvider(BaseProvider):
+    pass
+
+# resources/instance.py
+@register_resource("instance")
+class Instance(BaseResource):
+    pass
+
+# resources/network.py
+@register_resource("network")
+class Network(BaseResource):
+    pass
+```
+
+### Shared Base Classes
+
+```python
+# Don't register base classes
+class MyBaseResource(BaseResource):
+    """Shared functionality for all resources."""
+
+    async def _common_validation(self):
+        pass
+
+# Register concrete implementations
+@register_resource("instance")
+class Instance(MyBaseResource):
+    pass
+
+@register_resource("database")
+class Database(MyBaseResource):
+    pass
+```
+
+### Testing Decorated Components
+
+```python
+import pytest
+
+@pytest.fixture
+def instance_resource():
+    """Create instance resource for testing."""
+    return Instance()
+
+async def test_instance_creation(instance_resource):
+    """Test instance resource."""
+    # Test implementation
+    pass
+```
+
+## Debugging Registration
+
+### Check Registered Components
+
+```python
+from pyvider.hub import ProviderHub
+
+# List all registered resources
+resources = ProviderHub.get_resources()
+print(f"Registered resources: {list(resources.keys())}")
+
+# Get specific component
+instance_class = ProviderHub.get_resource("instance")
+```
+
+### Common Registration Errors
+
+**Error: Component not found**
+```python
+# Ensure decorator is applied and module is imported
+@register_resource("instance")  # ← Decorator required
+class Instance(BaseResource):
+    pass
+
+# Ensure module is imported in __init__.py
+from .resources.instance import Instance  # ← Must import
+```
+
+**Error: Duplicate registration**
+```python
+# Don't register same name twice
+@register_resource("instance")
+class Instance1(BaseResource):
+    pass
+
+@register_resource("instance")  # ← Error: duplicate name
+class Instance2(BaseResource):
     pass
 ```
 
 ## See Also
 
-- [Creating Providers](../guides/creating-providers.md) - Complete provider development guide
-- [Creating Resources](../guides/creating-resources.md) - Resource implementation guide
-- [Creating Data Sources](../guides/creating-data-sources.md) - Data source guide
-- [Creating Functions](../guides/creating-functions.md) - Function development guide
-- [Schema API](../api/schema/index.md) - Schema system reference
+- [Creating Providers](creating-providers.md) - Provider implementation guide
+- [Creating Resources](creating-resources.md) - Resource implementation guide
+- [Creating Data Sources](creating-data-sources.md) - Data source implementation guide
+- [Creating Functions](creating-functions.md) - Function implementation guide
+- [Capabilities Overview](../capabilities/overview.md) - Capabilities system
