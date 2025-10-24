@@ -127,7 +127,7 @@ class TestGetMetadataImpl:
             assert isinstance(response, pb.GetMetadata.Response)
             assert len(response.diagnostics) == 1
             assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
-            assert "GetMetadata error" in response.diagnostics[0].summary
+            assert "Provider metadata discovery failed" in response.diagnostics[0].summary
 
     @pytest.mark.asyncio
     async def test_impl_returns_no_diagnostics_on_success(self, sample_request, mock_hub_with_components):
@@ -212,7 +212,7 @@ class TestGetMetadataLogging:
                 await _get_metadata_impl(sample_request, context=None)
 
                 mock_logger.error.assert_called_once()
-                assert "Error in GetMetadata" in str(mock_logger.error.call_args)
+                assert "GetMetadata handler failed" in str(mock_logger.error.call_args)
 
 
 class TestGetMetadataEdgeCases:

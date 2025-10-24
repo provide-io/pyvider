@@ -2671,13 +2671,27 @@ to assemble the final schema by integrating capabilities.</p>
 <span class="normal"><a href="#__codelineno-0-46">46</a></span>
 <span class="normal"><a href="#__codelineno-0-47">47</a></span>
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#__codelineno-0-56">56</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    An initialization hook called by the framework after component</span>
 <a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    discovery but before serving requests. This is the ideal place</span>
 <a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    to assemble the final schema by integrating capabilities.</span>
 <a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="k">pass</span>  <span class="c1"># pragma: no cover</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>        <span class="s2">&quot;Provider setup hook called&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a>        <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;setup&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a>        <span class="n">provider_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="n">provider_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="n">protocol_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="p">)</span>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="k">pass</span>  <span class="c1"># pragma: no cover</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2706,21 +2720,83 @@ to assemble the final schema by integrating capabilities.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/pyvider/providers/base.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CtyType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the provider with the given configuration.&quot;&quot;&quot;</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">():</span>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span><span class="p">:</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a>            <span class="k">raise</span> <span class="n">ProviderError</span><span class="p">(</span><span class="s2">&quot;Provider already configured&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Provider configured with data (logic to be implemented).&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">True</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span>
+<span class="normal"><a href="#__codelineno-0-95">95</a></span>
+<span class="normal"><a href="#__codelineno-0-96">96</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">CtyType</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Configure the provider with the given configuration.&quot;&quot;&quot;</span>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">():</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span><span class="p">:</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a>            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a>                <span class="s2">&quot;Attempted to configure provider that is already configured&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>                <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;configure&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>                <span class="n">provider_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>                <span class="n">provider_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>            <span class="p">)</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>            <span class="k">raise</span> <span class="n">ProviderError</span><span class="p">(</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a>                <span class="sa">f</span><span class="s2">&quot;Provider &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39; has already been configured. &quot;</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>                <span class="sa">f</span><span class="s2">&quot;Terraform providers can only be configured once per execution.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>                <span class="sa">f</span><span class="s2">&quot;Suggestion: Ensure your Terraform configuration has only one &#39;provider&#39; block &quot;</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>                <span class="sa">f</span><span class="s2">&quot;for this provider. Multiple &#39;provider&#39; blocks with the same name require &quot;</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>                <span class="sa">f</span><span class="s2">&quot;the &#39;alias&#39; parameter.</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a>                <span class="sa">f</span><span class="s2">&quot;Example:</span><span class="se">\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>                <span class="sa">f</span><span class="s1">&#39;  provider &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; </span><span class="se">{{\n</span><span class="s1">&#39;</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>                <span class="sa">f</span><span class="s2">&quot;    # Configuration here</span><span class="se">\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>                <span class="sa">f</span><span class="s2">&quot;  </span><span class="se">}}\n\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a>                <span class="sa">f</span><span class="s2">&quot;For multiple configurations:</span><span class="se">\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a>                <span class="sa">f</span><span class="s1">&#39;  provider &quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; </span><span class="se">{{\n</span><span class="s1">&#39;</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>                <span class="sa">f</span><span class="s1">&#39;    alias = &quot;west&quot;</span><span class="se">\n</span><span class="s1">&#39;</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a>                <span class="sa">f</span><span class="s2">&quot;  </span><span class="se">}}</span><span class="s2">&quot;</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="p">)</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a>            <span class="s2">&quot;Provider configuration started&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>            <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;configure&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="n">provider_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="n">provider_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>            <span class="n">config_keys</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>        <span class="p">)</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_configured</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>            <span class="s2">&quot;Provider configured successfully&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="n">operation</span><span class="o">=</span><span class="s2">&quot;configure&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="n">provider_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

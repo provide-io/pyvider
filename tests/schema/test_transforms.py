@@ -68,7 +68,7 @@ class TestPvsSchemaTransformer:
         schema2 = s_resource(attributes={"name": a_num()})
         transformer = PvsSchemaTransformer()
 
-        with pytest.raises(ValueError, match="Attribute name conflict"):
+        with pytest.raises(ValueError, match="Cannot merge schemas.*attribute name conflict"):
             transformer.merge_schemas([schema1, schema2])
 
     def test_merge_schemas_with_description(self):
@@ -108,7 +108,7 @@ class TestPvsSchemaTransformer:
 
         transformer = PvsSchemaTransformer()
 
-        with pytest.raises(ValueError, match="Block type name conflict"):
+        with pytest.raises(ValueError, match="Cannot merge schemas.*block type name conflict"):
             transformer.merge_schemas([schema1, schema2])
 
     def test_merge_schemas_preserves_block_types(self):

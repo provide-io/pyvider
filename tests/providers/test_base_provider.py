@@ -80,7 +80,7 @@ class TestBaseProvider:
         await provider.configure(config)
 
         # Second configure should raise
-        with pytest.raises(ProviderError, match="already configured"):
+        with pytest.raises(ProviderError, match="already been configured"):
             await provider.configure(config)
 
     def test_schema_before_setup_raises_error(self):
@@ -88,7 +88,7 @@ class TestBaseProvider:
         metadata = ProviderMetadata(name="test", version="1.0.0")
         provider = BaseProvider(metadata=metadata)
 
-        with pytest.raises(FrameworkConfigurationError, match="before the setup"):
+        with pytest.raises(FrameworkConfigurationError, match="before initialization"):
             _ = provider.schema
 
     @pytest.mark.asyncio
