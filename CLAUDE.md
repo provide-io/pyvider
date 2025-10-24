@@ -154,19 +154,40 @@ class ResourceConfig:
 - Environment-specific virtual environments in `workenv/` directory
 - Sibling projects: TofuSoup (testing), Flavor (packaging), wrkenv (dev environment)
 
-## Testing Verification
-After making changes, always run:
+## Documentation
+
+### Structure
+Documentation is organized in clean, named folders:
+- `docs/getting-started/` - Installation and quick start guides
+- `docs/core-concepts/` - Architecture and design documentation
+- `docs/guides/` - How-to guides for developers and users
+- `docs/tutorials/` - Step-by-step tutorials
+- `docs/schema/` - Schema system documentation
+- `docs/capabilities/` - Capabilities system
+- `docs/api-reference/` - API reference (decorators, testing, CLI, etc.)
+- `docs/contributing/` - Contribution guidelines
+- `docs/development/` - Roadmap and planned features
+
+### Building Documentation
 ```bash
-# Lint and format check
-ruff check
-ruff format --check
+# Serve documentation locally
+mkdocs serve
 
-# Type checking  
-mypy src/pyvider
+# Build documentation
+mkdocs build
 
-# Tests
-pytest
+# Build in strict mode (fails on warnings)
+mkdocs build --strict
+
+# Check for broken links
+python scripts/check_doc_links.py
 ```
+
+### Adding Documentation
+- Use clean, descriptive file names (no number prefixes)
+- Update `mkdocs.yml` navigation when adding new pages
+- Run link checker before committing
+- Follow existing documentation style
 
 ## Testing Verification
 After making changes, always run:
@@ -180,4 +201,8 @@ uv run mypy src/pyvider
 
 # Tests
 uv run pytest
+
+# Documentation checks
+python scripts/check_doc_links.py
+mkdocs build --strict
 ```

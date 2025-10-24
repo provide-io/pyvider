@@ -4,7 +4,7 @@ This guide provides advanced examples of how to use `pyvider`.
 
 ## 🧩 Composing Resources and Functions
 
-Here is an example of how to compose resources and functions to create a more complex infrastructure. You can find the full, testable example in the [`examples/04-advanced-composition`](../../../examples/04-advanced-composition) directory.
+Here is an example of how to compose resources and functions to create a more complex infrastructure.
 
 ```terraform
 resource "pyvider_file_content" "example" {

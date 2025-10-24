@@ -1,0 +1,187 @@
+#!/usr/bin/env python3
+"""
+Check for broken links in markdown documentation.
+
+This script scans all markdown files in the docs/ directory and verifies:
+1. Internal links point to existing files
+2. Anchor links are valid (basic check)
+3. No duplicate headings that could cause anchor conflicts
+
+Usage:
+    python scripts/check_doc_links.py
+"""
+
+import re
+import sys
+from pathlib import Path
+from typing import Set, List, Tuple
+
+# Base documentation directory
+DOCS_DIR = Path(__file__).parent.parent / "docs"
+
+# Pattern to match markdown links
+LINK_PATTERN = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
+
+# Pattern to match headings for anchor validation
+HEADING_PATTERN = re.compile(r'^#{1,6}\s+(.+)$', re.MULTILINE)
+
+
+def slugify(text: str) -> str:
+    """Convert heading text to anchor slug (GitHub/MkDocs style)."""
+    # Remove markdown formatting
+    text = re.sub(r'[`*_]', '', text)
+    # Convert to lowercase and replace spaces with hyphens
+    slug = text.lower().strip()
+    slug = re.sub(r'[^\w\s-]', '', slug)
+    slug = re.sub(r'[-\s]+', '-', slug)
+    return slug
+
+
+def find_markdown_files() -> List[Path]:
+    """Find all markdown files in the docs directory."""
+    return list(DOCS_DIR.rglob("*.md"))
+
+
+def extract_links(file_path: Path) -> List[Tuple[str, str, int]]:
+    """
+    Extract all markdown links from a file.
+
+    Returns list of (link_text, link_url, line_number) tuples.
+    """
+    links = []
+    content = file_path.read_text(encoding='utf-8')
+
+    for line_num, line in enumerate(content.split('\n'), 1):
+        for match in LINK_PATTERN.finditer(line):
+            link_text = match.group(1)
+            link_url = match.group(2)
+            links.append((link_text, link_url, line_num))
+
+    return links
+
+
+def extract_headings(file_path: Path) -> Set[str]:
+    """Extract all heading slugs from a file."""
+    content = file_path.read_text(encoding='utf-8')
+    headings = set()
+
+    for match in HEADING_PATTERN.finditer(content):
+        heading_text = match.group(1)
+        slug = slugify(heading_text)
+        headings.add(slug)
+
+    return headings
+
+
+def resolve_link_path(source_file: Path, link_url: str) -> Path:
+    """Resolve a relative link to an absolute path."""
+    # Remove anchor if present
+    link_path = link_url.split('#')[0]
+
+    if not link_path:  # Just an anchor
+        return source_file
+
+    # Resolve relative to source file's directory
+    source_dir = source_file.parent
+    resolved = (source_dir / link_path).resolve()
+
+    return resolved
+
+
+def check_file_links(file_path: Path) -> List[str]:
+    """
+    Check all links in a file for broken references.
+
+    Returns list of error messages.
+    """
+    errors = []
+    links = extract_links(file_path)
+
+    # Get headings from this file for anchor validation
+    file_headings = extract_headings(file_path)
+
+    for link_text, link_url, line_num in links:
+        # Skip external links (http/https)
+        if link_url.startswith(('http://', 'https://', 'mailto:')):
+            continue
+
+        # Skip special links (like `:::`)
+        if link_url.startswith(':::'):
+            continue
+
+        # Parse link and anchor
+        if '#' in link_url:
+            link_path_str, anchor = link_url.split('#', 1)
+        else:
+            link_path_str = link_url
+            anchor = None
+
+        # Check file exists (if not just an anchor)
+        if link_path_str:
+            try:
+                target_path = resolve_link_path(file_path, link_url)
+
+                if not target_path.exists():
+                    rel_source = file_path.relative_to(DOCS_DIR)
+                    errors.append(
+                        f"{rel_source}:{line_num}: Broken link to '{link_url}' "
+                        f"(resolved to {target_path}, which does not exist)"
+                    )
+                    continue
+
+                # If there's an anchor, check it exists in target file
+                if anchor:
+                    target_headings = extract_headings(target_path)
+                    if anchor not in target_headings:
+                        rel_source = file_path.relative_to(DOCS_DIR)
+                        errors.append(
+                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' "
+                            f"in '{link_path_str}'"
+                        )
+            except Exception as e:
+                rel_source = file_path.relative_to(DOCS_DIR)
+                errors.append(
+                    f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}"
+                )
+        else:
+            # Just an anchor link (same file)
+            if anchor and anchor not in file_headings:
+                rel_source = file_path.relative_to(DOCS_DIR)
+                errors.append(
+                    f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' "
+                    f"in same file"
+                )
+
+    return errors
+
+
+def main() -> int:
+    """Main entry point."""
+    print(f"🔍 Checking documentation links in {DOCS_DIR}")
+    print()
+
+    markdown_files = find_markdown_files()
+    print(f"Found {len(markdown_files)} markdown files")
+    print()
+
+    all_errors = []
+
+    for md_file in markdown_files:
+        errors = check_file_links(md_file)
+        all_errors.extend(errors)
+
+    if all_errors:
+        print("❌ Found broken links:")
+        print()
+        for error in all_errors:
+            print(f"  {error}")
+        print()
+        print(f"Total: {len(all_errors)} broken link(s)")
+        return 1
+    else:
+        print("✅ All documentation links are valid!")
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

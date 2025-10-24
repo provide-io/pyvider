@@ -385,7 +385,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/cli/" class="md-tabs__link">
+        <a href="../../api-reference/decorators/" class="md-tabs__link">
           
   
   
@@ -2309,6 +2309,52 @@
   
   
     <li class="md-nav__item">
+      <a href="../../api-reference/decorators/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Decorators
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Testing
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../api-reference/cli/" class="md-nav__link">
         
   
@@ -2710,7 +2756,7 @@
 <h1 id="advanced-examples">🚀 Advanced Examples<a class="headerlink" href="#advanced-examples" title="Permanent link">&para;</a></h1>
 <p>This guide provides advanced examples of how to use <code>pyvider</code>.</p>
 <h2 id="composing-resources-and-functions">🧩 Composing Resources and Functions<a class="headerlink" href="#composing-resources-and-functions" title="Permanent link">&para;</a></h2>
-<p>Here is an example of how to compose resources and functions to create a more complex infrastructure. You can find the full, testable example in the <a href="../../../examples/04-advanced-composition"><code>examples/04-advanced-composition</code></a> directory.</p>
+<p>Here is an example of how to compose resources and functions to create a more complex infrastructure.</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;pyvider_file_content&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="na">path</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hello.txt&quot;</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="na">content</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">pyvider_</span><span class="nf">upper</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span>

@@ -73,7 +73,8 @@
       "Bash(uv run mypy:*)",
       "WebFetch(domain:pypi.org)",
       "Bash(ls:*)",
-      "Bash(mkdocs build:*)"
+      "Bash(mkdocs build:*)",
+      "Bash(timeout 3 mkdocs serve:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
