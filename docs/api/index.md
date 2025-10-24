@@ -9,15 +9,20 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 - **Manual documentation**: Curated guides for key APIs with examples and best practices
 - **Auto-generated documentation**: Extracted from Python docstrings using mkdocstrings
 
-!!! warning "API Stability - Alpha Software"
-    Pyvider is currently in alpha (v0.0.x). While we strive for stability, the API may change before the 1.0 release. Breaking changes will be documented in release notes.
+!!! warning "API Stability - Alpha Software (v0.0.1000)"
+    Pyvider is currently in **alpha**. While we strive for stability, the API may change before the 1.0 release. Breaking changes will be documented in release notes.
+
+    **Important Notes:**
+    - Some documented APIs may not be fully implemented yet
+    - Test thoroughly before using in production environments
+    - See [Roadmap](../development/roadmap.md) for feature status
 
     **Public API Stability:**
     - ✅ **Stable**: Decorator API (`@register_resource`, `@register_provider`, etc.)
     - ✅ **Stable**: Schema factory functions (`s_resource`, `a_str`, `a_num`, etc.)
     - ✅ **Stable**: Base classes (`BaseResource`, `BaseProvider`, `BaseDataSource`, etc.)
     - ⚠️ **Evolving**: Internal conversion and protocol handlers
-    - ⚠️ **Experimental**: Advanced features marked in documentation
+    - ⚠️ **Experimental**: Capabilities system and advanced features marked in documentation
 
 ## When to Use This Reference
 
