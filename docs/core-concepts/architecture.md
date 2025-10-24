@@ -347,14 +347,14 @@ stateDiagram-v2
 All I/O operations use async/await for maximum concurrency:
 
 ```python
-async def create(self, config: Config) -> State:
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     # Parallel API calls
     results = await asyncio.gather(
         self.create_network(),
         self.allocate_storage(),
         self.configure_security()
     )
-    return State(...)
+    return State(...), None
 ```
 
 ### 2. Connection Pooling
@@ -473,12 +473,12 @@ channel = grpc.aio.secure_channel('localhost:50051', credentials)
 ### 2. Error Handling
 
 ```python
-async def create(self, config: Config) -> State:
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     try:
         result = await self.api_call()
     except ApiError as e:
         raise ResourceError(f"Failed to create: {e}")
-    return State(...)
+    return State(...), None
 ```
 
 ### 3. Resource Design

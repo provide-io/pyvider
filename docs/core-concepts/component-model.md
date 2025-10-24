@@ -120,13 +120,13 @@ class Server(BaseResource):
         status: str = a_str(computed=True, description="Server status")
         tags: dict[str, str] = a_map(a_str(), description="Resource tags")
     
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         """Create a new server."""
         server = await self.provider.client.create_server(
-            name=config.name,
-            size=config.size,
-            image=config.image,
-            tags=config.tags
+            name=ctx.config.name,
+            size=ctx.config.size,
+            image=ctx.config.image,
+            tags=ctx.config.tags
         )
         return State(
             id=server.id,
@@ -136,12 +136,12 @@ class Server(BaseResource):
             ip_address=server.public_ip,
             status=server.status,
             tags=server.tags
-        )
-    
-    async def read(self, state: State) -> State | None:
+        ), None
+
+    async def read(self, ctx: ResourceContext) -> State | None:
         """Refresh server state."""
         try:
-            server = await self.provider.client.get_server(state.id)
+            server = await self.provider.client.get_server(ctx.state.id)
             return State(
                 id=server.id,
                 name=server.name,
@@ -153,29 +153,30 @@ class Server(BaseResource):
             )
         except NotFoundError:
             return None  # Server was deleted outside Terraform
-    
-    async def update(self, config: Config, state: State) -> State:
+
+    async def _update_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         """Update server configuration."""
         # Update mutable attributes
-        if config.tags != state.tags:
-            await self.provider.client.update_tags(state.id, config.tags)
-        
-        if config.size != state.size:
-            await self.provider.client.resize_server(state.id, config.size)
-        
+        if ctx.config.tags != ctx.state.tags:
+            await self.provider.client.update_tags(ctx.state.id, ctx.config.tags)
+
+        if ctx.config.size != ctx.state.size:
+            await self.provider.client.resize_server(ctx.state.id, ctx.config.size)
+
         # Refresh and return new state
-        return await self.read(state)
-    
-    async def delete(self, state: State) -> None:
+        refreshed = await self.read(ctx)
+        return refreshed, None
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
         """Delete the server."""
-        await self.provider.client.delete_server(state.id)
+        await self.provider.client.delete_server(ctx.state.id)
 ```
 
 **Lifecycle Methods:**
-- `create()`: Creates new infrastructure
+- `_create_apply()`: Creates new infrastructure (apply phase)
 - `read()`: Refreshes current state
-- `update()`: Modifies existing infrastructure
-- `delete()`: Removes infrastructure
+- `_update_apply()`: Modifies existing infrastructure (apply phase)
+- `_delete_apply()`: Removes infrastructure (apply phase)
 
 ### 3. Data Source Component
 
@@ -434,16 +435,16 @@ class Server(BaseResource):
 ```python
 @register_resource("server")
 class Server(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Access provider instance
         client = self.provider.client
-        
+
         # Use provider configuration
         region = self.provider.config.region
-        
+
         # Call provider methods
         server = await client.create_server(...)
-        return State(...)
+        return State(...), None
 ```
 
 ### Capability Composition
@@ -463,14 +464,14 @@ class TaggableCapability:
 
 @register_resource("server", capabilities=["taggable"])
 class Server(BaseResource):
-    async def create(self, config: Config) -> State:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         # Create server
         server = await self.provider.client.create_server(...)
-        
+
         # Use capability
-        self.capabilities.taggable.apply_tags(server.id, config.tags)
-        
-        return State(...)
+        self.capabilities.taggable.apply_tags(server.id, ctx.config.tags)
+
+        return State(...), None
 ```
 
 ## 📋 Schema Generation
@@ -663,7 +664,7 @@ class State:
 ### 4. Error Handling
 
 ```python
-async def create(self, config: Config) -> State:
+async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
     try:
         result = await self.provider.client.create(...)
     except ClientError as e:
@@ -673,8 +674,8 @@ async def create(self, config: Config) -> State:
                 details={"limit": e.limit, "current": e.current}
             )
         raise ResourceError(f"Failed to create resource: {e}")
-    
-    return State(...)
+
+    return State(...), None
 ```
 
 ## 📚 Advanced Topics
