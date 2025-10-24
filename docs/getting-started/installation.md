@@ -298,7 +298,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Pyvider
-RUN pip install --no-cache-dir pyvider[all]
+RUN pip install --no-cache-dir pyvider
 
 # Copy your provider code
 COPY . .

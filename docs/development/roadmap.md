@@ -217,23 +217,17 @@ Prevent DoS attacks and injection vulnerabilities:
 
 ## Contributing to the Roadmap
 
-Have ideas for future Pyvider features? We'd love to hear them!
-
-- Open an issue on GitHub with the `enhancement` label
-- Discuss in our community Discord
-- Submit a feature proposal PR to this roadmap
-
----
-
----
-
-## Contributing to the Roadmap
-
 The roadmap is a living document. Priorities may shift based on:
 - Community feedback and use cases
 - Critical bugs or security issues
 - Terraform protocol updates
 - Resource constraints
+
+Have ideas for future Pyvider features? We'd love to hear them!
+
+- Open an issue on GitHub with the `enhancement` label
+- Participate in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
+- Submit a feature proposal PR to this roadmap
 
 **Last Updated:** 2025-10-24
 **Next Review:** Monthly

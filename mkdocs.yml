@@ -130,29 +130,29 @@ nav:
     - 'Component Model': 'core-concepts/component-model.md'
     - 'Schema System': 'core-concepts/schema-system.md'
 
-  - 'Developer Guides':
-    - 'Creating Providers': 'guides/creating-providers.md'
-    - 'Creating Resources': 'guides/creating-resources.md'
-    - 'Creating Data Sources': 'guides/creating-data-sources.md'
-    - 'Creating Functions': 'guides/creating-functions.md'
-    - 'Using Decorators': 'guides/using-decorators.md'
-    - 'Testing Providers': 'guides/testing-providers.md'
-    - 'Best Practices': 'guides/best-practices.md'
-    - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
-    - 'Error Handling': 'guides/error-handling.md'
-    - 'Logging': 'guides/logging.md'
-    - 'Debugging': 'guides/debugging.md'
-
-  - 'User Guides':
-    - 'Configuration': 'guides/configuration.md'
-    - 'Managing Resources': 'guides/managing-resources.md'
-    - 'Using Data Sources': 'guides/using-data-sources.md'
-    - 'Using Functions': 'guides/using-functions.md'
-    - 'Advanced Patterns': 'guides/advanced-patterns.md'
-
-  - 'Examples & Tutorials':
-    - 'Quick Start': 'getting-started/quick-start.md'
-    - 'Pyvider Components (External)': 'https://github.com/provide-io/pyvider-components'
+  - 'Guides':
+    - 'Building Providers':
+      - 'Creating Providers': 'guides/creating-providers.md'
+      - 'Creating Resources': 'guides/creating-resources.md'
+      - 'Creating Data Sources': 'guides/creating-data-sources.md'
+      - 'Creating Functions': 'guides/creating-functions.md'
+      - 'Using Decorators': 'guides/using-decorators.md'
+    - 'Testing & Quality':
+      - 'Testing Providers': 'guides/testing-providers.md'
+      - 'Debugging': 'guides/debugging.md'
+      - 'Error Handling': 'guides/error-handling.md'
+      - 'Logging': 'guides/logging.md'
+    - 'Using Providers':
+      - 'Configuration': 'guides/configuration.md'
+      - 'Managing Resources': 'guides/managing-resources.md'
+      - 'Using Data Sources': 'guides/using-data-sources.md'
+      - 'Using Functions': 'guides/using-functions.md'
+    - 'Advanced Topics':
+      - 'Best Practices': 'guides/best-practices.md'
+      - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
+      - 'Advanced Patterns': 'guides/advanced-patterns.md'
+    - 'Examples':
+      - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
