@@ -64,7 +64,12 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _handle_attrs_conversion(cls, data: Any, target_cls: type) -> Any | None:
         if not isinstance(data, dict):
             logger.warning(
-                f"Cannot construct attrs class '{target_cls.__name__}' from non-dict type '{type(data).__name__}'"
+                "Cannot construct attrs class from non-dict data type",
+                operation="attrs_conversion",
+                class_name=target_cls.__name__,
+                received_type=type(data).__name__,
+                expected_type="dict",
+                suggestion="Ensure configuration data is structured as a dictionary/object",
             )
             return None
 
@@ -90,12 +95,37 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             # explicitly rather than relying on ctx.config being None.
             if "missing" in str(e) and "required" in str(e):
                 logger.debug(
-                    f"Cannot create '{target_cls.__name__}' instance - unknown/computed values present",
+                    "Cannot create attrs instance - unknown or computed values present",
+                    class_name=target_cls.__name__,
                     error=str(e),
+                    available_fields=list(kwargs.keys()),
                 )
                 return None
             # Re-raise other TypeErrors as they indicate real problems
-            raise TypeError(f"Could not create '{target_cls.__name__}' from data: {e}") from e
+            # Extract field information for better error messages
+            provided_fields = list(kwargs.keys())
+            target_fields_list = [f.name for f in attrs.fields(target_cls)]
+            required_fields = [f.name for f in attrs.fields(target_cls) if f.default == attrs.NOTHING]
+            missing_fields = [f for f in required_fields if f not in provided_fields]
+
+            logger.error(
+                "Failed to create attrs instance from configuration data",
+                class_name=target_cls.__name__,
+                error=str(e),
+                provided_fields=provided_fields,
+                required_fields=required_fields,
+                missing_fields=missing_fields,
+            )
+
+            raise TypeError(
+                f"Could not create '{target_cls.__name__}' instance from configuration data. "
+                f"Error: {e}\n\n"
+                f"Suggestion: Ensure all required fields are provided with valid types. "
+                f"Check the resource schema for required vs optional fields.\n"
+                f"Required fields: {', '.join(required_fields) if required_fields else 'none'}\n"
+                f"Missing fields: {', '.join(missing_fields) if missing_fields else 'none'}\n"
+                f"Provided fields: {', '.join(provided_fields) if provided_fields else 'none'}"
+            ) from e
 
     @classmethod
     def _cty_to_attrs_recursive(cls, data: Any, target_cls: type) -> Any | None:
@@ -145,32 +175,58 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _cty_to_dict_preserving_unknown(cls, cty_value: CtyValue | None) -> dict[str, Any]:
         """Convert CTY value to dict, but preserve unknown CtyValue objects instead of converting to None."""
         if not cty_value or cty_value.is_null:
-            logger.debug("_cty_to_dict_preserving_unknown: cty_value is None or null")
+            logger.debug(
+                "CTY value conversion skipped - value is None or null",
+                operation="cty_to_dict_preserving_unknown",
+                reason="null_or_none",
+            )
             return {}
 
         if not isinstance(cty_value.type, CtyObject):
             logger.debug(
-                f"_cty_to_dict_preserving_unknown: cty_value type is not CtyObject: {type(cty_value.type)}"
+                "CTY value is not an object type, converting to native",
+                operation="cty_to_dict_preserving_unknown",
+                cty_type=type(cty_value.type).__name__,
             )
             return cty_to_native(cty_value) if cty_value else {}
 
         result = {}
+        unknown_count = 0
         for key, value_cty in cty_value.value.items():
             if isinstance(value_cty, CtyValue):
                 # Preserve unknown values as CtyValue objects
                 if value_cty.is_unknown:
                     result[key] = value_cty
-                    logger.debug(f"_cty_to_dict_preserving_unknown: preserving unknown value for key '{key}'")
+                    unknown_count += 1
+                    logger.debug(
+                        "Preserving unknown CTY value in conversion",
+                        operation="cty_to_dict_preserving_unknown",
+                        field_name=key,
+                        reason="value_is_unknown",
+                    )
                 else:
                     result[key] = cty_to_native(value_cty)
                     logger.debug(
-                        f"_cty_to_dict_preserving_unknown: converted known value for key '{key}' to {result[key]}"
+                        "Converted known CTY value to native type",
+                        operation="cty_to_dict_preserving_unknown",
+                        field_name=key,
+                        converted_value=str(result[key])[:100],  # Truncate for safety
                     )
             else:
                 result[key] = value_cty
-                logger.debug(f"_cty_to_dict_preserving_unknown: non-CtyValue for key '{key}': {value_cty}")
+                logger.debug(
+                    "Non-CTY value passed through unchanged",
+                    operation="cty_to_dict_preserving_unknown",
+                    field_name=key,
+                )
 
-        logger.debug(f"_cty_to_dict_preserving_unknown: returning dict with keys: {list(result.keys())}")
+        logger.debug(
+            "CTY to dict conversion completed",
+            operation="cty_to_dict_preserving_unknown",
+            total_fields=len(result),
+            unknown_fields=unknown_count,
+            field_names=list(result.keys()),
+        )
         return result
 
     def _merge_config_into_plan(self, base_plan: dict[str, Any], ctx: ResourceContext) -> None:
@@ -200,6 +256,13 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         validation_errors = await self.validate(ctx.config)
         if validation_errors:
+            logger.warning(
+                "Resource configuration validation failed during planning",
+                operation="plan",
+                resource_type=self.__class__.__name__,
+                error_count=len(validation_errors),
+                errors=validation_errors,
+            )
             for err in validation_errors:
                 ctx.add_error(err)
             return None, None
@@ -207,8 +270,23 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         is_create = ctx.state is None
         is_delete = ctx.config is None and ctx.planned_state is None
 
+        logger.debug(
+            "Resource plan operation started",
+            operation="plan",
+            resource_type=self.__class__.__name__,
+            operation_type="delete" if is_delete else "create" if is_create else "update",
+            has_state=ctx.state is not None,
+            has_config=ctx.config is not None,
+        )
+
         if is_delete:
-            return await self._delete_plan(ctx)
+            result = await self._delete_plan(ctx)
+            logger.debug(
+                "Resource delete plan completed",
+                operation="plan_delete",
+                resource_type=self.__class__.__name__,
+            )
+            return result
 
         # Create base_plan from planned_state_cty, preserving unknown values
         base_plan = self._cty_to_dict_preserving_unknown(ctx.planned_state_cty)
@@ -219,25 +297,63 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
         if is_create:
             planned_state, private_state = await self._create(ctx, base_plan)
-            logger.debug(f"Plan _create returned private_state: {private_state}")
+            logger.debug(
+                "Resource create plan completed",
+                operation="plan_create",
+                resource_type=self.__class__.__name__,
+                has_private_state=private_state is not None,
+                planned_fields=list(planned_state.keys()) if planned_state else [],
+            )
             return planned_state, private_state
         else:
             planned_state, private_state = await self._update(ctx, base_plan)
-            logger.debug(f"Plan _update returned private_state: {private_state}")
+            logger.debug(
+                "Resource update plan completed",
+                operation="plan_update",
+                resource_type=self.__class__.__name__,
+                has_private_state=private_state is not None,
+                planned_fields=list(planned_state.keys()) if planned_state else [],
+            )
             return planned_state, private_state
 
     async def apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         is_create = ctx.state is None
         is_delete = ctx.planned_state is None
 
+        logger.debug(
+            "Resource apply operation started",
+            operation="apply",
+            resource_type=self.__class__.__name__,
+            operation_type="delete" if is_delete else "create" if is_create else "update",
+        )
+
         if is_delete:
             await self._delete_apply(ctx)
+            logger.info(
+                "Resource deleted successfully",
+                operation="apply_delete",
+                resource_type=self.__class__.__name__,
+            )
             return None, None
 
         if is_create:
-            return await self._create_apply(ctx)
+            result = await self._create_apply(ctx)
+            logger.info(
+                "Resource created successfully",
+                operation="apply_create",
+                resource_type=self.__class__.__name__,
+                has_private_state=result[1] is not None,
+            )
+            return result
         else:
-            return await self._update_apply(ctx)
+            result = await self._update_apply(ctx)
+            logger.info(
+                "Resource updated successfully",
+                operation="apply_update",
+                resource_type=self.__class__.__name__,
+                has_private_state=result[1] is not None,
+            )
+            return result
 
     @abstractmethod
     async def read(self, ctx: ResourceContext) -> StateType | None: ...

@@ -49,9 +49,26 @@ class PvsAttribute:
 
         # Rule 3: An attribute can't be both Required and Computed.
         if is_req and is_comp:
-            raise ValueError(f"Attribute '{self.name}' cannot be both Required and Computed.")
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"An attribute cannot be both Required and Computed.\n\n"
+                f"Suggestion: Choose one of the following:\n"
+                f"  - required=True, computed=False: For fields that must be provided by the user\n"
+                f"  - required=False, computed=True: For fields that are calculated by the provider\n"
+                f"  - optional=True, computed=True: For fields that can be provided or computed\n\n"
+                f"Current configuration: required={is_req}, optional={is_opt}, computed={is_comp}\n\n"
+                f"See: https://developer.hashicorp.com/terraform/plugin/framework/schemas"
+            )
 
         # Rule 4: Check that at least one flag is set after defaulting.
         # This check is now implicitly handled by the default-to-optional logic above.
         if not self.required and not self.optional and not self.computed:
-            raise ValueError(f"Attribute '{self.name}' must be Optional, Required, or Computed.")
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"An attribute must be explicitly marked as Optional, Required, or Computed.\n\n"
+                f"Suggestion: Set one of these flags:\n"
+                f"  - required=True: For fields that users must provide\n"
+                f"  - optional=True: For fields that users may provide (default)\n"
+                f"  - computed=True: For fields that the provider calculates\n\n"
+                f"Current configuration: required={self.required}, optional={self.optional}, computed={self.computed}"
+            )
