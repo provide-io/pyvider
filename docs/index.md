@@ -212,8 +212,8 @@ Organizations using Pyvider in production:
   <a href="getting-started/quick-start.md" class="btn btn-secondary">
     🚀 Quick Start Guide
   </a>
-  <a href="tutorials/first-provider.md" class="btn btn-tertiary">
-    🎓 Full Tutorial
+  <a href="https://github.com/provide-io/pyvider-components" class="btn btn-tertiary">
+    📚 Browse Examples
   </a>
 </div>
 
