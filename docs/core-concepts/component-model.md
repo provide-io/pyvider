@@ -35,12 +35,13 @@ The Provider is the root component that configures authentication and shared set
 
 ```python
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
+from pyvider.schema import a_str, a_num
 import attrs
 
 @register_provider("mycloud")
 class MyCloudProvider(BaseProvider):
     """Root provider component for MyCloud services."""
-    
+
     def __init__(self):
         super().__init__(
             metadata=ProviderMetadata(
@@ -49,20 +50,20 @@ class MyCloudProvider(BaseProvider):
                 protocol_version="6"
             )
         )
-    
+
     @attrs.define
     class Config:
         """Provider configuration schema."""
-        api_key: str = Attribute(
+        api_key: str = a_str(
             required=True,
             sensitive=True,
             description="API key for authentication"
         )
-        endpoint: str = Attribute(
+        endpoint: str = a_str(
             default="https://api.mycloud.com",
             description="API endpoint URL"
         )
-        timeout: int = Attribute(
+        timeout: int = a_num(
             default=30,
             description="Request timeout in seconds"
         )
@@ -89,34 +90,35 @@ Resources represent manageable infrastructure with full CRUD lifecycle:
 
 ```python
 from pyvider.resources import register_resource, BaseResource
-from pyvider.schema import Attribute
+from pyvider.schema import a_str, a_map
 import attrs
 
 @register_resource("server")
 class Server(BaseResource):
     """Manages a cloud server instance."""
-    
+
     @attrs.define
     class Config:
         """Resource configuration (from Terraform)."""
-        name: str = Attribute(required=True, description="Server name")
-        size: str = Attribute(default="small", description="Instance size")
-        image: str = Attribute(required=True, description="OS image")
-        tags: dict[str, str] = Attribute(
+        name: str = a_str(required=True, description="Server name")
+        size: str = a_str(default="small", description="Instance size")
+        image: str = a_str(required=True, description="OS image")
+        tags: dict[str, str] = a_map(
+            a_str(),
             default_factory=dict,
             description="Resource tags"
         )
-    
+
     @attrs.define
     class State:
         """Resource state (tracked by Terraform)."""
-        id: str = Attribute(computed=True, description="Server ID")
-        name: str = Attribute(description="Server name")
-        size: str = Attribute(description="Instance size")
-        image: str = Attribute(description="OS image")
-        ip_address: str = Attribute(computed=True, description="Public IP")
-        status: str = Attribute(computed=True, description="Server status")
-        tags: dict[str, str] = Attribute(description="Resource tags")
+        id: str = a_str(computed=True, description="Server ID")
+        name: str = a_str(description="Server name")
+        size: str = a_str(description="Instance size")
+        image: str = a_str(description="OS image")
+        ip_address: str = a_str(computed=True, description="Public IP")
+        status: str = a_str(computed=True, description="Server status")
+        tags: dict[str, str] = a_map(a_str(), description="Resource tags")
     
     async def create(self, config: Config) -> State:
         """Create a new server."""
@@ -181,32 +183,34 @@ Data sources provide read-only access to existing infrastructure:
 
 ```python
 from pyvider.data_sources import register_data_source, BaseDataSource
+from pyvider.schema import a_str, a_bool, a_list, a_map, a_num
 import attrs
 
 @register_data_source("images")
 class Images(BaseDataSource):
     """Fetches available server images."""
-    
+
     @attrs.define
     class Config:
         """Data source configuration."""
-        filter: str = Attribute(
+        filter: str = a_str(
             default="*",
             description="Image name filter pattern"
         )
-        include_deprecated: bool = Attribute(
+        include_deprecated: bool = a_bool(
             default=False,
             description="Include deprecated images"
         )
-    
+
     @attrs.define
     class State:
         """Data source output."""
-        images: list[dict] = Attribute(
+        images: list[dict] = a_list(
+            a_map(a_str()),
             computed=True,
             description="List of available images"
         )
-        total_count: int = Attribute(
+        total_count: int = a_num(
             computed=True,
             description="Total number of images"
         )
@@ -238,27 +242,28 @@ Functions provide pure, callable transformations:
 
 ```python
 from pyvider.functions import register_function, BaseFunction
+from pyvider.schema import a_str
 import attrs
 import hashlib
 
 @register_function(name="hash_file")
 class HashFile(BaseFunction):
     """Computes SHA256 hash of file content."""
-    
+
     @attrs.define
     class Input:
         """Function input parameters."""
-        content: str = Attribute(required=True, description="File content")
-        algorithm: str = Attribute(
+        content: str = a_str(required=True, description="File content")
+        algorithm: str = a_str(
             default="sha256",
             description="Hash algorithm"
         )
-    
+
     @attrs.define
     class Output:
         """Function output."""
-        hash: str = Attribute(description="Computed hash")
-        algorithm: str = Attribute(description="Algorithm used")
+        hash: str = a_str(description="Computed hash")
+        algorithm: str = a_str(description="Algorithm used")
     
     async def call(self, input: Input) -> Output:
         """Execute the function."""
@@ -281,27 +286,28 @@ Ephemeral resources manage short-lived connections or sessions:
 
 ```python
 from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeral
+from pyvider.schema import a_str, a_num
 import attrs
 
 @register_ephemeral_resource("database_connection")
 class DatabaseConnection(BaseEphemeral):
     """Manages a temporary database connection."""
-    
+
     @attrs.define
     class Config:
         """Connection configuration."""
-        host: str = Attribute(required=True)
-        port: int = Attribute(default=5432)
-        database: str = Attribute(required=True)
-        username: str = Attribute(required=True)
-        password: str = Attribute(required=True, sensitive=True)
-    
+        host: str = a_str(required=True)
+        port: int = a_num(default=5432)
+        database: str = a_str(required=True)
+        username: str = a_str(required=True)
+        password: str = a_str(required=True, sensitive=True)
+
     @attrs.define
     class State:
         """Connection state."""
-        connection_id: str = Attribute(computed=True)
-        connected_at: str = Attribute(computed=True)
-        expires_at: str = Attribute(computed=True)
+        connection_id: str = a_str(computed=True)
+        connected_at: str = a_str(computed=True)
+        expires_at: str = a_str(computed=True)
     
     async def open(self, config: Config) -> State:
         """Open a new connection."""
@@ -474,11 +480,13 @@ class Server(BaseResource):
 Pyvider automatically generates Terraform schemas from Python classes:
 
 ```python
+from pyvider.schema import a_str, a_num, a_map
+
 @attrs.define
 class Config:
-    name: str = Attribute(required=True)
-    size: int = Attribute(default=10, validators=[Range(1, 100)])
-    tags: dict[str, str] = Attribute(default_factory=dict)
+    name: str = a_str(required=True)
+    size: int = a_num(default=10, validators=[Range(1, 100)])
+    tags: dict[str, str] = a_map(a_str(), default_factory=dict)
 
 # Generated Terraform schema:
 {
@@ -585,9 +593,11 @@ def validate_resource(cls: type) -> None:
 ### Schema Validation
 
 ```python
+from pyvider.schema import a_num
+
 @attrs.define
 class Config:
-    port: int = Attribute(
+    port: int = a_num(
         required=True,
         validators=[
             Range(min=1, max=65535),
@@ -615,30 +625,34 @@ class Config:
 ### 2. Schema Design
 
 ```python
+from pyvider.schema import a_str, a_map
+
 @attrs.define
 class Config:
     # Good: Clear, typed, documented
-    instance_type: str = Attribute(
+    instance_type: str = a_str(
         required=True,
         description="EC2 instance type (e.g., t3.micro)",
         validators=[OneOf(["t3.micro", "t3.small", "t3.medium"])]
     )
-    
+
     # Bad: Vague, untyped, no validation
-    config: dict = Attribute()  # Too generic!
+    config: dict = a_map(a_str())  # Too generic!
 ```
 
 ### 3. State Management
 
 ```python
+from pyvider.schema import a_str
+
 class State:
     # Include only essential state
-    id: str = Attribute(computed=True)  # Always include ID
-    name: str = Attribute()  # User-provided values
-    
+    id: str = a_str(computed=True)  # Always include ID
+    name: str = a_str()  # User-provided values
+
     # Computed values that might change
-    status: str = Attribute(computed=True)
-    ip_address: str = Attribute(computed=True)
+    status: str = a_str(computed=True)
+    ip_address: str = a_str(computed=True)
     
     # Don't include:
     # - Temporary values
@@ -701,18 +715,24 @@ class Server(BaseCloudResource):
 
 ```python
 import pytest
-from pyvider.testing import ComponentTestCase
 
-class TestServer(ComponentTestCase):
-    component_class = Server
-    
-    async def test_create(self):
-        config = Server.Config(name="test", size="small")
-        state = await self.component.create(config)
-        
-        assert state.id is not None
-        assert state.name == "test"
-        assert state.status == "running"
+@pytest.fixture
+def server():
+    """Create a server resource instance."""
+    return Server()
+
+@pytest.mark.asyncio
+async def test_create(server, mock_provider):
+    """Test server creation."""
+    # Inject mock provider
+    server.provider = mock_provider
+
+    config = Server.Config(name="test", size="small")
+    state = await server.create(config)
+
+    assert state.id is not None
+    assert state.name == "test"
+    assert state.status == "running"
 ```
 
 ## 🔗 Related Documentation
