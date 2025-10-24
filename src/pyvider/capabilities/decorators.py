@@ -47,7 +47,7 @@ def requires_capability(func: F) -> F:
         return await func(*args, **kwargs)
 
     if asyncio.iscoroutinefunction(func):
-        return async_wrapper
+        return async_wrapper  # type: ignore[return-value]
     else:
 
         @wraps(func)
@@ -68,4 +68,4 @@ def requires_capability(func: F) -> F:
             kwargs[parent_cap_name] = capability_instance
             return func(*args, **kwargs)
 
-        return sync_wrapper
+        return sync_wrapper  # type: ignore[return-value]

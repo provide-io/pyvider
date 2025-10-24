@@ -41,19 +41,19 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
     try:
         # Dynamically discover registered resources
         resources = []
-        for resource_name in hub.get_components("resource").keys():
+        for resource_name in hub.get_components("resource"):
             resources.append(pb.GetMetadata.ResourceMetadata(type_name=resource_name))
             logger.debug(f"Discovered resource: {resource_name}")
 
         # Get data sources if any
         data_sources = []
-        for ds_name in hub.get_components("data_source").keys():
+        for ds_name in hub.get_components("data_source"):
             data_sources.append(pb.GetMetadata.DataSourceMetadata(type_name=ds_name))
             logger.debug(f"Discovered data source: {ds_name}")
 
         # Get functions if any
         functions = []
-        for func_name in hub.get_components("function").keys():
+        for func_name in hub.get_components("function"):
             functions.append(pb.GetMetadata.FunctionMetadata(name=func_name))
             logger.debug(f"Discovered function: {func_name}")
 

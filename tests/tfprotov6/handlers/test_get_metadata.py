@@ -20,11 +20,11 @@ def sample_request():
 def mock_hub_with_components():
     """Create a mock hub with registered components."""
     mock_hub = MagicMock()
-    mock_hub.registry.get.side_effect = lambda component_type, default: {
+    mock_hub.get_components.side_effect = lambda component_type: {
         "resource": {"test_resource": MagicMock(), "another_resource": MagicMock()},
         "data_source": {"test_data_source": MagicMock()},
         "function": {"test_function": MagicMock(), "another_function": MagicMock()},
-    }.get(component_type, default)
+    }.get(component_type, {})
     return mock_hub
 
 
@@ -32,7 +32,7 @@ def mock_hub_with_components():
 def mock_hub_empty():
     """Create a mock hub with no registered components."""
     mock_hub = MagicMock()
-    mock_hub.registry.get.return_value = {}
+    mock_hub.get_components.return_value = {}
     return mock_hub
 
 
@@ -43,7 +43,7 @@ class TestGetMetadataHandlerStructure:
     async def test_handler_returns_response(self, sample_request):
         """Test that handler returns GetMetadata.Response."""
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.return_value = {}
+            mock_hub.get_components.return_value = {}
 
             response = await GetMetadataHandler(sample_request, context=None)
 
@@ -120,7 +120,7 @@ class TestGetMetadataImpl:
     async def test_impl_handles_exception(self, sample_request):
         """Test that implementation handles exceptions gracefully."""
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.side_effect = RuntimeError("Registry error")
+            mock_hub.get_components.side_effect = RuntimeError("Registry error")
 
             response = await _get_metadata_impl(sample_request, context=None)
 
@@ -146,7 +146,7 @@ class TestGetMetadataMetrics:
         """Test that handler increments request counter."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_requests") as mock_requests:
             with patch("pyvider.hub.hub") as mock_hub:
-                mock_hub.registry.get.return_value = {}
+                mock_hub.get_components.return_value = {}
 
                 await GetMetadataHandler(sample_request, context=None)
 
@@ -157,7 +157,7 @@ class TestGetMetadataMetrics:
         """Test that handler records duration metric."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_duration") as mock_duration:
             with patch("pyvider.hub.hub") as mock_hub:
-                mock_hub.registry.get.return_value = {}
+                mock_hub.get_components.return_value = {}
 
                 await GetMetadataHandler(sample_request, context=None)
 
@@ -207,7 +207,7 @@ class TestGetMetadataLogging:
         """Test that errors are logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.logger") as mock_logger:
             with patch("pyvider.hub.hub") as mock_hub:
-                mock_hub.registry.get.side_effect = RuntimeError("Test error")
+                mock_hub.get_components.side_effect = RuntimeError("Test error")
 
                 await _get_metadata_impl(sample_request, context=None)
 
@@ -224,7 +224,7 @@ class TestGetMetadataEdgeCases:
         context = MagicMock()
 
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.return_value = {}
+            mock_hub.get_components.return_value = {}
 
             response = await GetMetadataHandler(sample_request, context=context)
 
@@ -234,7 +234,7 @@ class TestGetMetadataEdgeCases:
     async def test_with_only_resources(self, sample_request):
         """Test with only resources registered."""
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.side_effect = lambda comp_type, default: (
+            mock_hub.get_components.side_effect = lambda comp_type: (
                 {"res1": MagicMock()} if comp_type == "resource" else {}
             )
 
@@ -248,7 +248,7 @@ class TestGetMetadataEdgeCases:
     async def test_with_only_data_sources(self, sample_request):
         """Test with only data sources registered."""
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.side_effect = lambda comp_type, default: (
+            mock_hub.get_components.side_effect = lambda comp_type: (
                 {"ds1": MagicMock()} if comp_type == "data_source" else {}
             )
 
@@ -262,7 +262,7 @@ class TestGetMetadataEdgeCases:
     async def test_with_only_functions(self, sample_request):
         """Test with only functions registered."""
         with patch("pyvider.hub.hub") as mock_hub:
-            mock_hub.registry.get.side_effect = lambda comp_type, default: (
+            mock_hub.get_components.side_effect = lambda comp_type: (
                 {"func1": MagicMock()} if comp_type == "function" else {}
             )
 
