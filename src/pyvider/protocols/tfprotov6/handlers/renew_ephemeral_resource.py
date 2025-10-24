@@ -55,7 +55,9 @@ async def _renew_ephemeral_resource_impl(
                 "Ephemeral resource type not found during renew operation",
                 operation="renew_ephemeral_resource",
                 resource_type=request.type_name,
-                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys()) if hub.get_components("ephemeral_resource") else [],
+                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys())
+                if hub.get_components("ephemeral_resource")
+                else [],
             )
             raise ValueError(
                 f"Ephemeral resource type '{request.type_name}' not found.\n\n"

@@ -53,7 +53,9 @@ async def _validate_ephemeral_resource_config_impl(
                 "Ephemeral resource type not found during validation",
                 operation="validate_ephemeral_resource_config",
                 resource_type=request.type_name,
-                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys()) if hub.get_components("ephemeral_resource") else [],
+                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys())
+                if hub.get_components("ephemeral_resource")
+                else [],
             )
             raise ValueError(
                 f"Ephemeral resource type '{request.type_name}' not found.\n\n"

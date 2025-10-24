@@ -13,7 +13,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 @pytest.mark.asyncio
 async def test_move_resource_state_returns_empty_response():
     """
-    Verifies that MoveResourceState returns an empty response.
+    Verifies that MoveResourceState returns a response with warning diagnostic.
     This handler is currently unimplemented.
     """
     request = pb.MoveResourceState.Request(
@@ -24,7 +24,9 @@ async def test_move_resource_state_returns_empty_response():
     response = await MoveResourceStateHandler(request, context=None)
 
     assert isinstance(response, pb.MoveResourceState.Response)
-    assert len(response.diagnostics) == 0
+    assert len(response.diagnostics) == 1
+    assert response.diagnostics[0].severity == pb.Diagnostic.WARNING
+    assert "Resource move not yet implemented" in response.diagnostics[0].summary
 
 
 @pytest.mark.asyncio
@@ -40,7 +42,8 @@ async def test_move_resource_state_handles_same_type():
     response = await MoveResourceStateHandler(request, context=None)
 
     assert isinstance(response, pb.MoveResourceState.Response)
-    assert len(response.diagnostics) == 0
+    assert len(response.diagnostics) == 1  # Now returns warning diagnostic
+    assert response.diagnostics[0].severity == pb.Diagnostic.WARNING
 
 
 @pytest.mark.asyncio

@@ -34,7 +34,9 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
             "Resource type not found during plan operation",
             operation="plan_resource_change",
             resource_type=type_name,
-            registered_resources=list(hub.get_components("resource").keys()) if hub.get_components("resource") else [],
+            registered_resources=list(hub.get_components("resource").keys())
+            if hub.get_components("resource")
+            else [],
         )
 
         err = ResourceError(
@@ -106,7 +108,9 @@ async def _process_private_state(resource_class: Any, prior_private: bytes) -> A
             logger.debug(
                 "Prior private state deserialized successfully",
                 operation="process_private_state",
-                private_state_class=getattr(resource_class.private_state_class, "__name__", str(resource_class.private_state_class)),
+                private_state_class=getattr(
+                    resource_class.private_state_class, "__name__", str(resource_class.private_state_class)
+                ),
             )
 
         except Exception as e:

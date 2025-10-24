@@ -52,7 +52,7 @@ async def _configure_provider_impl(
         "ConfigureProvider handler called",
         operation="configure_provider",
         has_config=bool(request.config.msgpack),
-        terraform_version=request.terraform_version if hasattr(request, 'terraform_version') else "unknown",
+        terraform_version=request.terraform_version if hasattr(request, "terraform_version") else "unknown",
     )
 
     try:

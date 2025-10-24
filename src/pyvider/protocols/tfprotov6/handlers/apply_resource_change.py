@@ -39,7 +39,9 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
             "Resource type not found during apply operation",
             operation="apply_resource_change",
             resource_type=type_name,
-            registered_resources=list(hub.get_components("resource").keys()) if hub.get_components("resource") else [],
+            registered_resources=list(hub.get_components("resource").keys())
+            if hub.get_components("resource")
+            else [],
         )
 
         err = ResourceError(

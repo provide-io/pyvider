@@ -12,7 +12,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 @pytest.mark.asyncio
 async def test_import_resource_state_returns_empty_response():
     """
-    Verifies that ImportResourceState returns an empty response.
+    Verifies that ImportResourceState returns a response with warning diagnostic.
     This handler is currently unimplemented.
     """
     request = pb.ImportResourceState.Request(
@@ -23,7 +23,9 @@ async def test_import_resource_state_returns_empty_response():
     response = await ImportResourceStateHandler(request, context=None)
 
     assert isinstance(response, pb.ImportResourceState.Response)
-    assert len(response.diagnostics) == 0
+    assert len(response.diagnostics) == 1
+    assert response.diagnostics[0].severity == pb.Diagnostic.WARNING
+    assert "Import not yet implemented" in response.diagnostics[0].summary
     assert len(response.imported_resources) == 0
 
 
@@ -40,7 +42,8 @@ async def test_import_resource_state_handles_empty_id():
     response = await ImportResourceStateHandler(request, context=None)
 
     assert isinstance(response, pb.ImportResourceState.Response)
-    assert len(response.diagnostics) == 0
+    assert len(response.diagnostics) == 1  # Now returns warning diagnostic
+    assert response.diagnostics[0].severity == pb.Diagnostic.WARNING
 
 
 @pytest.mark.asyncio

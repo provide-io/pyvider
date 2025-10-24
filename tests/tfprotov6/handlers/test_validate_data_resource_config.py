@@ -259,7 +259,7 @@ class TestValidateDataResourceConfigLogging:
                         await _validate_data_resource_config_impl(sample_request, context=None)
 
                         mock_logger.error.assert_called_once()
-                        assert "Unhandled error" in str(mock_logger.error.call_args)
+                        assert "unexpected error" in str(mock_logger.error.call_args)
 
 
 class TestValidateDataResourceConfigEdgeCases:

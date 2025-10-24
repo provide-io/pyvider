@@ -59,7 +59,9 @@ async def _read_data_source_impl(
                 "Data source type not found during read operation",
                 operation="read_data_source",
                 data_source_type=request.type_name,
-                registered_data_sources=list(hub.get_components("data_source").keys()) if hub.get_components("data_source") else [],
+                registered_data_sources=list(hub.get_components("data_source").keys())
+                if hub.get_components("data_source")
+                else [],
             )
 
             err = DataSourceError(
@@ -76,7 +78,8 @@ async def _read_data_source_impl(
             err.add_context("data_source.type_name", request.type_name)
             err.add_context("terraform.summary", "Unknown data source type")
             err.add_context(
-                "terraform.detail", f"The data source type '{request.type_name}' is not registered with this provider."
+                "terraform.detail",
+                f"The data source type '{request.type_name}' is not registered with this provider.",
             )
             raise err
 

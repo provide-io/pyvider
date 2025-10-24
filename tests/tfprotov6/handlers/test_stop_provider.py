@@ -175,7 +175,9 @@ class TestStopProviderLogging:
                 await _stop_provider_impl(request, context=None)
 
                 # Check that completion was logged
-                assert any("stop() completed" in str(call) for call in mock_logger.info.call_args_list)
+                assert any(
+                    "stop completed successfully" in str(call) for call in mock_logger.info.call_args_list
+                )
 
     @pytest.mark.asyncio
     async def test_impl_logs_warning_when_no_server(self):

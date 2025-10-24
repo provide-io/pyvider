@@ -175,8 +175,9 @@ class TestCloseEphemeralResourceImpl:
 
                 await _close_ephemeral_resource_impl(sample_request, context=None)
 
-                # Should log at start and end
-                assert mock_logger.debug.call_count >= 2
+                # Should log at start with debug and completion with info
+                assert mock_logger.debug.call_count >= 1
+                assert mock_logger.info.call_count >= 1
 
 
 class TestCloseEphemeralResourceMetrics:

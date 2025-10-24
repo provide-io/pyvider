@@ -232,7 +232,7 @@ class TestGetFunctionsImplementation:
 
             assert len(response.diagnostics) == 1
             assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
-            assert "GetFunctions error" in response.diagnostics[0].summary
+            assert "Function discovery failed" in response.diagnostics[0].summary
             assert "Critical error" in response.diagnostics[0].detail
 
 

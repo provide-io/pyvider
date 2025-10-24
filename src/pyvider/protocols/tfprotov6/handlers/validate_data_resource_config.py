@@ -53,7 +53,9 @@ async def _validate_data_resource_config_impl(
                 "Data source type not found during validation",
                 operation="validate_data_resource_config",
                 data_source_type=request.type_name,
-                registered_data_sources=list(hub.get_components("data_source").keys()) if hub.get_components("data_source") else [],
+                registered_data_sources=list(hub.get_components("data_source").keys())
+                if hub.get_components("data_source")
+                else [],
             )
             raise ValueError(
                 f"Data source type '{request.type_name}' not registered.\n\n"
