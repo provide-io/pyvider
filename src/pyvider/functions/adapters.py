@@ -18,32 +18,32 @@ from pyvider.cty import (
 )
 
 
-def _get_cty_type_for_union(python_type: Any, args: tuple[Any, ...]) -> CtyType:
+def _get_cty_type_for_union(python_type: Any, args: tuple[Any, ...]) -> CtyType[object]:
     non_none_args = [arg for arg in args if arg is not type(None)]
     if set(non_none_args) <= {int, float, Decimal}:
-        return CtyNumber()
+        return CtyNumber()  # type: ignore[return-value]
     if len(non_none_args) == 1:
         return _python_type_to_cty_type(non_none_args[0])
     return CtyDynamic()
 
 
-def _get_cty_type_for_list(python_type: Any, args: tuple[Any, ...]) -> CtyType:
+def _get_cty_type_for_list(python_type: Any, args: tuple[Any, ...]) -> CtyType[object]:
     element_type = _python_type_to_cty_type(args[0]) if args else CtyDynamic()
-    return CtyList(element_type=element_type)
+    return CtyList(element_type=element_type)  # type: ignore[return-value]
 
 
-def _get_cty_type_for_dict(python_type: Any, args: tuple[Any, ...]) -> CtyType:
+def _get_cty_type_for_dict(python_type: Any, args: tuple[Any, ...]) -> CtyType[object]:
     value_type = _python_type_to_cty_type(args[1]) if len(args) > 1 else CtyDynamic()
-    return CtyMap(element_type=value_type)
+    return CtyMap(element_type=value_type)  # type: ignore[return-value]
 
 
-def _get_cty_type_for_primitive(python_type: type) -> CtyType | None:
+def _get_cty_type_for_primitive(python_type: type) -> CtyType[object] | None:
     if issubclass(python_type, str):
-        return CtyString()
+        return CtyString()  # type: ignore[return-value]
     if issubclass(python_type, bool):
-        return CtyBool()
+        return CtyBool()  # type: ignore[return-value]
     if issubclass(python_type, int | float | Decimal):
-        return CtyNumber()
+        return CtyNumber()  # type: ignore[return-value]
     return None
 
 
@@ -69,7 +69,7 @@ def _is_dict_type(annotation: Any) -> bool:
     return origin in (dict, dict) or annotation is dict
 
 
-def _python_type_to_cty_type(python_type: Any) -> CtyType:
+def _python_type_to_cty_type(python_type: Any) -> CtyType[object]:
     if python_type is CtyValue or python_type is Any:
         return CtyDynamic()
 
@@ -98,7 +98,7 @@ def _is_optional_type_hint(annotation: Any) -> bool:
 
 
 def _extract_parameters_meta(
-    func_obj: Callable, sig: inspect.Signature, type_hints: dict[str, Any]
+    func_obj: Callable[..., Any], sig: inspect.Signature, type_hints: dict[str, Any]
 ) -> dict[str, Any]:
     """
     Extract parameter metadata, separating required and variadic parameters.
@@ -170,7 +170,7 @@ def _extract_return_type_meta(type_hints: dict[str, Any]) -> dict[str, Any]:
     return {"cty_type": _python_type_to_cty_type(return_type_hint)}
 
 
-def _extract_docstring_meta(func_obj: Callable, base_meta: dict[str, Any]) -> None:
+def _extract_docstring_meta(func_obj: Callable[..., Any], base_meta: dict[str, Any]) -> None:
     docstring = inspect.getdoc(func_obj) or ""
     if not base_meta.get("summary") and docstring:
         base_meta["summary"] = docstring.strip().split("\n", 1)[0]

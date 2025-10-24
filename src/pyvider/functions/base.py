@@ -65,7 +65,7 @@ class FunctionParameter:
             raise ValueError(f"Invalid parameter name: '{value}'. Must be a valid identifier.")
 
     @type.validator
-    def _validate_type(self, attribute: Any, value: CtyType[Any]) -> None:
+    def _validate_type(self, attribute: Any, value: CtyType[object]) -> None:
         """Ensure the type is a valid CtyType instance."""
         if not isinstance(value, CtyType):
             raise TypeError(f"Parameter type must be an instance of CtyType, got {type(value).__name__}")
@@ -83,7 +83,7 @@ class FunctionReturnType:
     type: CtyType[Any] = field()
 
     @type.validator
-    def _validate_type(self, attribute: Any, value: CtyType[Any]) -> None:
+    def _validate_type(self, attribute: Any, value: CtyType[object]) -> None:
         """Ensure the type is a valid CtyType instance."""
         if not isinstance(value, CtyType):
             raise TypeError(f"Return type must be an instance of CtyType, got {type(value).__name__}")
@@ -163,26 +163,26 @@ class FunctionAdapter:
     """
 
     @staticmethod
-    def _infer_collection_cty_type(origin_type: Any, args: tuple[Any, ...]) -> CtyType[Any]:
+    def _infer_collection_cty_type(origin_type: Any, args: tuple[Any, ...]) -> CtyType[object]:
         if origin_type in (list, list):
-            element_cty: CtyType[Any] = CtyDynamic()
+            element_cty: CtyType[object] = CtyDynamic()
             if args and isinstance(args[0], type) and issubclass(args[0], CtyType):
                 element_cty = args[0]()
-            return CtyList(element_type=element_cty)
+            return CtyList(element_type=element_cty)  # type: ignore[return-value]
         elif origin_type in (dict, dict):
-            value_cty: CtyType[Any] = CtyDynamic()
+            value_cty: CtyType[object] = CtyDynamic()
             if args and len(args) > 1 and isinstance(args[1], type) and issubclass(args[1], CtyType):
                 value_cty = args[1]()
-            return CtyMap(element_type=value_cty)
+            return CtyMap(element_type=value_cty)  # type: ignore[return-value]
         raise ValueError(f"Unsupported collection type: {origin_type}")
 
     @staticmethod
-    def _infer_union_cty_type(args: tuple[Any, ...]) -> CtyType[Any]:
+    def _infer_union_cty_type(args: tuple[Any, ...]) -> CtyType[object]:
         types_in_union = [t for t in args if t is not type(None)]
         if all(t in (int, float) for t in types_in_union):
-            return CtyNumber()
+            return CtyNumber()  # type: ignore[return-value]
         elif len(types_in_union) == 1 and types_in_union[0] is str:
-            return CtyString()
+            return CtyString()  # type: ignore[return-value]
         return CtyDynamic()
 
     @staticmethod
@@ -200,11 +200,11 @@ class FunctionAdapter:
         if origin_type is typing.Union:
             return FunctionAdapter._infer_union_cty_type(args)
 
-        direct_mappings = {
-            str: CtyString(),
-            int: CtyNumber(),
-            float: CtyNumber(),
-            bool: CtyBool(),
+        direct_mappings: dict[type, CtyType[object]] = {
+            str: CtyString(),  # type: ignore[dict-item]
+            int: CtyNumber(),  # type: ignore[dict-item]
+            float: CtyNumber(),  # type: ignore[dict-item]
+            bool: CtyBool(),  # type: ignore[dict-item]
         }
         return direct_mappings.get(hint, CtyDynamic())
 

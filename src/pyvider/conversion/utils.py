@@ -11,16 +11,16 @@ from pyvider.cty import CtyDynamic, CtyList, CtyObject, CtyType, CtyValue
 from pyvider.cty.conversion import infer_cty_type_from_raw
 
 
-def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyValue:
+def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyValue[Any]:
     """
     Analyzes a list of dictionaries, infers a unified CtyObject schema,
     and returns a validated CtyValue representing a CtyList(CtyObject).
     """
     if not dict_list:
-        return CtyList(element_type=CtyDynamic()).validate([])
+        return CtyList(element_type=CtyDynamic()).validate([])  # type: ignore[no-any-return]
 
     all_keys: set[str] = set()
-    attribute_types: dict[str, CtyType] = {}
+    attribute_types: dict[str, CtyType[object]] = {}
 
     for item in dict_list:
         all_keys.update(item.keys())
@@ -31,12 +31,14 @@ def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyVa
             elif not attribute_types[key].equal(inferred_type):
                 attribute_types[key] = CtyDynamic()
 
-    optional_keys = {key for key in all_keys if not all(key in item for item in dict_list)}
+    optional_keys_list: list[str] = [
+        key for key in all_keys if not all(key in item for item in dict_list)
+    ]
 
     unified_object_type = CtyObject(
-        attribute_types=attribute_types, optional_attributes=frozenset(optional_keys)
+        attribute_types=attribute_types, optional_attributes=optional_keys_list  # type: ignore[arg-type]
     )
 
     final_list_type = CtyList(element_type=unified_object_type)
 
-    return final_list_type.validate(dict_list)
+    return final_list_type.validate(dict_list)  # type: ignore[no-any-return]
