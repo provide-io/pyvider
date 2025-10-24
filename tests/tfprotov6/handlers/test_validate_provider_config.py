@@ -1,5 +1,6 @@
 """Tests for ValidateProviderConfig handler."""
 
+from unittest.mock import MagicMock
 from provide.testkit.mocking import patch
 import pytest
 
@@ -48,16 +49,16 @@ class TestValidateProviderConfigImplementation:
     @pytest.mark.asyncio
     async def test_impl_handles_exception(self, sample_request):
         """Test implementation handles exceptions gracefully."""
-        # Patch logger.trace to raise an exception
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger:
-            mock_logger.trace.side_effect = RuntimeError("Test error")
+        # Create a mock request that raises an exception when bool() is called on msgpack
+        bad_request = MagicMock()
+        bad_request.config.msgpack.__bool__ = MagicMock(side_effect=RuntimeError("Test error"))
 
-            response = await _validate_provider_config_impl(sample_request, context=None)
+        response = await _validate_provider_config_impl(bad_request, context=None)
 
-            # Should return response with error diagnostic
-            assert len(response.diagnostics) == 1
-            assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
-            assert "Provider configuration validation failed" in response.diagnostics[0].summary
+        # Should return response with error diagnostic
+        assert len(response.diagnostics) == 1
+        assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
+        assert "Provider configuration validation failed" in response.diagnostics[0].summary
 
 
 class TestValidateProviderConfigMetrics:

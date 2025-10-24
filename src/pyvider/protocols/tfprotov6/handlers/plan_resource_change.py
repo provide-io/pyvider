@@ -30,7 +30,23 @@ from pyvider.resources.context import ResourceContext
 async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any]:
     resource_class = hub.get_component("resource", type_name)
     if not resource_class:
-        err = ResourceError(f"Resource type '{type_name}' not registered")
+        logger.error(
+            "Resource type not found during plan operation",
+            operation="plan_resource_change",
+            resource_type=type_name,
+            registered_resources=list(hub.get_components("resource").keys()) if hub.get_components("resource") else [],
+        )
+
+        err = ResourceError(
+            f"Resource type '{type_name}' not registered.\n\n"
+            f"Suggestion: Ensure the resource is registered using the @resource decorator "
+            f"and that component discovery has completed successfully.\n\n"
+            f"Troubleshooting:\n"
+            f"  1. Check that the resource class has the @resource decorator\n"
+            f"  2. Verify the resource module is imported by the provider\n"
+            f"  3. Run 'pyvider components list' to see registered resources\n"
+            f"  4. Review provider logs for component registration errors"
+        )
         err.add_context("resource.type_name", type_name)
         err.add_context("terraform.summary", "Unknown resource type")
         err.add_context(
@@ -40,7 +56,24 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
 
     provider_instance = hub.get_component("singleton", "provider")
     if not provider_instance:
-        raise RuntimeError("Provider instance not found in hub.")
+        logger.error(
+            "Provider instance not found in hub during plan operation",
+            operation="plan_resource_change",
+            resource_type=type_name,
+        )
+        raise RuntimeError(
+            "Provider instance not found in hub.\n\n"
+            "This is an internal framework error. The provider should be registered "
+            "during server initialization.\n\n"
+            "Suggestion: Report this issue - it indicates a provider initialization problem."
+        )
+
+    logger.debug(
+        "Resource and provider instances retrieved for plan",
+        operation="plan_resource_change",
+        resource_type=type_name,
+    )
+
     return resource_class, provider_instance
 
 
@@ -55,20 +88,35 @@ async def _unmarshal_request_data(
 
 
 async def _process_private_state(resource_class: Any, prior_private: bytes) -> Any | None:
+    logger.debug(
+        "Processing prior private state for plan operation",
+        operation="process_private_state",
+        has_prior_private=bool(prior_private),
+        private_data_size=len(prior_private) if prior_private else 0,
+    )
+
     private_state_instance = None
     if hasattr(resource_class, "private_state_class") and resource_class.private_state_class and prior_private:
         decrypted_bytes = None
         try:
-            logger.debug(f"Attempting to decrypt prior_private: {prior_private}")
             decrypted_bytes = decrypt(prior_private)
             private_data = msgpack.unpackb(decrypted_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
-            logger.debug(f"Successfully deserialized prior private state: {private_state_instance}")
+
+            logger.debug(
+                "Prior private state deserialized successfully",
+                operation="process_private_state",
+                private_state_class=getattr(resource_class.private_state_class, "__name__", str(resource_class.private_state_class)),
+            )
+
         except Exception as e:
             logger.warning(
-                f"Could not deserialize prior private state for {resource_class.__name__}: {e}",
-                prior_private=prior_private,
-                decrypted_bytes=decrypted_bytes,
+                "Could not deserialize prior private state, continuing with plan",
+                operation="process_private_state",
+                resource_class=getattr(resource_class, "__name__", str(resource_class)),
+                error_type=type(e).__name__,
+                error_message=str(e),
+                suggestion="This may be expected if the resource schema changed. Private state will be regenerated during apply.",
             )
     return private_state_instance
 
@@ -163,6 +211,16 @@ async def _plan_resource_change_impl(
     """Implementation of PlanResourceChange handler."""
     response = pb.PlanResourceChange.Response()
     resource_context = None
+
+    logger.debug(
+        "PlanResourceChange handler called",
+        operation="plan_resource_change",
+        resource_type=request.type_name,
+        has_prior_state=bool(request.prior_state.msgpack),
+        has_config=bool(request.config.msgpack),
+        has_proposed_state=bool(request.proposed_new_state.msgpack),
+    )
+
     try:
         resource_class, provider_instance = await _get_resource_and_provider_instances(request.type_name)
         resource_schema = resource_class.get_schema()
@@ -187,11 +245,20 @@ async def _plan_resource_change_impl(
             provider_instance,
         )
 
+        logger.debug(
+            "Invoking resource plan method",
+            operation="plan_resource_change",
+            resource_type=request.type_name,
+        )
+
         planned_state_dict, planned_private_state_attrs = await resource_handler.plan(resource_context)
 
-        logger.debug(f"Resource.plan() returned planned_state_dict: {planned_state_dict}")
         logger.debug(
-            f"Keys in planned_state_dict: {list(planned_state_dict.keys()) if planned_state_dict else None}"
+            "Resource plan method completed",
+            operation="plan_resource_change",
+            resource_type=request.type_name,
+            has_planned_state=planned_state_dict is not None,
+            planned_state_keys=list(planned_state_dict.keys()) if planned_state_dict else [],
         )
 
         if resource_context.diagnostics:
@@ -207,12 +274,42 @@ async def _plan_resource_change_impl(
                 attrs.asdict(planned_private_state_attrs), use_bin_type=True
             )
             response.planned_private = encrypt(serialized_private_bytes)
-            logger.debug(f"Setting response.planned_private: {response.planned_private}")
+
+            logger.debug(
+                "Encrypted planned private state",
+                operation="plan_resource_change",
+                resource_type=request.type_name,
+                private_state_size=len(response.planned_private),
+            )
+
+        logger.info(
+            "Resource plan completed successfully",
+            operation="plan_resource_change",
+            resource_type=request.type_name,
+            has_planned_state=bool(response.planned_state.msgpack),
+            has_planned_private=bool(response.planned_private),
+        )
 
     except (CtyValidationError, PyviderError) as e:
+        logger.error(
+            "PlanResourceChange failed with framework error",
+            operation="plan_resource_change",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
+        logger.error(
+            "PlanResourceChange failed with unexpected error",
+            operation="plan_resource_change",
+            resource_type=request.type_name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
 

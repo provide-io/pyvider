@@ -41,22 +41,52 @@ async def _validate_provider_config_impl(
     request: pb.ValidateProviderConfig.Request, context: Any
 ) -> pb.ValidateProviderConfig.Response:
     """Implementation of ValidateProviderConfig handler."""
-    logger.debug("6️⃣️ 📋 ValidateProviderConfigHandler called")
     try:
-        logger.trace(99, f"6️⃣️ ←️ 📋 ValidateProviderConfig request: {request}")
+        logger.debug(
+            "ValidateProviderConfig handler called",
+            operation="validate_provider_config",
+            has_config=bool(request.config.msgpack),
+        )
+        # Provider configuration validation is typically minimal
+        # Most validation happens in the provider's configure() method
         response = pb.ValidateProviderConfig.Response(
             diagnostics=[]  # Empty diagnostics means validation passed
         )
-        logger.trace(99, f"6️⃣️ →️ 📋 ValidateProviderConfig response: {response}")
+
+        logger.info(
+            "Provider configuration validation passed",
+            operation="validate_provider_config",
+        )
+
         return response
+
     except Exception as e:
-        logger.error(f"6️⃣️ ⛔️ 📋 Error in ValidateProviderConfig: {e!s}", exc_info=True)
+        logger.error(
+            "ValidateProviderConfig failed with unexpected error",
+            operation="validate_provider_config",
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
+
+        error_detail = (
+            f"Provider configuration validation failed: {e}\n\n"
+            f"Suggestion: Check that your provider configuration is valid and matches "
+            f"the provider schema.\n\n"
+            f"Troubleshooting:\n"
+            f"  1. Review the provider documentation for required configuration fields\n"
+            f"  2. Ensure all required fields are provided\n"
+            f"  3. Check that field values are of the correct type\n"
+            f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG\n\n"
+            f"Error details: {type(e).__name__}: {e}"
+        )
+
         return pb.ValidateProviderConfig.Response(
             diagnostics=[
                 Diagnostic(
                     severity=Diagnostic.ERROR,
                     summary="Provider configuration validation failed",
-                    detail=str(e),
+                    detail=error_detail,
                 )
             ]
         )
