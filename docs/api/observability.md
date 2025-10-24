@@ -1,518 +1,360 @@
 # Observability API Reference
 
-This page documents Pyvider's observability features for monitoring, metrics, and telemetry in Terraform providers.
+This page documents Pyvider's built-in metrics for monitoring provider operations, resource lifecycle, and performance.
 
 ## Overview
 
-Pyvider provides comprehensive observability through:
-- Structured logging via `provide.foundation`
-- Metrics collection and export
-- Distributed tracing support
-- Performance profiling
-- Request/response tracking
+Pyvider provides automatic metrics collection for all provider operations using the `provide.foundation.metrics` library. These metrics are exported as counters and histograms that can be integrated with monitoring systems like Prometheus, CloudWatch, or Datadog.
 
-## Metrics System
+!!! note "Metrics vs Full Observability"
+    Pyvider currently provides **metrics only** through the `pyvider.observability` module. For structured logging, use `structlog` or `provide.foundation.logging` directly in your provider code. Advanced tracing and profiling features may be added in future releases.
 
-### Metric Types
+## Available Metrics
 
-Pyvider tracks various metric types:
+All metrics are automatically collected by Pyvider's internal handlers. You don't need to manually instrument your provider code - these metrics are recorded as your resources, data sources, and functions execute.
+
+### Resource Lifecycle Metrics
+
+Track resource operations and their outcomes:
 
 ```python
-from pyvider.observability import metrics
-
-# Counter - Cumulative values
-metrics.increment_counter(
-    "provider.api_calls",
-    tags={"method": "create", "resource": "server"}
-)
-
-# Gauge - Point-in-time values
-metrics.set_gauge(
-    "provider.active_connections",
-    value=42,
-    tags={"region": "us-east-1"}
-)
-
-# Histogram - Distribution of values
-metrics.record_histogram(
-    "provider.request_duration_ms",
-    value=127.5,
-    tags={"operation": "create_resource"}
-)
-
-# Summary - Statistical distribution
-metrics.record_summary(
-    "provider.response_size_bytes",
-    value=2048,
-    tags={"endpoint": "/api/v1/resources"}
+from pyvider.observability import (
+    resource_operations,      # Total resource operations
+    resource_create_total,    # Create operations
+    resource_read_total,      # Read operations
+    resource_update_total,    # Update operations
+    resource_delete_total,    # Delete operations
+    resource_errors,          # Resource operation errors
 )
 ```
 
-### Built-in Metrics
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.resource.operations.total` | Counter | Total number of resource operations across all types |
+| `pyvider.resource.create.total` | Counter | Total resource create (apply) operations |
+| `pyvider.resource.read.total` | Counter | Total resource read/refresh operations |
+| `pyvider.resource.update.total` | Counter | Total resource update (apply) operations |
+| `pyvider.resource.delete.total` | Counter | Total resource delete operations |
+| `pyvider.resource.errors.total` | Counter | Total resource operation errors |
 
-Pyvider automatically tracks:
+**Tags**: Resource metrics include tags for `resource_type` (e.g., `mycloud_server`)
 
-| Metric Name | Type | Description | Tags |
-|------------|------|-------------|------|
-| `pyvider.requests.total` | Counter | Total provider requests | `method`, `resource_type` |
-| `pyvider.requests.duration_ms` | Histogram | Request duration | `method`, `resource_type`, `status` |
-| `pyvider.requests.errors` | Counter | Request errors | `method`, `resource_type`, `error_type` |
-| `pyvider.resources.created` | Counter | Resources created | `resource_type` |
-| `pyvider.resources.updated` | Counter | Resources updated | `resource_type` |
-| `pyvider.resources.deleted` | Counter | Resources deleted | `resource_type` |
-| `pyvider.grpc.connections` | Gauge | Active gRPC connections | `state` |
-| `pyvider.grpc.message_size` | Histogram | gRPC message sizes | `direction`, `type` |
+### Handler Performance Metrics
 
-## Structured Logging
-
-### Logger Configuration
+Monitor the performance of Terraform protocol handlers:
 
 ```python
-import structlog
-from pyvider.observability import configure_logging
-
-# Configure logging with custom settings
-configure_logging(
-    level="DEBUG",
-    format="json",  # or "console" for development
-    include_timestamp=True,
-    include_caller=True,
-    processors=[
-        structlog.processors.add_log_level,
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.StackInfoRenderer(),
-        structlog.processors.format_exc_info,
-    ]
+from pyvider.observability import (
+    handler_duration,         # Handler execution time (histogram)
+    handler_requests,         # Total handler requests
+    handler_errors,           # Handler errors
 )
 ```
 
-### Using the Logger
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.handler.duration.seconds` | Histogram | Handler execution duration in seconds |
+| `pyvider.handler.requests.total` | Counter | Total number of handler requests |
+| `pyvider.handler.errors.total` | Counter | Total number of handler errors |
+
+**Tags**: Handler metrics include tags for `handler_name` (e.g., `ApplyResourceChange`)
+
+### Discovery Metrics
+
+Track component discovery performance:
 
 ```python
-import structlog
+from pyvider.observability import (
+    discovery_duration,       # Discovery time (histogram)
+    components_discovered,    # Components found
+    discovery_errors,         # Discovery errors
+)
+```
 
-logger = structlog.get_logger()
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.discovery.duration.seconds` | Histogram | Component discovery duration in seconds |
+| `pyvider.discovery.components.total` | Counter | Total number of components discovered |
+| `pyvider.discovery.errors.total` | Counter | Total number of discovery errors |
 
-class MyResource(BaseResource):
+**Tags**: Discovery metrics include tags for `component_type` (e.g., `resource`, `data_source`)
+
+### Schema Metrics
+
+Monitor schema generation and caching:
+
+```python
+from pyvider.observability import (
+    schema_generation_duration,  # Schema generation time
+    schema_cache_hits,           # Schema cache hits
+)
+```
+
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.schema.generation.duration.seconds` | Histogram | Schema generation duration in seconds |
+| `pyvider.schema.cache.hits.total` | Counter | Total number of schema cache hits |
+
+### Data Source Metrics
+
+Track data source operations:
+
+```python
+from pyvider.observability import (
+    datasource_read_total,    # Data source reads
+    datasource_errors,        # Data source errors
+)
+```
+
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.datasource.read.total` | Counter | Total number of data source read operations |
+| `pyvider.datasource.errors.total` | Counter | Total number of data source errors |
+
+**Tags**: Data source metrics include tags for `datasource_type` (e.g., `mycloud_images`)
+
+### Function Metrics
+
+Monitor provider function calls:
+
+```python
+from pyvider.observability import (
+    function_calls,          # Function call count
+    function_duration,       # Function execution time
+    function_errors,         # Function errors
+)
+```
+
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.function.calls.total` | Counter | Total number of function calls |
+| `pyvider.function.duration.seconds` | Histogram | Function execution duration in seconds |
+| `pyvider.function.errors.total` | Counter | Total number of function errors |
+
+**Tags**: Function metrics include tags for `function_name` (e.g., `hash_file`)
+
+### Ephemeral Resource Metrics
+
+Track ephemeral resource lifecycle:
+
+```python
+from pyvider.observability import (
+    ephemeral_open_total,     # Open operations
+    ephemeral_renew_total,    # Renew operations
+    ephemeral_close_total,    # Close operations
+    ephemeral_errors,         # Ephemeral errors
+)
+```
+
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.ephemeral.open.total` | Counter | Total ephemeral resource open operations |
+| `pyvider.ephemeral.renew.total` | Counter | Total ephemeral resource renew operations |
+| `pyvider.ephemeral.close.total` | Counter | Total ephemeral resource close operations |
+| `pyvider.ephemeral.errors.total` | Counter | Total ephemeral resource errors |
+
+**Tags**: Ephemeral metrics include tags for `ephemeral_type`
+
+### Provider Metrics
+
+Monitor provider configuration:
+
+```python
+from pyvider.observability import (
+    provider_configure_total,       # Configure operations
+    provider_configure_errors,      # Configuration errors
+)
+```
+
+| Metric Name | Type | Description |
+|------------|------|-------------|
+| `pyvider.provider.configure.total` | Counter | Total provider configure operations |
+| `pyvider.provider.configure.errors.total` | Counter | Total provider configure errors |
+
+## Using Metrics
+
+### Automatic Collection
+
+Metrics are automatically collected - you don't need to do anything:
+
+```python
+@register_resource("server")
+class Server(BaseResource):
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Bind context to all logs in this method
-        log = logger.bind(
-            resource_type="mycloud_server",
-            resource_name=ctx.config.name,
-            operation="create"
-        )
+        # resource_create_total is automatically incremented
+        # handler_duration automatically records timing
+        # resource_errors incremented on exception
 
-        log.info("Creating resource", config=config.__dict__)
-
-        try:
-            # Create resource
-            result = await self.provider.api.create_server(...)
-
-            log.info(
-                "Resource created successfully",
-                resource_id=result.id,
-                duration_ms=elapsed_time
-            )
-
-            return State(...)
-
-        except Exception as e:
-            log.error(
-                "Resource creation failed",
-                error=str(e),
-                error_type=type(e).__name__,
-                exc_info=True  # Include stack trace
-            )
-            raise
+        server = await self.api.create_server(ctx.config)
+        return State(id=server.id, name=server.name), None
 ```
 
-### Log Levels
+### Manual Metric Recording
+
+If you need to record custom metrics in your provider, use `provide.foundation.metrics` directly:
 
 ```python
-# Log levels in order of severity
-logger.debug("Detailed diagnostic information")
-logger.info("General informational messages")
-logger.warning("Warning messages for potential issues")
-logger.error("Error messages for failures")
-logger.critical("Critical failures requiring immediate attention")
-```
+from provide.foundation.metrics import counter, histogram
 
-## Tracing
+# Define custom metrics
+api_calls = counter(
+    "mycloud.api.calls.total",
+    description="Total API calls to cloud service"
+)
 
-### Distributed Tracing with OpenTelemetry
+api_latency = histogram(
+    "mycloud.api.latency.seconds",
+    description="API call latency",
+    unit="s"
+)
 
-```python
-from opentelemetry import trace
-from pyvider.observability import get_tracer
-
-tracer = get_tracer("my_provider")
-
-class MyResource(BaseResource):
+@register_resource("server")
+class Server(BaseResource):
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Start a span for the operation
-        with tracer.start_as_current_span(
-            "resource.create",
-            attributes={
-                "resource.type": "server",
-                "resource.name": ctx.config.name,
-                "provider.name": "mycloud"
-            }
-        ) as span:
-            try:
-                # Nested span for API call
-                with tracer.start_as_current_span("api.create_server") as api_span:
-                    api_span.set_attribute("api.endpoint", "/servers")
-                    api_span.set_attribute("api.method", "POST")
+        # Record custom metric
+        api_calls.inc({"endpoint": "create_server", "region": "us-east-1"})
 
-                    result = await self.provider.api.create_server(...)
+        start = time.time()
+        server = await self.api.create_server(ctx.config)
+        duration = time.time() - start
 
-                    api_span.set_attribute("api.response.id", result.id)
-                    api_span.set_status(trace.Status(trace.StatusCode.OK))
+        api_latency.observe(duration, {"endpoint": "create_server"})
 
-                span.set_attribute("resource.id", result.id)
-                return State(...)
-
-            except Exception as e:
-                span.record_exception(e)
-                span.set_status(
-                    trace.Status(
-                        trace.StatusCode.ERROR,
-                        str(e)
-                    )
-                )
-                raise
-```
-
-### Trace Context Propagation
-
-```python
-from opentelemetry import propagate
-
-async def make_api_call(self, endpoint: str, data: dict):
-    """Make API call with trace context propagation."""
-
-    # Extract trace context
-    headers = {}
-    propagate.inject(headers)
-
-    # Include trace headers in API call
-    response = await self.client.post(
-        endpoint,
-        json=data,
-        headers=headers
-    )
-
-    return response
-```
-
-## Performance Profiling
-
-### Method Timing Decorator
-
-```python
-from pyvider.observability import timed
-
-class MyResource(BaseResource):
-    @timed("resource.create")
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        """Create method with automatic timing."""
-        # Method execution time automatically recorded
-        result = await self._create_impl(ctx.config)
-        return result, None
-
-    @timed("api.call", include_args=True)
-    async def api_call(self, method: str, endpoint: str):
-        """API call with detailed timing."""
-        # Records timing with method and endpoint as tags
-        return await self.client.request(method, endpoint)
-```
-
-### Manual Timing
-
-```python
-from pyvider.observability import Timer
-
-async def complex_operation(self):
-    """Operation with manual timing points."""
-    timer = Timer()
-
-    # Time initialization
-    with timer.measure("init"):
-        await self.initialize()
-
-    # Time main operation
-    with timer.measure("process"):
-        result = await self.process_data()
-
-    # Log all timings
-    logger.info("Operation complete", timings=timer.get_all())
-
-    # Record as metrics
-    for name, duration in timer.get_all().items():
-        metrics.record_histogram(
-            f"operation.{name}.duration_ms",
-            value=duration
-        )
-```
-
-## Request/Response Tracking
-
-### Middleware for Request Tracking
-
-```python
-from pyvider.observability import RequestTracker
-
-class TrackedProvider(BaseProvider):
-    def __init__(self):
-        super().__init__()
-        self.tracker = RequestTracker()
-
-    async def handle_request(self, request):
-        """Handle request with tracking."""
-        # Start tracking
-        request_id = self.tracker.start_request(
-            method=request.method,
-            resource_type=request.resource_type
-        )
-
-        try:
-            # Process request
-            response = await self.process(request)
-
-            # Record success
-            self.tracker.complete_request(
-                request_id,
-                status="success",
-                response_size=len(response)
-            )
-
-            return response
-
-        except Exception as e:
-            # Record failure
-            self.tracker.complete_request(
-                request_id,
-                status="error",
-                error=str(e)
-            )
-            raise
-```
-
-## Health Checks
-
-### Health Status Reporting
-
-```python
-from pyvider.observability import HealthCheck, HealthStatus
-
-class MyProvider(BaseProvider):
-    def __init__(self):
-        super().__init__()
-        self.health = HealthCheck()
-
-    async def check_health(self) -> HealthStatus:
-        """Perform health checks."""
-        status = HealthStatus()
-
-        # Check API connectivity
-        try:
-            await self.api_client.ping()
-            status.add_check("api", "healthy", {"endpoint": self.api_endpoint})
-        except Exception as e:
-            status.add_check("api", "unhealthy", {"error": str(e)})
-
-        # Check database
-        try:
-            await self.db.query("SELECT 1")
-            status.add_check("database", "healthy")
-        except Exception as e:
-            status.add_check("database", "unhealthy", {"error": str(e)})
-
-        return status
+        return State(id=server.id), None
 ```
 
 ## Metrics Export
 
 ### Prometheus Export
 
+Pyvider metrics can be exported to Prometheus via the `provide.foundation` library. Configure your provider's metrics endpoint:
+
 ```python
-from pyvider.observability import PrometheusExporter
+# In your provider startup code
+from provide.foundation.metrics import start_metrics_server
 
-# Configure Prometheus exporter
-exporter = PrometheusExporter(
-    port=9090,
-    path="/metrics",
-    namespace="pyvider"
-)
-
-# Start exporter
-await exporter.start()
+# Start metrics server
+start_metrics_server(port=9090)
 
 # Metrics available at http://localhost:9090/metrics
 ```
 
-### Custom Metric Exporters
+### Other Exporters
+
+The `provide.foundation.metrics` library supports multiple exporters. See the [provide.foundation documentation](https://github.com/provide-io/provide-foundation) for details on:
+
+- CloudWatch export
+- Datadog export
+- StatsD export
+- Custom exporters
+
+## Metric Types
+
+### Counter
+
+Counters track cumulative totals that only increase:
 
 ```python
-from pyvider.observability import MetricExporter
+from provide.foundation.metrics import counter
 
-class CloudWatchExporter(MetricExporter):
-    """Export metrics to AWS CloudWatch."""
+requests = counter("mycloud.requests.total", description="Total requests")
+requests.inc()  # Increment by 1
+requests.inc({"status": "success"})  # With tags
+```
 
-    async def export(self, metrics: list[Metric]):
-        """Send metrics to CloudWatch."""
-        for metric in metrics:
-            await self.cloudwatch.put_metric_data(
-                Namespace="Pyvider",
-                MetricData=[
-                    {
-                        "MetricName": metric.name,
-                        "Value": metric.value,
-                        "Timestamp": metric.timestamp,
-                        "Dimensions": [
-                            {"Name": k, "Value": v}
-                            for k, v in metric.tags.items()
-                        ]
-                    }
-                ]
-            )
+### Histogram
+
+Histograms track distributions of values (timing, sizes, etc.):
+
+```python
+from provide.foundation.metrics import histogram
+
+latency = histogram("mycloud.latency.seconds", description="Latency", unit="s")
+latency.observe(0.125)  # Record observation
+latency.observe(0.250, {"endpoint": "create"})  # With tags
+```
+
+## Structured Logging
+
+For structured logging in your provider, use `structlog` or `provide.foundation.logging`:
+
+```python
+import structlog
+
+logger = structlog.get_logger()
+
+@register_resource("server")
+class Server(BaseResource):
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+        log = logger.bind(
+            operation="create",
+            resource_type="server",
+            resource_name=ctx.config.name
+        )
+
+        log.info("Creating server", size=ctx.config.size)
+
+        try:
+            server = await self.api.create_server(ctx.config)
+            log.info("Server created", server_id=server.id, duration_ms=elapsed)
+            return State(id=server.id), None
+        except Exception as e:
+            log.error("Server creation failed", error=str(e), exc_info=True)
+            raise
 ```
 
 ## Environment Variables
 
-Configure observability via environment variables:
+Configure metrics behavior via environment variables:
 
 ```bash
-# Logging
-export PYVIDER_LOG_LEVEL=DEBUG
-export PYVIDER_LOG_FORMAT=json
-export PYVIDER_LOG_FILE=/var/log/pyvider.log
-
-# Metrics
+# Enable/disable metrics
 export PYVIDER_METRICS_ENABLED=true
-export PYVIDER_METRICS_EXPORT=prometheus
+
+# Metrics server port (if using built-in server)
 export PYVIDER_METRICS_PORT=9090
 
-# Tracing
-export PYVIDER_TRACING_ENABLED=true
-export PYVIDER_TRACING_EXPORTER=otlp
-export PYVIDER_TRACING_ENDPOINT=http://localhost:4317
-export PYVIDER_TRACING_SAMPLE_RATE=0.1
-
-# Profiling
-export PYVIDER_PROFILE=true
-export PYVIDER_PROFILE_OUTPUT=/tmp/pyvider.prof
-```
-
-## Best Practices
-
-### 1. Consistent Metric Naming
-
-```python
-# Good - Consistent naming convention
-metrics.increment_counter("pyvider.resource.create.success")
-metrics.increment_counter("pyvider.resource.create.failure")
-metrics.record_histogram("pyvider.resource.create.duration_ms")
-
-# Bad - Inconsistent naming
-metrics.increment_counter("created_resources")
-metrics.increment_counter("ResourceCreateFail")
-metrics.record_histogram("create_time")
-```
-
-### 2. Meaningful Log Context
-
-```python
-# Good - Rich context
-logger.info(
-    "Resource operation completed",
-    operation="create",
-    resource_type="server",
-    resource_id=result.id,
-    duration_ms=elapsed,
-    api_calls=3,
-    cache_hits=2
-)
-
-# Bad - Minimal context
-logger.info(f"Created {result.id}")
-```
-
-### 3. Appropriate Log Levels
-
-```python
-# Debug - Detailed diagnostic info
-logger.debug("Parsing configuration", raw_config=config_dict)
-
-# Info - Normal operations
-logger.info("Resource created", resource_id=resource.id)
-
-# Warning - Potential issues
-logger.warning("API rate limit approaching", remaining=10)
-
-# Error - Failures that are handled
-logger.error("API call failed, retrying", attempt=2, error=str(e))
-
-# Critical - Unrecoverable failures
-logger.critical("Cannot connect to database", error=str(e))
-```
-
-## Testing Observability
-
-```python
-import pytest
-from unittest.mock import Mock, patch
-from pyvider.observability import metrics, configure_logging
-
-def test_metrics_recording():
-    """Test that metrics are properly recorded."""
-    with patch.object(metrics, 'increment_counter') as mock_counter:
-        # Perform operation that should record metrics
-        resource.create(config)
-
-        # Verify metric was recorded
-        mock_counter.assert_called_with(
-            "pyvider.resources.created",
-            tags={"resource_type": "server"}
-        )
-
-def test_error_logging():
-    """Test that errors are properly logged."""
-    with patch('structlog.get_logger') as mock_logger:
-        logger = Mock()
-        mock_logger.return_value = logger
-
-        # Trigger an error
-        with pytest.raises(ResourceError):
-            resource.create(invalid_config)
-
-        # Verify error was logged
-        logger.error.assert_called()
-        call_args = logger.error.call_args
-        assert "creation failed" in call_args[0][0]
-        assert "error" in call_args[1]
+# Log level (affects foundation logging)
+export FOUNDATION_LOG_LEVEL=INFO
 ```
 
 ## Related Documentation
 
-- [Logging Guide](../guides/logging.md) - Detailed logging patterns
-- [Debugging](../guides/debugging.md) - Debug with observability tools
-- [Error Handling](../guides/error-handling.md) - Error tracking and reporting
+- [provide.foundation metrics](https://github.com/provide-io/provide-foundation) - Underlying metrics library
+- [Logging Guide](../guides/logging.md) - Structured logging patterns
+- [Debugging](../guides/debugging.md) - Debug with metrics
+- [Error Handling](../guides/error-handling.md) - Error tracking
 
-## Auto-Generated API Documentation
+## Module Reference
+
+### Exported Metrics
 
 ::: pyvider.observability
     options:
-      show_source: true
-      show_bases: true
+      show_source: false
       members:
-        - metrics
-        - configure_logging
-        - get_tracer
-        - Timer
-        - timed
-        - RequestTracker
-        - HealthCheck
-        - HealthStatus
-        - MetricExporter
-        - PrometheusExporter
+        - resource_operations
+        - resource_create_total
+        - resource_read_total
+        - resource_update_total
+        - resource_delete_total
+        - resource_errors
+        - handler_duration
+        - handler_requests
+        - handler_errors
+        - discovery_duration
+        - components_discovered
+        - discovery_errors
+        - schema_generation_duration
+        - schema_cache_hits
+        - datasource_read_total
+        - datasource_errors
+        - function_calls
+        - function_duration
+        - function_errors
+        - ephemeral_open_total
+        - ephemeral_renew_total
+        - ephemeral_close_total
+        - ephemeral_errors
+        - provider_configure_total
+        - provider_configure_errors
