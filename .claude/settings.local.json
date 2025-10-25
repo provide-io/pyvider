@@ -99,7 +99,8 @@
       "Bash(TF_PLUGIN_MAGIC_COOKIE=d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d37e95f7aa66ad0 /Users/tim/.terraform.d/plugins/local/providers/pyvider/0.1.0/darwin_arm64/terraform-provider-pyvider:*)",
       "Bash(TF_LOG=debug tofu init:*)",
       "Bash(export TF_PLUGIN_MAGIC_COOKIE=d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d37e95f7aa66ad0)",
-      "Bash(/Users/tim/.terraform.d/plugins/local/providers/pyvider/0.1.0/darwin_arm64/terraform-provider-pyvider)"
+      "Bash(/Users/tim/.terraform.d/plugins/local/providers/pyvider/0.1.0/darwin_arm64/terraform-provider-pyvider)",
+      "Bash(timeout:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
