@@ -45,37 +45,8 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _handle_cty_value(cls, cty_value: CtyValue, target_cls: type) -> Any | None:
         if cty_value.is_null:
             return None
-        if cty_value.is_unknown:
-            # Debug: log what we're dealing with
-            logger.debug(
-                "Handling unknown CtyValue",
-                cty_type=type(cty_value.type).__name__,
-                value_type=type(cty_value.value).__name__,
-                is_dict=isinstance(cty_value.value, dict),
-                value_repr=repr(cty_value.value)[:100],
-                target_cls=target_cls.__name__ if hasattr(target_cls, '__name__') else str(target_cls),
-            )
-            # Check if the unknown value actually has field data
-            # CtyObjects can be marked as unknown but still have partial field information
-            if isinstance(cty_value.type, CtyObject) and isinstance(cty_value.value, dict):
-                # The object is marked unknown but has field data - process it normally
-                logger.debug("Unknown object with dict value - processing fields")
-                return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
-            elif isinstance(cty_value.type, CtyObject) and attrs.has(target_cls):
-                # Truly unknown object with no field data - create instance with None values
-                logger.debug("Unknown object without field data - creating empty instance")
-                target_fields = {f.name: f for f in attrs.fields(target_cls)}
-                kwargs = {}
-                for name, field_def in target_fields.items():
-                    if field_def.init:
-                        kwargs[name] = None
-                try:
-                    return target_cls(**kwargs)
-                except TypeError:
-                    return None
-            # For non-object types or non-attrs classes, unknown means None
-            if not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
-                return None
+        if cty_value.is_unknown and not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
+            return None
         return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
 
     @classmethod
@@ -91,15 +62,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
     @classmethod
     def _handle_attrs_conversion(cls, data: Any, target_cls: type) -> Any | None:
-        # Check for UnrefinedUnknownValue explicitly
-        if type(data).__name__ == 'UnrefinedUnknownValue':
-            logger.debug(
-                "Cannot construct attrs class from UnrefinedUnknownValue",
-                operation="attrs_conversion",
-                class_name=target_cls.__name__,
-            )
-            return None
-
         if not isinstance(data, dict):
             logger.warning(
                 "Cannot construct attrs class from non-dict data type",
@@ -169,8 +131,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if isinstance(data, CtyValue):
             return cls._handle_cty_value(data, target_cls)
 
-        # Check for unknown/None values - use type name since identity may not match
-        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL or type(data).__name__ == 'UnrefinedUnknownValue':
+        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL:
             return None
 
         origin = get_origin(target_cls)
