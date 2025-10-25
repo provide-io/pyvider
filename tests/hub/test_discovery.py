@@ -46,10 +46,8 @@ class TestDiscoverAll:
             with patch.object(discovery, "_discover_package") as mock_discover:
                 await discovery.discover_all()
 
-                # Should fall back to manual discovery
-                assert mock_discover.call_count == 2
-                mock_discover.assert_any_call("pyvider.components", strict=False)
-                mock_discover.assert_any_call("pyvider.providers.capabilities", strict=False)
+                # Should not discover anything when no entry points exist
+                mock_discover.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_discover_all_with_entry_points(self, discovery):
@@ -89,8 +87,13 @@ class TestDiscoverAll:
     @pytest.mark.asyncio
     async def test_discover_all_strict_mode(self, discovery):
         """Test discover_all in strict mode propagates errors."""
+        # Create a mock entry point that will trigger an error
+        mock_ep = MagicMock()
+        mock_ep.name = "test_package"
+        mock_ep.value = "test.module"
+
         with patch("importlib.metadata.entry_points") as mock_entry_points:
-            mock_entry_points.return_value = []
+            mock_entry_points.return_value = [mock_ep]
 
             with patch.object(discovery, "_discover_package") as mock_discover:
                 mock_discover.side_effect = ImportError("Test import error")

@@ -88,7 +88,9 @@
       "Bash(guides/building-components/*.md)",
       "Bash(guides/development/*.md)",
       "Bash(guides/production/*.md)",
-      "Bash(guides/usage/*.md)"
+      "Bash(guides/usage/*.md)",
+      "Bash(pyvider components:*)",
+      "Bash(pyvider:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

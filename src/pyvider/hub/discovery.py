@@ -38,19 +38,13 @@ class ComponentDiscovery:
             logger.error("🛰️🔍❌ Failed to query for entry points", error=e, exc_info=True)
             return
 
-        if not entry_points:
-            logger.info(" i No packages found declaring the 'pyvider.components' entry point.")
-            logger.info(" i Manually discovering built-in component packages.")
-            await self._discover_package("pyvider.components", strict=strict)
-            await self._discover_package("pyvider.providers.capabilities", strict=strict)
-        else:
-            for entry_point in entry_points:
-                logger.debug(
-                    "🛰️🔍📦 Found component package entry point",
-                    name=entry_point.name,
-                    module=entry_point.value,
-                )
-                await self._discover_package(entry_point.value, strict=strict)
+        for entry_point in entry_points:
+            logger.debug(
+                "🛰️🔍📦 Found component package entry point",
+                name=entry_point.name,
+                module=entry_point.value,
+            )
+            await self._discover_package(entry_point.value, strict=strict)
 
         component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
         logger.info("🛰️🔍✅ Component discovery complete", components=component_counts)
