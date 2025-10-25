@@ -133,12 +133,14 @@ nav:
   - 'Guides':
     - 'Building Providers':
       - 'Creating Providers': 'guides/creating-providers.md'
+      - 'Advanced Provider Features': 'guides/advanced-provider-features.md'
       - 'Creating Resources': 'guides/creating-resources.md'
       - 'Creating Data Sources': 'guides/creating-data-sources.md'
       - 'Creating Functions': 'guides/creating-functions.md'
       - 'Using Decorators': 'guides/using-decorators.md'
     - 'Production Providers':
       - 'Best Practices': 'guides/best-practices.md'
+      - 'Production Readiness': 'guides/production-readiness.md'
       - 'Testing Providers': 'guides/testing-providers.md'
       - 'Error Handling': 'guides/error-handling.md'
       - 'Logging': 'guides/logging.md'
@@ -158,13 +160,7 @@ nav:
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
-  - '⚡ Quick Reference': 'quick-reference.md'
-
   - 'Troubleshooting': 'troubleshooting.md'
-
-  - 'FAQ': 'faq.md'
-
-  - 'Glossary': 'glossary.md'
 
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
@@ -177,6 +173,9 @@ nav:
     - 'Schema by Example': 'schema/schema-by-example.md'
     - 'Common Patterns': 'schema/common-patterns.md'
     - 'Best Practices': 'schema/best-practices.md'
+
+  - '🔬 Capabilities (Experimental)':
+    - 'Overview': 'capabilities/overview.md'
 
   - 'API Reference':
     - 'Overview': 'api/index.md'
@@ -198,8 +197,11 @@ nav:
     - 'Conversion': 'api/conversion/index.md'
     - 'Protocols': 'api/protocols/index.md'
 
-  - '🔬 Capabilities (Experimental)':
-    - 'Overview': 'capabilities/overview.md'
+  - '⚡ Quick Reference': 'quick-reference.md'
+
+  - 'FAQ': 'faq.md'
+
+  - 'Glossary': 'glossary.md'
 
   - 'Contributing':
     - 'Guidelines': 'contributing/guidelines.md'

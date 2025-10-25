@@ -1,4 +1,4 @@
-# Testing API Reference
+# Testing Providers
 
 This page documents Pyvider's testing utilities and best practices for testing providers.
 
