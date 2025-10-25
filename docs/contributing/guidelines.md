@@ -29,4 +29,47 @@ If you find a bug in `pyvider`, please report it by creating an issue on the Git
 -   The version of `pyvider` you are using.
 -   The version of Terraform you are using.
 -   Any relevant logs or error messages.
+
+## Development Setup
+
+To set up a development environment for Pyvider:
+
+```bash
+# Clone the repository
+git clone https://github.com/provide-io/pyvider.git
+cd pyvider
+
+# Install dependencies with uv
+uv sync --group dev
+
+# Run tests
+uv run pytest
+
+# Run linters
+uv run ruff check
+uv run mypy src/pyvider
 ```
+
+See [CLAUDE.md](../../CLAUDE.md) for detailed development commands and workflows.
+
+## Code Style
+
+-   Follow PEP 8 guidelines
+-   Use type hints for all function signatures
+-   Use `ruff` for formatting and linting
+-   Write docstrings for all public APIs (Google style)
+-   Keep test coverage above 90%
+
+## Pull Request Guidelines
+
+-   Keep PRs focused on a single feature or bug fix
+-   Add tests for new functionality
+-   Update documentation for user-facing changes
+-   Ensure all tests pass and linters are clean
+-   Reference related issues in the PR description
+
+## Questions?
+
+-   Open a [GitHub Discussion](https://github.com/provide-io/pyvider/discussions) for questions
+-   Check existing issues before creating a new one
+-   Join our community channels (links in README)

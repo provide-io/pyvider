@@ -172,19 +172,25 @@ nav:
     - 'CLI': 'api/cli.md'
     - 'Common': 'api/common.md'
     - 'Hub': 'api/hub.md'
-    - 'Providers': 'api/providers/index.md'
+    - 'Providers':
+      - 'Overview': 'api/providers/index.md'
+      - 'Capabilities': 'api/providers/capabilities.md'
     - 'Resources': 'api/resources.md'
     - 'Data Sources': 'api/data_sources.md'
     - 'Functions': 'api/functions.md'
     - 'Ephemeral Resources': 'api/ephemerals.md'
     - 'Exceptions': 'api/exceptions.md'
     - 'Observability': 'api/observability.md'
-    - 'Schema': 'api/schema/index.md'
+    - 'Schema':
+      - 'Overview': 'api/schema/index.md'
+      - 'Types': 'api/schema/types.md'
     - 'Conversion': 'api/conversion/index.md'
     - 'Protocols': 'api/protocols/index.md'
 
   - '🔬 Capabilities (Experimental)':
     - 'Overview': 'capabilities/overview.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
 
   - 'Contributing':
     - 'Guidelines': 'contributing/guidelines.md'
@@ -192,5 +198,3 @@ nav:
 
   - 'Development':
     - 'Roadmap': 'development/roadmap.md'
-
-  - 'Troubleshooting': 'troubleshooting.md'
