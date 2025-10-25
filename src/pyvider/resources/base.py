@@ -45,17 +45,15 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _handle_cty_value(cls, cty_value: CtyValue, target_cls: type) -> Any | None:
         if cty_value.is_null:
             return None
-        # For primitives that are unknown, return None
         if cty_value.is_unknown and not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
             return None
-        # DEBUG: Log when processing structural types
-        logger.debug(
+        logger.trace(
             "Processing CtyValue in _handle_cty_value",
             operation="_handle_cty_value",
             is_unknown=cty_value.is_unknown,
             is_structural=isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple),
             value_type=type(cty_value.value).__name__,
-            target_cls=getattr(target_cls, '__name__', str(target_cls)),
+            target_cls=getattr(target_cls, "__name__", str(target_cls)),
         )
         return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
 
@@ -83,14 +81,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             )
             return None
 
-        logger.debug(
-            "Starting attrs conversion",
-            operation="_handle_attrs_conversion",
-            target_cls=getattr(target_cls, '__name__', str(target_cls)),
-            data_keys=list(data.keys()),
-            value_types={k: type(v).__name__ for k, v in data.items()},
-        )
-
         kwargs = {}
         target_fields = {f.name: f for f in attrs.fields(target_cls)}
 
@@ -102,22 +92,8 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 # This handles unknown/computed values during validation/planning
                 kwargs[name] = converted_value
 
-        logger.debug(
-            "Creating attrs instance",
-            operation="_handle_attrs_conversion",
-            target_cls=target_cls.__name__,
-            kwargs_keys=list(kwargs.keys()),
-            kwargs_values={k: type(v).__name__ if v is not None else None for k, v in kwargs.items()},
-        )
-
         try:
-            result = target_cls(**kwargs)
-            logger.debug(
-                "Successfully created attrs instance",
-                operation="_handle_attrs_conversion",
-                target_cls=target_cls.__name__,
-            )
-            return result
+            return target_cls(**kwargs)
         except TypeError as e:
             # If we can't create the instance due to missing required fields,
             # it's likely because some values are unknown/computed during planning.
