@@ -1,3 +1,5 @@
+from typing import Any
+
 from pyvider.capabilities import BaseCapability, register_capability
 from pyvider.schema import PvsAttribute
 
@@ -11,6 +13,10 @@ class CoreProviderCapability(BaseCapability):
     other capabilities can extend. Its contribution is an empty dictionary,
     making it a neutral identity element in the schema composition process.
     """
+
+    def __init__(self, config: Any | None = None) -> None:
+        """Initialize the core capability."""
+        pass
 
     @staticmethod
     def get_schema_contribution() -> dict[str, PvsAttribute]:
