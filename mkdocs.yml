@@ -131,30 +131,31 @@ nav:
     - 'Schema System': 'core-concepts/schema-system.md'
 
   - 'Guides':
-    - 'Building Providers':
-      - 'Creating Providers': 'guides/creating-providers.md'
-      - 'Advanced Provider Features': 'guides/advanced-provider-features.md'
-      - 'Creating Resources': 'guides/creating-resources.md'
-      - 'Creating Data Sources': 'guides/creating-data-sources.md'
-      - 'Creating Functions': 'guides/creating-functions.md'
-      - 'Using Decorators': 'guides/using-decorators.md'
-    - 'Production Providers':
-      - 'Best Practices': 'guides/best-practices.md'
-      - 'Production Readiness': 'guides/production-readiness.md'
-      - 'Testing Providers': 'guides/testing-providers.md'
-      - 'Error Handling': 'guides/error-handling.md'
-      - 'Logging': 'guides/logging.md'
-      - 'Debugging': 'guides/debugging.md'
-      - 'Security Best Practices': 'guides/security-best-practices.md'
-      - 'Performance Optimization': 'guides/performance-optimization.md'
-    - 'Using Providers':
-      - 'Configuration': 'guides/configuration.md'
-      - 'Managing Resources': 'guides/managing-resources.md'
-      - 'Using Data Sources': 'guides/using-data-sources.md'
-      - 'Using Functions': 'guides/using-functions.md'
+    - 'Building Components':
+      - 'Creating Providers': 'guides/building-components/creating-providers.md'
+      - 'Creating Resources': 'guides/building-components/creating-resources.md'
+      - 'Creating Data Sources': 'guides/building-components/creating-data-sources.md'
+      - 'Creating Functions': 'guides/building-components/creating-functions.md'
+      - 'Using Decorators': 'guides/building-components/using-decorators.md'
+    - 'Development':
+      - 'Testing Providers': 'guides/development/testing-providers.md'
+      - 'Debugging': 'guides/development/debugging.md'
+      - 'Logging': 'guides/development/logging.md'
+      - 'Error Handling': 'guides/development/error-handling.md'
+    - 'Production':
+      - 'Best Practices': 'guides/production/best-practices.md'
+      - 'Production Readiness': 'guides/production/production-readiness.md'
+      - 'Security Best Practices': 'guides/production/security-best-practices.md'
+      - 'Performance Optimization': 'guides/production/performance-optimization.md'
     - 'Advanced':
-      - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
-      - 'Advanced Patterns': 'guides/advanced-patterns.md'
+      - 'Provider Lifecycle': 'guides/advanced/provider-lifecycle.md'
+      - 'Advanced Patterns': 'guides/advanced/advanced-patterns.md'
+      - 'Advanced Provider Features': 'guides/advanced/advanced-provider-features.md'
+    - 'Usage':
+      - 'Configuration': 'guides/usage/configuration.md'
+      - 'Managing Resources': 'guides/usage/managing-resources.md'
+      - 'Using Data Sources': 'guides/usage/using-data-sources.md'
+      - 'Using Functions': 'guides/usage/using-functions.md'
     - 'Tutorials':
       - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
     - 'Examples':

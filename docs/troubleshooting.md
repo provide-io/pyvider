@@ -785,7 +785,7 @@ Provider process exits unexpectedly
 
 **Solutions:**
 
-See [Debugging Guide - Provider Crashes](guides/debugging.md#scenario-3-provider-crashes-on-apply) for detailed workflow.
+See [Debugging Guide - Provider Crashes](guides/development/debugging.md#scenario-3-provider-crashes-on-apply) for detailed workflow.
 
 ## Getting Help
 
@@ -821,25 +821,25 @@ Visit [https://github.com/provide-io/pyvider/issues](https://github.com/provide-
 Before creating a new issue:
 - Search [existing issues](https://github.com/provide-io/pyvider/issues)
 - Check [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
-- Review the [Debugging Guide](guides/debugging.md)
-- Check [Best Practices](guides/best-practices.md) for common patterns
+- Review the [Debugging Guide](guides/development/debugging.md)
+- Check [Best Practices](guides/production/best-practices.md) for common patterns
 - Look at [Pyvider Components](https://github.com/provide-io/pyvider-components) for working examples
 
 ## Related Documentation
 
-- [Debugging Guide](guides/debugging.md) - Interactive debugging techniques
-- [Best Practices](guides/best-practices.md) - Patterns that prevent issues
-- [Error Handling](guides/error-handling.md) - Exception handling
-- [Security Best Practices](guides/security-best-practices.md) - Security troubleshooting
-- [Performance Optimization](guides/performance-optimization.md) - Performance troubleshooting
-- [Logging](guides/logging.md) - Structured logging
-- [Testing Providers](guides/testing-providers.md) - Testing strategies
+- [Debugging Guide](guides/development/debugging.md) - Interactive debugging techniques
+- [Best Practices](guides/production/best-practices.md) - Patterns that prevent issues
+- [Error Handling](guides/development/error-handling.md) - Exception handling
+- [Security Best Practices](guides/production/security-best-practices.md) - Security troubleshooting
+- [Performance Optimization](guides/production/performance-optimization.md) - Performance troubleshooting
+- [Logging](guides/development/logging.md) - Structured logging
+- [Testing Providers](guides/development/testing-providers.md) - Testing strategies
 
 ---
 
 **Remember**: Most issues can be quickly diagnosed with debug logging enabled. Start with `TF_LOG=DEBUG` and `PYVIDER_LOG_LEVEL=DEBUG` to see what's actually happening.
 
 **See Also**:
-- For security-related issues, consult the [Security Best Practices Guide](guides/security-best-practices.md)
-- For performance problems, see the [Performance Optimization Guide](guides/performance-optimization.md)
-- For general provider patterns, check [Best Practices](guides/best-practices.md)
+- For security-related issues, consult the [Security Best Practices Guide](guides/production/security-best-practices.md)
+- For performance problems, see the [Performance Optimization Guide](guides/production/performance-optimization.md)
+- For general provider patterns, check [Best Practices](guides/production/best-practices.md)

@@ -52,19 +52,19 @@ Understand Pyvider's foundation
 - [Component Model](core-concepts/component-model.md) - Hub-based discovery system
 - [Schema System](core-concepts/schema-system.md) - Type-safe data modeling
 
-### 📖 [Developer Guides](guides/creating-providers.md)
+### 📖 [Developer Guides](guides/building-components/creating-providers.md)
 Deep dives into building providers
-- [Creating Providers](guides/creating-providers.md) - Provider configuration and lifecycle
-- [Creating Resources](guides/creating-resources.md) - CRUD operations and state management
-- [Creating Data Sources](guides/creating-data-sources.md) - Read-only data fetching
-- [Creating Functions](guides/creating-functions.md) - Callable transformations
-- [Testing Providers](guides/testing-providers.md) - Testing strategies and best practices
-- [Best Practices](guides/best-practices.md) - Production-ready patterns
-- [Error Handling](guides/error-handling.md) - Robust error management
-- [Logging](guides/logging.md) - Structured logging with foundation
-- [Debugging](guides/debugging.md) - Troubleshooting providers
-- [Security Best Practices](guides/security-best-practices.md) - Secure provider development
-- [Performance Optimization](guides/performance-optimization.md) - Building fast providers
+- [Creating Providers](guides/building-components/creating-providers.md) - Provider configuration and lifecycle
+- [Creating Resources](guides/building-components/creating-resources.md) - CRUD operations and state management
+- [Creating Data Sources](guides/building-components/creating-data-sources.md) - Read-only data fetching
+- [Creating Functions](guides/building-components/creating-functions.md) - Callable transformations
+- [Testing Providers](guides/development/testing-providers.md) - Testing strategies and best practices
+- [Best Practices](guides/production/best-practices.md) - Production-ready patterns
+- [Error Handling](guides/development/error-handling.md) - Robust error management
+- [Logging](guides/development/logging.md) - Structured logging with foundation
+- [Debugging](guides/development/debugging.md) - Troubleshooting providers
+- [Security Best Practices](guides/production/security-best-practices.md) - Secure provider development
+- [Performance Optimization](guides/production/performance-optimization.md) - Building fast providers
 
 ### 🎓 [Examples & Tutorials](getting-started/quick-start.md)
 Learn by building real providers
@@ -92,7 +92,7 @@ Type-safe data modeling
 ### 🔌 [Capabilities (Experimental)](capabilities/overview.md)
 Planned composition mechanism for code reuse
 - [Overview](capabilities/overview.md) - Experimental capabilities system (not fully implemented)
-- For working code reuse patterns, see [Best Practices](guides/best-practices.md)
+- For working code reuse patterns, see [Best Practices](guides/production/best-practices.md)
 
 ### 🤝 [Contributing](contributing/guidelines.md)
 Join the Pyvider community
@@ -111,8 +111,8 @@ Project roadmap and planned features
   <div class="card">
     <h4>🏗️ Providers</h4>
     <ul>
-      <li><a href="guides/creating-providers.md">Creating Providers</a></li>
-      <li><a href="guides/provider-lifecycle.md">Provider Lifecycle</a></li>
+      <li><a href="guides/building-components/creating-providers.md">Creating Providers</a></li>
+      <li><a href="guides/advanced/provider-lifecycle.md">Provider Lifecycle</a></li>
       <li><a href="core-concepts/component-model.md">Component Model</a></li>
     </ul>
   </div>
@@ -120,8 +120,8 @@ Project roadmap and planned features
   <div class="card">
     <h4>📦 Resources</h4>
     <ul>
-      <li><a href="guides/creating-resources.md">Creating Resources</a></li>
-      <li><a href="guides/managing-resources.md">Managing Resources</a></li>
+      <li><a href="guides/building-components/creating-resources.md">Creating Resources</a></li>
+      <li><a href="guides/usage/managing-resources.md">Managing Resources</a></li>
       <li><a href="schema/overview.md">Schema System</a></li>
     </ul>
   </div>
@@ -129,8 +129,8 @@ Project roadmap and planned features
   <div class="card">
     <h4>📊 Data Sources</h4>
     <ul>
-      <li><a href="guides/creating-data-sources.md">Creating Data Sources</a></li>
-      <li><a href="guides/using-data-sources.md">Using Data Sources</a></li>
+      <li><a href="guides/building-components/creating-data-sources.md">Creating Data Sources</a></li>
+      <li><a href="guides/usage/using-data-sources.md">Using Data Sources</a></li>
       <li><a href="https://github.com/provide-io/pyvider-components/tree/main/examples/data_source">API Integration Examples</a></li>
     </ul>
   </div>
@@ -138,8 +138,8 @@ Project roadmap and planned features
   <div class="card">
     <h4>⚡ Functions</h4>
     <ul>
-      <li><a href="guides/creating-functions.md">Creating Functions</a></li>
-      <li><a href="guides/using-functions.md">Using Functions</a></li>
+      <li><a href="guides/building-components/creating-functions.md">Creating Functions</a></li>
+      <li><a href="guides/usage/using-functions.md">Using Functions</a></li>
       <li><a href="https://github.com/provide-io/pyvider-components/tree/main/examples/function">Function Examples</a></li>
     </ul>
   </div>
@@ -149,9 +149,9 @@ Project roadmap and planned features
 
 - **"I want to build my first provider"** → [Quick Start](getting-started/quick-start.md)
 - **"I need to integrate with a REST API"** → [HTTP API Examples](https://github.com/provide-io/pyvider-components/tree/main/examples/data_source/http_api)
-- **"How do I test my provider?"** → [Testing Providers](guides/testing-providers.md)
-- **"I need to debug an issue"** → [Debugging Guide](guides/debugging.md)
-- **"How do I handle errors properly?"** → [Error Handling](guides/error-handling.md)
+- **"How do I test my provider?"** → [Testing Providers](guides/development/testing-providers.md)
+- **"I need to debug an issue"** → [Debugging Guide](guides/development/debugging.md)
+- **"How do I handle errors properly?"** → [Error Handling](guides/development/error-handling.md)
 - **"I want to contribute"** → [Contributing Guidelines](contributing/guidelines.md)
 
 ## 📦 Ready-to-Use Components

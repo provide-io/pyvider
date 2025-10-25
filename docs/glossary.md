@@ -85,7 +85,7 @@ class User(BaseDataSource):
         return UserData(...)
 ```
 
-See: [Creating Data Sources](guides/creating-data-sources.md)
+See: [Creating Data Sources](guides/building-components/creating-data-sources.md)
 
 ### Decorator
 Python syntax (`@decorator`) used to register components with Pyvider.
@@ -182,7 +182,7 @@ Encrypted storage for sensitive data that shouldn't appear in terraform.tfstate.
 return state, {"password": db.password}  # Private state (encrypted)
 ```
 
-See: [Security Best Practices](guides/security-best-practices.md)
+See: [Security Best Practices](guides/production/security-best-practices.md)
 
 ### Provider
 The root component that configures authentication and shared resources for a Terraform provider.
@@ -195,7 +195,7 @@ class MyCloudProvider(BaseProvider):
         self.api_client = APIClient(config["api_key"])
 ```
 
-See: [Creating Providers](guides/creating-providers.md)
+See: [Creating Providers](guides/building-components/creating-providers.md)
 
 ### Protocol v6
 Version 6 of the Terraform Plugin Protocol. Pyvider implements this version.
@@ -231,7 +231,7 @@ class Server(BaseResource):
         pass
 ```
 
-See: [Creating Resources](guides/creating-resources.md)
+See: [Creating Resources](guides/building-components/creating-resources.md)
 
 ## S
 

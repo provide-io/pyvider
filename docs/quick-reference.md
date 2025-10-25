@@ -287,6 +287,6 @@ class Example(BaseDataSource):
 
 - [Complete API Reference](api/index.md)
 - [Schema System](schema/overview.md)
-- [Creating Resources Guide](guides/creating-resources.md)
-- [Creating Providers Guide](guides/creating-providers.md)
+- [Creating Resources Guide](guides/building-components/creating-resources.md)
+- [Creating Providers Guide](guides/building-components/creating-providers.md)
 - [pyvider-components Examples](https://github.com/provide-io/pyvider-components)

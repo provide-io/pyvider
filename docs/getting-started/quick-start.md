@@ -383,10 +383,10 @@ Now that you understand the basics, explore:
 - **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
 
 ### Build Real Providers
-- **[Creating Providers](../guides/creating-providers.md)** - Comprehensive provider guide
-- **[Creating Resources](../guides/creating-resources.md)** - Advanced resource patterns
-- **[Testing Providers](../guides/testing-providers.md)** - Write comprehensive tests
-- **[Best Practices](../guides/best-practices.md)** - Production-ready patterns
+- **[Creating Providers](../guides/building-components/creating-providers.md)** - Comprehensive provider guide
+- **[Creating Resources](../guides/building-components/creating-resources.md)** - Advanced resource patterns
+- **[Testing Providers](../guides/development/testing-providers.md)** - Write comprehensive tests
+- **[Best Practices](../guides/production/best-practices.md)** - Production-ready patterns
 
 ### See Examples
 - **[Pyvider Components](https://github.com/provide-io/pyvider-components)** - 100+ working examples including:

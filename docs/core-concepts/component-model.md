@@ -41,7 +41,7 @@ graph TB
 
 **Registration**: `@register_provider("name")`
 
-**See**: [Creating Providers Guide](../guides/creating-providers.md) for complete examples
+**See**: [Creating Providers Guide](../guides/building-components/creating-providers.md) for complete examples
 
 ---
 
@@ -63,7 +63,7 @@ graph TB
 
 **Registration**: `@register_resource("name")`
 
-**See**: [Creating Resources Guide](../guides/creating-resources.md) for complete examples
+**See**: [Creating Resources Guide](../guides/building-components/creating-resources.md) for complete examples
 
 ---
 
@@ -82,7 +82,7 @@ graph TB
 
 **Registration**: `@register_data_source("name")`
 
-**See**: [Creating Data Sources Guide](../guides/creating-data-sources.md) for complete examples
+**See**: [Creating Data Sources Guide](../guides/building-components/creating-data-sources.md) for complete examples
 
 ---
 
@@ -101,7 +101,7 @@ graph TB
 
 **Registration**: `@register_function(name="name")`
 
-**See**: [Creating Functions Guide](../guides/creating-functions.md) for complete examples
+**See**: [Creating Functions Guide](../guides/building-components/creating-functions.md) for complete examples
 
 ---
 
@@ -369,17 +369,17 @@ class Server(BaseCloudResource):
     pass
 ```
 
-**See**: [Advanced Patterns Guide](../guides/advanced-patterns.md)
+**See**: [Advanced Patterns Guide](../guides/advanced/advanced-patterns.md)
 
 ## 🔗 Related Documentation
 
 - **[Architecture Overview](architecture.md)** - System architecture and data flow
 - **[Schema System](schema-system.md)** - Type-safe data modeling
-- **[Creating Providers](../guides/creating-providers.md)** - Step-by-step provider guide
-- **[Creating Resources](../guides/creating-resources.md)** - Resource implementation guide
-- **[Creating Data Sources](../guides/creating-data-sources.md)** - Data source patterns
-- **[Creating Functions](../guides/creating-functions.md)** - Function development
-- **[Best Practices](../guides/best-practices.md)** - Production-ready patterns
+- **[Creating Providers](../guides/building-components/creating-providers.md)** - Step-by-step provider guide
+- **[Creating Resources](../guides/building-components/creating-resources.md)** - Resource implementation guide
+- **[Creating Data Sources](../guides/building-components/creating-data-sources.md)** - Data source patterns
+- **[Creating Functions](../guides/building-components/creating-functions.md)** - Function development
+- **[Best Practices](../guides/production/best-practices.md)** - Production-ready patterns
 
 ---
 

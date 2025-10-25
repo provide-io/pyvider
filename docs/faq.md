@@ -89,7 +89,7 @@ Follow these steps:
 1. **Read the [Quick Start](getting-started/quick-start.md)** - Build your first provider in 5 minutes
 2. **Try the [Tutorial](tutorials/intermediate-provider.md)** - Build a real HTTP API provider
 3. **Study [Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-4. **Read the Guides** - [Creating Providers](guides/creating-providers.md), [Creating Resources](guides/creating-resources.md)
+4. **Read the Guides** - [Creating Providers](guides/building-components/creating-providers.md), [Creating Resources](guides/building-components/creating-resources.md)
 
 ### What's the difference between a resource and a data source?
 
@@ -129,7 +129,7 @@ See [Core Concepts](core-concepts/component-model.md).
 
 4. **Never log** sensitive data
 
-See [Security Best Practices](guides/security-best-practices.md).
+See [Security Best Practices](guides/production/security-best-practices.md).
 
 ### How do I test my provider?
 
@@ -146,7 +146,7 @@ async def test_resource_create():
     assert state.id
 ```
 
-See [Testing Providers](guides/testing-providers.md).
+See [Testing Providers](guides/development/testing-providers.md).
 
 ### How do I debug my provider?
 
@@ -165,7 +165,7 @@ import pdb; pdb.set_trace()
 # Or use breakpoint()
 ```
 
-See [Debugging Guide](guides/debugging.md).
+See [Debugging Guide](guides/development/debugging.md).
 
 ## Schema Questions
 
@@ -238,7 +238,7 @@ Yes, for most use cases. Terraform providers are typically I/O bound (API calls,
 - Cache expensive lookups
 - Batch API calls
 
-See [Performance Optimization](guides/performance-optimization.md).
+See [Performance Optimization](guides/production/performance-optimization.md).
 
 ### How do I make my provider faster?
 
@@ -248,7 +248,7 @@ See [Performance Optimization](guides/performance-optimization.md).
 4. **Connection pooling** - Reuse HTTP connections
 5. **Profile** - Use py-spy to find bottlenecks
 
-See [Performance Optimization](guides/performance-optimization.md).
+See [Performance Optimization](guides/production/performance-optimization.md).
 
 ### Should I use caching?
 
@@ -465,7 +465,7 @@ We welcome contributions!
 
 - [Quick Start Guide](getting-started/quick-start.md)
 - [Tutorial: HTTP API Provider](tutorials/intermediate-provider.md)
-- [Best Practices](guides/best-practices.md)
+- [Best Practices](guides/production/best-practices.md)
 - [Troubleshooting Guide](troubleshooting.md)
 - [API Reference](api/index.md)
 
