@@ -115,7 +115,7 @@ async def close(self, ctx: EphemeralResourceContext[None, PrivateState]) -> None
 ```python
 from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeralResource, EphemeralResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, a_num, a_bool
+from pyvider.schema import a_str, a_num, a_bool, a_list
 from datetime import datetime, timedelta
 import attrs
 import uuid
