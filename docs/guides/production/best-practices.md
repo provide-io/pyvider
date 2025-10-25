@@ -535,7 +535,7 @@ async def _create(self, ctx: ResourceContext, base_plan: dict) -> tuple[dict | N
 
 - [Production Readiness Guide](../production/production-readiness.md) - Error handling, logging, performance, testing, and security
 - [Creating Resources](../building-components/creating-resources.md) - Resource implementation guide
-- [Schema Best Practices](../schema/best-practices.md) - Schema-specific guidance
+- [Schema Best Practices](../../schema/best-practices.md) - Schema-specific guidance
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
 
 ## Learn by Example

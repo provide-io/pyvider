@@ -324,7 +324,7 @@ async def read(self, config: QueryConfig) -> QueryData:
 
 ## See Also
 
-- [Schema System](../core-concepts/schema-system.md) - Understanding schemas
-- [Data Source API](../api/data_sources.md) - BaseDataSource reference
+- [Schema System](../../core-concepts/schema-system.md) - Understanding schemas
+- [Data Source API](../../api/data_sources.md) - BaseDataSource reference
 - [Creating Resources](../building-components/creating-resources.md) - For comparison
 - [Best Practices](../production/best-practices.md) - Production patterns

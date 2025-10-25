@@ -83,7 +83,12 @@
       "Bash(head:*)",
       "Bash(curl:*)",
       "Bash(uv tree:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(guides/advanced/*.md)",
+      "Bash(guides/building-components/*.md)",
+      "Bash(guides/development/*.md)",
+      "Bash(guides/production/*.md)",
+      "Bash(guides/usage/*.md)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

@@ -344,7 +344,7 @@ logger.debug("API request failed", api_key=self.api_key)
 - [Types](types.md) - Available attribute types
 - [Validators](validators.md) - Validation including sensitive data
 - [Best Practices](best-practices.md) - Schema design guidelines
-- [Security Practices](../guides/production-readiness.md#security-practices)
+- [Security Practices](../guides/production/production-readiness.md#security-practices)
 
 ---
 

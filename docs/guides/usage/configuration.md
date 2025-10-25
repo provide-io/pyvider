@@ -559,4 +559,4 @@ async def configure(self, config: dict) -> None:
 - [Creating Providers](../building-components/creating-providers.md) - Complete provider development guide
 - [Best Practices](../production/best-practices.md) - Provider development best practices
 - [Error Handling](../development/error-handling.md) - Error handling patterns
-- [Schema System](../schema/overview.md) - Schema definition reference
+- [Schema System](../../schema/overview.md) - Schema definition reference

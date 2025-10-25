@@ -386,4 +386,4 @@ for i, item in enumerate(items, 1):
 - [Debugging](../development/debugging.md) - Debugging techniques
 - [Error Handling](../development/error-handling.md) - Error management patterns
 - [Best Practices](../production/best-practices.md) - Provider development patterns
-- [Observability API](../api/observability.md) - Observability integration
+- [Observability API](../../api/observability.md) - Observability integration

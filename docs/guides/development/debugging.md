@@ -1051,7 +1051,7 @@ When troubleshooting an issue, work through this checklist systematically:
 - [Error Handling](../development/error-handling.md) - Exception handling patterns
 - [Testing Providers](../development/testing-providers.md) - Testing strategies
 - [Best Practices](../production/best-practices.md) - Avoiding common issues
-- [Troubleshooting](../troubleshooting.md) - Common problems and solutions
+- [Troubleshooting](../../troubleshooting.md) - Common problems and solutions
 
 ## Learn by Debugging
 

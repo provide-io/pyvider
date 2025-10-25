@@ -351,7 +351,7 @@ class APIObject(BaseResource):
 
 ## See Also
 
-- [Schema System](../core-concepts/schema-system.md) - Understanding schemas
-- [Resource Context](../api/resources.md) - ResourceContext API reference
+- [Schema System](../../core-concepts/schema-system.md) - Understanding schemas
+- [Resource Context](../../api/resources.md) - ResourceContext API reference
 - [Testing Resources](../development/testing-providers.md) - Testing strategies
 - [Best Practices](../production/best-practices.md) - Production patterns

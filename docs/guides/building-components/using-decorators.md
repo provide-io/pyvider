@@ -731,4 +731,4 @@ class Instance2(BaseResource):
 - [Creating Resources](../building-components/creating-resources.md) - Resource implementation guide
 - [Creating Data Sources](../building-components/creating-data-sources.md) - Data source implementation guide
 - [Creating Functions](../building-components/creating-functions.md) - Function implementation guide
-- [Capabilities Overview](../capabilities/overview.md) - Capabilities system
+- [Capabilities Overview](../../capabilities/overview.md) - Capabilities system

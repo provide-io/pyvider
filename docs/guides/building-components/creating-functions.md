@@ -367,7 +367,7 @@ async def test_divide_function():
 
 ## See Also
 
-- [Schema System](../core-concepts/schema-system.md) - Understanding schemas
-- [Function API](../api/functions.md) - BaseFunction reference
+- [Schema System](../../core-concepts/schema-system.md) - Understanding schemas
+- [Function API](../../api/functions.md) - BaseFunction reference
 - [Best Practices](../production/best-practices.md) - Production patterns
 - [Testing Functions](../development/testing-providers.md) - Testing strategies

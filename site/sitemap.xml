@@ -5,6 +5,10 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
+         <loc>https://foundry.provide.io/pyvider/REORGANIZATION_PLAN/</loc>
+         <lastmod>2025-10-25</lastmod>
+    </url>
+    <url>
          <loc>https://foundry.provide.io/pyvider/faq/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
@@ -125,83 +129,83 @@
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/advanced-patterns/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/advanced/advanced-patterns/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/advanced-provider-features/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/advanced/advanced-provider-features/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/best-practices/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/advanced/provider-lifecycle/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/configuration/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/building-components/creating-data-sources/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/creating-data-sources/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/building-components/creating-functions/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/creating-functions/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/building-components/creating-providers/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/creating-providers/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/building-components/creating-resources/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/creating-resources/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/building-components/using-decorators/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/debugging/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/development/debugging/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/error-handling/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/development/error-handling/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/logging/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/development/logging/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/managing-resources/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/development/testing-providers/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/performance-optimization/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/production/best-practices/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/production-readiness/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/production/performance-optimization/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/provider-lifecycle/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/production/production-readiness/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/security-best-practices/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/production/security-best-practices/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/testing-providers/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/usage/configuration/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/using-data-sources/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/usage/managing-resources/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/using-decorators/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/usage/using-data-sources/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
-         <loc>https://foundry.provide.io/pyvider/guides/using-functions/</loc>
+         <loc>https://foundry.provide.io/pyvider/guides/usage/using-functions/</loc>
          <lastmod>2025-10-25</lastmod>
     </url>
     <url>
