@@ -160,8 +160,6 @@ nav:
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
-  - 'Troubleshooting': 'troubleshooting.md'
-
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
     - 'Types': 'schema/types.md'
@@ -200,6 +198,8 @@ nav:
   - '⚡ Quick Reference': 'quick-reference.md'
 
   - 'FAQ': 'faq.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
 
   - 'Glossary': 'glossary.md'
 

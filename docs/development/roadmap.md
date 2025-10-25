@@ -77,7 +77,7 @@ pyvider validate --with-terraform
 - [ ] Complete documentation review
 - [ ] Migration guide from pre-1.0 versions
 
-**Estimated Timeline**: Q1-Q2 2026
+**Estimated Timeline**: Early-Mid 2026 (subject to change)
 
 ---
 
