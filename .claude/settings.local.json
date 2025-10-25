@@ -91,7 +91,8 @@
       "Bash(guides/usage/*.md)",
       "Bash(pyvider components:*)",
       "Bash(pyvider:*)",
-      "Bash(timeout 5 pyvider provide:*)"
+      "Bash(timeout 5 pyvider provide:*)",
+      "Bash(pip show:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
