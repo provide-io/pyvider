@@ -1,105 +1,17 @@
-# Capabilities Overview
+# Code Reuse Patterns in Pyvider
 
-!!! info "Implementation Status"
-    **Basic capabilities infrastructure is implemented** in Pyvider v0.0.1000:
+!!! warning "Use Standard Python Patterns for Production"
+    **For production providers, use these proven approaches:**
 
-    - ✅ `BaseCapability` class
-    - ✅ `@register_capability` decorator
-    - ✅ `@requires_capability` decorator
-    - ✅ Component capability access via `self.capabilities`
+    - ✅ **Inheritance** - Base classes with shared functionality
+    - ✅ **Composition** - Helper classes and utilities
+    - ✅ **Utility Modules** - Shared functions and patterns
 
-    **Advanced features are experimental or planned:**
+    **Capabilities are experimental** and not recommended for production use. See [Experimental Capabilities](#experimental-capabilities) below for details.
 
-    - ⚠️ Capability lifecycle hooks (partial)
-    - 🔮 Capability marketplace (planned)
-    - 🔮 Advanced composition patterns (planned)
-    - 🔮 Built-in capability library (planned)
+## Recommended Approaches
 
-    For production use, prefer **inheritance, composition, and utility modules** as shown in the [Current Alternatives](#current-alternatives) section below.
-
-## What are Capabilities?
-
-Capabilities are a composition mechanism in Pyvider that allow you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.
-
-Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.
-
-## Why Use Capabilities?
-
-### Reusability
-Write cross-cutting concerns once and apply them to multiple components:
-- Authentication logic (OAuth, API keys, token management)
-- Retry patterns (exponential backoff, circuit breakers)
-- Caching strategies (response caching, state caching)
-- Logging and observability
-- Performance metrics collection
-
-### Separation of Concerns
-Keep your resource/provider implementations focused on core business logic while capabilities handle infrastructure concerns.
-
-### Modularity
-- Develop capabilities independently
-- Test in isolation
-- Version separately
-- Share across projects
-- Publish as packages
-
-## Basic Usage
-
-### Creating a Capability
-
-```python
-from pyvider.capabilities import BaseCapability, register_capability
-import attrs
-
-@register_capability("authentication")
-class AuthenticationCapability(BaseCapability):
-    """Provides authentication token management."""
-
-    @attrs.define
-    class Config:
-        api_key: str
-        endpoint: str = "https://api.example.com"
-
-    async def setup(self, provider):
-        """Initialize the capability."""
-        self.provider = provider
-        self.token = None
-
-    async def get_token(self) -> str:
-        """Get or refresh authentication token."""
-        if not self.token:
-            self.token = await self._fetch_token()
-        return self.token
-
-    async def _fetch_token(self) -> str:
-        """Fetch new token from API."""
-        # Implementation
-        pass
-```
-
-### Using a Capability
-
-```python
-from pyvider.resources import register_resource, BaseResource
-from pyvider.capabilities import requires_capability
-
-@register_resource("authenticated_resource")
-class AuthenticatedResource(BaseResource):
-    """A resource that uses authentication capability."""
-
-    @requires_capability
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Access capability through context
-        token = await ctx.capabilities.authentication.get_token()
-
-        # Use token to create resource
-        result = await self.api_call(token=token, config=ctx.config)
-        return State(id=result.id), None
-```
-
-## Current Alternatives
-
-While the capabilities system continues to evolve, you can achieve similar goals using standard Python patterns:
+This guide shows you how to share code and functionality across your Pyvider components using standard Python patterns. These approaches are production-ready and well-tested.
 
 ### 1. Base Class Inheritance
 
