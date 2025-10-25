@@ -45,8 +45,25 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     def _handle_cty_value(cls, cty_value: CtyValue, target_cls: type) -> Any | None:
         if cty_value.is_null:
             return None
-        if cty_value.is_unknown and not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
-            return None
+        if cty_value.is_unknown:
+            # For unknown objects that are attrs classes, create an instance with None/default values
+            # This handles planned_state with unknown computed fields during apply
+            if isinstance(cty_value.type, CtyObject) and attrs.has(target_cls):
+                # Create attrs instance with all fields as None
+                target_fields = {f.name: f for f in attrs.fields(target_cls)}
+                kwargs = {}
+                for name, field_def in target_fields.items():
+                    if field_def.init:
+                        # Use None for all fields - they're unknown at this point
+                        kwargs[name] = None
+                try:
+                    return target_cls(**kwargs)
+                except TypeError:
+                    # If we can't create with all None, return None
+                    return None
+            # For non-object types or non-attrs classes, unknown means None
+            if not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
+                return None
         return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
 
     @classmethod
