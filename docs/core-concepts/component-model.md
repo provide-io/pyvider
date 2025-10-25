@@ -722,6 +722,7 @@ class Server(BaseCloudResource):
 
 ```python
 import pytest
+from pyvider.resources.context import ResourceContext
 
 @pytest.fixture
 def server():
@@ -734,10 +735,10 @@ async def test_create(server, mock_provider):
     # Inject mock provider
     server.provider = mock_provider
 
-    config = Server.Config(name="test", size="small")
-    state = await server.create(config)
+    ctx = ResourceContext(config=Server.Config(name="test", size="small"))
+    state, _ = await server._create_apply(ctx)
 
-    assert state.id is not None
+    assert state and state.id is not None
     assert state.name == "test"
     assert state.status == "running"
 ```

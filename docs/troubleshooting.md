@@ -65,9 +65,9 @@ chmod +x ~/.terraform.d/plugins/terraform-provider-pyvider
 ```hcl
 terraform {
   required_providers {
-    pyvider = {
-      source  = "provide.io/pyvider/pyvider"  # Must match installed name
-      version = "~> 1.0"
+    my_provider = {
+      source  = "example.com/acme/my-provider"  # Match your package namespace
+      version = "~> 0.1"
     }
   }
 }
@@ -98,13 +98,13 @@ Provider "pyvider" requires configuration.
 **1. Check provider schema:**
 ```bash
 # See what configuration is required
-terraform providers schema -json | jq '.provider_schemas."provide.io/pyvider/pyvider"'
+terraform providers schema -json | jq '.provider_schemas."example.com/acme/my-provider"'
 ```
 
 **2. Verify provider configuration block:**
 ```hcl
-provider "pyvider" {
-  # Add any required configuration
+provider "my_provider" {
+  # Add any required configuration your provider expects
   api_endpoint = "https://api.example.com"
   api_key      = var.api_key
 }
@@ -113,12 +113,12 @@ provider "pyvider" {
 **3. Check attribute types:**
 ```hcl
 # Wrong: String instead of number
-provider "pyvider" {
+provider "my_provider" {
   timeout = "30"  # Should be: timeout = 30
 }
 
 # Correct: Number
-provider "pyvider" {
+provider "my_provider" {
   timeout = 30
 }
 ```

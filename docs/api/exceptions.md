@@ -412,6 +412,7 @@ class ResourceLockedError(ResourceError):
 ```python
 import pytest
 from pyvider.exceptions import ResourceError, ValidationError
+from pyvider.resources.context import ResourceContext
 
 @pytest.mark.asyncio
 async def test_resource_creation_error_handling(resource):
@@ -419,16 +420,16 @@ async def test_resource_creation_error_handling(resource):
 
     # Test validation error
     with pytest.raises(ValidationError) as exc_info:
-        config = Resource.Config(name="")  # Empty name
-        await resource.create(config)
+        ctx = ResourceContext(config=Resource.Config(name=""))  # Empty name
+        await resource._create_apply(ctx)
 
     assert "Required field" in str(exc_info.value)
     assert exc_info.value.details["field"] == "name"
 
     # Test resource error with cause
     with pytest.raises(ResourceError) as exc_info:
-        config = Resource.Config(name="test", invalid_field=True)
-        await resource.create(config)
+        ctx = ResourceContext(config=Resource.Config(name="test", invalid_field=True))
+        await resource._create_apply(ctx)
 
     assert exc_info.value.cause is not None
     assert "invalid_field" in exc_info.value.details

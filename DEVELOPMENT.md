@@ -103,31 +103,32 @@ pytest tests/integration/
 ```python
 # tests/test_my_resource.py
 import pytest
-from pyvider.testing import ResourceTestCase
+from pyvider.resources.context import ResourceContext
+from my_provider.resources import MyResource
 
-class TestMyResource(ResourceTestCase):
+
+class TestMyResource:
     """Test suite for MyResource."""
-    
+
     @pytest.fixture
-    def resource_config(self):
-        """Provide test configuration."""
-        return {
-            "name": "test-resource",
-            "size": 10
-        }
-    
-    async def test_create_resource(self, resource_config):
+    def resource(self) -> MyResource:
+        return MyResource()
+
+    async def test_create_resource(self, resource):
         """Test resource creation."""
-        state = await self.resource.create(resource_config)
-        
+        ctx = ResourceContext(
+            config=MyResource.Config(name="test-resource", size=10)
+        )
+        state, _ = await resource._create_apply(ctx)
+
+        assert state is not None
         assert state.id is not None
         assert state.name == "test-resource"
-        assert state.size == 10
-    
-    async def test_read_missing_resource(self):
+
+    async def test_read_missing_resource(self, resource):
         """Test reading non-existent resource."""
-        state = await self.resource.read({"id": "missing"})
-        assert state is None
+        ctx = ResourceContext(state=MyResource.State(id="missing", name="", size=0))
+        assert await resource.read(ctx) is None
 ```
 
 ### Test Fixtures

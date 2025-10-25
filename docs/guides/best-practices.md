@@ -461,47 +461,48 @@ class MyProvider(BaseProvider):
 
 ```python
 import pytest
-from pyvider.testing import ResourceTestCase
+from pathlib import Path
+from pyvider.resources.context import ResourceContext
+from my_provider.resources import FileContentResource, FileContentConfig, FileContentState
 
-class TestFileContent(ResourceTestCase):
-    resource_class = FileContentResource
-
+class TestFileContent:
     async def test_create_success(self):
         """Test successful file creation."""
-        config = FileContentConfig(
-            filename="/tmp/test.txt",
-            content="Hello, world!"
+        resource = FileContentResource()
+        ctx = ResourceContext(
+            config=FileContentConfig(filename="/tmp/test.txt", content="Hello, world!")
         )
 
-        state = await self.resource._create(self.make_context(config), {})
+        state, _ = await resource._create_apply(ctx)
 
-        assert state["exists"] is True
-        assert state["content_hash"] is not None
+        assert state.exists is True
+        assert state.content_hash is not None
         assert Path("/tmp/test.txt").read_text() == "Hello, world!"
 
     async def test_read_missing_file(self):
         """Test reading non-existent file returns None."""
-        state = FileContentState(filename="/tmp/missing.txt", content="")
-        ctx = self.make_context(state=state)
+        resource = FileContentResource()
+        ctx = ResourceContext(state=FileContentState(filename="/tmp/missing.txt", content=""))
 
-        result = await self.resource.read(ctx)
-
-        assert result is None
+        assert await resource.read(ctx) is None
 
     async def test_update_content(self):
         """Test updating file content."""
-        # Setup: Create initial file
-        initial_state = await self.resource._create(...)
-
-        # Update content
-        new_config = FileContentConfig(
-            filename="/tmp/test.txt",
-            content="Updated content"
+        resource = FileContentResource()
+        initial_ctx = ResourceContext(
+            config=FileContentConfig(filename="/tmp/test.txt", content="Hello")
         )
-        updated_state = await self.resource._update(...)
+        state, _ = await resource._create_apply(initial_ctx)
 
-        assert updated_state["content"] == "Updated content"
-        assert updated_state["content_hash"] != initial_state["content_hash"]
+        update_ctx = ResourceContext(
+            config=FileContentConfig(filename="/tmp/test.txt", content="Updated content"),
+            state=state,
+            planned_state=state,
+        )
+        updated_state, _ = await resource._update_apply(update_ctx)
+
+        assert updated_state.content == "Updated content"
+        assert updated_state.content_hash != state.content_hash
 ```
 
 ### Test Error Conditions
@@ -514,8 +515,10 @@ async def test_permission_denied(self):
         content="test"
     )
 
+    resource = FileContentResource()
+    ctx = ResourceContext(config=config)
     with pytest.raises(ResourceError) as exc_info:
-        await self.resource._create(self.make_context(config), {})
+        await resource._create_apply(ctx)
 
     assert "Permission denied" in str(exc_info.value)
     assert "write access" in str(exc_info.value)

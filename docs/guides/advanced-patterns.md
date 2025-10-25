@@ -411,32 +411,33 @@ class DatabaseConfig:
 
 ```python
 import pytest
-from mycloud_provider import MyCloudProvider
+from pyvider.resources.context import ResourceContext
+from mycloud_provider.resources import Network, Subnet, NetworkConfig, SubnetConfig
 
 @pytest.mark.integration
 async def test_resource_dependencies():
     """Test complex resource dependencies."""
-    provider = MyCloudProvider()
+    network_resource = Network()
+    subnet_resource = Subnet()
 
     # Create parent resource
-    network = await provider.resources.network.create(
-        NetworkConfig(cidr="10.0.0.0/16")
+    network_state, _ = await network_resource._create_apply(
+        ResourceContext(config=NetworkConfig(cidr="10.0.0.0/16"))
     )
 
     # Create dependent resource
-    subnet = await provider.resources.subnet.create(
-        SubnetConfig(
-            network_id=network.id,
-            cidr="10.0.1.0/24"
+    subnet_state, _ = await subnet_resource._create_apply(
+        ResourceContext(
+            config=SubnetConfig(network_id=network_state.id, cidr="10.0.1.0/24")
         )
     )
 
     # Verify relationship
-    assert subnet.network_id == network.id
+    assert subnet_state.network_id == network_state.id
 
     # Test deletion order
-    await provider.resources.subnet.delete(subnet)
-    await provider.resources.network.delete(network)
+    await subnet_resource._delete_apply(ResourceContext(state=subnet_state))
+    await network_resource._delete_apply(ResourceContext(state=network_state))
 ```
 
 ### Property-Based Testing

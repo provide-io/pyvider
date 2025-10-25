@@ -14,8 +14,8 @@ Data sources in Pyvider provide read-only access to external data that can be re
 
 ### Usage
 
-Data sources implement a single `read()` method that:
-- Accepts configuration parameters
+Data sources implement a single `read(ctx: ResourceContext)` method that:
+- Reads configuration via `ctx.config`
 - Queries external systems
 - Returns data as computed attributes
 - Does not modify any state

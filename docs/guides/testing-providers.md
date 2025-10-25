@@ -40,87 +40,88 @@ Test the complete CRUD lifecycle:
 
 ```python
 import pytest
+from pyvider.resources.context import ResourceContext
 from my_provider.resources import Instance
+
+
+def make_context(
+    *,
+    config: Instance.Config | None = None,
+    state: Instance.State | None = None,
+    planned_state: Instance.State | None = None,
+):
+    return ResourceContext(config=config, state=state, planned_state=planned_state)
+
 
 @pytest.fixture
 def instance_resource():
     """Create an instance resource."""
     return Instance()
 
+
 @pytest.mark.asyncio
 async def test_resource_create(instance_resource):
     """Test resource creation."""
-    config = Instance.Config(
-        name="test-instance",
-        size="t2.micro",
-        ami="ami-12345678"
+    ctx = make_context(
+        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
+    state, _ = await instance_resource._create_apply(ctx)
 
-    state = await instance_resource.create(config)
-
-    assert state.id is not None
+    assert state is not None
     assert state.id.startswith("i-")
     assert state.status == "running"
-    assert state.public_ip is not None
+
 
 @pytest.mark.asyncio
 async def test_resource_read(instance_resource):
     """Test resource read."""
-    # Create resource first
-    config = Instance.Config(
-        name="test-instance",
-        size="t2.micro",
-        ami="ami-12345678"
+    create_ctx = make_context(
+        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
-    created_state = await instance_resource.create(config)
+    state, _ = await instance_resource._create_apply(create_ctx)
 
-    # Read it back
-    read_state = await instance_resource.read(created_state)
+    read_ctx = ResourceContext(state=state)
+    read_state = await instance_resource.read(read_ctx)
 
     assert read_state is not None
-    assert read_state.id == created_state.id
+    assert read_state.id == state.id
+
 
 @pytest.mark.asyncio
 async def test_resource_update(instance_resource):
     """Test resource update."""
-    # Create resource
-    config = Instance.Config(
-        name="test-instance",
-        size="t2.micro",
-        ami="ami-12345678"
+    create_ctx = make_context(
+        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
-    created_state = await instance_resource.create(config)
+    state, _ = await instance_resource._create_apply(create_ctx)
 
-    # Update it
-    updated_config = Instance.Config(
-        name="test-instance",
-        size="t3.small",  # Changed size
-        ami="ami-12345678"
+    update_ctx = make_context(
+        config=Instance.Config(
+            name="test-instance",
+            size="t3.small",  # Changed size
+            ami="ami-12345678",
+        ),
+        state=state,
+        planned_state=state,
     )
-    updated_state = await instance_resource.update(updated_config, created_state)
+    updated_state, _ = await instance_resource._update_apply(update_ctx)
 
-    assert updated_state.id == created_state.id
-    # Verify update took effect via read
-    read_state = await instance_resource.read(updated_state)
-    assert read_state is not None
+    assert updated_state is not None
+    assert updated_state.size == "t3.small"
+
 
 @pytest.mark.asyncio
 async def test_resource_delete(instance_resource):
     """Test resource deletion."""
-    # Create resource
-    config = Instance.Config(
-        name="test-instance",
-        size="t2.micro",
-        ami="ami-12345678"
+    create_ctx = make_context(
+        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
-    created_state = await instance_resource.create(config)
+    state, _ = await instance_resource._create_apply(create_ctx)
 
-    # Delete it
-    await instance_resource.delete(created_state)
+    await instance_resource._delete_apply(ResourceContext(state=state))
 
-    # Verify it's gone
-    read_state = await instance_resource.read(created_state)
-    assert read_state is None
+    read_ctx = ResourceContext(state=state)
+    assert await instance_resource.read(read_ctx) is None
 ```
 
 ### Testing Resource Validation
@@ -134,24 +135,29 @@ from pyvider.exceptions import ValidationError
 @pytest.mark.asyncio
 async def test_resource_validates_required_fields(instance_resource):
     """Test that required fields are validated."""
-    with pytest.raises(ValidationError):
-        config = Instance.Config(
+    ctx = make_context(
+        config=Instance.Config(
             # Missing required 'name' field
             size="t2.micro",
-            ami="ami-12345678"
+            ami="ami-12345678",
         )
-        await instance_resource.create(config)
+    )
+    with pytest.raises(ValidationError):
+        await instance_resource._create_apply(ctx)
+
 
 @pytest.mark.asyncio
 async def test_resource_validates_field_values(instance_resource):
     """Test that field values are validated."""
-    with pytest.raises(ValidationError):
-        config = Instance.Config(
+    ctx = make_context(
+        config=Instance.Config(
             name="test",
             size="invalid-size",  # Invalid size
-            ami="ami-12345678"
+            ami="ami-12345678",
         )
-        await instance_resource.create(config)
+    )
+    with pytest.raises(ValidationError):
+        await instance_resource._create_apply(ctx)
 ```
 
 ## Testing Data Sources
@@ -321,16 +327,18 @@ async def test_resource_with_mocked_api(instance_resource, mocker):
     instance_resource.client = mock_client
 
     # Test create
-    config = Instance.Config(
-        name="test-instance",
-        size="t2.micro",
-        ami="ami-12345678"
+    ctx = make_context(
+        config=Instance.Config(
+            name="test-instance",
+            size="t2.micro",
+            ami="ami-12345678",
+        )
     )
-    state = await instance_resource.create(config)
+    state, _ = await instance_resource._create_apply(ctx)
 
     # Verify mock was called
     mock_client.create_instance.assert_called_once()
-    assert state.id == "i-12345"
+    assert state and state.id == "i-12345"
 ```
 
 ### Using responses for HTTP APIs
@@ -383,15 +391,16 @@ from hypothesis import given, strategies as st
 @pytest.mark.asyncio
 async def test_resource_handles_various_inputs(instance_resource, name, size):
     """Test resource with property-based testing."""
-    config = Instance.Config(
-        name=name,
-        size=size,
-        ami="ami-12345678"
+    ctx = make_context(
+        config=Instance.Config(
+            name=name,
+            size=size,
+            ami="ami-12345678",
+        )
     )
+    state, _ = await instance_resource._create_apply(ctx)
 
-    state = await instance_resource.create(config)
-
-    assert state.id is not None
+    assert state is not None
     assert state.status == "running"
 ```
 

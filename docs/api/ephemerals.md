@@ -6,7 +6,7 @@ This page documents the ephemeral resources API for creating short-lived, statel
 
 Ephemeral resources are a special type of resource that manage temporary connections, sessions, or other short-lived infrastructure. Unlike regular resources, ephemeral resources:
 
-- Have a different lifecycle: `open`, `renew`, and `close` instead of CRUD operations
+- Have a different lifecycle: `open`, `renew`, and `close` (each receives an `EphemeralResourceContext`)
 - Are not persisted in Terraform state
 - Are recreated on every Terraform run
 - Perfect for database connections, API sessions, temporary credentials, etc.
@@ -29,16 +29,16 @@ class DatabaseSession:
 **Parameters:**
 - `name` (str): The resource name as it appears in Terraform configurations
 
-### `BaseEphemeral` Class
+### `BaseEphemeralResource` Class
 
 Base class for all ephemeral resource implementations:
 
 ```python
-from pyvider.ephemerals import BaseEphemeral
+from pyvider.ephemerals import BaseEphemeralResource
 from pyvider.schema import a_str, a_num
 import attrs
 
-class MyEphemeral(BaseEphemeral):
+class MyEphemeral(BaseEphemeralResource):
     """Base class for ephemeral resources."""
 
     @attrs.define
@@ -58,79 +58,70 @@ class MyEphemeral(BaseEphemeral):
 
 Ephemeral resources implement a different lifecycle than regular resources:
 
-### `open(config: Config) -> State`
+### `open(ctx: EphemeralResourceContext) -> tuple[Result, PrivateState, datetime]`
 
-Opens/creates the ephemeral resource:
+Opens/creates the ephemeral resource. The context gives you strongly typed config and capability access.
 
 ```python
-async def open(self, config: Config) -> State:
+async def open(
+    self, ctx: EphemeralResourceContext[Config, None]
+) -> tuple[Result, PrivateState, datetime]:
     """
     Open a new ephemeral resource instance.
 
-    Args:
-        config: User-provided configuration
-
     Returns:
-        State object representing the opened resource
+        (result, private_state, renew_at_utc)
     """
     session = await self.provider.create_session(
-        host=config.host,
-        port=config.port
+        host=ctx.config.host,
+        port=ctx.config.port,
     )
-    return self.State(
-        session_id=session.id,
-        expires_at=session.expires_at
+    return (
+        self.Result(session_id=session.id, expires_at=session.expires_at.isoformat()),
+        self.PrivateState(token=session.token),
+        session.expires_at,
     )
 ```
 
-### `renew(state: State) -> State`
+### `renew(ctx: EphemeralResourceContext) -> tuple[PrivateState, datetime]`
 
-Renews/refreshes the ephemeral resource lease:
+Renews/refreshes the ephemeral resource lease using the stored private state:
 
 ```python
-async def renew(self, state: State) -> State:
+async def renew(
+    self, ctx: EphemeralResourceContext[None, PrivateState]
+) -> tuple[PrivateState, datetime]:
     """
     Renew the ephemeral resource lease.
-
-    Args:
-        state: Current ephemeral state
-
-    Returns:
-        Updated state with renewed lease
     """
-    renewed = await self.provider.renew_session(state.session_id)
-    return self.State(
-        session_id=state.session_id,
-        expires_at=renewed.expires_at
-    )
+    renewed = await self.provider.renew_session(ctx.private_state.token)
+    return self.PrivateState(token=renewed.token), renewed.expires_at
 ```
 
-### `close(state: State) -> None`
+### `close(ctx: EphemeralResourceContext) -> None`
 
 Closes/destroys the ephemeral resource:
 
 ```python
-async def close(self, state: State) -> None:
+async def close(self, ctx: EphemeralResourceContext[None, PrivateState]) -> None:
     """
-    Close the ephemeral resource.
-
-    Args:
-        state: Current ephemeral state
+    Close the ephemeral resource and clean up server-side state.
     """
-    await self.provider.close_session(state.session_id)
+    await self.provider.close_session(ctx.private_state.token)
 ```
 
 ## Complete Example
 
 ```python
-from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeral
+from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeralResource, EphemeralResourceContext
+from pyvider.resources.private_state import PrivateState
 from pyvider.schema import a_str, a_num, a_bool
 from datetime import datetime, timedelta
 import attrs
 import uuid
 
 @register_ephemeral_resource("api_token")
-class ApiToken(BaseEphemeral):
+class ApiToken(BaseEphemeralResource):
     """
     Manages temporary API tokens with automatic expiration.
     """
@@ -143,48 +134,47 @@ class ApiToken(BaseEphemeral):
         auto_renew: bool = a_bool(default=True)
 
     @attrs.define
-    class State:
-        """Token state."""
+    class Result:
         token: str = a_str(computed=True, sensitive=True)
         token_id: str = a_str(computed=True)
         expires_at: str = a_str(computed=True)
         scopes: list[str] = a_list(a_str(), computed=True)
 
-    async def open(self, config: Config) -> State:
+    @attrs.define
+    class TokenPrivateState(PrivateState):
+        token: str = a_str(sensitive=True)
+
+    async def open(
+        self, ctx: EphemeralResourceContext[Config, None]
+    ) -> tuple[Result, PrivateState, datetime]:
         """Generate a new API token."""
-        # Create token with requested scopes
         response = await self.provider.api_client.create_token(
-            scopes=config.scopes,
-            ttl=config.ttl_seconds
+            scopes=ctx.config.scopes, ttl=ctx.config.ttl_seconds
         )
 
-        return self.State(
-            token=response.token,
-            token_id=response.token_id,
-            expires_at=response.expires_at.isoformat(),
-            scopes=config.scopes
-        )
-
-    async def renew(self, state: State) -> State:
-        """Renew token before expiration."""
-        # Check if token needs renewal
-        expires_at = datetime.fromisoformat(state.expires_at)
-        if datetime.utcnow() > expires_at - timedelta(minutes=5):
-            # Renew the token
-            response = await self.provider.api_client.renew_token(
-                token_id=state.token_id
-            )
-            return self.State(
+        expires_at = response.expires_at or datetime.utcnow() + timedelta(hours=1)
+        return (
+            self.Result(
                 token=response.token,
-                token_id=state.token_id,
-                expires_at=response.expires_at.isoformat(),
-                scopes=state.scopes
-            )
-        return state
+                token_id=response.token_id,
+                expires_at=expires_at.isoformat(),
+                scopes=ctx.config.scopes,
+            ),
+            self.TokenPrivateState(token=response.token),
+            expires_at,
+        )
 
-    async def close(self, state: State) -> None:
+    async def renew(
+        self, ctx: EphemeralResourceContext[None, TokenPrivateState]
+    ) -> tuple[TokenPrivateState, datetime]:
+        """Renew token before expiration."""
+        response = await self.provider.api_client.renew_token(token=ctx.private_state.token)
+        expires_at = response.expires_at or datetime.utcnow() + timedelta(hours=1)
+        return self.TokenPrivateState(token=response.token), expires_at
+
+    async def close(self, ctx: EphemeralResourceContext[None, TokenPrivateState]) -> None:
         """Revoke the API token."""
-        await self.provider.api_client.revoke_token(state.token_id)
+        await self.provider.api_client.revoke_token(ctx.private_state.token)
 ```
 
 ## Usage in Terraform
@@ -209,20 +199,15 @@ resource "mycloud_data_import" "import" {
 Ephemeral resources have access to context information:
 
 ```python
-from pyvider.ephemerals.context import EphemeralContext
+from pyvider.ephemerals.context import EphemeralResourceContext
 
-async def open(self, config: Config) -> State:
-    # Access context
-    ctx: EphemeralContext = self.context
-
-    # Log with context
+async def open(self, ctx: EphemeralResourceContext[Config, None]) -> tuple[Result, TokenPrivateState, datetime]:
     self.logger.info(
         "Opening ephemeral resource",
         resource_type=ctx.resource_type,
-        resource_name=ctx.resource_name
+        resource_name=ctx.resource_name,
     )
-
-    # Continue with implementation...
+    ...
 ```
 
 ## Error Handling

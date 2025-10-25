@@ -10,11 +10,11 @@ This document provides context and instructions for interacting with the `pyvide
 
 `pyvider` uses a hub-based discovery system where components self-register via decorators:
 
-*   **Provider**: Entry point that configures authentication and shared settings (`@provider` decorator)
-*   **Resources**: CRUD lifecycle management for infrastructure (`@resource` decorator)
-*   **Data Sources**: Read-only data fetchers (`@data_source` decorator)
-*   **Functions**: Callable logic for transformations (`@function` decorator)
-*   **Ephemerals**: Short-lived resources with open/renew/close lifecycle (`@ephemeral` decorator)
+*   **Provider**: Entry point that configures authentication and shared settings (`@register_provider` decorator)
+*   **Resources**: CRUD lifecycle management for infrastructure (`@register_resource` decorator)
+*   **Data Sources**: Read-only data fetchers (`@register_data_source` decorator)
+*   **Functions**: Callable logic for transformations (`@register_function` decorator)
+*   **Ephemerals**: Short-lived resources with open/renew/close lifecycle (`@register_ephemeral_resource` decorator)
 
 ## Building and Running
 
