@@ -5,6 +5,6 @@ provider "local/providers/pyvider" {
   version     = "0.1.0"
   constraints = "0.1.0"
   hashes = [
-    "h1:WP5dy8AzxKMpMhpICDd42JMte96vY+1VDWW4z5d9RjQ=",
+    "h1:KloMoVb94VGz+34x168bOGzkVTLYeat1+REwnp5s4ro=",
   ]
 }

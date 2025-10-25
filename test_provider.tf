@@ -19,7 +19,7 @@ resource "pyvider_file_content" "test_file" {
 
 # Test data source: Read environment variables
 data "pyvider_env_variables" "env" {
-  filter_prefix = "PATH"
+  prefix = "PATH"
 }
 
 # Test function: String manipulation
@@ -32,5 +32,5 @@ output "file_path" {
 }
 
 output "env_path" {
-  value = try(data.pyvider_env_variables.env.variables["PATH"], "PATH not found")
+  value = try(data.pyvider_env_variables.env.values["PATH"], "PATH not found")
 }
