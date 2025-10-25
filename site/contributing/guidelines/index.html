@@ -2531,6 +2531,42 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#development-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-style" class="md-nav__link">
+    <span class="md-ellipsis">
+      Code Style
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pull-request-guidelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pull Request Guidelines
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Questions?
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2690,8 +2726,46 @@
 <li>Steps to reproduce the bug.</li>
 <li>The version of <code>pyvider</code> you are using.</li>
 <li>The version of Terraform you are using.</li>
-<li>Any relevant logs or error messages.
-```</li>
+<li>Any relevant logs or error messages.</li>
+</ul>
+<h2 id="development-setup">Development Setup<a class="headerlink" href="#development-setup" title="Permanent link">&para;</a></h2>
+<p>To set up a development environment for Pyvider:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Clone the repository</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/provide-io/pyvider.git
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">cd</span><span class="w"> </span>pyvider
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Install dependencies with uv</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>uv<span class="w"> </span>sync<span class="w"> </span>--group<span class="w"> </span>dev
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Run tests</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># Run linters</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>uv<span class="w"> </span>run<span class="w"> </span>ruff<span class="w"> </span>check
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>uv<span class="w"> </span>run<span class="w"> </span>mypy<span class="w"> </span>src/pyvider
+</code></pre></div>
+<p>See <code>CLAUDE.md</code> in the repository root for detailed development commands and workflows.</p>
+<h2 id="code-style">Code Style<a class="headerlink" href="#code-style" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Follow PEP 8 guidelines</li>
+<li>Use type hints for all function signatures</li>
+<li>Use <code>ruff</code> for formatting and linting</li>
+<li>Write docstrings for all public APIs (Google style)</li>
+<li>Keep test coverage above 90%</li>
+</ul>
+<h2 id="pull-request-guidelines">Pull Request Guidelines<a class="headerlink" href="#pull-request-guidelines" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Keep PRs focused on a single feature or bug fix</li>
+<li>Add tests for new functionality</li>
+<li>Update documentation for user-facing changes</li>
+<li>Ensure all tests pass and linters are clean</li>
+<li>Reference related issues in the PR description</li>
+</ul>
+<h2 id="questions">Questions?<a class="headerlink" href="#questions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Open a <a href="https://github.com/provide-io/pyvider/discussions">GitHub Discussion</a> for questions</li>
+<li>Check existing issues before creating a new one</li>
+<li>Join our community channels (links in README)</li>
 </ul>
 
 

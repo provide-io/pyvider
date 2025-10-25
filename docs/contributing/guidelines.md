@@ -50,7 +50,7 @@ uv run ruff check
 uv run mypy src/pyvider
 ```
 
-See [CLAUDE.md](../../CLAUDE.md) for detailed development commands and workflows.
+See `CLAUDE.md` in the repository root for detailed development commands and workflows.
 
 ## Code Style
 
