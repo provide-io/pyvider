@@ -260,6 +260,6 @@ resource "mycloud_server" "web2" {
 
 ## See Also
 
-- [Creating Functions](creating-functions.md) - How to implement provider functions
-- [Best Practices](best-practices.md) - Provider development patterns
+- [Creating Functions](../building-components/creating-functions.md) - How to implement provider functions
+- [Best Practices](../production/best-practices.md) - Provider development patterns
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Working examples

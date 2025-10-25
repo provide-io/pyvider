@@ -1047,10 +1047,10 @@ When troubleshooting an issue, work through this checklist systematically:
 
 ## Related Documentation
 
-- [Logging Guide](logging.md) - Structured logging details
-- [Error Handling](error-handling.md) - Exception handling patterns
-- [Testing Providers](testing-providers.md) - Testing strategies
-- [Best Practices](best-practices.md) - Avoiding common issues
+- [Logging Guide](../development/logging.md) - Structured logging details
+- [Error Handling](../development/error-handling.md) - Exception handling patterns
+- [Testing Providers](../development/testing-providers.md) - Testing strategies
+- [Best Practices](../production/best-practices.md) - Avoiding common issues
 - [Troubleshooting](../troubleshooting.md) - Common problems and solutions
 
 ## Learn by Debugging

@@ -346,7 +346,7 @@ async def _delete_apply(self, ctx: ResourceContext):
 
 ## See Also
 
-- [Logging](logging.md) - Logging best practices
-- [Debugging](debugging.md) - Debugging techniques
-- [Best Practices](best-practices.md) - Provider development patterns
+- [Logging](../development/logging.md) - Logging best practices
+- [Debugging](../development/debugging.md) - Debugging techniques
+- [Best Practices](../production/best-practices.md) - Provider development patterns
 - [API Reference](../api/exceptions.md) - Complete exception reference

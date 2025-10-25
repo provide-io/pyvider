@@ -556,7 +556,7 @@ async def configure(self, config: dict) -> None:
 
 ## See Also
 
-- [Creating Providers](creating-providers.md) - Complete provider development guide
-- [Best Practices](best-practices.md) - Provider development best practices
-- [Error Handling](error-handling.md) - Error handling patterns
+- [Creating Providers](../building-components/creating-providers.md) - Complete provider development guide
+- [Best Practices](../production/best-practices.md) - Provider development best practices
+- [Error Handling](../development/error-handling.md) - Error handling patterns
 - [Schema System](../schema/overview.md) - Schema definition reference

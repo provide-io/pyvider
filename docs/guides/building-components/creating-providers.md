@@ -501,7 +501,7 @@ class ValidateServerName(BaseFunction):
 
 ## Next Steps
 
-You now have a complete, basic provider! For advanced features like error handling, retry logic, rate limiting, caching, and comprehensive testing, see the [Advanced Provider Features](advanced-provider-features.md) guide.
+You now have a complete, basic provider! For advanced features like error handling, retry logic, rate limiting, caching, and comprehensive testing, see the [Advanced Provider Features](../advanced/advanced-provider-features.md) guide.
 
 ## Complete Example
 
@@ -510,8 +510,8 @@ See the full example provider at:
 
 ## See Also
 
-- [Advanced Provider Features](advanced-provider-features.md) - Error handling, retry logic, caching, and testing
-- [Creating Resources](creating-resources.md) - Resource implementation
-- [Creating Data Sources](creating-data-sources.md) - Data source implementation
-- [Creating Functions](creating-functions.md) - Function implementation
-- [Best Practices](best-practices.md) - Production patterns
+- [Advanced Provider Features](../advanced/advanced-provider-features.md) - Error handling, retry logic, caching, and testing
+- [Creating Resources](../building-components/creating-resources.md) - Resource implementation
+- [Creating Data Sources](../building-components/creating-data-sources.md) - Data source implementation
+- [Creating Functions](../building-components/creating-functions.md) - Function implementation
+- [Best Practices](../production/best-practices.md) - Production patterns

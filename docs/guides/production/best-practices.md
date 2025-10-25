@@ -2,7 +2,7 @@
 
 This guide provides foundational best practices for developing Pyvider providers, focusing on design patterns, code organization, and development standards. These patterns are derived from real-world usage and the battle-tested [pyvider-components](https://github.com/provide-io/pyvider-components) repository.
 
-For operational concerns like error handling, logging, performance, testing, and security, see the [Production Readiness Guide](production-readiness.md).
+For operational concerns like error handling, logging, performance, testing, and security, see the [Production Readiness Guide](../production/production-readiness.md).
 
 ## Table of Contents
 
@@ -533,8 +533,8 @@ async def _create(self, ctx: ResourceContext, base_plan: dict) -> tuple[dict | N
 
 ## Related Documentation
 
-- [Production Readiness Guide](production-readiness.md) - Error handling, logging, performance, testing, and security
-- [Creating Resources](creating-resources.md) - Resource implementation guide
+- [Production Readiness Guide](../production/production-readiness.md) - Error handling, logging, performance, testing, and security
+- [Creating Resources](../building-components/creating-resources.md) - Resource implementation guide
 - [Schema Best Practices](../schema/best-practices.md) - Schema-specific guidance
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
 

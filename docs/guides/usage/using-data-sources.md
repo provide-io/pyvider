@@ -378,7 +378,7 @@ The [pyvider-components](https://github.com/provide-io/pyvider-components) repos
 
 ## See Also
 
-- [Creating Data Sources](creating-data-sources.md) - How to implement data sources
+- [Creating Data Sources](../building-components/creating-data-sources.md) - How to implement data sources
 - [Managing Resources](managing-resources.md) - Resource lifecycle management
-- [Best Practices](best-practices.md) - Provider development patterns
+- [Best Practices](../production/best-practices.md) - Provider development patterns
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Working examples
