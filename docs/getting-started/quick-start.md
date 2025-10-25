@@ -38,6 +38,7 @@ from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
 from pyvider.resources import register_resource, BaseResource, ResourceContext
 from pyvider.data_sources import register_data_source, BaseDataSource
 from pyvider.schema import s_provider, s_resource, s_data_source, a_str, a_num, a_bool, PvsSchema
+from pyvider.hub import hub
 
 # ============================================
 # PROVIDER DEFINITION

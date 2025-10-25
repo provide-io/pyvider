@@ -319,6 +319,8 @@ class Server(BaseResource):
         """Create server using provider configuration."""
         # Get provider instance
         provider = hub.get_component("singleton", "provider")
+        if provider is None or provider.config is None:
+            raise RuntimeError("Provider has not been configured yet.")
 
         # Access provider config
         api_key = provider.config.api_key
