@@ -52,6 +52,10 @@ def extract_links(file_path: Path) -> List[Tuple[str, str, int]]:
     content = file_path.read_text(encoding='utf-8')
 
     for line_num, line in enumerate(content.split('\n'), 1):
+        # Skip lines with Jinja2/macro template variables
+        if '{{' in line and '}}' in line:
+            continue
+
         for match in LINK_PATTERN.finditer(line):
             link_text = match.group(1)
             link_url = match.group(2)

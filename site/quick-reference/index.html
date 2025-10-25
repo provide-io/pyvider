@@ -2724,6 +2724,11 @@
 <td><code>a_set(a_str(), description="Unique IDs")</code></td>
 </tr>
 <tr>
+<td><code>a_tuple([T...])</code></td>
+<td>Tuple (fixed types)</td>
+<td><code>a_tuple([a_str(), a_num()], description="Pair")</code></td>
+</tr>
+<tr>
 <td><code>a_obj({...})</code></td>
 <td>Nested object</td>
 <td><code>a_obj({"port": a_num()}, description="Config")</code></td>
@@ -2732,6 +2737,16 @@
 <td><code>a_dyn()</code></td>
 <td>Dynamic (any type)</td>
 <td><code>a_dyn(description="Metadata")</code></td>
+</tr>
+<tr>
+<td><code>a_null()</code></td>
+<td>Null value</td>
+<td><code>a_null(description="Explicitly null")</code></td>
+</tr>
+<tr>
+<td><code>a_unknown()</code></td>
+<td>Unknown (planning)</td>
+<td><code>a_unknown(description="Value unknown during plan")</code></td>
 </tr>
 </tbody>
 </table>
