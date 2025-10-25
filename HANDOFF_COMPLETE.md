@@ -59,17 +59,17 @@ pyvider-components/
    - Plan executes correctly
    - Resources, data sources, and functions all working
 
-## Known Issues & Fixes Applied
+## Fixed Issues
 
-### Issue: Provider Binary Naming
-**Problem:** Terraform expects providers named `terraform-provider-*` but pyvider CLI uses `pyvider`
+### Issue: Provider Binary Naming Detection
+**Problem:** When Terraform calls the wrapper script `terraform-provider-pyvider`, which then calls `pyvider provide`, the check in `provide_command.py` was rejecting it because `sys.argv[0]` was `pyvider` instead of `terraform-provider-pyvider`.
 
-**Temporary Fix Applied:** Modified wrapper script to set argv[0] correctly:
-```python
-sys.argv = ['terraform-provider-pyvider', 'provide'] + sys.argv[1:]
-```
+**Solution:** Modified `src/pyvider/cli/provide_command.py:255` to check for `PLUGIN_MAGIC_COOKIE_VALUE` environment variable, which the wrapper script sets. This allows the provider detection to recognize when it's being called via the wrapper script.
 
-**Permanent Fix Needed:** Update `pyvider install` command to generate wrapper with proper argv[0] handling
+**Files Changed:**
+- `src/pyvider/cli/provide_command.py` - Added check for `via_wrapper` variable
+
+The wrapper script remains a simple shell script and works correctly from any directory where `pyvider install` is run.
 
 ## How to Use the New Architecture
 

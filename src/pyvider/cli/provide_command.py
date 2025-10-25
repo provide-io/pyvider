@@ -250,10 +250,15 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
     script_name = Path(sys.argv[0]).name
 
+    # Check if we're being called via the wrapper script
+    # (wrapper sets PLUGIN_MAGIC_COOKIE_VALUE from TF_PLUGIN_MAGIC_COOKIE)
+    via_wrapper = os.environ.get("PLUGIN_MAGIC_COOKIE_VALUE") is not None
+
     # Check if Terraform is trying to launch us but we can't detect it properly
     if (
         magic_cookie
         and not force
+        and not via_wrapper
         and "terraform-provider" not in script_name.lower()
         and "terraform-provider" not in sys.argv[0].lower()
     ):
