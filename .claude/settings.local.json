@@ -78,7 +78,8 @@
       "Bash(uv run python:*)",
       "Bash(tree:*)",
       "Bash(uv run:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(cut:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
