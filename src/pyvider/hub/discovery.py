@@ -12,10 +12,10 @@ from pyvider.hub.components import ComponentRegistry
 class ComponentDiscovery:
     """
     Discovers and registers components by scanning for installed packages that
-    declare the 'pyvider.components' entry point.
+    declare the 'pyvider' entry point.
     """
 
-    ENTRY_POINT_GROUP = "pyvider.components"
+    ENTRY_POINT_GROUP = "pyvider"
 
     def __init__(self, hub: ComponentRegistry) -> None:
         self.hub = hub

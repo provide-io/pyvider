@@ -50,7 +50,7 @@ docs = [
 [project.scripts]
 pyvider = "pyvider.cli.__main__:main"
 
-[project.entry-points."pyvider.components"]
+[project.entry-points.pyvider]
 pyvider = "pyvider"
 
 [build-system]
