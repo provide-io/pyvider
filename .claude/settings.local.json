@@ -105,7 +105,11 @@
       "Bash(uv sync:*)",
       "Bash(updateem)",
       "Bash(/Users/tim/code/gh/provide-io/updateem)",
-      "Bash(bash:*)"
+      "Bash(bash:*)",
+      "Bash(VIRTUAL_ENV=/Users/tim/code/gh/provide-io/pyvider/.venv /Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest:*)",
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest tests/resources/test_comprehensive_private_state_suite.py::TestPrivateStateResourceLifecycle::test_private_state_verifier_resource_works -xvs)",
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest tests/resources/test_comprehensive_private_state_suite.py::TestTimedTokenResource::test_timed_token_lifecycle -xvs)",
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
