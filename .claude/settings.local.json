@@ -102,7 +102,10 @@
       "Bash(/Users/tim/.terraform.d/plugins/local/providers/pyvider/0.1.0/darwin_arm64/terraform-provider-pyvider)",
       "Bash(timeout:*)",
       "Bash(mkdir:*)",
-      "Bash(uv sync:*)"
+      "Bash(uv sync:*)",
+      "Bash(updateem)",
+      "Bash(/Users/tim/code/gh/provide-io/updateem)",
+      "Bash(bash:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
