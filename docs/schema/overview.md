@@ -339,7 +339,7 @@ Add custom validation logic to attributes:
     required=True,
     validators=[
         lambda x: "@" in x or "Must be a valid email address",
-        lambda x: x.endswith(".com") or ".org") or "Must end with .com or .org",
+        lambda x: (x.endswith(".com") or x.endswith(".org")) or "Must end with .com or .org",
     ]
 )
 ```
