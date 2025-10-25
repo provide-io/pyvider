@@ -91,6 +91,15 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
     @classmethod
     def _handle_attrs_conversion(cls, data: Any, target_cls: type) -> Any | None:
+        # Check for UnrefinedUnknownValue explicitly
+        if type(data).__name__ == 'UnrefinedUnknownValue':
+            logger.debug(
+                "Cannot construct attrs class from UnrefinedUnknownValue",
+                operation="attrs_conversion",
+                class_name=target_cls.__name__,
+            )
+            return None
+
         if not isinstance(data, dict):
             logger.warning(
                 "Cannot construct attrs class from non-dict data type",
@@ -160,7 +169,8 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if isinstance(data, CtyValue):
             return cls._handle_cty_value(data, target_cls)
 
-        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL:
+        # Check for unknown/None values - use type name since identity may not match
+        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL or type(data).__name__ == 'UnrefinedUnknownValue':
             return None
 
         origin = get_origin(target_cls)
