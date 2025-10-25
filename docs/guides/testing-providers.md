@@ -438,33 +438,39 @@ async def test_complete_resource_lifecycle(configured_provider):
     instance = Instance()
 
     # Create
-    config = Instance.Config(
-        name="integration-test",
-        size="t2.micro",
-        ami="ami-12345678"
+    create_ctx = ResourceContext(
+        config=Instance.Config(
+            name="integration-test",
+            size="t2.micro",
+            ami="ami-12345678"
+        )
     )
-    created = await instance.create(config)
-    assert created.id is not None
+    created, _ = await instance._create_apply(create_ctx)
+    assert created and created.id is not None
 
     # Read
-    read = await instance.read(created)
+    read = await instance.read(ResourceContext(state=created))
     assert read is not None
     assert read.id == created.id
 
     # Update
-    updated_config = Instance.Config(
-        name="integration-test",
-        size="t3.small",
-        ami="ami-12345678"
+    update_ctx = ResourceContext(
+        config=Instance.Config(
+            name="integration-test",
+            size="t3.small",
+            ami="ami-12345678"
+        ),
+        state=created,
+        planned_state=created,
     )
-    updated = await instance.update(updated_config, created)
+    updated, _ = await instance._update_apply(update_ctx)
     assert updated.id == created.id
 
     # Delete
-    await instance.delete(updated)
+    await instance._delete_apply(ResourceContext(state=updated))
 
     # Verify deleted
-    deleted = await instance.read(updated)
+    deleted = await instance.read(ResourceContext(state=updated))
     assert deleted is None
 ```
 
