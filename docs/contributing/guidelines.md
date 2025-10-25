@@ -190,6 +190,32 @@ Update documentation when you:
 - **API reference**: `docs/api/*.md`
 - **Examples**: Link to [pyvider-components](https://github.com/provide-io/pyvider-components)
 
+### API Documentation Approach
+
+Pyvider uses a **hybrid approach** for API reference documentation:
+
+**Manual Documentation** (`api/cli.md`, `api/common.md`, `api/hub.md`, etc.):
+- Curated examples and explanations
+- Context and usage patterns
+- Best practices and common pitfalls
+- Cross-references to guides
+
+**Auto-Generated Sections** (via mkdocstrings):
+- Rendered directly from Python docstrings
+- Always up-to-date with code
+- Complete parameter listings
+- Type signatures
+
+**Why both?**
+- Manual docs provide context, examples, and guidance
+- Auto-generated docs ensure technical accuracy
+- Together they serve different reader needs
+
+**When contributing:**
+- Update docstrings for code changes (will auto-generate)
+- Update manual pages for new features or changed workflows
+- Keep both in sync
+
 ### Documentation Style
 
 - Use clear, concise language

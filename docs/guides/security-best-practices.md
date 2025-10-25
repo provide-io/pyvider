@@ -666,7 +666,7 @@ Before releasing your provider, verify:
 - **OWASP Top 10**: [https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)
 - **CWE Top 25**: [https://cwe.mitre.org/top25/](https://cwe.mitre.org/top25/)
 - **Python Security**: [https://python.readthedocs.io/en/stable/library/security_warnings.html](https://python.readthedocs.io/en/stable/library/security_warnings.html)
-- **Terraform Security**: [https://www.terraform.io/docs/language/values/sensitive.html](https://www.terraform.io/docs/language/values/sensitive.html)
+- **Terraform Security**: [https://developer.hashicorp.com/terraform/docs/language/values/sensitive.html](https://developer.hashicorp.com/terraform/docs/language/values/sensitive.html)
 
 ---
 

@@ -2927,6 +2927,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#api-documentation-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      API Documentation Approach
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#documentation-style" class="md-nav__link">
     <span class="md-ellipsis">
       Documentation Style
@@ -3374,6 +3383,26 @@
 <li><strong>API reference</strong>: <code>docs/api/*.md</code></li>
 <li><strong>Examples</strong>: Link to <a href="https://github.com/provide-io/pyvider-components">pyvider-components</a></li>
 </ul>
+<h3 id="api-documentation-approach">API Documentation Approach<a class="headerlink" href="#api-documentation-approach" title="Permanent link">&para;</a></h3>
+<p>Pyvider uses a <strong>hybrid approach</strong> for API reference documentation:</p>
+<p><strong>Manual Documentation</strong> (<code>api/cli.md</code>, <code>api/common.md</code>, <code>api/hub.md</code>, etc.):
+- Curated examples and explanations
+- Context and usage patterns
+- Best practices and common pitfalls
+- Cross-references to guides</p>
+<p><strong>Auto-Generated Sections</strong> (via mkdocstrings):
+- Rendered directly from Python docstrings
+- Always up-to-date with code
+- Complete parameter listings
+- Type signatures</p>
+<p><strong>Why both?</strong>
+- Manual docs provide context, examples, and guidance
+- Auto-generated docs ensure technical accuracy
+- Together they serve different reader needs</p>
+<p><strong>When contributing:</strong>
+- Update docstrings for code changes (will auto-generate)
+- Update manual pages for new features or changed workflows
+- Keep both in sync</p>
 <h3 id="documentation-style">Documentation Style<a class="headerlink" href="#documentation-style" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Use clear, concise language</li>
