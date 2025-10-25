@@ -157,25 +157,7 @@ def _create_resource_context(
 ) -> ResourceContext:
     config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
-
-    # Debug logging for planned_state conversion issue
-    logger.debug(
-        "Converting planned_state to attrs instance",
-        operation="create_resource_context",
-        planned_state_cty_is_none=planned_state_cty is None,
-        planned_state_cty_type=type(planned_state_cty).__name__ if planned_state_cty else None,
-        has_is_unknown=hasattr(planned_state_cty, 'is_unknown'),
-        is_unknown=planned_state_cty.is_unknown if hasattr(planned_state_cty, 'is_unknown') else None,
-    )
-
     planned_state_instance = cty_to_attrs_instance(planned_state_cty, resource_class.state_class)
-
-    logger.debug(
-        "Planned state converted",
-        operation="create_resource_context",
-        planned_state_instance_is_none=planned_state_instance is None,
-        planned_state_instance_type=type(planned_state_instance).__name__ if planned_state_instance else None,
-    )
 
     return ResourceContext(
         config=config_instance,
