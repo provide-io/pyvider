@@ -46,20 +46,32 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if cty_value.is_null:
             return None
         if cty_value.is_unknown:
-            # For unknown objects that are attrs classes, create an instance with None/default values
-            # This handles planned_state with unknown computed fields during apply
-            if isinstance(cty_value.type, CtyObject) and attrs.has(target_cls):
-                # Create attrs instance with all fields as None
+            # Debug: log what we're dealing with
+            logger.debug(
+                "Handling unknown CtyValue",
+                cty_type=type(cty_value.type).__name__,
+                value_type=type(cty_value.value).__name__,
+                is_dict=isinstance(cty_value.value, dict),
+                value_repr=repr(cty_value.value)[:100],
+                target_cls=target_cls.__name__ if hasattr(target_cls, '__name__') else str(target_cls),
+            )
+            # Check if the unknown value actually has field data
+            # CtyObjects can be marked as unknown but still have partial field information
+            if isinstance(cty_value.type, CtyObject) and isinstance(cty_value.value, dict):
+                # The object is marked unknown but has field data - process it normally
+                logger.debug("Unknown object with dict value - processing fields")
+                return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
+            elif isinstance(cty_value.type, CtyObject) and attrs.has(target_cls):
+                # Truly unknown object with no field data - create instance with None values
+                logger.debug("Unknown object without field data - creating empty instance")
                 target_fields = {f.name: f for f in attrs.fields(target_cls)}
                 kwargs = {}
                 for name, field_def in target_fields.items():
                     if field_def.init:
-                        # Use None for all fields - they're unknown at this point
                         kwargs[name] = None
                 try:
                     return target_cls(**kwargs)
                 except TypeError:
-                    # If we can't create with all None, return None
                     return None
             # For non-object types or non-attrs classes, unknown means None
             if not isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple):
