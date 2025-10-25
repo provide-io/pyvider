@@ -81,7 +81,8 @@
       "Bash(git log:*)",
       "Bash(cut:*)",
       "Bash(head:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(uv tree:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
