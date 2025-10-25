@@ -95,6 +95,7 @@ class ComponentDiscovery:
                 continue
 
             reg_checks = [
+                ("_is_registered_provider", "provider"),
                 ("_is_registered_resource", "resource"),
                 ("_is_registered_data_source", "data_source"),
                 ("_is_registered_function", "function"),

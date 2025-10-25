@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any
+from typing import Any, ClassVar
 
 from attrs import define, field
 from provide.foundation import logger
@@ -33,27 +33,83 @@ class BaseProvider:
     """
     Base provider implementation that handles gRPC service initialization
     and provider lifecycle management.
+
+    Automatically discovers and integrates capabilities during setup().
+    Component packages can override setup() for custom initialization.
     """
 
     metadata: ProviderMetadata
     config_class: Any | None = None  # Add config_class attribute
     _configured: bool = field(default=False, init=False)
     _final_schema: PvsSchema | None = field(default=None, init=False)
+    capabilities: ClassVar[dict[str, Any]] = {}
 
     async def setup(self) -> None:
         """
-        An initialization hook called by the framework after component
-        discovery but before serving requests. This is the ideal place
-        to assemble the final schema by integrating capabilities.
+        Initialization hook called by the framework after component
+        discovery but before serving requests.
+
+        Automatically:
+        - Discovers capabilities from the hub
+        - Instantiates capability classes
+        - Composes provider schema from capability contributions
+        - Creates config_class for configuration parsing
+
+        Override this method for custom provider initialization.
         """
+        from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
+        from pyvider.hub import hub
+        from pyvider.schema import s_provider
+
         logger.debug(
-            "Provider setup hook called",
+            "Provider setup started",
             operation="setup",
             provider_name=self.metadata.name,
             provider_version=self.metadata.version,
             protocol_version=self.metadata.protocol_version,
         )
-        pass  # pragma: no cover
+
+        # Auto-discover and instantiate capabilities
+        final_attributes = {}
+        capability_classes = hub.get_components("capability")
+
+        provider_ctx = hub.get_component("singleton", "provider_context")
+        provider_config = provider_ctx.config if provider_ctx else None
+
+        for name, cap_class in capability_classes.items():
+            cap_instance = cap_class(config=provider_config)
+            self.capabilities[name] = cap_instance
+            if hasattr(cap_instance, "get_schema_contribution"):
+                final_attributes.update(cap_instance.get_schema_contribution())
+
+        self.capabilities["provider"] = self
+
+        # Build final provider schema
+        self._final_schema = s_provider(attributes=final_attributes)
+        self.config_class = create_attrs_class_from_schema(
+            "ProviderConfig", self._final_schema.block.attributes
+        )
+
+        # Validate component-capability associations
+        all_components = {
+            **hub.get_components("resource"),
+            **hub.get_components("data_source"),
+            **hub.get_components("function"),
+        }
+        for name, comp in all_components.items():
+            parent_cap_name = getattr(comp, "_parent_capability", "provider")
+            if parent_cap_name not in self.capabilities:
+                raise FrameworkConfigurationError(
+                    f"Component '{name}' is associated with capability '{parent_cap_name}', "
+                    f"but that capability is not registered."
+                )
+
+        logger.info(
+            "Provider setup completed",
+            operation="setup",
+            provider_name=self.metadata.name,
+            capabilities=list(self.capabilities.keys()),
+        )
 
     async def configure(self, config: dict[str, CtyType]) -> None:
         """Configure the provider with the given configuration."""

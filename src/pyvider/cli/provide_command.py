@@ -27,7 +27,6 @@ async def _run_provider_server(magic_cookie: str) -> None:
     from pyvider.handler import ProviderHandler
     from pyvider.hub import hub
     import pyvider.protocols.tfprotov6.protobuf as pb
-    from pyvider.providers.provider import PyviderProvider
     from pyvider.rpcplugin import RPCPluginProtocol, RPCPluginServer
 
     def _configure_telemetry(config: PyviderConfig) -> None:
@@ -101,24 +100,56 @@ async def _run_provider_server(magic_cookie: str) -> None:
             operation="component_discovery",
         )
 
-        logger.debug(
-            "Creating provider instance",
-            operation="provider_create",
-        )
-        provider_instance = PyviderProvider()
-        await provider_instance.setup()
-        logger.debug(
-            "Provider setup completed",
-            operation="provider_setup",
+        # Discover and instantiate all registered providers
+        provider_classes = hub.get_components("provider")
+
+        if not provider_classes:
+            logger.error(
+                "No providers discovered",
+                operation="provider_discovery",
+                domain="system",
+            )
+            raise RuntimeError(
+                "No providers found. Install a provider package (e.g., pyvider-components) "
+                "that registers a provider using @register_provider('name')."
+            )
+
+        logger.info(
+            "Discovered providers",
+            operation="provider_discovery",
+            providers=list(provider_classes.keys()),
         )
 
-        hub.register("singleton", "provider", provider_instance)
+        # Instantiate and setup all providers
+        provider_instances = {}
+        for provider_name, provider_class in provider_classes.items():
+            logger.debug(
+                "Creating provider instance",
+                operation="provider_create",
+                provider=provider_name,
+            )
+            provider_instance = provider_class()
+            await provider_instance.setup()
+            provider_instances[provider_name] = provider_instance
+
+            logger.debug(
+                "Provider setup completed",
+                operation="provider_setup",
+                provider=provider_name,
+            )
+
+        # Register the first provider as the singleton "provider" for backwards compatibility
+        # TODO: In the future, handlers should route to the correct provider based on resource type
+        primary_provider = list(provider_instances.values())[0]
+        hub.register("singleton", "provider", primary_provider)
         logger.debug(
-            "Provider registered in hub",
+            "Primary provider registered in hub",
             operation="hub_register",
+            provider=list(provider_classes.keys())[0],
         )
+
         protocol = PyviderProtocol()
-        handler = ProviderHandler(provider_instance)
+        handler = ProviderHandler(primary_provider)
 
         # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
