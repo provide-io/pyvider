@@ -83,12 +83,27 @@ def _place_terraform_provider_script(ctx: PyviderContext) -> None:
         has_pyvider_cmd = pyvider_cmd.exists()
 
         # Determine execution method
+        # Always use Python to set argv[0] correctly for Terraform detection
         if has_pyvider_cmd:
-            exec_line = 'exec pyvider provide "$@"'
+            exec_line = '''exec "$PYTHON_EXE" -c "
+import sys
+# Set argv to include the expected provider name and 'provide' command
+sys.argv = ['terraform-provider-pyvider', 'provide'] + sys.argv[1:]
+# Import and run the provider
+from pyvider.cli import main
+main()
+" "$@"'''
             install_method = "installed (pyvider command)"
         else:
             # Use python -m for editable installs or when pyvider command doesn't exist
-            exec_line = 'exec python -m pyvider.cli provide "$@"'
+            exec_line = '''exec "$PYTHON_EXE" -c "
+import sys
+# Set argv to include the expected provider name and 'provide' command
+sys.argv = ['terraform-provider-pyvider', 'provide'] + sys.argv[1:]
+# Import and run the provider
+from pyvider.cli import main
+main()
+" "$@"'''
             install_method = "editable (python -m)"
 
         # Generate script with accurate, hardcoded paths
