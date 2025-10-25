@@ -92,7 +92,9 @@
       "Bash(pyvider components:*)",
       "Bash(pyvider:*)",
       "Bash(timeout 5 pyvider provide:*)",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Bash(TF_PLUGIN_MAGIC_COOKIE=d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d37e95f7aa66ad0 timeout 5 pyvider provide:*)",
+      "Bash(TF_PLUGIN_MAGIC_COOKIE=d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d37e95f7aa66ad0 timeout 3 pyvider provide:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
