@@ -55,7 +55,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             is_unknown=cty_value.is_unknown,
             is_structural=isinstance(cty_value.type, CtyObject | CtyList | CtySet | CtyTuple),
             value_type=type(cty_value.value).__name__,
-            target_cls=target_cls.__name__,
+            target_cls=getattr(target_cls, '__name__', str(target_cls)),
         )
         return cls._cty_to_attrs_recursive(cty_value.value, target_cls)
 
@@ -86,7 +86,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         logger.debug(
             "Starting attrs conversion",
             operation="_handle_attrs_conversion",
-            target_cls=target_cls.__name__,
+            target_cls=getattr(target_cls, '__name__', str(target_cls)),
             data_keys=list(data.keys()),
             value_types={k: type(v).__name__ for k, v in data.items()},
         )
