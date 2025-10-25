@@ -20,6 +20,16 @@ Data sources implement a single `read(ctx: ResourceContext)` method that:
 - Returns data as computed attributes
 - Does not modify any state
 
+```python
+from pyvider.resources.context import ResourceContext
+
+async def read(self, ctx: ResourceContext) -> ImageState | None:
+    if ctx.config is None:
+        return None
+    response = await self.client.get_image(ctx.config.image_id)
+    return ImageState(**response)
+```
+
 ## Module Reference
 
 ::: pyvider.data_sources

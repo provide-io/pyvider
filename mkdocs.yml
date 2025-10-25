@@ -119,6 +119,7 @@ extra_javascript:
 # Navigation Structure
 nav:
   - 'Home': 'index.md'
+  - '⚡ Quick Reference': 'quick-reference.md'
 
   - 'Getting Started':
     - 'What is Pyvider': 'getting-started/what-is-pyvider.md'
@@ -137,18 +138,18 @@ nav:
       - 'Creating Data Sources': 'guides/creating-data-sources.md'
       - 'Creating Functions': 'guides/creating-functions.md'
       - 'Using Decorators': 'guides/using-decorators.md'
-    - 'Testing & Quality':
+    - 'Production Providers':
+      - 'Best Practices': 'guides/best-practices.md'
       - 'Testing Providers': 'guides/testing-providers.md'
-      - 'Debugging': 'guides/debugging.md'
       - 'Error Handling': 'guides/error-handling.md'
       - 'Logging': 'guides/logging.md'
+      - 'Debugging': 'guides/debugging.md'
     - 'Using Providers':
       - 'Configuration': 'guides/configuration.md'
       - 'Managing Resources': 'guides/managing-resources.md'
       - 'Using Data Sources': 'guides/using-data-sources.md'
       - 'Using Functions': 'guides/using-functions.md'
-    - 'Advanced Topics':
-      - 'Best Practices': 'guides/best-practices.md'
+    - 'Advanced':
       - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
       - 'Advanced Patterns': 'guides/advanced-patterns.md'
     - 'Examples':
@@ -182,7 +183,7 @@ nav:
     - 'Conversion': 'api/conversion/index.md'
     - 'Protocols': 'api/protocols/index.md'
 
-  - 'Capabilities (Experimental)':
+  - '🔬 Capabilities (Experimental)':
     - 'Overview': 'capabilities/overview.md'
 
   - 'Contributing':

@@ -20,7 +20,7 @@ cd pyvider
 source ./env.sh  # On Windows: .\env.ps1
 
 # This script will:
-# 1. Create a virtual environment in workenv/
+# 1. Create a virtual environment
 # 2. Install all dependencies
 # 3. Install Pyvider in editable mode
 # 4. Set up pre-commit hooks

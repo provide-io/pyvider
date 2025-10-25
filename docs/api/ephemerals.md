@@ -35,6 +35,7 @@ Base class for all ephemeral resource implementations:
 
 ```python
 from pyvider.ephemerals import BaseEphemeralResource
+from pyvider.resources.private_state import PrivateState
 from pyvider.schema import a_str, a_num
 import attrs
 
@@ -48,10 +49,14 @@ class MyEphemeral(BaseEphemeralResource):
         port: int = a_num(default=5432)
 
     @attrs.define
-    class State:
-        """Ephemeral state (not persisted)."""
+    class Result:
+        """Data returned to Terraform callers."""
         session_id: str = a_str(computed=True)
         expires_at: str = a_str(computed=True)
+
+    @attrs.define
+    class SessionState(PrivateState):
+        token: str = a_str(sensitive=True)
 ```
 
 ## Lifecycle Methods
@@ -202,10 +207,11 @@ Ephemeral resources have access to context information:
 from pyvider.ephemerals.context import EphemeralResourceContext
 
 async def open(self, ctx: EphemeralResourceContext[Config, None]) -> tuple[Result, TokenPrivateState, datetime]:
+    # Context provides: config, private_state, and diagnostic methods
     self.logger.info(
         "Opening ephemeral resource",
-        resource_type=ctx.resource_type,
-        resource_name=ctx.resource_name,
+        scopes=ctx.config.scopes if ctx.config else [],
+        ttl=ctx.config.ttl_seconds if ctx.config else None,
     )
     ...
 ```
@@ -239,6 +245,7 @@ async def open(self, config: Config) -> State:
 
 ```python
 import pytest
+from pyvider.ephemerals.context import EphemeralResourceContext
 from my_provider.ephemerals import ApiToken
 
 @pytest.fixture
@@ -251,17 +258,18 @@ async def test_token_lifecycle(api_token, mock_provider):
     api_token.provider = mock_provider
 
     # Test open
-    config = ApiToken.Config(scopes=["read", "write"])
-    state = await api_token.open(config)
-    assert state.token_id is not None
-    assert state.scopes == ["read", "write"]
+    config_ctx = EphemeralResourceContext(config=ApiToken.Config(scopes=["read", "write"]))
+    result, private_state, renew_at = await api_token.open(config_ctx)
+    assert result.token_id is not None
+    assert result.scopes == ["read", "write"]
 
     # Test renew
-    renewed_state = await api_token.renew(state)
-    assert renewed_state.token_id == state.token_id
+    renew_ctx = EphemeralResourceContext(private_state=private_state)
+    new_private_state, next_renew = await api_token.renew(renew_ctx)
+    assert next_renew >= renew_at
 
     # Test close
-    await api_token.close(renewed_state)
+    await api_token.close(EphemeralResourceContext(private_state=new_private_state))
     # Verify cleanup happened
 ```
 
@@ -279,5 +287,5 @@ async def test_token_lifecycle(api_token, mock_provider):
       show_bases: true
       members:
         - register_ephemeral_resource
-        - BaseEphemeral
-        - EphemeralContext
+        - BaseEphemeralResource
+        - EphemeralResourceContext

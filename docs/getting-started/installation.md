@@ -180,10 +180,7 @@ After installation, verify everything is working:
 # Verify Pyvider is installed
 python -c "import pyvider; print(pyvider.__version__)"
 
-# Check CLI availability
-pyvider --version
-
-# List available commands
+# Check CLI availability and list available commands
 pyvider --help
 ```
 
@@ -391,7 +388,7 @@ pip install --upgrade pyvider
 uv sync --upgrade
 
 # Check current version
-pyvider --version
+python -c "import pyvider; print(pyvider.__version__)"
 ```
 
 **Note**: Pyvider is in alpha. Breaking changes may occur between releases. Check the release notes before upgrading.

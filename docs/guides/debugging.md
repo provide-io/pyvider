@@ -2,6 +2,15 @@
 
 This guide provides comprehensive debugging techniques and workflows for troubleshooting Pyvider providers. Whether you're tracking down a subtle bug or dealing with a complete failure, these strategies will help you identify and fix issues quickly.
 
+## Table of Contents
+
+- [Why Provider Debugging is Different](#why-provider-debugging-is-different)
+- [Quick Reference](#quick-reference)
+- [Setting Up Your Debug Environment](#setting-up-your-debug-environment)
+- [Log-Based Debugging](#log-based-debugging)
+
+---
+
 ## Why Provider Debugging is Different
 
 Debugging Terraform providers presents unique challenges:
@@ -151,7 +160,7 @@ class ExampleResource(BaseResource):
     async def _create(self, ctx: ResourceContext, base_plan: dict):
         logger.debug(
             "Create operation starting",
-            resource_type=ctx.resource_type,
+            resource_class=self.__class__.__name__,
             config=base_plan
         )
 
@@ -274,13 +283,13 @@ breakpoint()
 (Pdb) pp ctx.state.__dict__ if ctx.state else "No state"
 {'filename': '/tmp/test.txt', 'content': 'Hello', 'exists': True}
 
-# Inspect resource type
-(Pdb) print(ctx.resource_type)
-'pyvider_file_content'
+# Check if field is unknown during planning
+(Pdb) print(ctx.is_field_unknown('content'))
+False
 
 # Check private state
 (Pdb) print(ctx.private_state)
-b'encrypted_data...'
+None
 ```
 
 ## Debugging with Terraform

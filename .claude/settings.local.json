@@ -77,7 +77,8 @@
       "Bash(timeout 3 mkdocs serve:*)",
       "Bash(uv run python:*)",
       "Bash(tree:*)",
-      "Bash(uv run:*)"
+      "Bash(uv run:*)",
+      "Bash(git log:*)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

@@ -2,6 +2,14 @@
 
 This comprehensive guide walks you through creating production-ready Terraform providers using Pyvider, from basic setup to advanced features.
 
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Provider Anatomy](#provider-anatomy)
+- [Step-by-Step Provider Creation](#step-by-step-provider-creation)
+
+---
+
 ## Prerequisites
 
 Before creating a provider, you should understand:

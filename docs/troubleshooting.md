@@ -58,7 +58,7 @@ ls -la .terraform/providers/
 chmod +x ~/.terraform.d/plugins/terraform-provider-pyvider
 
 # Test provider directly
-./terraform-provider-pyvider --version
+./terraform-provider-pyvider --help
 ```
 
 **4. Check Terraform configuration:**

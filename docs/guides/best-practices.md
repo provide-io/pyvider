@@ -2,6 +2,13 @@
 
 This guide provides comprehensive best practices for developing production-ready Pyvider providers. These patterns are derived from real-world usage and the battle-tested [pyvider-components](https://github.com/provide-io/pyvider-components) repository.
 
+## Table of Contents
+
+- [Provider Design Patterns](#provider-design-patterns)
+- [Schema Design Best Practices](#schema-design-best-practices)
+
+---
+
 ## Provider Design Patterns
 
 ### Single Responsibility Principle
@@ -343,7 +350,7 @@ logger.debug(
 # Good: Log state transitions
 logger.info(
     "Resource created successfully",
-    resource_type=ctx.resource_type,
+    resource_class=self.__class__.__name__,
     resource_id=result_id
 )
 

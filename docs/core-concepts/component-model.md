@@ -1,6 +1,6 @@
 # 🧩 Component Model
 
-Pyvider's component model provides a powerful, decorator-based system for building Terraform providers. This document explores how components are defined, discovered, registered, and managed throughout their lifecycle.
+Pyvider's component model provides a powerful, decorator-based system for building Terraform providers. This document explores the architecture of how components are defined, discovered, registered, and managed.
 
 ## 📊 Component Hierarchy
 
@@ -14,7 +14,7 @@ graph TB
         E[Ephemeral Resources]
         C[Capabilities]
     end
-    
+
     P --> R
     P --> D
     P --> F
@@ -22,7 +22,7 @@ graph TB
     R -.-> C
     D -.-> C
     E -.-> C
-    
+
     style P fill:#f9f,stroke:#333,stroke-width:4px
     style C fill:#bbf,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5
 ```
@@ -31,52 +31,7 @@ graph TB
 
 ### 1. Provider Component
 
-The Provider is the root component that configures authentication and shared settings:
-
-```python
-from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
-from pyvider.schema import a_str, a_num
-import attrs
-
-@register_provider("mycloud")
-class MyCloudProvider(BaseProvider):
-    """Root provider component for MyCloud services."""
-
-    def __init__(self):
-        super().__init__(
-            metadata=ProviderMetadata(
-                name="mycloud",
-                version="1.0.0",
-                protocol_version="6"
-            )
-        )
-
-    @attrs.define
-    class Config:
-        """Provider configuration schema."""
-        api_key: str = a_str(
-            required=True,
-            sensitive=True,
-            description="API key for authentication"
-        )
-        endpoint: str = a_str(
-            default="https://api.mycloud.com",
-            description="API endpoint URL"
-        )
-        timeout: int = a_num(
-            default=30,
-            description="Request timeout in seconds"
-        )
-    
-    async def configure(self, config: Config) -> None:
-        """Configure provider with validated configuration."""
-        self.client = MyCloudClient(
-            api_key=config.api_key,
-            endpoint=config.endpoint,
-            timeout=config.timeout
-        )
-        await self.client.authenticate()
-```
+**Purpose**: Root component that configures authentication and shared settings
 
 **Key Characteristics:**
 - **Singleton**: Only one provider instance per Terraform configuration
@@ -84,306 +39,123 @@ class MyCloudProvider(BaseProvider):
 - **Authentication**: Manages API credentials and client initialization
 - **Metadata**: Defines provider name, version, and capabilities
 
+**Registration**: `@register_provider("name")`
+
+**See**: [Creating Providers Guide](../guides/creating-providers.md) for complete examples
+
+---
+
 ### 2. Resource Component
 
-Resources represent manageable infrastructure with full CRUD lifecycle:
-
-```python
-from pyvider.resources import register_resource, BaseResource
-from pyvider.schema import a_str, a_map
-import attrs
-
-@register_resource("server")
-class Server(BaseResource):
-    """Manages a cloud server instance."""
-
-    @attrs.define
-    class Config:
-        """Resource configuration (from Terraform)."""
-        name: str = a_str(required=True, description="Server name")
-        size: str = a_str(default="small", description="Instance size")
-        image: str = a_str(required=True, description="OS image")
-        tags: dict[str, str] = a_map(
-            a_str(),
-            default_factory=dict,
-            description="Resource tags"
-        )
-
-    @attrs.define
-    class State:
-        """Resource state (tracked by Terraform)."""
-        id: str = a_str(computed=True, description="Server ID")
-        name: str = a_str(description="Server name")
-        size: str = a_str(description="Instance size")
-        image: str = a_str(description="OS image")
-        ip_address: str = a_str(computed=True, description="Public IP")
-        status: str = a_str(computed=True, description="Server status")
-        tags: dict[str, str] = a_map(a_str(), description="Resource tags")
-    
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        """Create a new server."""
-        server = await self.provider.client.create_server(
-            name=ctx.config.name,
-            size=ctx.config.size,
-            image=ctx.config.image,
-            tags=ctx.config.tags
-        )
-        return State(
-            id=server.id,
-            name=server.name,
-            size=server.size,
-            image=server.image,
-            ip_address=server.public_ip,
-            status=server.status,
-            tags=server.tags
-        ), None
-
-    async def read(self, ctx: ResourceContext) -> State | None:
-        """Refresh server state."""
-        try:
-            server = await self.provider.client.get_server(ctx.state.id)
-            return State(
-                id=server.id,
-                name=server.name,
-                size=server.size,
-                image=server.image,
-                ip_address=server.public_ip,
-                status=server.status,
-                tags=server.tags
-            )
-        except NotFoundError:
-            return None  # Server was deleted outside Terraform
-
-    async def _update_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        """Update server configuration."""
-        # Update mutable attributes
-        if ctx.config.tags != ctx.state.tags:
-            await self.provider.client.update_tags(ctx.state.id, ctx.config.tags)
-
-        if ctx.config.size != ctx.state.size:
-            await self.provider.client.resize_server(ctx.state.id, ctx.config.size)
-
-        # Refresh and return new state
-        refreshed = await self.read(ctx)
-        return refreshed, None
-
-    async def _delete_apply(self, ctx: ResourceContext) -> None:
-        """Delete the server."""
-        await self.provider.client.delete_server(ctx.state.id)
-```
+**Purpose**: Manages infrastructure with full CRUD lifecycle
 
 **Lifecycle Methods:**
-- `_create_apply()`: Creates new infrastructure (apply phase)
-- `read()`: Refreshes current state
-- `_update_apply()`: Modifies existing infrastructure (apply phase)
-- `_delete_apply()`: Removes infrastructure (apply phase)
+- `_create_apply()` - Creates new infrastructure
+- `read()` - Refreshes current state
+- `_update_apply()` - Modifies existing infrastructure
+- `_delete_apply()` - Removes infrastructure
+
+**Key Features:**
+- State tracking via `State` class
+- Private state for sensitive data
+- Configuration validation
+- Drift detection
+
+**Registration**: `@register_resource("name")`
+
+**See**: [Creating Resources Guide](../guides/creating-resources.md) for complete examples
+
+---
 
 ### 3. Data Source Component
 
-Data sources provide read-only access to existing infrastructure:
+**Purpose**: Read-only access to existing infrastructure
 
-```python
-from pyvider.data_sources import register_data_source, BaseDataSource
-from pyvider.schema import a_str, a_bool, a_list, a_map, a_num
-import attrs
+**Lifecycle Methods:**
+- `read()` - Fetches data from external systems
 
-@register_data_source("images")
-class Images(BaseDataSource):
-    """Fetches available server images."""
+**Key Features:**
+- No state modification
+- Query-based data retrieval
+- Computed-only attributes
+- Caching support
 
-    @attrs.define
-    class Config:
-        """Data source configuration."""
-        filter: str = a_str(
-            default="*",
-            description="Image name filter pattern"
-        )
-        include_deprecated: bool = a_bool(
-            default=False,
-            description="Include deprecated images"
-        )
+**Registration**: `@register_data_source("name")`
 
-    @attrs.define
-    class State:
-        """Data source output."""
-        images: list[dict] = a_list(
-            a_map(a_str()),
-            computed=True,
-            description="List of available images"
-        )
-        total_count: int = a_num(
-            computed=True,
-            description="Total number of images"
-        )
-    
-    async def read(self, config: Config) -> State:
-        """Fetch image data."""
-        images = await self.provider.client.list_images(
-            filter=config.filter,
-            include_deprecated=config.include_deprecated
-        )
-        
-        return State(
-            images=[
-                {
-                    "id": img.id,
-                    "name": img.name,
-                    "version": img.version,
-                    "deprecated": img.deprecated
-                }
-                for img in images
-            ],
-            total_count=len(images)
-        )
-```
+**See**: [Creating Data Sources Guide](../guides/creating-data-sources.md) for complete examples
+
+---
 
 ### 4. Function Component
 
-Functions provide pure, callable transformations:
+**Purpose**: Pure, callable transformations
 
-```python
-from pyvider.functions import register_function, BaseFunction
-from pyvider.schema import a_str
-import attrs
-import hashlib
+**Lifecycle Methods:**
+- `call()` - Executes transformation logic
 
-@register_function(name="hash_file")
-class HashFile(BaseFunction):
-    """Computes SHA256 hash of file content."""
+**Key Features:**
+- Stateless operations
+- Input/output type safety
+- No side effects
+- Terraform-native functions
 
-    @attrs.define
-    class Input:
-        """Function input parameters."""
-        content: str = a_str(required=True, description="File content")
-        algorithm: str = a_str(
-            default="sha256",
-            description="Hash algorithm"
-        )
+**Registration**: `@register_function(name="name")`
 
-    @attrs.define
-    class Output:
-        """Function output."""
-        hash: str = a_str(description="Computed hash")
-        algorithm: str = a_str(description="Algorithm used")
-    
-    async def call(self, input: Input) -> Output:
-        """Execute the function."""
-        if input.algorithm == "sha256":
-            hash_obj = hashlib.sha256(input.content.encode())
-        elif input.algorithm == "md5":
-            hash_obj = hashlib.md5(input.content.encode())
-        else:
-            raise ValueError(f"Unsupported algorithm: {input.algorithm}")
-        
-        return Output(
-            hash=hash_obj.hexdigest(),
-            algorithm=input.algorithm
-        )
-```
+**See**: [Creating Functions Guide](../guides/creating-functions.md) for complete examples
+
+---
 
 ### 5. Ephemeral Resource Component
 
-Ephemeral resources manage short-lived connections or sessions:
+**Purpose**: Short-lived connections or sessions
 
-```python
-from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeral
-from pyvider.schema import a_str, a_num
-import attrs
+**Lifecycle Methods:**
+- `open()` - Creates ephemeral resource
+- `renew()` - Extends lifetime
+- `close()` - Destroys resource
 
-@register_ephemeral_resource("database_connection")
-class DatabaseConnection(BaseEphemeral):
-    """Manages a temporary database connection."""
+**Key Features:**
+- Not persisted in state
+- Automatic lifecycle management
+- Time-based renewal
+- Perfect for credentials, connections
 
-    @attrs.define
-    class Config:
-        """Connection configuration."""
-        host: str = a_str(required=True)
-        port: int = a_num(default=5432)
-        database: str = a_str(required=True)
-        username: str = a_str(required=True)
-        password: str = a_str(required=True, sensitive=True)
+**Registration**: `@register_ephemeral_resource("name")`
 
-    @attrs.define
-    class State:
-        """Connection state."""
-        connection_id: str = a_str(computed=True)
-        connected_at: str = a_str(computed=True)
-        expires_at: str = a_str(computed=True)
-    
-    async def open(self, config: Config) -> State:
-        """Open a new connection."""
-        conn = await self.provider.db_pool.connect(
-            host=config.host,
-            port=config.port,
-            database=config.database,
-            username=config.username,
-            password=config.password
-        )
-        
-        return State(
-            connection_id=conn.id,
-            connected_at=conn.created_at.isoformat(),
-            expires_at=conn.expires_at.isoformat()
-        )
-    
-    async def renew(self, state: State) -> State:
-        """Renew the connection lease."""
-        conn = await self.provider.db_pool.renew(state.connection_id)
-        return State(
-            connection_id=conn.id,
-            connected_at=state.connected_at,
-            expires_at=conn.expires_at.isoformat()
-        )
-    
-    async def close(self, state: State) -> None:
-        """Close the connection."""
-        await self.provider.db_pool.disconnect(state.connection_id)
-```
+**See**: [Ephemeral Resources API](../api/ephemerals.md) for complete examples
+
+---
 
 ## 🔍 Component Discovery
 
-### Automatic Discovery Process
+### Discovery Mechanism
 
-```mermaid
-sequenceDiagram
-    participant M as Main
-    participant D as Discovery
-    participant I as Importer
-    participant H as Hub
-    participant C as Component
-    
-    M->>D: discover_all()
-    D->>I: Import modules
-    I->>I: Find @register_* decorators
-    I->>C: Load component class
-    C->>H: Register component
-    H->>H: Validate component
-    H-->>D: Registration complete
-    D-->>M: Discovery complete
-```
+Pyvider uses a multi-stage discovery process:
+
+1. **Entry Point Scanning**: Looks for `pyvider.components` entry points in installed packages
+2. **Package Traversal**: Recursively scans packages for decorated classes
+3. **Decorator Detection**: Identifies classes with `@register_*` decorators
+4. **Validation**: Ensures components meet interface requirements
+5. **Registration**: Adds valid components to the component hub
 
 ### Entry Points
 
-Components can be discovered through Python entry points:
+Components can be discovered through Python entry points in `pyproject.toml`:
 
 ```toml
-# pyproject.toml
 [project.entry-points."pyvider.components"]
 mycloud = "mycloud_provider.components"
 ```
 
 ### Manual Registration
 
-For testing or dynamic components:
+For testing or dynamic scenarios:
 
 ```python
 from pyvider.hub import hub
 
-# Manual registration
+# Register manually
 hub.register("resource", "custom_resource", CustomResource)
-
-# Verify registration
-assert "custom_resource" in hub.resources
 ```
 
 ## 🎨 Decorator System
@@ -392,139 +164,87 @@ assert "custom_resource" in hub.resources
 
 Each component type has its own registration decorator:
 
-```python
-# Provider
-@register_provider("name")
-class MyProvider(BaseProvider): ...
-
-# Resource
-@register_resource("name")
-class MyResource(BaseResource): ...
-
-# Data Source
-@register_data_source("name")
-class MyDataSource(BaseDataSource): ...
-
-# Function
-@register_function(name="name")
-class MyFunction(BaseFunction): ...
-
-# Ephemeral
-@register_ephemeral_resource("name")
-class MyEphemeral(BaseEphemeral): ...
-```
+| Decorator | Component Type |
+|-----------|---------------|
+| `@register_provider("name")` | Provider |
+| `@register_resource("name")` | Resource |
+| `@register_data_source("name")` | Data Source |
+| `@register_function(name="name")` | Function |
+| `@register_ephemeral_resource("name")` | Ephemeral |
+| `@register_capability("name")` | Capability |
 
 ### Decorator Metadata
 
-Decorators attach metadata for discovery:
+Decorators attach metadata to classes for discovery:
 
 ```python
 @register_resource("server")
 class Server(BaseResource):
     pass
 
-# Attached metadata:
+# Metadata attached:
 # Server._is_registered_resource = True
 # Server._registered_name = "server"
 ```
 
 ## 🔗 Component Relationships
 
-### Provider-Resource Relationship
+### Provider Access
+
+All components can access their parent provider:
 
 ```python
-@register_resource("server")
-class Server(BaseResource):
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Access provider instance
-        client = self.provider.client
-
-        # Use provider configuration
-        region = self.provider.config.region
-
-        # Call provider methods
-        server = await client.create_server(...)
-        return State(...), None
+async def _create_apply(self, ctx: ResourceContext):
+    # Access provider instance
+    client = self.provider.client
+    config = self.provider.config
 ```
 
 ### Capability Composition
 
-Components can be enhanced with capabilities:
+Components can use capabilities for cross-cutting concerns:
 
 ```python
-from pyvider.capabilities import register_capability
-
-@register_capability("taggable")
-class TaggableCapability:
-    """Adds tagging functionality to resources."""
-    
-    def apply_tags(self, resource_id: str, tags: dict[str, str]):
-        # Tag management logic
-        pass
-
-@register_resource("server", capabilities=["taggable"])
+@register_resource("server")
 class Server(BaseResource):
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Create server
-        server = await self.provider.client.create_server(...)
-
-        # Use capability
-        self.capabilities.taggable.apply_tags(server.id, ctx.config.tags)
-
-        return State(...), None
+    async def _create_apply(self, ctx: ResourceContext):
+        # Access capabilities through context
+        token = await ctx.capabilities.auth.get_token()
 ```
+
+**See**: [Capabilities Overview](../capabilities/overview.md)
 
 ## 📋 Schema Generation
 
-### Automatic Schema Discovery
+### Automatic Type Mapping
 
-Pyvider automatically generates Terraform schemas from Python classes:
+Pyvider automatically generates Terraform schemas from Python type annotations:
+
+| Python Type | Terraform Type |
+|-------------|----------------|
+| `str` | `string` |
+| `int`, `float` | `number` |
+| `bool` | `bool` |
+| `list[T]` | `list(T)` |
+| `dict[str, T]` | `map(T)` |
+| `set[T]` | `set(T)` |
+| `@attrs.define` class | `object` |
+
+### Schema Definition
+
+Components define schemas using factory functions:
 
 ```python
-from pyvider.schema import a_str, a_num, a_map
-
-@attrs.define
-class Config:
-    name: str = a_str(required=True)
-    size: int = a_num(default=10, validators=[Range(1, 100)])
-    tags: dict[str, str] = a_map(a_str(), default_factory=dict)
-
-# Generated Terraform schema:
-{
-    "name": {
-        "type": "string",
-        "required": true
-    },
-    "size": {
-        "type": "number",
-        "optional": true,
-        "default": 10,
-        "validators": [{
-            "type": "range",
-            "min": 1,
-            "max": 100
-        }]
-    },
-    "tags": {
-        "type": "map",
-        "element_type": "string",
-        "optional": true
-    }
-}
+@classmethod
+def get_schema(cls) -> PvsSchema:
+    return s_resource({
+        "name": a_str(required=True, description="..."),
+        "port": a_num(default=8080, description="..."),
+        "id": a_str(computed=True, description="..."),
+    })
 ```
 
-### Type Mappings
-
-| Python Type | Terraform Type | Example |
-|-------------|----------------|---------|
-| `str` | `string` | `"hello"` |
-| `int` | `number` | `42` |
-| `float` | `number` | `3.14` |
-| `bool` | `bool` | `true` |
-| `list[T]` | `list(T)` | `["a", "b"]` |
-| `dict[str, T]` | `map(T)` | `{"key": "value"}` |
-| `set[T]` | `set(T)` | `["unique"]` |
-| `@attrs.define` | `object` | Complex nested object |
+**See**: [Schema System](schema-system.md) and [Schema Documentation](../schema/overview.md)
 
 ## 🔄 Component Lifecycle
 
@@ -543,212 +263,119 @@ stateDiagram-v2
     Active --> [*]: Request complete
 ```
 
-### Resource Invocation Flow
+### Invocation Pattern
 
 ```python
-from pyvider.hub import hub
-from pyvider.resources.context import ResourceContext
-
-# 1. Framework looks up the component and instantiates it
+# 1. Framework looks up component
 resource_cls = hub.get_component("resource", "server")
+
+# 2. Instantiates the resource
 resource = resource_cls()
 
-# 2. A ResourceContext is assembled for the current RPC
-ctx = ResourceContext(
-    config=Server.Config(...),
-    state=None,              # or prior state during updates
-    planned_state=None,      # populated during plan()
-    private_state=None,      # decrypted provider state
-)
+# 3. Creates context
+ctx = ResourceContext(config=..., state=...)
 
-# 3. Terraform plan/apply phases call into hooks
-plan, private = await resource._create(ctx, base_plan={})
-state, private = await resource._create_apply(
-    ResourceContext(config=ctx.config, planned_state=plan, private_state=private)
-)
-
-# 4. read(ctx) is invoked to refresh state after apply or during refresh
-current = await resource.read(ResourceContext(state=state))
+# 4. Calls lifecycle methods
+state, private = await resource._create_apply(ctx)
 ```
 
 ## 🛡️ Validation
 
 ### Component Validation
 
-Components are validated during registration:
+During registration, components are validated for:
 
-```python
-def validate_resource(cls: type) -> None:
-    """Validate resource component."""
-    # Check base class
-    if not issubclass(cls, BaseResource):
-        raise ValidationError("Must inherit from BaseResource")
-    
-    # Check required methods
-    required = ['read', '_create_apply', '_update_apply', '_delete_apply']
-    for method in required:
-        if not hasattr(cls, method):
-            raise ValidationError(f"Missing required method: {method}")
-    
-    # Check schema classes
-    if not hasattr(cls, 'Config'):
-        raise ValidationError("Missing Config class")
-    if not hasattr(cls, 'State'):
-        raise ValidationError("Missing State class")
-```
+- Correct base class inheritance
+- Required methods present
+- Schema class definitions
+- Type signature correctness
 
 ### Schema Validation
 
-```python
-from pyvider.schema import a_num
+Runtime validation ensures:
 
-@attrs.define
-class Config:
-    port: int = a_num(
-        required=True,
-        validators=[
-            Range(min=1, max=65535),
-            lambda x: x != 22 or ValueError("SSH port not allowed")
-        ]
-    )
-```
+- Configuration matches schema
+- Required fields present
+- Type constraints satisfied
+- Custom validators pass
 
 ## 🎯 Best Practices
 
 ### 1. Component Design
 
 **Do:**
-- Keep components focused on a single responsibility
-- Use descriptive names that match Terraform conventions
+- Focus on single responsibility
+- Use descriptive, Terraform-friendly names
 - Implement comprehensive error handling
 - Document all attributes and methods
 
 **Don't:**
-- Mix concerns in a single component
-- Use generic names like "Resource" or "Data"
-- Ignore error cases
-- Skip validation
+- Mix multiple concerns in one component
+- Use generic names
+- Ignore validation
+- Skip documentation
 
-### 2. Schema Design
+### 2. Naming Conventions
 
-```python
-from pyvider.schema import a_str, a_map
-
-@attrs.define
-class Config:
-    # Good: Clear, typed, documented
-    instance_type: str = a_str(
-        required=True,
-        description="EC2 instance type (e.g., t3.micro)",
-        validators=[OneOf(["t3.micro", "t3.small", "t3.medium"])]
-    )
-
-    # Bad: Vague, untyped, no validation
-    config: dict = a_map(a_str())  # Too generic!
-```
+- Resources: Nouns describing infrastructure (`server`, `database`, `network`)
+- Data Sources: Plural or descriptive (`images`, `availability_zones`, `account_info`)
+- Functions: Action verbs (`encode`, `parse`, `transform`)
 
 ### 3. State Management
 
-```python
-from pyvider.schema import a_str
-
-class State:
-    # Include only essential state
-    id: str = a_str(computed=True)  # Always include ID
-    name: str = a_str()  # User-provided values
-
-    # Computed values that might change
-    status: str = a_str(computed=True)
-    ip_address: str = a_str(computed=True)
-    
-    # Don't include:
-    # - Temporary values
-    # - Values that can be recomputed
-    # - Large data blobs
-```
+- Store only essential state data
+- Use private state for sensitive information
+- Implement proper `read()` for drift detection
+- Handle missing resources gracefully
 
 ### 4. Error Handling
 
-```python
-async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-    try:
-        result = await self.provider.client.create(...)
-    except ClientError as e:
-        if e.code == "QUOTA_EXCEEDED":
-            raise ResourceError(
-                "Quota exceeded for this resource type",
-                details={"limit": e.limit, "current": e.current}
-            )
-        raise ResourceError(f"Failed to create resource: {e}")
-
-    return State(...), None
-```
+- Provide clear, actionable error messages
+- Use appropriate exception types
+- Include relevant context in errors
+- Log errors with structured data
 
 ## 📚 Advanced Topics
 
 ### Dynamic Component Registration
 
+Create components at runtime:
+
 ```python
-# Register components at runtime
 def create_dynamic_resource(table_name: str):
     @register_resource(f"dynamodb_{table_name}")
     class DynamicTable(BaseResource):
-        # Implementation
         pass
-    
     return DynamicTable
-
-# Create and register
-UserTable = create_dynamic_resource("users")
 ```
 
 ### Component Inheritance
 
+Share functionality across components:
+
 ```python
 class BaseCloudResource(BaseResource):
     """Shared functionality for cloud resources."""
-    
-    async def apply_common_tags(self, resource_id: str):
-        # Common tagging logic
+    async def apply_tags(self, resource_id, tags):
         pass
 
 @register_resource("server")
 class Server(BaseCloudResource):
-    # Inherits common functionality
+    # Inherits tagging functionality
     pass
 ```
 
-### Testing Components
-
-```python
-import pytest
-from pyvider.resources.context import ResourceContext
-
-@pytest.fixture
-def server():
-    """Create a server resource instance."""
-    return Server()
-
-@pytest.mark.asyncio
-async def test_create(server, mock_provider):
-    """Test server creation."""
-    # Inject mock provider
-    server.provider = mock_provider
-
-    ctx = ResourceContext(config=Server.Config(name="test", size="small"))
-    state, _ = await server._create_apply(ctx)
-
-    assert state and state.id is not None
-    assert state.name == "test"
-    assert state.status == "running"
-```
+**See**: [Advanced Patterns Guide](../guides/advanced-patterns.md)
 
 ## 🔗 Related Documentation
 
-- [Architecture Overview](architecture.md) - System architecture
-- [Schema System](schema-system.md) - Schema definition and validation
-- [Creating Providers](../guides/creating-providers.md) - Provider development guide
-- [Creating Resources](../guides/creating-resources.md) - Resource implementation guide
+- **[Architecture Overview](architecture.md)** - System architecture and data flow
+- **[Schema System](schema-system.md)** - Type-safe data modeling
+- **[Creating Providers](../guides/creating-providers.md)** - Step-by-step provider guide
+- **[Creating Resources](../guides/creating-resources.md)** - Resource implementation guide
+- **[Creating Data Sources](../guides/creating-data-sources.md)** - Data source patterns
+- **[Creating Functions](../guides/creating-functions.md)** - Function development
+- **[Best Practices](../guides/best-practices.md)** - Production-ready patterns
 
 ---
 

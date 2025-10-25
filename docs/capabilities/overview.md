@@ -1,24 +1,29 @@
 # Capabilities Overview
 
-!!! danger "Experimental Feature - Not Fully Implemented"
-    **The Capabilities system is currently experimental and not fully implemented in v0.0.1000.**
+!!! info "Implementation Status"
+    **Basic capabilities infrastructure is implemented** in Pyvider v0.0.1000:
 
-    - The API shown here represents planned functionality
-    - Not all features may work as documented
-    - Significant changes expected before stable release
-    - **Not recommended for production use**
+    - ✅ `BaseCapability` class
+    - ✅ `@register_capability` decorator
+    - ✅ `@requires_capability` decorator
+    - ✅ Component capability access via `self.capabilities`
 
-    For working examples of code reuse patterns, see [pyvider-components](https://github.com/provide-io/pyvider-components).
+    **Advanced features are experimental or planned:**
+
+    - ⚠️ Capability lifecycle hooks (partial)
+    - 🔮 Capability marketplace (planned)
+    - 🔮 Advanced composition patterns (planned)
+    - 🔮 Built-in capability library (planned)
+
+    For production use, prefer **inheritance, composition, and utility modules** as shown in the [Current Alternatives](#current-alternatives) section below.
 
 ## What are Capabilities?
 
-Capabilities are a planned composition mechanism in Pyvider that will allow you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.
+Capabilities are a composition mechanism in Pyvider that allow you to create reusable, modular components that extend the functionality of providers, resources, data sources, and functions.
 
-**Planned concept**: Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.
+Think of capabilities as mixins or plugins that you can attach to your components to enhance their behavior without modifying their core implementation.
 
-## Why Capabilities? (Planned)
-
-The capabilities system aims to enable:
+## Why Use Capabilities?
 
 ### Reusability
 Write cross-cutting concerns once and apply them to multiple components:
@@ -38,11 +43,66 @@ Keep your resource/provider implementations focused on core business logic while
 - Share across projects
 - Publish as packages
 
+## Basic Usage
+
+### Creating a Capability
+
+```python
+from pyvider.capabilities import BaseCapability, register_capability
+import attrs
+
+@register_capability("authentication")
+class AuthenticationCapability(BaseCapability):
+    """Provides authentication token management."""
+
+    @attrs.define
+    class Config:
+        api_key: str
+        endpoint: str = "https://api.example.com"
+
+    async def setup(self, provider):
+        """Initialize the capability."""
+        self.provider = provider
+        self.token = None
+
+    async def get_token(self) -> str:
+        """Get or refresh authentication token."""
+        if not self.token:
+            self.token = await self._fetch_token()
+        return self.token
+
+    async def _fetch_token(self) -> str:
+        """Fetch new token from API."""
+        # Implementation
+        pass
+```
+
+### Using a Capability
+
+```python
+from pyvider.resources import register_resource, BaseResource
+from pyvider.capabilities import requires_capability
+
+@register_resource("authenticated_resource")
+class AuthenticatedResource(BaseResource):
+    """A resource that uses authentication capability."""
+
+    @requires_capability
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
+        # Access capability through context
+        token = await ctx.capabilities.authentication.get_token()
+
+        # Use token to create resource
+        result = await self.api_call(token=token, config=ctx.config)
+        return State(id=result.id), None
+```
+
 ## Current Alternatives
 
-While the capabilities system is under development, you can achieve similar goals using:
+While the capabilities system continues to evolve, you can achieve similar goals using standard Python patterns:
 
-### 1. **Base Class Inheritance**
+### 1. Base Class Inheritance
+
 Create shared base classes for common functionality:
 
 ```python
@@ -50,28 +110,25 @@ class BaseCloudResource(BaseResource):
     """Shared functionality for cloud resources."""
 
     async def apply_common_tags(self, resource_id: str, tags: dict):
-        # Common tagging logic
+        """Apply standard tags to resource."""
         pass
 
     async def setup_monitoring(self, resource_id: str):
-        # Common monitoring setup
+        """Configure monitoring for resource."""
         pass
 
 @register_resource("server")
 class Server(BaseCloudResource):
-    # Inherits common functionality
+    """Inherits tagging and monitoring."""
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Resource-specific logic
         server = await self.create_server(ctx.config)
-
-        # Use inherited methods
         await self.apply_common_tags(server.id, ctx.config.tags)
         await self.setup_monitoring(server.id)
-
         return State(...), None
 ```
 
-### 2. **Composition with Helper Classes**
+### 2. Composition with Helper Classes
+
 Use composition to share functionality:
 
 ```python
@@ -94,14 +151,14 @@ class Server(BaseResource):
         self.retry_handler = RetryHandler()
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
-        # Use composition for retry logic
         server = await self.retry_handler.with_retry(
             lambda: self.create_server(ctx.config)
         )
         return State(...), None
 ```
 
-### 3. **Utility Modules**
+### 3. Utility Modules
+
 Create shared utility modules:
 
 ```python
@@ -112,11 +169,7 @@ class Cache:
         self.ttl = ttl
 
     async def get(self, key):
-        # Cache logic
-        pass
-
-    async def set(self, key, value):
-        # Cache logic
+        # Cache implementation
         pass
 
 # In your resource
@@ -129,42 +182,143 @@ class Server(BaseResource):
         self.cache = Cache(ttl=600)
 ```
 
-### 4. **pyvider-components Examples**
-See the [pyvider-components](https://github.com/provide-io/pyvider-components) repository for 100+ working examples of:
-- Resources with common patterns
-- Data sources with shared logic
-- Functions demonstrating reusability
-- Complete provider implementations
+## Component Bundling
+
+You can package multiple related components together for distribution:
+
+### Package Structure
+
+```
+my-pyvider-bundle/
+├── pyproject.toml
+├── src/
+│   └── my_bundle/
+│       ├── __init__.py
+│       ├── resources/
+│       ├── data_sources/
+│       └── functions/
+└── tests/
+```
+
+### Configuration
+
+```toml
+# pyproject.toml
+[project]
+name = "my-pyvider-bundle"
+version = "0.1.0"
+dependencies = [
+    "pyvider>=0.0.1000",
+]
+
+[project.entry-points."pyvider.components"]
+my_bundle = "my_bundle"
+```
+
+### Using Bundled Components
+
+```bash
+# Install the bundle
+pip install my-pyvider-bundle
+
+# Components are automatically discovered
+# Use them in Terraform configurations
+```
+
+### Example: pyvider-components
+
+The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides a comprehensive collection of production-ready components:
+
+- **Resources**: file_content, local_directory, timed_token
+- **Data Sources**: env_variables, file_info, http_api, lens_jq
+- **Functions**: String manipulation, numeric operations, JQ transformations
+- **100+ Working Examples** with complete Terraform configurations
+
+Perfect for:
+- Learning by example
+- Quick prototyping
+- Production use
+- Understanding best practices
+
+## Experimental Features
+
+The following features are planned for future releases:
+
+### Capability Lifecycle
+
+**Status:** Partial implementation
+
+Planned lifecycle hooks:
+- `setup()` - Initialize capability
+- `configure()` - Configure with provider settings
+- `teardown()` - Cleanup on shutdown
+
+### Capability Marketplace
+
+**Status:** Planned for post-1.0
+
+A central hub for discovering and sharing reusable capabilities:
+- Browse by category
+- Search by functionality
+- Community ratings
+- One-command installation via PyPI
+
+### Advanced Composition
+
+**Status:** Planned
+
+Features under consideration:
+- Capability dependency management
+- Composition ordering
+- Conflict resolution
+- Dynamic capability loading
+
+## Configuration
+
+Capabilities can be configured through provider configuration or environment:
+
+```python
+@register_provider("mycloud")
+class MyCloudProvider(BaseProvider):
+    async def configure(self, config):
+        # Configure capabilities
+        if hasattr(self, 'capabilities'):
+            for cap in self.capabilities.values():
+                if hasattr(cap, 'configure'):
+                    await cap.configure(config)
+```
+
+## Best Practices
+
+1. **Start Simple**: Use inheritance or composition for simple cases
+2. **Capabilities for Cross-Cutting**: Use capabilities for truly reusable, cross-cutting concerns
+3. **Test in Isolation**: Test capabilities independently from components
+4. **Document Well**: Provide clear usage examples
+5. **Version Carefully**: Capabilities are shared code - version appropriately
 
 ## Future Plans
 
-The full capabilities system is planned for a future release. See the [Roadmap](../development/roadmap.md) for timeline and details.
+See the [Roadmap](../development/roadmap.md) for details on:
+- Capability marketplace timeline
+- Advanced composition features
+- Built-in capability library
+- Integration with telemetry systems
 
-When implemented, the capabilities system will provide:
-- Decorator-based capability attachment (`@use_capability`)
-- Automatic dependency injection
-- Lifecycle hooks (setup, teardown, before/after operations)
-- Capability composition and inheritance
-- Discovery and registration via the hub system
+## Related Documentation
 
-## Experimental Documentation
-
-Detailed documentation for the planned capabilities system (including API design and usage examples) has been moved to the experimental folder:
-
-- Implementation concepts and lifecycle
-- Planned API patterns
-- Advanced composition techniques
-- Marketplace and distribution plans
-
-These docs represent the **vision** for capabilities, not current functionality.
-
-## See Also
-
-- [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples of reusable patterns
-- [Best Practices](../guides/best-practices.md) - Current patterns for code reuse
-- [Roadmap](../development/roadmap.md) - Feature status and timeline
+- [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
+- [Best Practices](../guides/best-practices.md) - Code reuse patterns
+- [Roadmap](../development/roadmap.md) - Feature timeline
 - [Advanced Patterns](../guides/advanced-patterns.md) - Advanced implementation techniques
+
+## Contributing
+
+Interested in contributing to the capabilities system?
+
+- Join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
+- Review the [Contributing Guidelines](../contributing/guidelines.md)
+- Check the [Roadmap](../development/roadmap.md) for upcoming features
 
 ---
 
-**Note**: If you're interested in contributing to the capabilities system design or implementation, please join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions).
+**Note**: For production providers, we recommend using well-tested patterns (inheritance, composition, utilities) until the capabilities system reaches 1.0 maturity.

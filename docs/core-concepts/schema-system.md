@@ -1,82 +1,44 @@
 # Schema System
 
-The Pyvider schema system provides a type-safe, declarative way to define the structure and constraints of your provider's resources, data sources, and functions. It bridges Python and Terraform's type systems, enabling proper validation and documentation.
+The Pyvider schema system is the bridge between Python and Terraform's type systems. It provides a declarative way to define the structure and constraints of your provider's resources, data sources, and functions.
 
-## What is a Schema?
+## Why Schemas Matter
 
-A schema defines:
+Schemas serve multiple purposes in Pyvider:
 
-- **Structure**: What attributes and blocks your component has
-- **Types**: What kind of data each attribute holds (string, number, list, etc.)
-- **Constraints**: What values are valid (required, optional, validators)
-- **Behavior**: How attributes work (computed, sensitive, default values)
-- **Documentation**: Descriptions shown to users
+- **Type Safety**: Define what data flows between Terraform and your provider
+- **Validation**: Ensure user inputs meet requirements before execution
+- **Documentation**: Descriptions appear in Terraform documentation
+- **Terraform Integration**: Automatically translated to Terraform's protocol format
 
 ## Quick Example
 
-Here's a simple resource with schema:
+Here's how schemas work in practice:
 
 ```python
-from pyvider.resources import register_resource, BaseResource
-from pyvider.resources.context import ResourceContext
-from pyvider.schema import s_resource, a_str, a_num, a_bool, PvsSchema
-import attrs
-
-@attrs.define
-class ServerConfig:
-    """Configuration from Terraform."""
-    name: str
-    port: int = 8080
-    enabled: bool = True
-
-@attrs.define
-class ServerState:
-    """State tracked by Terraform."""
-    id: str
-    name: str
-    port: int
-    enabled: bool
-    ip_address: str  # Computed by provider
+from pyvider.schema import s_resource, a_str, a_num, a_bool
 
 @register_resource("server")
 class Server(BaseResource):
-    config_class = ServerConfig
-    state_class = ServerState
-
     @classmethod
-    def get_schema(cls) -> PvsSchema:
-        """Define the Terraform schema."""
+    def get_schema(cls):
         return s_resource({
             # User inputs
             "name": a_str(required=True, description="Server name"),
             "port": a_num(default=8080, description="Port number"),
-            "enabled": a_bool(default=True, description="Whether enabled"),
 
             # Provider outputs
             "id": a_str(computed=True, description="Unique ID"),
             "ip_address": a_str(computed=True, description="Assigned IP"),
         })
-
-    async def read(self, ctx: ResourceContext) -> ServerState | None:
-        # Implementation
-        pass
-
-    async def _create_apply(self, ctx: ResourceContext) -> tuple[ServerState | None, None]:
-        # Implementation
-        pass
-
-    async def _update_apply(self, ctx: ResourceContext) -> tuple[ServerState | None, None]:
-        # Implementation
-        pass
-
-    async def _delete_apply(self, ctx: ResourceContext) -> None:
-        # Implementation
-        pass
 ```
 
-## Key Components
+This schema tells Terraform:
+- Users must provide a `name` (string, required)
+- `port` is optional with a default of 8080
+- `id` and `ip_address` are computed by the provider
 
-### Schema Factories
+## Schema Factories
 
 Pyvider uses **factory functions** to build schemas:
 
@@ -84,119 +46,79 @@ Pyvider uses **factory functions** to build schemas:
 from pyvider.schema import (
     s_resource, s_data_source, s_provider,  # Schema builders
     a_str, a_num, a_bool, a_list, a_map,   # Attribute types
-    b_list, b_single, b_main,               # Nested blocks
+    b_list, b_single,                       # Nested blocks
 )
 ```
 
-### Attribute Types
+These factories create type-safe schema definitions that Pyvider automatically converts to Terraform's protocol format.
 
-Define what data each field holds:
+## Key Concepts
 
-```python
-# Simple types
-a_str()   # String values
-a_num()   # Numeric values (int or float)
-a_bool()  # Boolean values
+### Attributes vs Blocks
 
-# Collection types
-a_list(a_str())           # List of strings
-a_map(a_num())            # Map of numbers
-a_set(a_str())            # Set of strings
+- **Attributes**: Simple or collection values (`a_str()`, `a_num()`, `a_list()`)
+- **Blocks**: Nested configuration structures (`b_list()`, `b_single()`)
 
-# Complex types
-a_obj({
-    "field1": a_str(),
-    "field2": a_num(),
-})
-```
-
-### Attribute Modifiers
-
-Control attribute behavior:
+### Required, Optional, and Computed
 
 ```python
-s_resource({
-    # Required input
-    "name": a_str(required=True),
-
-    # Optional with default
-    "port": a_num(default=8080),
-
-    # Computed by provider
-    "id": a_str(computed=True),
-
-    # Sensitive (masked in logs)
-    "password": a_str(sensitive=True),
-})
+{
+    "name": a_str(required=True),      # User must provide
+    "port": a_num(default=8080),       # User can override default
+    "id": a_str(computed=True),        # Provider calculates
+}
 ```
 
-### Schema Types
+### Type Mapping
 
-Different component types have different schema builders:
+Pyvider automatically maps Python types to Terraform types:
 
-```python
-# Resource schema (CRUD lifecycle)
-@classmethod
-def get_schema(cls) -> PvsSchema:
-    return s_resource({...})
+| Python | Terraform | Factory |
+|--------|-----------|---------|
+| `str` | `string` | `a_str()` |
+| `int`, `float` | `number` | `a_num()` |
+| `bool` | `bool` | `a_bool()` |
+| `list[T]` | `list(T)` | `a_list(T)` |
+| `dict[str, T]` | `map(T)` | `a_map(T)` |
 
-# Data source schema (read-only)
-@classmethod
-def get_schema(cls) -> PvsSchema:
-    return s_data_source({...})
+## How It Works
 
-# Provider schema (global configuration)
-def _build_schema(self) -> PvsSchema:
-    return s_provider({...})
+When you define a schema:
+
+1. **Build Time**: Factory functions create a schema structure
+2. **Startup**: Pyvider converts schemas to Terraform protocol format
+3. **Runtime**: Data flows between Terraform ↔ Python via automatic conversion
+4. **Type Safety**: Your `@attrs.define` classes get properly typed data
+
+```mermaid
+graph LR
+    TF[Terraform HCL] --> |protocol| PV[Pyvider Schema]
+    PV --> |conversion| PY[Python attrs]
+    PY --> |your code| RES[Resource Methods]
+    RES --> |returns| PY2[Python attrs]
+    PY2 --> |conversion| PV2[Pyvider Schema]
+    PV2 --> |protocol| TF2[Terraform State]
 ```
-
-## How Schemas Work
-
-### 1. Schema Definition
-
-You define schemas using factory functions in your component's `get_schema()` method.
-
-### 2. Schema Generation
-
-Pyvider automatically converts your Python schema to Terraform's protocol format (CTY types).
-
-### 3. Runtime Conversion
-
-When Terraform sends data:
-- Pyvider converts CTY values → Python types
-- Populates your `@attrs.define` classes
-- Validates against schema constraints
-
-When your provider returns data:
-- Pyvider converts Python types → CTY values
-- Sends back to Terraform via gRPC
-
-### 4. Type Safety
-
-The combination of schemas + attrs classes gives you:
-- Compile-time type checking (mypy/pyright)
-- Runtime validation (schema constraints)
-- IDE autocomplete and type hints
 
 ## Best Practices
 
-1. **Always add descriptions** - Users see these in documentation
+1. **Always add descriptions** - They appear in Terraform docs
 2. **Use appropriate defaults** - Make common cases easy
-3. **Validate early** - Use validators to catch errors before apply
-4. **Keep schemas DRY** - Extract common attribute patterns
-5. **Document computed fields** - Explain where values come from
+3. **Mark sensitive data** - Use `sensitive=True` for passwords, tokens
+4. **Validate inputs** - Add validators to catch errors early
+5. **Keep schemas simple** - Prefer flat structures when possible
 
-## Learn More
+## Complete Schema Reference
 
-This is a high-level introduction to Pyvider's schema system. For comprehensive documentation including:
+This overview introduces the core concepts. For comprehensive documentation including:
 
-- Detailed attribute reference
-- Nested blocks and complex types
-- Advanced validation techniques
-- Schema patterns and examples
-- Best practices and anti-patterns
+- **Detailed attribute reference** - All available types and modifiers
+- **Nested blocks** - Complex configuration structures
+- **Validators** - Input validation techniques
+- **Advanced patterns** - Schema composition and reuse
+- **Examples** - Real-world schema definitions
 
-See the **[Schema System Documentation →](../schema/overview.md)**
+See the **[Complete Schema Documentation →](../schema/overview.md)**
 
 ---
 

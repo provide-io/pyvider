@@ -36,20 +36,11 @@ import hashlib
 import attrs
 from pyvider.providers import register_provider, BaseProvider, ProviderMetadata
 from pyvider.resources import register_resource, BaseResource, ResourceContext
-from pyvider.data_sources import register_data_source, BaseDataSource
-from pyvider.schema import s_provider, s_resource, s_data_source, a_str, a_num, a_bool, PvsSchema
-from pyvider.hub import hub
+from pyvider.schema import s_provider, s_resource, a_str, a_num, PvsSchema
 
 # ============================================
 # PROVIDER DEFINITION
 # ============================================
-
-@attrs.define
-class ProviderConfig:
-    """Provider configuration."""
-    base_directory: str = "."
-    create_directories: bool = True
-
 
 @register_provider("local")
 class LocalProvider(BaseProvider):
@@ -63,28 +54,10 @@ class LocalProvider(BaseProvider):
                 protocol_version="6"
             )
         )
-        self.provider_config: ProviderConfig | None = None
 
     def _build_schema(self) -> PvsSchema:
-        """Define provider schema."""
-        return s_provider({
-            "base_directory": a_str(
-                default=".",
-                description="Base directory for file operations"
-            ),
-            "create_directories": a_bool(
-                default=True,
-                description="Automatically create parent directories"
-            ),
-        })
-
-    async def configure(self, config: dict) -> None:
-        """Configure the provider."""
-        await super().configure(config)
-        self.provider_config = ProviderConfig(
-            base_directory=config.get("base_directory", "."),
-            create_directories=config.get("create_directories", True),
-        )
+        """Define provider schema (no configuration needed for this simple example)."""
+        return s_provider({})
 
 # ============================================
 # FILE RESOURCE
@@ -118,7 +91,7 @@ class File(BaseResource):
     def get_schema(cls) -> PvsSchema:
         """Define resource schema."""
         return s_resource({
-            # Configuration attributes
+            # Configuration attributes (user inputs)
             "path": a_str(
                 required=True,
                 description="Path to the file"
@@ -128,7 +101,7 @@ class File(BaseResource):
                 description="Content to write"
             ),
 
-            # Computed attributes
+            # Computed attributes (provider outputs)
             "id": a_str(
                 computed=True,
                 description="File identifier"
@@ -148,21 +121,17 @@ class File(BaseResource):
         if not ctx.config:
             return None, None
 
-        # Get provider config
-        from pyvider.hub import hub
-        provider = hub.get_component("singleton", "provider")
-        if provider is None or provider.provider_config is None:
-            raise RuntimeError("Provider is not configured yet.")
-        provider_config = provider.provider_config
+        # Create file path
+        file_path = Path(ctx.config.path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Write file
-        file_path = Path(provider_config.base_directory) / ctx.config.path
-        if provider_config.create_directories:
-            file_path.parent.mkdir(parents=True, exist_ok=True)
+        # Write content
         file_path.write_text(ctx.config.content)
 
-        # Return state
+        # Compute checksum
         checksum = hashlib.sha256(ctx.config.content.encode()).hexdigest()
+
+        # Return state
         return FileState(
             id=str(file_path.absolute()),
             path=str(file_path.absolute()),
@@ -241,12 +210,11 @@ terraform {
 }
 
 provider "local" {
-  base_directory     = "./managed_files"
-  create_directories = true
+  # No configuration needed for this simple example
 }
 
 resource "local_file" "config" {
-  path    = "config/app.conf"
+  path    = "managed_files/app.conf"
   content = <<-EOT
     # Application Configuration
     app_name = "MyApp"
@@ -254,8 +222,17 @@ resource "local_file" "config" {
   EOT
 }
 
+resource "local_file" "readme" {
+  path    = "managed_files/README.md"
+  content = "# My Managed Files\n\nThis directory is managed by Terraform."
+}
+
 output "config_checksum" {
   value = local_file.config.checksum
+}
+
+output "readme_size" {
+  value = local_file.readme.size
 }
 ```
 
@@ -265,7 +242,7 @@ output "config_checksum" {
 # Make the provider executable
 chmod +x local_provider.py
 
-# Run directly for testing
+# Run provider in background (for testing)
 python local_provider.py provide &
 
 # In another terminal, run Terraform
@@ -273,8 +250,10 @@ terraform init
 terraform plan
 terraform apply
 
-# Check the created file
-cat managed_files/config/app.conf
+# Check the created files
+ls -la managed_files/
+cat managed_files/app.conf
+cat managed_files/README.md
 ```
 
 ## 📊 Expected Output
@@ -282,21 +261,25 @@ cat managed_files/config/app.conf
 After running `terraform apply`, you should see:
 
 ```
-Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
 
 Outputs:
 
-config_checksum = "a3f5c7d9e1b3..."
+config_checksum = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+readme_size = 62
 ```
 
-And the file `managed_files/config/app.conf` will exist with your content.
+And the files will exist:
+- `managed_files/app.conf` with your configuration
+- `managed_files/README.md` with the README content
 
 ## 🎉 Congratulations!
 
 You've just built your first Terraform provider in Python! You've:
 
-- ✅ Created a provider with configuration
-- ✅ Implemented a full CRUD resource
+- ✅ Created a provider with minimal configuration
+- ✅ Implemented a full CRUD resource (create, read, update, delete)
+- ✅ Computed attributes (checksum, size)
 - ✅ Used it with real Terraform
 
 ## 🔍 What's Happening?
@@ -308,6 +291,55 @@ When you run your provider, Pyvider:
 3. **Handles Protocol**: Manages gRPC communication with Terraform
 4. **Manages State**: Tracks resource state between operations
 5. **Provides Type Safety**: Ensures data matches your `@attrs.define` classes
+
+## 📚 Understanding the Code
+
+### Provider Configuration
+
+```python
+@register_provider("local")
+class LocalProvider(BaseProvider):
+    """Minimal provider - no configuration needed."""
+```
+
+The `@register_provider` decorator registers your provider with Pyvider. For this simple example, we don't need any provider-level configuration.
+
+### Resource Schema
+
+```python
+@classmethod
+def get_schema(cls) -> PvsSchema:
+    return s_resource({
+        "path": a_str(required=True, description="Path to the file"),
+        "content": a_str(required=True, description="Content to write"),
+        "checksum": a_str(computed=True, description="SHA256 checksum"),
+    })
+```
+
+The schema defines:
+- **User inputs**: `path` and `content` (required)
+- **Provider outputs**: `checksum` and `size` (computed)
+
+### Resource Context
+
+```python
+async def _create_apply(self, ctx: ResourceContext) -> tuple[FileState | None, None]:
+    # Access configuration
+    file_path = Path(ctx.config.path)
+    content = ctx.config.content
+
+    # Create resource
+    file_path.write_text(content)
+
+    # Return state
+    return FileState(...), None
+```
+
+The `ResourceContext` provides:
+- `ctx.config` - User configuration (FileConfig)
+- `ctx.state` - Previous state (FileState) for updates
+- `ctx.planned_state` - Planned state from terraform plan
+- `ctx.private_state` - Encrypted private state (if needed)
 
 ## 🚦 Next Steps
 
@@ -338,6 +370,47 @@ Now that you understand the basics, explore:
 4. **Handle Errors Gracefully**: Provide clear error messages
 5. **Document Thoroughly**: Add docstrings and schema descriptions
 
+## 🔄 Making Changes
+
+Try modifying the example:
+
+### Add Validation
+
+```python
+async def _validate_config(self, config: FileConfig) -> list[str]:
+    """Validate configuration."""
+    errors = []
+    if ".." in config.path:
+        errors.append("Path cannot contain '..'")
+    if len(config.content) > 1_000_000:
+        errors.append("Content too large (max 1MB)")
+    return errors
+```
+
+### Add a Data Source
+
+```python
+@register_data_source("file_info")
+class FileInfo(BaseDataSource):
+    """Read file metadata."""
+
+    @classmethod
+    def get_schema(cls):
+        return s_data_source({
+            "path": a_str(required=True),
+            "exists": a_bool(computed=True),
+            "size": a_num(computed=True),
+        })
+
+    async def read(self, ctx: ResourceContext):
+        file_path = Path(ctx.config.path)
+        return FileInfoState(
+            path=str(file_path),
+            exists=file_path.exists(),
+            size=file_path.stat().st_size if file_path.exists() else 0
+        )
+```
+
 ## 🆘 Getting Help
 
 If you run into issues:
@@ -345,6 +418,7 @@ If you run into issues:
 - Check the [Troubleshooting Guide](../troubleshooting.md)
 - Search [GitHub Issues](https://github.com/provide-io/pyvider/issues)
 - Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
+- Review [pyvider-components examples](https://github.com/provide-io/pyvider-components)
 
 ---
 

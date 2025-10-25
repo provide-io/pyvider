@@ -164,10 +164,9 @@ class ResourceConfig:
 
 ## Important Notes
 
-- **Python 3.11+ required** (moving from 3.12+ to broaden compatibility)
+- **Python 3.11+ required**
 - Uses `uv` for fast dependency management
 - Protocol buffer files (`*pb2*.py`) are auto-generated - do not edit directly
-- Environment-specific virtual environments in `workenv/` directory
 - Sibling projects: TofuSoup (testing), Flavor (packaging), wrkenv (dev environment)
 
 ## Documentation

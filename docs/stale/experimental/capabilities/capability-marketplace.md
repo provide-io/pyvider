@@ -64,10 +64,11 @@ See the [pyvider-components documentation](https://github.com/provide-io/pyvider
 Interested in creating capabilities? See:
 - [Creating Capabilities](creating-capabilities.md)
 - [Bundling Components](bundling-components.md)
-- [Contributing Guidelines](../../contributing/guidelines.md)
+- Note: These links are preserved for historical reference but may be outdated
+- Contributing Guidelines (see main docs)
 
 ## Stay Updated
 
-- Watch the [Pyvider roadmap](../../development/roadmap.md) for marketplace updates
+- Watch the Pyvider roadmap (see main docs) for marketplace updates
 - Join discussions on [GitHub](https://github.com/provide-io/pyvider/discussions)
 - Follow announcements for marketplace launch
