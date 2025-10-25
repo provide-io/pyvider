@@ -43,6 +43,57 @@ def _find_actual_venv(base_dir: Path) -> Path | None:
     return None
 
 
+def _create_venv_symlink(venv_dir: Path) -> None:
+    """
+    Create a symlink for terraform-provider-pyvider in the venv bin directory.
+
+    This symlink allows the provider to be invoked with the correct binary name
+    for Terraform's binary name detection, which is required for proper
+    TF_PLUGIN_MAGIC_COOKIE recognition.
+
+    Args:
+        venv_dir: Path to the virtual environment directory
+
+    Raises:
+        ConfigurationError: If symlink creation fails
+    """
+    try:
+        venv_bin = venv_dir / "bin"
+        symlink_path = venv_bin / "terraform-provider-pyvider"
+        target = Path("pyvider")  # Relative symlink to pyvider in same directory
+
+        # Remove existing symlink if it exists
+        if symlink_path.exists() or symlink_path.is_symlink():
+            symlink_path.unlink()
+
+        # Create the symlink
+        symlink_path.symlink_to(target)
+        pout(f"  Symlink created: {symlink_path} -> {target}", style="cyan")
+    except Exception as e:
+        from provide.foundation.errors import ConfigurationError
+
+        raise ConfigurationError(f"Failed to create venv symlink: {e}") from e
+
+
+def _remove_venv_symlink(venv_dir: Path) -> None:
+    """
+    Remove the terraform-provider-pyvider symlink from the venv bin directory.
+
+    Args:
+        venv_dir: Path to the virtual environment directory
+
+    Returns:
+        None (silently succeeds even if symlink doesn't exist)
+    """
+    try:
+        symlink_path = venv_dir / "bin" / "terraform-provider-pyvider"
+        if symlink_path.exists() or symlink_path.is_symlink():
+            symlink_path.unlink()
+            pout(f"  Symlink removed: {symlink_path}", style="cyan")
+    except Exception as e:
+        pout(f"  Warning: Failed to remove venv symlink: {e}", style="yellow")
+
+
 def _place_terraform_provider_script(ctx: PyviderContext) -> None:
     """
     Generates and places a Terraform provider wrapper script with accurate paths.
@@ -132,6 +183,9 @@ export PLUGIN_MAGIC_COOKIE_VALUE="$TF_PLUGIN_MAGIC_COOKIE"
         pout(f"  Virtual environment: {venv_dir.relative_to(install_dir)}", style="cyan")
         pout(f"  Execution method: {install_method}", style="cyan")
         pout(f"  Script location: {target_provider_path}", style="cyan")
+
+        # Create symlink in venv for proper binary name detection
+        _create_venv_symlink(venv_dir)
 
     except Exception as e:
         pout(

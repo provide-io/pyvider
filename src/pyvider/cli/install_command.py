@@ -3,11 +3,16 @@ import shutil
 import sys
 
 import click
-from provide.foundation.console import perr
+from provide.foundation.console import perr, pout
 from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
-from pyvider.cli.utils import _place_terraform_provider_script
+from pyvider.cli.utils import (
+    _create_venv_symlink,
+    _find_actual_venv,
+    _place_terraform_provider_script,
+    _remove_venv_symlink,
+)
 
 
 def is_running_as_binary() -> bool:
@@ -17,16 +22,93 @@ def is_running_as_binary() -> bool:
     return getattr(sys, "frozen", False)
 
 
+def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
+    """
+    Uninstall the Terraform provider.
+
+    Removes the provider script from the plugin directory and the symlink from venv.
+
+    Args:
+        ctx: The Pyvider context
+        quiet: If True, suppress output for non-error messages
+    """
+    try:
+        # Try to remove the provider script from plugin directory
+        target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
+
+        if target_provider_path.exists():
+            target_provider_path.unlink()
+            if not quiet:
+                pout(f"  Provider script removed: {target_provider_path}", style="cyan")
+        else:
+            if not quiet:
+                pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
+
+        # Try to remove the symlink from venv
+        # Find venv in current directory
+        install_dir = Path.cwd()
+        venv_dir = _find_actual_venv(install_dir)
+
+        if venv_dir:
+            _remove_venv_symlink(venv_dir)
+        else:
+            if not quiet:
+                pout(f"  Virtual environment not found, skipping symlink removal", style="yellow")
+
+        # Try to clean up empty parent directories
+        try:
+            parent = ctx.tf_plugin_dir.parent
+            if parent.exists() and not any(parent.iterdir()):
+                parent.rmdir()
+                if not quiet:
+                    pout(f"  Cleaned up empty directory: {parent}", style="cyan")
+        except OSError:
+            # Silently ignore if we can't remove directory (e.g., it's not empty)
+            pass
+
+        if not quiet:
+            pout("✅ Provider uninstalled successfully.", fg="green")
+
+    except Exception as e:
+        pout(f"❌ Failed to uninstall provider: {e}", fg="red", bold=True)
+        raise click.Abort() from e
+
+
 @click.command(name="install")
+@click.option(
+    "--uninstall",
+    is_flag=True,
+    help="Uninstall the provider instead of installing it.",
+)
+@click.option(
+    "--reinstall",
+    is_flag=True,
+    help="Uninstall and then install the provider.",
+)
 @click.pass_context
-def install_command(ctx: click.Context) -> None:  # noqa: C901
+def install_command(  # noqa: C901
+    ctx: click.Context,
+    uninstall: bool,
+    reinstall: bool,
+) -> None:
     """
     Installs the provider for use with Terraform.
 
     In binary mode, it copies the executable. In development mode, it places
     the wrapper script.
+
+    Use --uninstall to remove the provider, or --reinstall to refresh the installation.
     """
     pyvider_ctx: PyviderContext = ctx.obj
+
+    # Validate mutually exclusive flags
+    if uninstall and reinstall:
+        perr(
+            "Error: --uninstall and --reinstall are mutually exclusive.",
+            fg="red",
+            bold=True,
+        )
+        raise click.Abort()
 
     # Guard: Check for pyvider.toml or pyproject.toml with [tool.pyvider]
     pyproject_path = Path.cwd() / "pyproject.toml"
@@ -49,6 +131,18 @@ def install_command(ctx: click.Context) -> None:  # noqa: C901
             bold=True,
         )
         raise click.Abort()
+
+    # Handle uninstall (after validation)
+    if uninstall:
+        click.secho("🗑️  Uninstalling provider...", fg="yellow")
+        _uninstall_provider(pyvider_ctx)
+        return
+
+    # Handle reinstall (uninstall + install)
+    if reinstall:
+        click.secho("🔄 Reinstalling provider...", fg="yellow")
+        _uninstall_provider(pyvider_ctx, quiet=True)
+        # Fall through to install logic below
 
     if is_running_as_binary():
         click.secho("📦 Running in Binary Mode.", fg="cyan")
