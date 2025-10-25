@@ -236,16 +236,20 @@ output "readme_size" {
 }
 ```
 
-## 🚀 Step 3: Run the Provider
+## 🚀 Step 3: Install and Run the Provider
+
+### Option A: Development Mode (Recommended for Testing)
+
+The easiest way to test your provider during development is to use `pyvider install`:
 
 ```bash
-# Make the provider executable
-chmod +x local_provider.py
+# Make sure you're in a directory with your provider code
+# and have pyvider installed in your virtual environment
 
-# Run provider in background (for testing)
-python local_provider.py provide &
+# Install the provider for Terraform
+pyvider install
 
-# In another terminal, run Terraform
+# Now run Terraform normally - it will find your provider
 terraform init
 terraform plan
 terraform apply
@@ -255,6 +259,34 @@ ls -la managed_files/
 cat managed_files/app.conf
 cat managed_files/README.md
 ```
+
+!!! note "How This Works"
+    `pyvider install` creates a wrapper script in Terraform's plugin directory that:
+
+    1. Activates your virtual environment
+    2. Runs your provider with the correct Python interpreter
+    3. Allows Terraform to communicate with your provider via the plugin protocol
+
+    This is the recommended approach for development and testing.
+
+### Option B: Direct Execution (For Debugging)
+
+To test the provider directly without Terraform:
+
+```bash
+# Set the Terraform magic cookie (Terraform normally does this)
+export TF_PLUGIN_MAGIC_COOKIE="d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4e95f7aa66ead0"
+
+# Run the provider
+python local_provider.py provide
+
+# In another terminal with the same environment variable,
+# run Terraform commands
+```
+
+!!! warning "Direct Execution Limitations"
+    This approach is useful for debugging but not recommended for normal development.
+    The provider must be launched by Terraform to work correctly in production scenarios.
 
 ## 📊 Expected Output
 

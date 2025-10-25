@@ -1,0 +1,224 @@
+# MkDocs Configuration
+# For a full reference, see https://www.mkdocs.org/user-guide/configuration/
+# For Material theme options, see https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/
+
+site_name: PyVider Documentation
+site_description: 'Python framework for building Terraform providers'
+site_author: provide.io
+site_url: https://foundry.provide.io/pyvider/
+
+repo_url: https://github.com/provide-io/pyvider
+repo_name: provide-io/pyvider
+edit_uri: edit/main/docs/
+
+# Development server configuration
+dev_addr: '127.0.0.1:8003'
+
+# Standalone mode settings
+docs_dir: docs
+
+# Copyright
+copyright: 'Copyright &copy; 2017 - 2025 Provide'
+
+# Theme Configuration
+theme:
+  name: material
+  logo: assets/logo.svg # You may need to create this file
+  favicon: assets/favicon.ico # You may need to create this file
+  language: en
+
+  # Features for a top-tier experience
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.expand
+    - toc.integrate  # Move TOC to the left sidebar
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.tabs.link
+
+  # Color Palette (with light/dark mode toggle)
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# Plugins
+plugins:
+  - search
+  - macros:
+      include_dir: docs/.shared-theme/data
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            show_signature_annotations: true
+            signature_crossrefs: true
+            show_bases: true
+            show_inheritance_diagram: false
+            merge_init_into_class: true
+            separate_signature: true
+            members_order: source
+            inherited_members: true
+
+# Markdown Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+
+extra_css:
+  - .shared-theme/stylesheets/provide-theme.css
+  - .shared-theme/stylesheets/termynal.css
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10/dist/mermaid.min.js
+  - .shared-theme/javascripts/mermaid-init.js
+  - .shared-theme/javascripts/termynal.js
+  - .shared-theme/javascripts/custom.js
+
+# Navigation Structure
+# REORGANIZED - Improved grouping and discoverability
+nav:
+  - 'Home': 'index.md'
+
+  - 'Getting Started':
+    - 'What is Pyvider': 'getting-started/what-is-pyvider.md'
+    - 'Installation': 'getting-started/installation.md'
+    - 'Quick Start': 'getting-started/quick-start.md'
+
+  - 'Core Concepts':
+    - 'Architecture': 'core-concepts/architecture.md'
+    - 'Component Model': 'core-concepts/component-model.md'
+    - 'Schema System': 'core-concepts/schema-system.md'
+
+  - 'Tutorials':
+    - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
+
+  - 'Guides':
+    # Building Components - How to create provider components
+    - 'Building Components':
+      - 'Creating Providers': 'guides/building-components/creating-providers.md'
+      - 'Creating Resources': 'guides/building-components/creating-resources.md'
+      - 'Creating Data Sources': 'guides/building-components/creating-data-sources.md'
+      - 'Creating Functions': 'guides/building-components/creating-functions.md'
+      - 'Using Decorators': 'guides/building-components/using-decorators.md'
+
+    # Development - Tools and practices for development
+    - 'Development':
+      - 'Testing Providers': 'guides/development/testing-providers.md'
+      - 'Debugging': 'guides/development/debugging.md'
+      - 'Logging': 'guides/development/logging.md'
+      - 'Error Handling': 'guides/development/error-handling.md'
+
+    # Production - Deploying and maintaining providers
+    - 'Production':
+      - 'Best Practices': 'guides/production/best-practices.md'
+      - 'Production Readiness': 'guides/production/production-readiness.md'
+      - 'Security Best Practices': 'guides/production/security-best-practices.md'
+      - 'Performance Optimization': 'guides/production/performance-optimization.md'
+
+    # Advanced - Advanced topics and patterns
+    - 'Advanced Topics':
+      - 'Provider Lifecycle': 'guides/advanced/provider-lifecycle.md'
+      - 'Advanced Patterns': 'guides/advanced/advanced-patterns.md'
+      - 'Advanced Provider Features': 'guides/advanced/advanced-provider-features.md'
+
+    # Usage - For end users of providers
+    - 'Using Providers':
+      - 'Configuration': 'guides/usage/configuration.md'
+      - 'Managing Resources': 'guides/usage/managing-resources.md'
+      - 'Using Data Sources': 'guides/usage/using-data-sources.md'
+      - 'Using Functions': 'guides/usage/using-functions.md'
+
+  - 'Examples':
+    - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
+
+  - 'Schema System':
+    - 'Overview': 'schema/overview.md'
+    - 'Types': 'schema/types.md'
+    - 'Attributes': 'schema/attributes.md'
+    - 'Blocks': 'schema/blocks.md'
+    - 'Validators': 'schema/validators.md'
+    - 'Computed Attributes': 'schema/computed-attributes.md'
+    - 'Sensitive Data': 'schema/sensitive-data.md'
+    - 'Schema by Example': 'schema/schema-by-example.md'
+    - 'Common Patterns': 'schema/common-patterns.md'
+    - 'Best Practices': 'schema/best-practices.md'
+
+  - '🔬 Capabilities (Experimental)':
+    - 'Overview': 'capabilities/overview.md'
+
+  - 'API Reference':
+    - 'Overview': 'api/index.md'
+    - 'CLI': 'api/cli.md'
+    - 'Common': 'api/common.md'
+    - 'Hub': 'api/hub.md'
+    - 'Providers':
+      - 'Overview': 'api/providers/index.md'
+      - 'Capabilities': 'api/providers/capabilities.md'
+    - 'Resources': 'api/resources.md'
+    - 'Data Sources': 'api/data_sources.md'
+    - 'Functions': 'api/functions.md'
+    - 'Ephemeral Resources': 'api/ephemerals.md'
+    - 'Exceptions': 'api/exceptions.md'
+    - 'Observability': 'api/observability.md'
+    - 'Schema':
+      - 'Overview': 'api/schema/index.md'
+      - 'Types': 'api/schema/types.md'
+    - 'Conversion': 'api/conversion/index.md'
+    - 'Protocols': 'api/protocols/index.md'
+
+  - '⚡ Quick Reference': 'quick-reference.md'
+
+  - 'FAQ': 'faq.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
+
+  - 'Glossary': 'glossary.md'
+
+  - 'Contributing':
+    - 'Guidelines': 'contributing/guidelines.md'
+    - 'Code of Conduct': 'contributing/code-of-conduct.md'
+
+  - 'Development':
+    - 'Roadmap': 'development/roadmap.md'
