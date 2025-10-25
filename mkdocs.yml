@@ -162,6 +162,10 @@ nav:
 
   - 'Troubleshooting': 'troubleshooting.md'
 
+  - 'FAQ': 'faq.md'
+
+  - 'Glossary': 'glossary.md'
+
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
     - 'Types': 'schema/types.md'

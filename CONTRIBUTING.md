@@ -2,6 +2,12 @@
 
 Thank you for your interest in contributing to Pyvider! This document provides guidelines and standards for contributing to the project.
 
+## 📚 Complete Contributing Guide
+
+For comprehensive contributing guidelines including testing requirements, documentation standards, and pull request process, see:
+
+**→ [Complete Contributing Guidelines](docs/contributing/guidelines.md)**
+
 ## Development Environment
 
 ### Setup

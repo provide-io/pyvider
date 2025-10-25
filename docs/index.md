@@ -63,10 +63,13 @@ Deep dives into building providers
 - [Error Handling](guides/error-handling.md) - Robust error management
 - [Logging](guides/logging.md) - Structured logging with foundation
 - [Debugging](guides/debugging.md) - Troubleshooting providers
+- [Security Best Practices](guides/security-best-practices.md) - Secure provider development
+- [Performance Optimization](guides/performance-optimization.md) - Building fast providers
 
 ### 🎓 [Examples & Tutorials](getting-started/quick-start.md)
 Learn by building real providers
 - [Quick Start Guide](getting-started/quick-start.md) - Build your first provider in 5 minutes
+- [Building an HTTP API Provider](tutorials/intermediate-provider.md) - Intermediate tutorial
 - [Pyvider Components Examples](https://github.com/provide-io/pyvider-components/tree/main/examples) - 100+ working examples
   - Resources: file_content, local_directory, timed_token
   - Data Sources: env_variables, http_api, lens_jq

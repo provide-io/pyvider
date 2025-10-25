@@ -830,9 +830,16 @@ Before creating a new issue:
 - [Debugging Guide](guides/debugging.md) - Interactive debugging techniques
 - [Best Practices](guides/best-practices.md) - Patterns that prevent issues
 - [Error Handling](guides/error-handling.md) - Exception handling
+- [Security Best Practices](guides/security-best-practices.md) - Security troubleshooting
+- [Performance Optimization](guides/performance-optimization.md) - Performance troubleshooting
 - [Logging](guides/logging.md) - Structured logging
 - [Testing Providers](guides/testing-providers.md) - Testing strategies
 
 ---
 
 **Remember**: Most issues can be quickly diagnosed with debug logging enabled. Start with `TF_LOG=DEBUG` and `PYVIDER_LOG_LEVEL=DEBUG` to see what's actually happening.
+
+**See Also**:
+- For security-related issues, consult the [Security Best Practices Guide](guides/security-best-practices.md)
+- For performance problems, see the [Performance Optimization Guide](guides/performance-optimization.md)
+- For general provider patterns, check [Best Practices](guides/best-practices.md)
