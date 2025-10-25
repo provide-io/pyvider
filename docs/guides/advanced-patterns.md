@@ -244,8 +244,11 @@ Support importing existing infrastructure:
 class Server(BaseResource):
     async def import_resource(self, id: str) -> State:
         """Import existing server by ID."""
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         try:
-            server = await self.provider.api.get_server(id)
+            server = await provider.api.get_server(id)
             return self.State(
                 id=server.id,
                 name=server.name,
@@ -280,7 +283,10 @@ class Database(BaseResource):
 
     async def read(self, state: State) -> State:
         """Read with state migration."""
-        db = await self.provider.api.get_database(state.id)
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
+        db = await provider.api.get_database(state.id)
 
         # Migrate from v1 to v2
         if not hasattr(state, 'backup_enabled'):
@@ -470,8 +476,11 @@ def test_firewall_rule_validation(port, protocol):
 class ServerGroup(BaseResource):
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]:
         """Create multiple servers efficiently."""
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         # Batch API call
-        servers = await self.provider.api.create_servers_batch(
+        servers = await provider.api.create_servers_batch(
             [
                 {"name": f"{ctx.config.name}-{i}", "size": ctx.config.size}
                 for i in range(ctx.config.count)
@@ -493,7 +502,10 @@ class ImageDataSource(BaseDataSource):
     @lru_cache(maxsize=128)
     async def get_image_by_name(self, name: str) -> Image:
         """Cache image lookups."""
-        return await self.provider.api.find_image(name)
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
+        return await provider.api.find_image(name)
 
     async def read(self, config: Config) -> State:
         # Uses cached result if called multiple times
@@ -515,8 +527,11 @@ class ApiKey(BaseResource):
         encrypted_key: str = a_str()
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, PrivateState | None]:
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         # Generate API key
-        api_key = await self.provider.generate_api_key()
+        api_key = await provider.generate_api_key()
 
         # Store encrypted
         private_state = self.PrivateState(

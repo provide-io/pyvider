@@ -339,9 +339,12 @@ class ServerResource(BaseResource):
         Read current state of the resource.
         Called during: refresh, before updates, during plan
         """
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         logger.debug("Reading resource", resource_id=ctx.state.id)
 
-        server = await self.provider.api.get_server(ctx.state.id)
+        server = await provider.api.get_server(ctx.state.id)
 
         if not server:
             logger.debug("Resource not found", resource_id=ctx.state.id)
@@ -358,9 +361,12 @@ class ServerResource(BaseResource):
         Create new resource.
         Called during: terraform apply (for new resources)
         """
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         logger.info("Creating resource", name=base_plan["name"])
 
-        server = await self.provider.api.create_server(
+        server = await provider.api.create_server(
             name=base_plan["name"],
             size=base_plan["size"]
         )
@@ -372,9 +378,12 @@ class ServerResource(BaseResource):
         Update existing resource.
         Called during: terraform apply (for changed resources)
         """
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         logger.info("Updating resource", resource_id=ctx.state.id)
 
-        await self.provider.api.update_server(
+        await provider.api.update_server(
             ctx.state.id,
             name=base_plan["name"],
             size=base_plan["size"]
@@ -387,9 +396,12 @@ class ServerResource(BaseResource):
         Delete resource.
         Called during: terraform destroy, terraform apply (for removed resources)
         """
+        from pyvider.hub import hub
+        provider = hub.get_component("singleton", "provider")
+
         logger.info("Deleting resource", resource_id=ctx.state.id)
 
-        await self.provider.api.delete_server(ctx.state.id)
+        await provider.api.delete_server(ctx.state.id)
 ```
 
 **Operation Flow**:
@@ -605,11 +617,14 @@ async def setup(self):
 
 ```python
 async def _create(self, ctx: ResourceContext, base_plan: dict):
-    if not self.provider._configured:
+    from pyvider.hub import hub
+    provider = hub.get_component("singleton", "provider")
+
+    if not provider._configured:
         raise ProviderError("Provider not configured")
 
     # Now safe to use provider config
-    await self.provider.api.create_resource(...)
+    await provider.api.create_resource(...)
 ```
 
 ## Lifecycle Logging

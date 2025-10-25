@@ -40,15 +40,33 @@ Test the complete CRUD lifecycle:
 
 ```python
 import pytest
+import attrs
 from pyvider.resources.context import ResourceContext
 from my_provider.resources import Instance
+
+# Example attrs classes for Instance resource
+@attrs.define
+class InstanceConfig:
+    """Instance configuration."""
+    name: str
+    size: str
+    ami: str
+
+@attrs.define
+class InstanceState:
+    """Instance state."""
+    id: str
+    name: str
+    size: str
+    ami: str
+    status: str
 
 
 def make_context(
     *,
-    config: Instance.Config | None = None,
-    state: Instance.State | None = None,
-    planned_state: Instance.State | None = None,
+    config: InstanceConfig | None = None,
+    state: InstanceState | None = None,
+    planned_state: InstanceState | None = None,
 ):
     return ResourceContext(config=config, state=state, planned_state=planned_state)
 
@@ -63,7 +81,7 @@ def instance_resource():
 async def test_resource_create(instance_resource):
     """Test resource creation."""
     ctx = make_context(
-        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
+        config=InstanceConfig(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
     state, _ = await instance_resource._create_apply(ctx)
 
@@ -76,7 +94,7 @@ async def test_resource_create(instance_resource):
 async def test_resource_read(instance_resource):
     """Test resource read."""
     create_ctx = make_context(
-        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
+        config=InstanceConfig(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
     state, _ = await instance_resource._create_apply(create_ctx)
 
@@ -91,12 +109,12 @@ async def test_resource_read(instance_resource):
 async def test_resource_update(instance_resource):
     """Test resource update."""
     create_ctx = make_context(
-        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
+        config=InstanceConfig(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
     state, _ = await instance_resource._create_apply(create_ctx)
 
     update_ctx = make_context(
-        config=Instance.Config(
+        config=InstanceConfig(
             name="test-instance",
             size="t3.small",  # Changed size
             ami="ami-12345678",
@@ -114,7 +132,7 @@ async def test_resource_update(instance_resource):
 async def test_resource_delete(instance_resource):
     """Test resource deletion."""
     create_ctx = make_context(
-        config=Instance.Config(name="test-instance", size="t2.micro", ami="ami-12345678")
+        config=InstanceConfig(name="test-instance", size="t2.micro", ami="ami-12345678")
     )
     state, _ = await instance_resource._create_apply(create_ctx)
 
@@ -135,14 +153,16 @@ from pyvider.exceptions import ValidationError
 @pytest.mark.asyncio
 async def test_resource_validates_required_fields(instance_resource):
     """Test that required fields are validated."""
-    ctx = make_context(
-        config=Instance.Config(
-            # Missing required 'name' field
-            size="t2.micro",
-            ami="ami-12345678",
+    # Note: In practice, attrs will raise TypeError for missing required fields
+    # This example shows conceptual validation testing
+    with pytest.raises((ValidationError, TypeError)):
+        ctx = make_context(
+            config=InstanceConfig(
+                # Missing required 'name' field - this will fail at construction
+                size="t2.micro",
+                ami="ami-12345678",
+            )
         )
-    )
-    with pytest.raises(ValidationError):
         await instance_resource._create_apply(ctx)
 
 
@@ -150,7 +170,7 @@ async def test_resource_validates_required_fields(instance_resource):
 async def test_resource_validates_field_values(instance_resource):
     """Test that field values are validated."""
     ctx = make_context(
-        config=Instance.Config(
+        config=InstanceConfig(
             name="test",
             size="invalid-size",  # Invalid size
             ami="ami-12345678",
@@ -166,7 +186,22 @@ async def test_resource_validates_field_values(instance_resource):
 
 ```python
 import pytest
+import attrs
 from my_provider.data_sources import Image
+
+# Example attrs classes for Image data source
+@attrs.define
+class ImageConfig:
+    """Image lookup configuration."""
+    name_filter: str
+    most_recent: bool = True
+
+@attrs.define
+class ImageData:
+    """Image data."""
+    id: str
+    name: str
+    created_at: str
 
 @pytest.fixture
 def image_data_source():
@@ -176,7 +211,7 @@ def image_data_source():
 @pytest.mark.asyncio
 async def test_data_source_read(image_data_source):
     """Test data source read."""
-    config = Image.Config(
+    config = ImageConfig(
         name_filter="ubuntu-22.04",
         most_recent=True
     )
@@ -190,7 +225,7 @@ async def test_data_source_read(image_data_source):
 @pytest.mark.asyncio
 async def test_data_source_filters(image_data_source):
     """Test data source filtering."""
-    config = Image.Config(
+    config = ImageConfig(
         name_filter="ubuntu*",
         most_recent=True
     )
@@ -207,7 +242,20 @@ async def test_data_source_filters(image_data_source):
 
 ```python
 import pytest
+import attrs
 from my_provider.functions import HashFunction
+
+# Example attrs classes for HashFunction
+@attrs.define
+class HashParameters:
+    """Hash function parameters."""
+    input: str
+    algorithm: str = "sha256"
+
+@attrs.define
+class HashResult:
+    """Hash function result."""
+    output: str
 
 @pytest.fixture
 def hash_function():
@@ -217,7 +265,7 @@ def hash_function():
 @pytest.mark.asyncio
 async def test_function_call(hash_function):
     """Test function execution."""
-    params = HashFunction.Parameters(
+    params = HashParameters(
         input="hello world",
         algorithm="sha256"
     )
@@ -230,14 +278,14 @@ async def test_function_call(hash_function):
 @pytest.mark.asyncio
 async def test_function_algorithms(hash_function):
     """Test different hash algorithms."""
-    params_sha256 = HashFunction.Parameters(
+    params_sha256 = HashParameters(
         input="test",
         algorithm="sha256"
     )
     result_sha256 = await hash_function.call(params_sha256)
     assert len(result_sha256.output) == 64
 
-    params_md5 = HashFunction.Parameters(
+    params_md5 = HashParameters(
         input="test",
         algorithm="md5"
     )
@@ -251,7 +299,21 @@ async def test_function_algorithms(hash_function):
 
 ```python
 import pytest
+import attrs
 from my_provider.ephemerals import Token
+
+# Example attrs classes for Token ephemeral resource
+@attrs.define
+class TokenConfig:
+    """Token configuration."""
+    scope: str
+    ttl: int = 3600
+
+@attrs.define
+class TokenData:
+    """Token data."""
+    token: str
+    expires_at: str
 
 @pytest.fixture
 def token_ephemeral():
@@ -261,7 +323,7 @@ def token_ephemeral():
 @pytest.mark.asyncio
 async def test_ephemeral_open(token_ephemeral):
     """Test ephemeral resource open."""
-    config = Token.Config(
+    config = TokenConfig(
         scope="read:write",
         ttl=3600
     )
@@ -274,7 +336,7 @@ async def test_ephemeral_open(token_ephemeral):
 @pytest.mark.asyncio
 async def test_ephemeral_renew(token_ephemeral):
     """Test ephemeral resource renewal."""
-    config = Token.Config(
+    config = TokenConfig(
         scope="read:write",
         ttl=3600
     )

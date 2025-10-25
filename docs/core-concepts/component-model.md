@@ -191,13 +191,17 @@ class Server(BaseResource):
 
 ### Provider Access
 
-All components can access their parent provider:
+Resources and other components can access the provider instance via the component hub:
 
 ```python
 async def _create_apply(self, ctx: ResourceContext):
-    # Access provider instance
-    client = self.provider.client
-    config = self.provider.config
+    # Access provider instance from hub
+    from pyvider.hub import hub
+    provider = hub.get_component("singleton", "provider")
+
+    # Use provider's client and configuration
+    client = provider.api_client
+    config = provider.provider_config
 ```
 
 ### Capability Composition
