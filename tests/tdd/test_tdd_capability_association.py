@@ -4,7 +4,7 @@ import pytest
 
 from pyvider.exceptions import FrameworkConfigurationError
 from pyvider.hub import hub
-from pyvider.providers.provider import PyviderProvider
+from pyvider.providers.base import BaseProvider, ProviderMetadata
 from pyvider.resources.base import BaseResource
 from pyvider.resources.decorators import register_resource
 from pyvider.schema import PvsSchema, a_str, s_resource
@@ -40,7 +40,7 @@ class TestTddCapabilityAssociation:
     async def test_provider_setup_succeeds_for_provider_component(self):
         """A component without `component_of` is a provider component and should succeed."""
         hub.register("resource", "orphan_resource", OrphanResource)
-        provider = PyviderProvider()
+        provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
         try:
             await provider.setup()
         except FrameworkConfigurationError:

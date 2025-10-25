@@ -10,14 +10,14 @@ import pytest
 from pyvider.hub import hub
 from pyvider.observability import handler_duration, handler_errors, handler_requests
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.providers.provider import PyviderProvider
+from pyvider.providers.base import BaseProvider, ProviderMetadata
 from pyvider.schema import s_provider
 
 
 @pytest.fixture
 async def mock_provider_in_hub():
     """Register a minimal provider in the hub for handler tests."""
-    provider = PyviderProvider()
+    provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
     provider._final_schema = s_provider()
     hub.register("singleton", "provider", provider)
     yield

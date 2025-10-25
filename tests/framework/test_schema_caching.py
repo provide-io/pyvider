@@ -16,7 +16,7 @@ from pytest_mock import MockerFixture
 
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.providers.provider import PyviderProvider
+from pyvider.providers.base import BaseProvider, ProviderMetadata
 from pyvider.schema import s_provider
 
 
@@ -27,7 +27,7 @@ async def mock_provider_in_hub(mocker: MockerFixture):
     so that the handler can find it.
     """
     # Create a mock provider instance with a minimal valid schema
-    provider = PyviderProvider()
+    provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
     provider._final_schema = s_provider()
 
     # Register it in the hub

@@ -86,16 +86,17 @@ def suppress_logging_during_mutmut():
 async def provider_in_hub(discovered_components_session):
     """
     A function-scoped fixture that instantiates, sets up, and registers a
-    PyviderProvider instance in the hub. This is crucial for handlers that
+    test provider instance in the hub. This is crucial for handlers that
     depend on a live provider instance with its capabilities.
     """
+    from pyvider.providers.base import BaseProvider, ProviderMetadata
     from pyvider.providers.context import ProviderContext
-    from pyvider.providers.provider import PyviderProvider
 
     provider_ctx = ProviderContext(config=None)
     hub.register("singleton", "provider_context", provider_ctx)
 
-    provider = PyviderProvider()
+    # Create a minimal test provider
+    provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
     await provider.setup()
     hub.register("singleton", "provider", provider)
 
