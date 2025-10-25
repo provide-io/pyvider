@@ -151,11 +151,30 @@ class TerraformProviderServicer:
 The Schema System provides type-safe data modeling:
 
 ```python
+from pyvider.schema import s_resource, a_str, a_map, a_num
+
 @attrs.define
 class ResourceConfig:
-    name: str = Attribute(required=True, description="Resource name")
-    tags: dict[str, str] = Attribute(default_factory=dict)
-    size: int = Attribute(validators=[Range(min=1, max=100)])
+    """Configuration attrs class"""
+    name: str
+    tags: dict[str, str]
+    size: int
+
+@register_resource("example")
+class ExampleResource(BaseResource):
+    config_class = ResourceConfig
+
+    @classmethod
+    def get_schema(cls):
+        """Schema definition using factory functions"""
+        return s_resource({
+            "name": a_str(required=True, description="Resource name"),
+            "tags": a_map(a_str(), default={}, description="Resource tags"),
+            "size": a_num(
+                validators=[lambda x: 1 <= x <= 100 or "Must be 1-100"],
+                description="Resource size"
+            ),
+        })
 ```
 
 **Features:**
@@ -433,14 +452,27 @@ with timed_block(logger, "resource_creation"):
 All inputs are validated before processing:
 
 ```python
+from pyvider.schema import s_provider, a_str
+
 @attrs.define
-class Config:
-    api_key: str = Attribute(
-        validators=[
-            Length(min=32, max=64),
-            Regex(r'^[a-zA-Z0-9]+$')
-        ]
-    )
+class ProviderConfig:
+    """Provider configuration attrs class"""
+    api_key: str
+
+@register_provider("example")
+class ExampleProvider(BaseProvider):
+    @classmethod
+    def _build_schema(cls):
+        """Schema with validators"""
+        return s_provider({
+            "api_key": a_str(
+                required=True,
+                validators=[
+                    lambda x: 32 <= len(x) <= 64 or "Must be 32-64 chars",
+                    lambda x: x.isalnum() or "Must be alphanumeric"
+                ]
+            )
+        })
 ```
 
 ### 2. Secret Management
@@ -448,9 +480,17 @@ class Config:
 Sensitive data never logged or exposed:
 
 ```python
-@attrs.define
-class Config:
-    password: str = Attribute(sensitive=True)  # Never logged
+from pyvider.schema import s_provider, a_str
+
+@classmethod
+def _build_schema(cls):
+    return s_provider({
+        "password": a_str(
+            required=True,
+            sensitive=True,  # Never logged or shown in output
+            description="Database password"
+        )
+    })
 ```
 
 ### 3. Secure Communication

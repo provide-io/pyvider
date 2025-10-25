@@ -14,8 +14,11 @@ This page provides quick lookup tables for common Pyvider APIs. For complete doc
 | `a_list(T)` | List of T | `a_list(a_str(), description="Tags")` |
 | `a_map(T)` | Map of string → T | `a_map(a_str(), description="Labels")` |
 | `a_set(T)` | Set of T | `a_set(a_str(), description="Unique IDs")` |
+| `a_tuple([T...])` | Tuple (fixed types) | `a_tuple([a_str(), a_num()], description="Pair")` |
 | `a_obj({...})` | Nested object | `a_obj({"port": a_num()}, description="Config")` |
 | `a_dyn()` | Dynamic (any type) | `a_dyn(description="Metadata")` |
+| `a_null()` | Null value | `a_null(description="Explicitly null")` |
+| `a_unknown()` | Unknown (planning) | `a_unknown(description="Value unknown during plan")` |
 
 ### Attribute Modifiers
 

@@ -69,6 +69,44 @@ from pyvider.schema import a_dyn
 
 **Terraform**: `metadata = "string"` or `metadata = {key = "value"}`
 
+### Null - `a_null()`
+
+Explicitly represents a null value.
+
+```python
+from pyvider.schema import a_null
+
+"placeholder": a_null(description="Explicitly null field")
+```
+
+**Use Cases:**
+- Representing optional fields that can be explicitly set to null
+- Schema placeholders
+- Conditional nullability in complex schemas
+
+**Terraform**: Not commonly used in HCL configurations - most often used internally.
+
+**Note**: In most cases, you should use `optional=True` on regular attributes rather than `a_null()`.
+
+### Unknown - `a_unknown()`
+
+Represents values that are unknown during planning phase.
+
+```python
+from pyvider.schema import a_unknown
+
+"computed_value": a_unknown(description="Value unknown until apply")
+```
+
+**Use Cases:**
+- Values computed during apply that can't be known during plan
+- Handling Terraform's unknown value semantics
+- Advanced provider scenarios with deferred computation
+
+**Terraform**: Terraform internally represents these as unknown values during the plan phase.
+
+**Note**: This is an advanced type primarily used for complex provider scenarios. Most computed values should use `a_str(computed=True)` or similar instead.
+
 ## Collection Types
 
 ### List - `a_list(element_type)`
@@ -246,6 +284,8 @@ servers = [
 | `a_tuple([T...])` | `tuple` | `tuple([T...])` | `["a", 1]` |
 | `a_obj({...})` | `dict` | `object({...})` | `{k = "v"}` |
 | `a_dyn()` | `Any` | `dynamic` | any |
+| `a_null()` | `None` | `null` | `null` |
+| `a_unknown()` | N/A | `unknown` | (plan-time) |
 
 ## Choosing the Right Type
 
