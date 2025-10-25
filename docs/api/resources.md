@@ -318,11 +318,11 @@ async def test_server_lifecycle():
 
 ## Related Guides
 
-- [Creating Resources](../guides/creating-resources.md) - Complete resource development guide
-- [Best Practices](../guides/best-practices.md) - Resource best practices
-- [Testing Providers](../guides/testing-providers.md) - Testing resources
-- [Error Handling](../guides/error-handling.md) - Resource error handling
-- [Security Best Practices](../guides/security-best-practices.md) - Secure resources
+- [Creating Resources](../guides/building-components/creating-resources.md) - Complete resource development guide
+- [Best Practices](../guides/production/best-practices.md) - Resource best practices
+- [Testing Providers](../guides/development/testing-providers.md) - Testing resources
+- [Error Handling](../guides/development/error-handling.md) - Resource error handling
+- [Security Best Practices](../guides/production/security-best-practices.md) - Secure resources
 
 ## Module Reference
 

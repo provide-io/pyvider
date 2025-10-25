@@ -170,7 +170,7 @@ async def test_resource_creation():
     assert state.name == "test"
 ```
 
-See the [Testing Providers Guide](../guides/testing-providers.md) for more details.
+See the [Testing Providers Guide](../guides/development/testing-providers.md) for more details.
 
 ## Documentation Updates
 
@@ -400,7 +400,7 @@ Have an idea for a new feature?
 
 Need help contributing?
 
-- **Documentation**: Read our [guides](../guides/creating-providers.md)
+- **Documentation**: Read our [guides](../guides/building-components/creating-providers.md)
 - **Discussions**: Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - **Issues**: Search [existing issues](https://github.com/provide-io/pyvider/issues)
 - **Examples**: Check [pyvider-components](https://github.com/provide-io/pyvider-components)

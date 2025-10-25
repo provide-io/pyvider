@@ -324,11 +324,11 @@ async def test_provider_api_request():
 
 ## Related Guides
 
-- [Creating Providers](../../guides/creating-providers.md) - Complete provider development guide
-- [Best Practices](../../guides/best-practices.md) - Provider best practices
-- [Security Best Practices](../../guides/security-best-practices.md) - Secure providers
-- [Performance Optimization](../../guides/performance-optimization.md) - Fast providers
-- [Testing Providers](../../guides/testing-providers.md) - Testing strategies
+- [Creating Providers](../../guides/building-components/creating-providers.md) - Complete provider development guide
+- [Best Practices](../../guides/production/best-practices.md) - Provider best practices
+- [Security Best Practices](../../guides/production/security-best-practices.md) - Secure providers
+- [Performance Optimization](../../guides/production/performance-optimization.md) - Fast providers
+- [Testing Providers](../../guides/development/testing-providers.md) - Testing strategies
 
 ## Module Reference
 

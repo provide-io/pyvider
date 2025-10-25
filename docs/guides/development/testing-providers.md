@@ -647,6 +647,6 @@ markers =
 
 ## See Also
 
-- [Creating Providers](../guides/creating-providers.md) - Provider development guide
-- [Creating Resources](../guides/creating-resources.md) - Resource implementation
-- [Best Practices](../guides/best-practices.md) - Production best practices
+- [Creating Providers](../building-components/creating-providers.md) - Provider development guide
+- [Creating Resources](../building-components/creating-resources.md) - Resource implementation
+- [Best Practices](../production/best-practices.md) - Production best practices

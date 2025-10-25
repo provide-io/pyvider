@@ -837,10 +837,10 @@ For a real provider, also implement:
 
 ## Related Documentation
 
-- [Creating Providers](../guides/creating-providers.md) - Complete provider guide
-- [Creating Resources](../guides/creating-resources.md) - Resource patterns
-- [Creating Data Sources](../guides/creating-data-sources.md) - Data source patterns
-- [Testing Providers](../guides/testing-providers.md) - Testing strategies
-- [Error Handling](../guides/error-handling.md) - Error patterns
-- [Security Best Practices](../guides/security-best-practices.md) - Security guidance
-- [Performance Optimization](../guides/performance-optimization.md) - Performance tips
+- [Creating Providers](../guides/building-components/creating-providers.md) - Complete provider guide
+- [Creating Resources](../guides/building-components/creating-resources.md) - Resource patterns
+- [Creating Data Sources](../guides/building-components/creating-data-sources.md) - Data source patterns
+- [Testing Providers](../guides/development/testing-providers.md) - Testing strategies
+- [Error Handling](../guides/development/error-handling.md) - Error patterns
+- [Security Best Practices](../guides/production/security-best-practices.md) - Security guidance
+- [Performance Optimization](../guides/production/performance-optimization.md) - Performance tips

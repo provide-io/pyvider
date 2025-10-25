@@ -742,4 +742,4 @@ output "server_id" {
 - [Schema Overview](overview.md) - Complete schema system guide
 - [Attributes](attributes.md) - All attribute types
 - [Blocks](blocks.md) - Nested block patterns
-- [Creating Resources](../guides/creating-resources.md) - Implementing resources
+- [Creating Resources](../guides/building-components/creating-resources.md) - Implementing resources

@@ -293,7 +293,7 @@ Pyvider automatically handles common Python types like `datetime`, `Decimal`, `U
 
 - [Schema System](../../core-concepts/schema-system.md) - Define schemas without touching conversion
 - [Component Model](../../core-concepts/component-model.md) - How components use conversion internally
-- [Creating Resources](../../guides/creating-resources.md) - Practical examples without conversion code
+- [Creating Resources](../../guides/building-components/creating-resources.md) - Practical examples without conversion code
 
 ## Module Reference
 

@@ -561,4 +561,4 @@ async def _validate_config(self, config: ServerConfig) -> list[str]:
 - [Schema Overview](overview.md) - Complete schema system guide
 - [Attributes](attributes.md) - Attribute types and options
 - [Best Practices](best-practices.md) - Schema design guidelines
-- [Creating Resources](../guides/creating-resources.md) - Using blocks in resources
+- [Creating Resources](../guides/building-components/creating-resources.md) - Using blocks in resources

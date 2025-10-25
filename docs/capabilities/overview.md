@@ -233,9 +233,9 @@ See the [Roadmap](../development/roadmap.md) for details on:
 ## Related Documentation
 
 - [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
-- [Best Practices](../guides/best-practices.md) - Code reuse patterns
+- [Best Practices](../guides/production/best-practices.md) - Code reuse patterns
 - [Roadmap](../development/roadmap.md) - Feature timeline
-- [Advanced Patterns](../guides/advanced-patterns.md) - Advanced implementation techniques
+- [Advanced Patterns](../guides/advanced/advanced-patterns.md) - Advanced implementation techniques
 
 ## Contributing
 

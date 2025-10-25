@@ -408,4 +408,4 @@ async def _create_apply(self, ctx):
 - [Schema Overview](overview.md) - Complete schema system guide
 - [Attributes](attributes.md) - All attribute types
 - [Best Practices](best-practices.md) - Schema design guidelines
-- [Creating Resources](../guides/creating-resources.md) - Resource implementation
+- [Creating Resources](../guides/building-components/creating-resources.md) - Resource implementation

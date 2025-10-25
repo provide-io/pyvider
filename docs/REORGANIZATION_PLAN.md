@@ -111,7 +111,7 @@ After moving files, update all internal links in the documentation. Common patte
 
 **Before:**
 ```markdown
-[Creating Providers](../guides/creating-providers.md)
+[Creating Providers](../guides/building-components/creating-providers.md)
 [Best Practices](guides/best-practices.md)
 ```
 

@@ -27,7 +27,7 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 ## When to Use This Reference
 
 ### For Building Providers
-Most provider developers should start with the **[Guides](../guides/creating-providers.md)** section, which provides task-oriented tutorials. Use the API reference when you need:
+Most provider developers should start with the **[Guides](../guides/building-components/creating-providers.md)** section, which provides task-oriented tutorials. Use the API reference when you need:
 
 - Detailed parameter information for specific functions
 - Complete list of available schema types and validators
@@ -245,7 +245,7 @@ class Server(BaseResource):
 
 ## Getting Help
 
-- **Guides**: Start with [developer guides](../guides/creating-providers.md) for task-oriented tutorials
+- **Guides**: Start with [developer guides](../guides/building-components/creating-providers.md) for task-oriented tutorials
 - **Examples**: See [pyvider-components](https://github.com/provide-io/pyvider-components) for 100+ working examples
 - **Issues**: Report bugs at [GitHub Issues](https://github.com/provide-io/pyvider/issues)
 - **Discussions**: Ask questions at [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
