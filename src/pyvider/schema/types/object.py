@@ -53,5 +53,5 @@ class PvsObjectType(PvsType):
 
         return CtyObject(
             attribute_types=attribute_types,
-            optional_attributes=frozenset(optional_attributes),
+            optional_attributes=frozenset(optional_attributes),  # type: ignore[arg-type]
         )
