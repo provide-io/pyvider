@@ -7,11 +7,9 @@ from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
 from pyvider.exceptions import FrameworkConfigurationError
 from pyvider.hub import hub
 from pyvider.providers.base import BaseProvider, ProviderMetadata
-from pyvider.providers.decorators import register_provider
 from pyvider.schema import s_provider
 
 
-@register_provider("pyvider")
 class PyviderProvider(BaseProvider):
     capabilities: ClassVar[dict[str, BaseCapability]] = {}
 
