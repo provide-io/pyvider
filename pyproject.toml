@@ -50,9 +50,6 @@ docs = [
 [project.scripts]
 pyvider = "pyvider.cli.__main__:main"
 
-[project.entry-points.pyvider]
-pyvider = "pyvider"
-
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
