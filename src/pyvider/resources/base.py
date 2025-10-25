@@ -83,6 +83,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             )
             return None
 
+        logger.debug(
+            "Starting attrs conversion",
+            operation="_handle_attrs_conversion",
+            target_cls=target_cls.__name__,
+            data_keys=list(data.keys()),
+            value_types={k: type(v).__name__ for k, v in data.items()},
+        )
+
         kwargs = {}
         target_fields = {f.name: f for f in attrs.fields(target_cls)}
 
