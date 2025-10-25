@@ -152,9 +152,21 @@ Perfect for:
 - Production use
 - Understanding best practices
 
-## Experimental Features
+## Experimental Capabilities
 
-The following features are planned for future releases:
+!!! warning "Experimental - Not Recommended for Production"
+    The capabilities system is still in development. The features below are experimental and APIs may change.
+
+### What are Capabilities?
+
+Capabilities are a planned composition mechanism that would allow you to create reusable, modular components extending provider functionality. Think of them as mixins or plugins.
+
+**Current Status:**
+- ✅ Basic infrastructure implemented (`BaseCapability`, decorators)
+- ⚠️ Lifecycle hooks partially implemented
+- 🔮 Advanced features planned but not yet available
+
+### Planned Features
 
 ### Capability Lifecycle
 
@@ -200,13 +212,15 @@ class MyCloudProvider(BaseProvider):
                     await cap.configure(config)
 ```
 
-## Best Practices
+## Best Practices for Code Reuse
 
-1. **Start Simple**: Use inheritance or composition for simple cases
-2. **Capabilities for Cross-Cutting**: Use capabilities for truly reusable, cross-cutting concerns
-3. **Test in Isolation**: Test capabilities independently from components
-4. **Document Well**: Provide clear usage examples
-5. **Version Carefully**: Capabilities are shared code - version appropriately
+1. **Start Simple**: Use inheritance for straightforward shared functionality
+2. **Prefer Composition**: Use helper classes for complex cross-cutting concerns
+3. **Create Utility Modules**: Package commonly-used functions in shared modules
+4. **Test in Isolation**: Test shared code independently from components
+5. **Document Well**: Provide clear usage examples and docstrings
+6. **Version Carefully**: Shared code is a dependency - version appropriately
+7. **Avoid Over-Abstraction**: Don't create abstractions until you need them in 3+ places
 
 ## Future Plans
 
