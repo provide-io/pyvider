@@ -1,10 +1,6 @@
 # 🐍 Pyvider: Build Terraform Providers in Pure Python
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/provide-io/pyvider/main/docs/assets/pyvider-banner.png" alt="Pyvider banner" width="800">
-</p>
-
-<p align="center">
     <a href="https://pypi.org/project/pyvider/">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/pyvider.svg">
     </a>
@@ -22,96 +18,16 @@
     </a>
 </p>
 
-**Pyvider** is the first production-ready Python framework for building Terraform providers. Write infrastructure as code using Python's elegance, type safety, and rich ecosystem—without sacrificing the power and reliability of Terraform.
+**Pyvider** is a Python framework for building Terraform providers. Write infrastructure providers using Python's elegance, type safety, and rich ecosystem while maintaining full compatibility with Terraform Plugin Protocol v6.
 
----
+## ✨ Key Features
 
-## ✨ Why Pyvider?
-
-Building Terraform providers traditionally requires Go expertise and deep knowledge of Terraform's plugin protocol. Pyvider changes the game:
-
-- **🐍 Pure Python**: Write providers in the language you love, with full access to Python's vast ecosystem
-- **🎯 Type-Safe**: Leverage Python's type hints and attrs for compile-time safety and IDE support
-- **🚀 Zero Boilerplate**: Decorators handle all the protocol complexity—you focus on your infrastructure logic
-- **🧪 Test-Driven**: Built-in testing framework with pytest integration for reliable providers
-- **📦 Production-Ready**: Battle-tested implementation of Terraform Plugin Protocol v6
-- **⚡ High Performance**: Optimized gRPC communication with async support throughout
-
-## 🎯 Key Features
-
-### 🏗️ Component-Based Architecture
-```python
-from pyvider.providers import register_provider
-from pyvider.resources import register_resource
-from pyvider.data_sources import register_data_source
-from pyvider.functions import register_function
-
-@register_provider("mycloud")
-class MyCloudProvider:
-    """Your cloud provider implementation"""
-    pass
-
-@register_resource("virtual_machine")  
-class VirtualMachine:
-    """Manages virtual machine lifecycle"""
-    pass
-
-@register_data_source("image_catalog")
-class ImageCatalog:
-    """Fetches available VM images"""
-    pass
-
-@register_function(name="generate_password")
-class GeneratePassword:
-    """Generates secure passwords"""
-    pass
-```
-
-### 🔒 Type-Safe Schema Definition
-```python
-import attrs
-from pyvider.schema import a_str, a_map
-
-@attrs.define
-class VMConfig:
-    name: str = a_str(required=True, description="VM instance name")
-    size: str = a_str(default="medium", description="Instance size")
-    tags: dict[str, str] = a_map(a_str(), description="Resource tags")
-```
-
-### 🧪 Comprehensive Testing
-```python
-import pytest
-from my_provider.resources import VirtualMachine
-
-@pytest.mark.asyncio
-async def test_create_vm():
-    """Test VM creation with pytest."""
-    resource = VirtualMachine()
-    config = VirtualMachine.Config(
-        name="test-vm",
-        size="large"
-    )
-
-    state, private = await resource._create_apply(
-        ResourceContext(config=config)
-    )
-
-    assert state.status == "running"
-    assert state.name == "test-vm"
-```
-
-### 🎮 Powerful CLI
-```bash
-# Component discovery
-pyvider components list
-
-# Launch provider in server mode for local testing
-PYVIDER_LOG_LEVEL=DEBUG pyvider provide --force
-
-# Launch provider service
-pyvider provide
-```
+- **🐍 Pure Python** - Write providers using familiar Python patterns and libraries
+- **🎯 Type-Safe** - Leverage type hints and attrs for robust code
+- **🚀 Decorator-Based** - Simple registration system handles protocol complexity
+- **📦 Protocol v6** - Full Terraform Plugin Protocol v6 implementation
+- **⚡ Async** - Built on modern async/await for high performance
+- **🧪 Testable** - Comprehensive testing with pytest integration
 
 ## 📦 Installation
 

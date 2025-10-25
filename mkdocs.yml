@@ -119,7 +119,6 @@ extra_javascript:
 # Navigation Structure
 nav:
   - 'Home': 'index.md'
-  - '⚡ Quick Reference': 'quick-reference.md'
 
   - 'Getting Started':
     - 'What is Pyvider': 'getting-started/what-is-pyvider.md'
@@ -144,6 +143,8 @@ nav:
       - 'Error Handling': 'guides/error-handling.md'
       - 'Logging': 'guides/logging.md'
       - 'Debugging': 'guides/debugging.md'
+      - 'Security Best Practices': 'guides/security-best-practices.md'
+      - 'Performance Optimization': 'guides/performance-optimization.md'
     - 'Using Providers':
       - 'Configuration': 'guides/configuration.md'
       - 'Managing Resources': 'guides/managing-resources.md'
@@ -152,8 +153,14 @@ nav:
     - 'Advanced':
       - 'Provider Lifecycle': 'guides/provider-lifecycle.md'
       - 'Advanced Patterns': 'guides/advanced-patterns.md'
+    - 'Tutorials':
+      - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
+
+  - '⚡ Quick Reference': 'quick-reference.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
 
   - 'Schema System':
     - 'Overview': 'schema/overview.md'
@@ -189,8 +196,6 @@ nav:
 
   - '🔬 Capabilities (Experimental)':
     - 'Overview': 'capabilities/overview.md'
-
-  - 'Troubleshooting': 'troubleshooting.md'
 
   - 'Contributing':
     - 'Guidelines': 'contributing/guidelines.md'
