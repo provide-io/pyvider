@@ -40,10 +40,15 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
     Retrieves components of a given type, filtering out test-only components
     if the provider is not in test mode.
     """
-    provider_context = hub.get_component("singleton", "provider_context")
-    test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
-
     all_components = hub.get_components(component_type)
+
+    # Try to get provider context to check test mode, but don't fail if it doesn't exist
+    try:
+        provider_context = hub.get_component("singleton", "provider_context")
+        test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+    except (KeyError, AttributeError):
+        # If provider_context doesn't exist (e.g., in unit tests), assume not in test mode
+        test_mode_enabled = False
 
     if test_mode_enabled:
         logger.debug(f"Test mode enabled, returning all {component_type} components.")
