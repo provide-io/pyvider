@@ -156,11 +156,14 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
         )
 
         resource_handler = resource_class()
+        provider_context = hub.get_component("singleton", "provider_context")
+        test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
         resource_context = ResourceContext(
             config=None,
             state=prior_state_instance,
             private_state=private_state_instance,
             capabilities=provider_instance.metadata.capabilities,
+            test_mode_enabled=test_mode_enabled,
         )
         new_state_attrs = await resource_handler.read(resource_context)
 

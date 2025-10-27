@@ -138,7 +138,8 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        provider_context = ProviderContext(config=config_instance)
+        test_mode_enabled = getattr(config_instance, "provider_testmode", False)
+        provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
         hub.register("singleton", "provider_context", provider_context)
 
         logger.info(
@@ -146,6 +147,7 @@ async def _configure_provider_impl(
             operation="configure_provider",
             provider_name=provider_instance.metadata.name,
             provider_version=provider_instance.metadata.version,
+            test_mode_enabled=test_mode_enabled,
         )
 
     except PyviderError as e:

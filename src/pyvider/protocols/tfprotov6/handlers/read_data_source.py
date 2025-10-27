@@ -88,7 +88,10 @@ async def _read_data_source_impl(
         config_instance = cty_to_attrs_instance(config_cty, ds_class.config_class)
 
         data_source = ds_class()
-        resource_context = ResourceContext(config=config_instance)
+
+        provider_context = hub.get_component("singleton", "provider_context")
+        test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+        resource_context = ResourceContext(config=config_instance, test_mode_enabled=test_mode_enabled)
 
         # Auto-inject capabilities based on component_of registration
         read_kwargs = {}

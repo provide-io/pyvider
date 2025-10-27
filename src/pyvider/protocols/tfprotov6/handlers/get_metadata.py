@@ -14,6 +14,7 @@ from pyvider.observability import (
     handler_requests,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
 
 
 @resilient()
@@ -34,8 +35,6 @@ async def GetMetadataHandler(request: pb.GetMetadata.Request, context: Any) -> p
 
 async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> pb.GetMetadata.Response:
     """Implementation of GetMetadata handler."""
-    from pyvider.hub import hub
-
     logger.debug(
         "GetMetadata handler called",
         operation="get_metadata",
@@ -43,9 +42,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
     )
 
     try:
-        # Dynamically discover registered resources
+        # Dynamically discover registered resources, filtered by test mode
+        filtered_resources = get_filtered_components("resource")
         resources = []
-        for resource_name in hub.get_components("resource"):
+        for resource_name in filtered_resources:
             resources.append(pb.GetMetadata.ResourceMetadata(type_name=resource_name))
             logger.debug(
                 "Resource discovered during metadata collection",
@@ -54,9 +54,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
                 component_name=resource_name,
             )
 
-        # Get data sources if any
+        # Get data sources, filtered by test mode
+        filtered_data_sources = get_filtered_components("data_source")
         data_sources = []
-        for ds_name in hub.get_components("data_source"):
+        for ds_name in filtered_data_sources:
             data_sources.append(pb.GetMetadata.DataSourceMetadata(type_name=ds_name))
             logger.debug(
                 "Data source discovered during metadata collection",
@@ -65,9 +66,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
                 component_name=ds_name,
             )
 
-        # Get functions if any
+        # Get functions, filtered by test mode
+        filtered_functions = get_filtered_components("function")
         functions = []
-        for func_name in hub.get_components("function"):
+        for func_name in filtered_functions:
             functions.append(pb.GetMetadata.FunctionMetadata(name=func_name))
             logger.debug(
                 "Function discovered during metadata collection",
@@ -87,8 +89,6 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
         response = pb.GetMetadata.Response(
             server_capabilities=pb.ServerCapabilities(
                 plan_destroy=True,
-                # THE FIX: This flag MUST be True to allow Terraform to use
-                # GetMetadata for function discovery alongside GetProviderSchema.
                 get_provider_schema_optional=True,
                 move_resource_state=True,
             ),

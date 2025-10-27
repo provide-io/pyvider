@@ -7,7 +7,9 @@ P = ParamSpec("P")
 T = TypeVar("T")
 
 
-def register_resource(name: str, component_of: str | None = None) -> Callable[[type], type]:
+def register_resource(
+    name: str, component_of: str | None = None, test_only: bool = False
+) -> Callable[[type], type]:
     """
     Decorator to register a resource and associate it with a capability.
     """
@@ -15,9 +17,14 @@ def register_resource(name: str, component_of: str | None = None) -> Callable[[t
     def decorator(cls: type) -> type:
         cls._is_registered_resource = True  # type: ignore[attr-defined]
         cls._registered_name = name  # type: ignore[attr-defined]
+        cls._is_test_only = test_only  # type: ignore[attr-defined]
         if component_of:
             cls._parent_capability = component_of  # type: ignore
-        logger.debug(f"🔧 Marked resource '{name}' for discovery", capability=component_of)
+        logger.debug(
+            f"🔧 Marked resource '{name}' for discovery",
+            capability=component_of,
+            test_only=test_only,
+        )
         return cls
 
     return decorator

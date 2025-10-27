@@ -25,6 +25,7 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
     config_cty: CtyValue | None = None
     planned_state_cty: CtyValue | None = None
     capabilities: dict[str, BaseCapability] = field(factory=dict)
+    test_mode_enabled: bool = field(default=False, kw_only=True)
 
     def get_private_state(self, private_state_class: type[PrivateStateType]) -> PrivateStateType | None:
         """

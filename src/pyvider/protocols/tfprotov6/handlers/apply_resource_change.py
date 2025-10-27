@@ -159,6 +159,9 @@ def _create_resource_context(
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
     planned_state_instance = cty_to_attrs_instance(planned_state_cty, resource_class.state_class)
 
+    provider_context = hub.get_component("singleton", "provider_context")
+    test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+
     return ResourceContext(
         config=config_instance,
         state=prior_state_instance,
@@ -166,6 +169,7 @@ def _create_resource_context(
         private_state=private_state_instance,
         config_cty=config_cty,
         capabilities=provider_instance.metadata.capabilities,
+        test_mode_enabled=test_mode_enabled,
     )
 
 

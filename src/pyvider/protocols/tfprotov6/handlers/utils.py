@@ -27,11 +27,39 @@ from pyvider.exceptions import (
     ResourceError,
     ResourceLifecycleContractError,
 )
+from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
 PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
+
+
+def get_filtered_components(component_type: str) -> dict[str, Any]:
+    """
+    Retrieves components of a given type, filtering out test-only components
+    if the provider is not in test mode.
+    """
+    provider_context = hub.get_component("singleton", "provider_context")
+    test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+
+    all_components = hub.get_components(component_type)
+
+    if test_mode_enabled:
+        logger.debug(f"Test mode enabled, returning all {component_type} components.")
+        return all_components
+
+    production_components = {
+        name: comp
+        for name, comp in all_components.items()
+        if not getattr(comp, "_is_test_only", False)
+    }
+    logger.debug(
+        f"Filtered {component_type} components for production mode.",
+        total=len(all_components),
+        production=len(production_components),
+    )
+    return production_components
 
 
 def _process_instance(instance: Any, _visited: set[int]) -> Any:

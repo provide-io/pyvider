@@ -77,7 +77,10 @@ async def _open_ephemeral_resource_impl(
         config_cty = unmarshal(request.config, schema=schema.block)
         config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
 
-        ctx = EphemeralResourceContext(config=config_instance)
+        provider_context = hub.get_component("singleton", "provider_context")
+        test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+
+        ctx = EphemeralResourceContext(config=config_instance, test_mode_enabled=test_mode_enabled)
         resource_instance = resource_class()
 
         result_obj, private_state_obj, renew_at = await resource_instance.open(ctx)

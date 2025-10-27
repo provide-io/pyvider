@@ -20,6 +20,11 @@ class ProviderContext(BaseContext):
 
     config: Any = field()
     provider: BaseProvider | None = field(default=None, init=False)
+    test_mode_enabled: bool = field(default=False, kw_only=True)
 
     def __attrs_post_init__(self) -> None:
-        logger.info("ProviderContext initialized", config_type=type(self.config).__name__)
+        logger.info(
+            "ProviderContext initialized",
+            config_type=type(self.config).__name__,
+            test_mode=self.test_mode_enabled,
+        )

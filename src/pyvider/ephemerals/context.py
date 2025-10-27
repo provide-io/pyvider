@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar
 
-from attrs import define
+from attrs import define, field
 
 from pyvider.common.context import BaseContext
 from pyvider.resources.private_state import PrivateState
@@ -18,3 +18,4 @@ class EphemeralResourceContext(BaseContext, Generic[ConfigType, PrivateStateType
 
     config: ConfigType | None = None
     private_state: PrivateStateType | None = None
+    test_mode_enabled: bool = field(default=False, kw_only=True)
