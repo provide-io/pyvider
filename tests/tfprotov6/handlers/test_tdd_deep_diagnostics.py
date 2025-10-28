@@ -34,7 +34,7 @@ async def assert_deep_diagnostic(
     invalid_config: dict[str, Any],
     expected_path_str: str,
     expected_summary_contains: str,
-):
+) -> None:
     """
     Helper to assert that validating a config against a schema produces a
     diagnostic with a specific, correctly formatted deep path.
@@ -79,7 +79,7 @@ class TestDeepDiagnosticPaths:
     for errors in deeply nested data structures.
     """
 
-    async def test_error_in_nested_object(self):
+    async def test_error_in_nested_object(self) -> None:
         """TDD: Verifies pathing for an object nested within another object."""
         schema = s_resource(
             attributes={"config": a_obj(attributes={"retries": a_num(required=True)}, required=True)}
@@ -92,7 +92,7 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="Number validation error",
         )
 
-    async def test_error_in_list_of_objects(self):
+    async def test_error_in_list_of_objects(self) -> None:
         """TDD: Verifies pathing for an error in the nth element of a list of objects."""
         schema = s_resource(
             attributes={"users": a_list(a_obj(attributes={"name": a_str(required=True)}), required=True)}
@@ -105,7 +105,7 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="String validation error",
         )
 
-    async def test_error_in_map_of_objects(self):
+    async def test_error_in_map_of_objects(self) -> None:
         """TDD: Verifies pathing for an error in an object inside a map."""
         schema = s_resource(
             attributes={"services": a_map(a_obj(attributes={"port": a_num(required=True)}), required=True)}
@@ -118,7 +118,7 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="Number validation error",
         )
 
-    async def test_error_in_tuple_with_nested_list(self):
+    async def test_error_in_tuple_with_nested_list(self) -> None:
         """TDD: Verifies pathing for an error in a list inside a tuple."""
         schema = s_resource(
             attributes={"endpoint": a_tuple([a_str(), a_list(a_num(required=True))], required=True)}
@@ -131,7 +131,7 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="Number validation error",
         )
 
-    async def test_error_in_nested_block_list(self):
+    async def test_error_in_nested_block_list(self) -> None:
         """TDD: Verifies pathing for an error within a nested block list."""
         schema = s_resource(
             block_types=[
@@ -149,7 +149,7 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="Number validation error",
         )
 
-    async def test_deeply_nested_block_in_map_in_list(self):
+    async def test_deeply_nested_block_in_map_in_list(self) -> None:
         """TDD: A stress test for deeply nested path generation."""
         schema = s_resource(
             block_types=[

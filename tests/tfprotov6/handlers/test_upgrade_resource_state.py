@@ -18,7 +18,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_passes_through_json_state():
+async def test_upgrade_resource_state_passes_through_json_state() -> None:
     """
     Verifies that UpgradeResourceState returns the same state it receives.
     """
@@ -39,7 +39,7 @@ async def test_upgrade_resource_state_passes_through_json_state():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_handles_empty_state():
+async def test_upgrade_resource_state_handles_empty_state() -> None:
     """
     Verifies that UpgradeResourceState handles empty state correctly.
     """
@@ -58,7 +58,7 @@ async def test_upgrade_resource_state_handles_empty_state():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_handles_no_raw_state():
+async def test_upgrade_resource_state_handles_no_raw_state() -> None:
     """
     Verifies that UpgradeResourceState handles missing raw_state.
     """
@@ -76,7 +76,7 @@ async def test_upgrade_resource_state_handles_no_raw_state():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_preserves_complex_state():
+async def test_upgrade_resource_state_preserves_complex_state() -> None:
     """
     Verifies that UpgradeResourceState preserves complex nested state.
     """
@@ -105,7 +105,7 @@ async def test_upgrade_resource_state_preserves_complex_state():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_impl_handles_exception():
+async def test_upgrade_resource_state_impl_handles_exception() -> None:
     """Test that implementation handles exceptions gracefully."""
     request = pb.UpgradeResourceState.Request(
         type_name="test_resource",
@@ -117,7 +117,7 @@ async def test_upgrade_resource_state_impl_handles_exception():
     with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
         call_count = 0
 
-        def debug_side_effect(*args, **kwargs):
+        def debug_side_effect(*args: list, **kwargs: dict) -> None:
             nonlocal call_count
             call_count += 1
             if call_count == 2:  # Raise on second debug call
@@ -135,27 +135,28 @@ async def test_upgrade_resource_state_impl_handles_exception():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_handler_records_error_metric():
+async def test_upgrade_resource_state_handler_records_error_metric() -> None:
     """Test that handler increments error counter on exception."""
     request = pb.UpgradeResourceState.Request(
         type_name="test_resource",
         version=0,
     )
 
-    with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_errors") as mock_errors:
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state._upgrade_resource_state_impl"
-        ) as mock_impl:
-            mock_impl.side_effect = RuntimeError("Test error")
+    with patch(
+        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_errors"
+    ) as mock_errors, patch(
+        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state._upgrade_resource_state_impl"
+    ) as mock_impl:
+        mock_impl.side_effect = RuntimeError("Test error")
 
-            with pytest.raises(RuntimeError):
-                await UpgradeResourceStateHandler(request, context=None)
+        with pytest.raises(RuntimeError):
+            await UpgradeResourceStateHandler(request, context=None)
 
-            mock_errors.inc.assert_called_once_with(handler="UpgradeResourceState")
+        mock_errors.inc.assert_called_once_with(handler="UpgradeResourceState")
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_records_metrics():
+async def test_upgrade_resource_state_records_metrics() -> None:
     """Test that handler records request and duration metrics."""
     request = pb.UpgradeResourceState.Request(
         type_name="test_resource",

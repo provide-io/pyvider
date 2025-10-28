@@ -17,7 +17,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.ValidateEphemeralResourceConfig.Request:
     """Create a sample ValidateEphemeralResourceConfig request."""
     request = pb.ValidateEphemeralResourceConfig.Request()
     request.type_name = "test_ephemeral"
@@ -26,7 +26,7 @@ def sample_request():
 
 
 @pytest.fixture
-def mock_resource_class():
+def mock_resource_class() -> MagicMock:
     """Create a mock ephemeral resource class."""
     mock_class = MagicMock()
     mock_schema = MagicMock()
@@ -45,7 +45,9 @@ class TestValidateEphemeralResourceConfigStructure:
     """Test handler structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request
+    ) -> None:
         """Test that handler returns proper response object."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -55,7 +57,9 @@ class TestValidateEphemeralResourceConfigStructure:
             assert isinstance(response, pb.ValidateEphemeralResourceConfig.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_metrics(self, sample_request):
+    async def test_handler_records_metrics(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request
+    ) -> None:
         """Test that handler records request and duration metrics."""
         with (
             patch(
@@ -78,7 +82,9 @@ class TestValidateEphemeralResourceConfigImpl:
     """Test implementation logic."""
 
     @pytest.mark.asyncio
-    async def test_impl_validates_config_successfully(self, sample_request, mock_resource_class):
+    async def test_impl_validates_config_successfully(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test successful config validation."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -99,7 +105,9 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_resource_type(self, sample_request):
+    async def test_impl_handles_unknown_resource_type(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request
+    ) -> None:
         """Test handling of unknown ephemeral resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -109,7 +117,9 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_unmarshals_config(self, sample_request, mock_resource_class):
+    async def test_impl_unmarshals_config(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that config is unmarshaled."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,

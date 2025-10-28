@@ -13,7 +13,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_ex
 
 
 @pytest.mark.asyncio
-async def test_create_diagnostic_produces_correct_attribute_path():
+async def test_create_diagnostic_produces_correct_attribute_path() -> None:
     """
     TDD Contract: Verifies that a CtyValidationError with a nested path
     is converted into a Protobuf Diagnostic with a correctly structured

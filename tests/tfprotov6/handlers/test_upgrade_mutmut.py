@@ -21,7 +21,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.mark.asyncio
-async def test_upgrade_passes_through_state():
+async def test_upgrade_passes_through_state() -> None:
     """Test that state is passed through unchanged."""
     state_data = {"name": "test", "value": 123}
     state_json = json.dumps(state_data).encode("utf-8")
@@ -40,7 +40,7 @@ async def test_upgrade_passes_through_state():
 
 
 @pytest.mark.asyncio
-async def test_upgrade_handles_empty_state():
+async def test_upgrade_handles_empty_state() -> None:
     """Test empty state handling."""
     request = pb.UpgradeResourceState.Request(
         type_name="test_resource",
