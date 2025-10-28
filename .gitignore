@@ -72,3 +72,4 @@ workenv/*
 docs/.shared-theme/
 site
 site/
+bf-*.txt
