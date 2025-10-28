@@ -20,6 +20,7 @@ from pyvider.observability import (
     handler_requests,
 )
 from pyvider.protocols.tfprotov6.handlers.utils import (
+    check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
@@ -55,6 +56,9 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
             "terraform.detail", f"The resource type '{type_name}' is not registered with this provider."
         )
         raise err
+
+    # Check if this is a test-only component accessed without test mode
+    check_test_only_access(resource_class, type_name, "resource")
 
     provider_instance = hub.get_component("singleton", "provider")
     if not provider_instance:

@@ -27,6 +27,7 @@ def mock_resource_class():
     mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
     mock_class.get_schema.return_value = mock_schema
     mock_class.config_class = MagicMock
+    mock_class._is_test_only = False
     return mock_class
 
 

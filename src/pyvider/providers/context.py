@@ -28,3 +28,11 @@ class ProviderContext(BaseContext):
             config_type=type(self.config).__name__,
             test_mode=self.test_mode_enabled,
         )
+        if self.test_mode_enabled:
+            logger.warning(
+                "⚠️  Test mode enabled - this should only be used for testing and development"
+            )
+        else:
+            logger.debug(
+                "Test mode is not enabled - running in production mode"
+            )

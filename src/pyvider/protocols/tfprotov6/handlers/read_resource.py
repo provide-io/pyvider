@@ -16,6 +16,7 @@ from pyvider.observability import (
 )
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
+    check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
@@ -76,6 +77,9 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
             )
             err.add_context("resource.type_name", request.type_name)
             raise err
+
+        # Check if this is a test-only component accessed without test mode
+        check_test_only_access(resource_class, request.type_name, "resource")
 
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:

@@ -35,10 +35,22 @@ from pyvider.resources.base import BaseResource
 PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
 
 
+def get_all_components(component_type: str) -> dict[str, Any]:
+    """
+    Retrieves all components of a given type without filtering.
+
+    Use this for schema generation where all components (including test-only)
+    must be included in the provider schema.
+    """
+    return hub.get_components(component_type)
+
+
 def get_filtered_components(component_type: str) -> dict[str, Any]:
     """
     Retrieves components of a given type, filtering out test-only components
     if the provider is not in test mode.
+
+    Use this at runtime when components are actually being accessed.
     """
     all_components = hub.get_components(component_type)
 
@@ -51,8 +63,18 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
         test_mode_enabled = False
 
     if test_mode_enabled:
-        logger.debug(f"Test mode enabled, returning all {component_type} components.")
+        logger.info(
+            f"Test mode enabled, returning all {component_type} components (including test-only).",
+            component_type=component_type,
+            total_count=len(all_components),
+        )
         return all_components
+    else:
+        logger.debug(
+            f"Test mode is not enabled, filtering {component_type} components for production mode.",
+            component_type=component_type,
+            total=len(all_components),
+        )
 
     production_components = {
         name: comp
@@ -65,6 +87,87 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
         production=len(production_components),
     )
     return production_components
+
+
+def check_test_only_access(
+    component_class: Any,
+    component_name: str,
+    component_type: str,
+) -> None:
+    """
+    Check if a test-only component is being accessed without test mode enabled.
+
+    Raises appropriate error if access should be denied.
+
+    Args:
+        component_class: The component class to check
+        component_name: Name of the component (for error messages)
+        component_type: Type of component ("data_source", "resource", "function")
+
+    Raises:
+        DataSourceError/ResourceError/FunctionError: If test-only access denied
+    """
+    is_test_only = getattr(component_class, "_is_test_only", False)
+
+    if not is_test_only:
+        return  # Not test-only, access always allowed
+
+    # Get test mode status
+    try:
+        provider_context = hub.get_component("singleton", "provider_context")
+        test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
+    except (KeyError, AttributeError):
+        test_mode_enabled = False
+
+    if test_mode_enabled:
+        logger.debug(
+            f"Allowing access to test-only {component_type}",
+            component_name=component_name,
+            test_mode_enabled=True,
+        )
+        return  # Test mode enabled, access allowed
+
+    # Test-only component accessed without test mode - DENY
+    logger.warning(
+        f"⚠️  Blocked access to test-only {component_type}",
+        component_name=component_name,
+        test_mode_enabled=False,
+    )
+
+    # Choose appropriate exception type
+    if component_type == "data_source":
+        error_class = DataSourceError
+        type_label = "Data source"
+    elif component_type == "resource":
+        error_class = ResourceError
+        type_label = "Resource"
+    elif component_type == "function":
+        error_class = FunctionError
+        type_label = "Function"
+    else:
+        error_class = DataSourceError  # Fallback
+        type_label = "Component"
+
+    err = error_class(
+        f"{type_label} '{component_name}' is test-only and requires test mode.\n\n"
+        f"This component is marked for testing and development purposes only. "
+        f"It cannot be used in production mode.\n\n"
+        f"Suggestion: Enable test mode to use this component.\n\n"
+        f"Troubleshooting:\n"
+        f"  1. Add 'provider_testmode = true' to your provider block to enable test mode\n"
+        f"  2. Remove test-only components from production configurations\n"
+        f"  3. Review component documentation to find production alternatives\n"
+        f"  4. Test mode should only be used in testing/development environments"
+    )
+    err.add_context(f"{component_type}.name", component_name)
+    err.add_context(f"{component_type}.test_only", True)
+    err.add_context("provider.test_mode_enabled", False)
+    err.add_context("terraform.summary", f"Test-only {component_type} requires test mode")
+    err.add_context(
+        "terraform.detail",
+        f"The {component_type} '{component_name}' is marked as test-only and cannot be used when provider_testmode is false or unset.",
+    )
+    raise err
 
 
 def _process_instance(instance: Any, _visited: set[int]) -> Any:

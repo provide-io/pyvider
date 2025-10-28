@@ -15,6 +15,7 @@ from pyvider.observability import (
 )
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
+    check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
 )
@@ -82,6 +83,9 @@ async def _read_data_source_impl(
                 f"The data source type '{request.type_name}' is not registered with this provider.",
             )
             raise err
+
+        # Check if this is a test-only component accessed without test mode
+        check_test_only_access(ds_class, request.type_name, "data_source")
 
         ds_schema = ds_class.get_schema()
         config_cty = unmarshal(request.config, schema=ds_schema.block)

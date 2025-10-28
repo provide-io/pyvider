@@ -111,7 +111,9 @@
       "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest tests/resources/test_comprehensive_private_state_suite.py::TestTimedTokenResource::test_timed_token_lifecycle -xvs)",
       "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pytest:*)",
       "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/pip show pyvider-cty)",
-      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/python:*)"
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/.venv/bin/python:*)",
+      "Bash(export PYVIDER_LOG_LEVEL=DEBUG FOUNDATION_LOG_LEVEL=DEBUG)",
+      "Bash(export PYVIDER_LOG_LEVEL=DEBUG)"
     ],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",

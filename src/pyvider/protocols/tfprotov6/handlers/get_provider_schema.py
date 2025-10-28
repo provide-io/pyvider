@@ -17,7 +17,7 @@ from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
+from pyvider.protocols.tfprotov6.handlers.utils import get_all_components
 
 # --- Module-level Cache using asyncio.Future ---
 _schema_future: asyncio.Future[pb.GetProviderSchema.Response] | None = None
@@ -29,8 +29,8 @@ async def _collect_resource_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Schema]:
     resource_schemas = {}
-    filtered_resources = get_filtered_components("resource")
-    for name, resource_class in filtered_resources.items():
+    all_resources = get_all_components("resource")
+    for name, resource_class in all_resources.items():
         try:
             schema_obj = resource_class.get_schema()
             resource_schemas[name] = await pvs_schema_to_proto(schema_obj)
@@ -49,8 +49,8 @@ async def _collect_data_source_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Schema]:
     data_source_schemas = {}
-    filtered_data_sources = get_filtered_components("data_source")
-    for name, ds_class in filtered_data_sources.items():
+    all_data_sources = get_all_components("data_source")
+    for name, ds_class in all_data_sources.items():
         try:
             schema_obj = ds_class.get_schema()
             data_source_schemas[name] = await pvs_schema_to_proto(schema_obj)
@@ -69,8 +69,8 @@ async def _collect_function_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Function]:
     functions = {}
-    filtered_functions = get_filtered_components("function")
-    for name, func_obj in filtered_functions.items():
+    all_functions = get_all_components("function")
+    for name, func_obj in all_functions.items():
         try:
             func_dict = function_to_dict(func_obj)
             if func_dict:

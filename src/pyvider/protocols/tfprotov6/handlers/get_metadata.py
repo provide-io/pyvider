@@ -14,7 +14,7 @@ from pyvider.observability import (
     handler_requests,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
+from pyvider.protocols.tfprotov6.handlers.utils import get_all_components
 
 
 @resilient()
@@ -42,10 +42,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
     )
 
     try:
-        # Dynamically discover registered resources, filtered by test mode
-        filtered_resources = get_filtered_components("resource")
+        # Dynamically discover registered resources (all, including test-only)
+        all_resources = get_all_components("resource")
         resources = []
-        for resource_name in filtered_resources:
+        for resource_name in all_resources:
             resources.append(pb.GetMetadata.ResourceMetadata(type_name=resource_name))
             logger.debug(
                 "Resource discovered during metadata collection",
@@ -54,10 +54,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
                 component_name=resource_name,
             )
 
-        # Get data sources, filtered by test mode
-        filtered_data_sources = get_filtered_components("data_source")
+        # Get data sources (all, including test-only)
+        all_data_sources = get_all_components("data_source")
         data_sources = []
-        for ds_name in filtered_data_sources:
+        for ds_name in all_data_sources:
             data_sources.append(pb.GetMetadata.DataSourceMetadata(type_name=ds_name))
             logger.debug(
                 "Data source discovered during metadata collection",
@@ -66,10 +66,10 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
                 component_name=ds_name,
             )
 
-        # Get functions, filtered by test mode
-        filtered_functions = get_filtered_components("function")
+        # Get functions (all, including test-only)
+        all_functions = get_all_components("function")
         functions = []
-        for func_name in filtered_functions:
+        for func_name in all_functions:
             functions.append(pb.GetMetadata.FunctionMetadata(name=func_name))
             logger.debug(
                 "Function discovered during metadata collection",

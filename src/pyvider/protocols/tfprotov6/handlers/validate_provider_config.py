@@ -8,6 +8,8 @@ from typing import Any
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
+from pyvider.conversion import unmarshal
+from pyvider.hub import hub
 from pyvider.observability import (
     handler_duration,
     handler_errors,
@@ -17,6 +19,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
 )
+from pyvider.resources.base import BaseResource
 
 
 @resilient()
@@ -47,6 +50,37 @@ async def _validate_provider_config_impl(
             operation="validate_provider_config",
             has_config=bool(request.config.msgpack),
         )
+
+        # Get provider instance and parse config to check test mode
+        provider_instance = hub.get_component("singleton", "provider")
+        if provider_instance and request.config.msgpack:
+            try:
+                provider_schema = provider_instance.schema
+                config_cty = unmarshal(request.config, schema=provider_schema.block)
+
+                if not config_cty.is_unknown:
+                    config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)
+                    if config_instance:
+                        test_mode_enabled = getattr(config_instance, "provider_testmode", False)
+
+                        if test_mode_enabled:
+                            logger.warning(
+                                "⚠️  Provider test mode ENABLED - test-only components will be accessible",
+                                operation="validate_provider_config",
+                            )
+                        else:
+                            logger.debug(
+                                "Provider test mode NOT enabled - test-only components will be filtered out",
+                                operation="validate_provider_config",
+                            )
+            except Exception as e:
+                # Don't fail validation if we can't parse config for logging
+                logger.debug(
+                    "Could not parse config for test mode check",
+                    operation="validate_provider_config",
+                    error=str(e),
+                )
+
         # Provider configuration validation is typically minimal
         # Most validation happens in the provider's configure() method
         response = pb.ValidateProviderConfig.Response(

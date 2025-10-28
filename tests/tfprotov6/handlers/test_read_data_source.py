@@ -29,6 +29,7 @@ def mock_data_source_class():
     mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
     mock_class.get_schema.return_value = mock_schema
     mock_class.config_class = MagicMock
+    mock_class._is_test_only = False
     return mock_class
 
 
@@ -197,6 +198,7 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_class = MagicMock()
         mock_ds_class._parent_capability = "test_capability"
         mock_ds_class.config_class = MagicMock
+        mock_ds_class._is_test_only = False
 
         mock_schema = MagicMock()
         mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
@@ -247,6 +249,7 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_class = MagicMock()
         mock_ds_class._parent_capability = "test_capability"
         mock_ds_class.config_class = MagicMock
+        mock_ds_class._is_test_only = False
 
         mock_schema = MagicMock()
         mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
@@ -295,6 +298,7 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_class = MagicMock()
         mock_ds_class._parent_capability = "missing_capability"
         mock_ds_class.config_class = MagicMock
+        mock_ds_class._is_test_only = False
 
         mock_schema = MagicMock()
         mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
@@ -343,6 +347,7 @@ class TestReadDataSourceContextDiagnostics:
         mock_ds_class = MagicMock()
         mock_ds_class._parent_capability = None
         mock_ds_class.config_class = MagicMock
+        mock_ds_class._is_test_only = False
 
         mock_schema = MagicMock()
         mock_schema.block = CtyObject(attribute_types={"name": CtyString()})

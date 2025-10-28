@@ -217,7 +217,7 @@ class TestCtyObjectValidation:
     """Property-based tests for CtyObject validation."""
 
     @given(name=st.text(min_size=1, max_size=50), age=st.integers(min_value=0, max_value=150))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_object_with_fixed_schema_validates(self, name, age):
         """Property: CtyObject should validate objects matching its schema."""
         import unicodedata

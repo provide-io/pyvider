@@ -16,7 +16,10 @@ from pyvider.observability import (
     handler_errors,
     handler_requests,
 )
-from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
+from pyvider.protocols.tfprotov6.handlers.utils import (
+    check_test_only_access,
+    create_diagnostic_from_exception,
+)
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
@@ -220,6 +223,9 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
                 f"  3. Run 'pyvider components list' to see registered functions\n"
                 f"  4. Review provider logs for component registration errors"
             )
+
+        # Check if this is a test-only component accessed without test mode
+        check_test_only_access(function_obj, func_name, "function")
 
         func_meta = function_to_dict(function_obj)
         params_meta = func_meta.get("parameters", [])
