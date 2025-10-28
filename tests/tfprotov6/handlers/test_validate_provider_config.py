@@ -125,7 +125,8 @@ class TestValidateProviderConfigTestModeDetection:
         ):
                     mock_provider = MagicMock()
                     mock_schema = MagicMock()
-                    from pyvider.cty.types import CtyObject
+                    from pyvider.cty import CtyValue, CtyObject, CtyBool
+
                     mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
                     mock_provider.schema = mock_schema
 
@@ -171,6 +172,8 @@ class TestValidateProviderConfigTestModeDetection:
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
             ) as mock_logger,
         ):
+                   from pyvider.cty import CtyValue, CtyObject, CtyBool
+
                     mock_provider = MagicMock()
                     mock_schema = MagicMock()
                     mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
