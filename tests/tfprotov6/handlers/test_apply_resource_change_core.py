@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ApplyResourceChange handler - the most critical CRUD operation handler."""
 
 from provide.testkit import mocking as mock
@@ -256,3 +261,5 @@ class TestApplyResourceChangeLogging:
 
         # Handler should log some operational information
         # (Note: actual implementation may vary)
+
+# 🐍🏗️🔚

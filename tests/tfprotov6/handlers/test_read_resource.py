@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ReadResource handler."""
 
 from unittest.mock import patch
@@ -408,3 +413,5 @@ class TestReadResourceEdgeCases:
             assert response.diagnostics[0].summary == "Context warning"
         finally:
             hub.unregister("resource", "test_resource")
+
+# 🐍🏗️🔚

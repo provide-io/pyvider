@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import pytest
@@ -33,3 +40,5 @@ async def test_call_function_with_complex_object_avoids_recursion():
         assert not response.error.text, f"Function call failed with error: {response.error.text}"
     finally:
         hub.unregister("function", "test_identity")
+
+# 🐍🏗️🔚

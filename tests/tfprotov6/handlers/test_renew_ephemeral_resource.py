@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for RenewEphemeralResource handler."""
 
 from datetime import UTC, datetime
@@ -201,3 +206,5 @@ class TestRenewEphemeralResourceImpl:
             response = await _renew_ephemeral_resource_impl(sample_request, context=None)
 
             assert len(response.diagnostics) > 0
+
+# 🐍🏗️🔚

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ReadDataSource handler."""
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -385,3 +390,5 @@ class TestReadDataSourceContextDiagnostics:
                     # Check that context diagnostic was added to response
                     assert len(response.diagnostics) == 1
                     assert response.diagnostics[0].summary == "Context warning"
+
+# 🐍🏗️🔚

@@ -1,4 +1,10 @@
-# FIX: Import the new iterative function and alias it to the old name for the test.
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.conversion.marshaler import (
     _apply_schema_marks_iterative as _apply_schema_marks,
 )
@@ -24,3 +30,5 @@ def test_apply_schema_marks_adds_sensitive_mark():
 
     # THEN the resulting value must have the sensitive mark
     assert marked_value.has_mark(CtyMark("sensitive"))
+
+# 🐍🏗️🔚

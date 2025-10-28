@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for StopProvider handler."""
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -260,3 +265,5 @@ class TestStopProviderEdgeCases:
 
                 # Duration should still be recorded
                 assert mock_duration.observe.called
+
+# 🐍🏗️🔚
