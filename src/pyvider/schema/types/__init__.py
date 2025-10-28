@@ -1,4 +1,10 @@
-# pyvider/schema/types/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.schema.types.attribute import PvsAttribute
 from pyvider.schema.types.blocks import PvsNestedBlock
 from pyvider.schema.types.enums import NestingMode, StringKind
@@ -15,3 +21,5 @@ __all__ = [
     "PvsType",
     "StringKind",
 ]
+
+# 🐍🏗️🔚

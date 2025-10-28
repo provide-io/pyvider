@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import inspect
 import re
 from typing import Any
@@ -446,3 +453,5 @@ def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None)
         raise TypeError("Internal validation error: Passed object must be a class.")
 
     return BaseResource.from_cty(cty_val, attrs_cls)
+
+# 🐍🏗️🔚
