@@ -112,7 +112,7 @@ class TestValidateProviderConfigTestModeDetection:
     @pytest.mark.asyncio
     async def test_detects_test_mode_enabled(self):
         """Test that test mode enabled is detected and logged."""
-        from pyvider.cty import CtyBool, CtyObject, CtyValue
+
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
