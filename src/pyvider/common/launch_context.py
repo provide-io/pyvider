@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Launch context detection for Pyvider.
 
@@ -324,3 +329,5 @@ def log_launch_context(logger_func: Callable[[str], None] | None = None) -> Laun
     log_func(str(context))
 
     return context
+
+# 🐍🏗️🔚

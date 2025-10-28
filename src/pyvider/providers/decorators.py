@@ -1,4 +1,9 @@
-# pyvider/src/pyvider/providers/decorators.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
 
 from collections.abc import Callable
 
@@ -21,3 +26,5 @@ def register_provider(name: str) -> Callable[[type], type]:
         return cls
 
     return decorator
+
+# 🐍🏗️🔚
