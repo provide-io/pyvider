@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for hub validators."""
 
 from typing import Any
@@ -196,3 +201,5 @@ def test_multiple_attach_calls_accumulate() -> None:
     Validators.attach(metadata, "validator_2")
 
     assert len(metadata.validators) == 2
+
+# 🐍🏗️🔚

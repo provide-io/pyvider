@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ComponentDiscovery."""
 
 from abc import ABC
@@ -386,3 +391,5 @@ class TestProcessModule:
                         # Should not register (no name)
                         components = discovery.hub.list_components()
                         assert len(components.get("resource", [])) == 0
+
+# 🐍🏗️🔚

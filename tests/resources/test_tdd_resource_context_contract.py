@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import attrs
@@ -103,3 +110,5 @@ async def test_plan_handler_populates_full_resource_context(encryption_key_env, 
         assert planned_state.username_was_sensitive is False
     finally:
         hub.unregister("resource", resource_name)
+
+# 🐍🏗️🔚

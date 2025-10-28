@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for resource protocol and type aliases."""
 
 from pyvider.resources.protocol import ResourceProtocol
@@ -32,3 +37,5 @@ def test_resource_type_aliases() -> None:
     assert ResourceName("home") == "home"
     assert ResourceId("abc123") == "abc123"
     assert getattr(ResourceType, "__name__", "") == "ResourceType"
+
+# 🐍🏗️🔚
