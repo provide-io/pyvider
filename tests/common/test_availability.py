@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for msgpack availability detection utilities."""
 
 import importlib
@@ -82,3 +87,5 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     message = logger.error.call_args.args[0]
     assert "❌ Error checking msgpack availability" in message
     assert "boom" in message
+
+# 🐍🏗️🔚

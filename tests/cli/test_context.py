@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for CLI context module."""
 
 from pathlib import Path
@@ -264,3 +269,5 @@ class TestPyviderContextEdgeCases:
 
         # Verify discover_all was called with strict=False
         mock_discovery_instance.discover_all.assert_called_once_with(strict=False)
+
+# 🐍🏗️🔚

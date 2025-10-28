@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Mutation tests for upgrade_resource_state handler."""
 
 import json
@@ -46,3 +51,5 @@ async def test_handles_empty_state():
 
     assert response.upgraded_state.json == b"{}"
     assert len(response.diagnostics) == 0
+
+# 🐍🏗️🔚

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Additional tests for launch context helpers covering edge scenarios."""
 
 from contextlib import redirect_stdout
@@ -84,3 +89,5 @@ def test_log_launch_context_default_logger(monkeypatch):
     assert result is context
     output = buffer.getvalue()
     assert "Pyvider Launch Context" in output
+
+# 🐍🏗️🔚
