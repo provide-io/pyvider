@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Property-based tests for schema validation using Hypothesis."""
 
 from hypothesis import HealthCheck, assume, given, settings, strategies as st
@@ -158,3 +163,5 @@ def test_nested_list_schema_creation(nested_depth: int):
         schema = a_list(schema)
 
     assert schema is not None
+
+# 🐍🏗️🔚

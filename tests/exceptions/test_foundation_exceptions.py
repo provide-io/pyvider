@@ -1,4 +1,10 @@
-# Assuming foundation.py is in pyvider.exceptions.foundation
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.exceptions.foundation import (
     CapabilityError,
     ConfigurationError,
@@ -36,3 +42,5 @@ class TestFoundationExceptions:
 
         err_custom = UnsupportedTypeError(type_name="MyType")
         assert str(err_custom) == "Unsupported type encountered: 'MyType'."
+
+# 🐍🏗️🔚

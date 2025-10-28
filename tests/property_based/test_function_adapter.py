@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from decimal import Decimal
 from typing import Any
 
@@ -60,3 +67,5 @@ def test_function_adapter_type_inference(py_type, expected_cty_class):
     if expected_cty_class is CtyList and py_type is list[dict[str, bool]]:
         assert isinstance(inferred_param_type.element_type, CtyMap)
         assert isinstance(inferred_param_type.element_type.element_type, CtyBool)
+
+# 🐍🏗️🔚
