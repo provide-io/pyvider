@@ -292,9 +292,11 @@ class TestValidateDataResourceConfigEdgeCases:
         """Test handler with non-None context."""
         context = MagicMock()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-                mock_hub.get_component.return_value = None
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"),
+            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
+        ):
+            mock_hub.get_component.return_value = None
 
                 response = await ValidateDataResourceConfigHandler(sample_request, context=context)
 
