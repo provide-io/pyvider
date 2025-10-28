@@ -125,6 +125,7 @@ class TestValidateProviderConfigTestModeDetection:
         ):
                     mock_provider = MagicMock()
                     mock_schema = MagicMock()
+                    from pyvider.cty.types import CtyObject
                     mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
                     mock_provider.schema = mock_schema
 
