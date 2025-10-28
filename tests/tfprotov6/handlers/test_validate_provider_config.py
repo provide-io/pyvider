@@ -172,41 +172,41 @@ class TestValidateProviderConfigTestModeDetection:
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
             ) as mock_logger,
         ):
-                   from pyvider.cty import CtyValue, CtyObject, CtyBool
+            from pyvider.cty import CtyValue, CtyObject, CtyBool
 
-                    mock_provider = MagicMock()
-                    mock_schema = MagicMock()
-                    mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
-                    mock_provider.schema = mock_schema
+            mock_provider = MagicMock()
+            mock_schema = MagicMock()
+            mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
+            mock_provider.schema = mock_schema
 
-                    mock_config_class = MagicMock()
-                    mock_config_instance = MagicMock()
-                    mock_config_instance.provider_testmode = False
-                    mock_config_class.return_value = mock_config_instance
-                    mock_provider.config_class = mock_config_class
+            mock_config_class = MagicMock()
+            mock_config_instance = MagicMock()
+            mock_config_instance.provider_testmode = False
+            mock_config_class.return_value = mock_config_instance
+            mock_provider.config_class = mock_config_class
 
-                    mock_hub.get_component.return_value = mock_provider
+            mock_hub.get_component.return_value = mock_provider
 
-                    mock_cty_value = CtyValue(False, CtyBool())
-                    mock_unmarshal.return_value = mock_cty_value
+            mock_cty_value = CtyValue(False, CtyBool())
+            mock_unmarshal.return_value = mock_cty_value
 
-                    request = pb.ValidateProviderConfig.Request()
-                    request.config.msgpack = b"\xc2"  # False in msgpack
+            request = pb.ValidateProviderConfig.Request()
+            request.config.msgpack = b"\xc2"  # False in msgpack
 
-                    with patch(
-                        "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
-                    ) as mock_from_cty:
-                        mock_from_cty.return_value = mock_config_instance
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
+            ) as mock_from_cty:
+                mock_from_cty.return_value = mock_config_instance
 
-                        response = await _validate_provider_config_impl(request, context=None)
+                response = await _validate_provider_config_impl(request, context=None)
 
-                        # Should log debug about test mode NOT enabled
-                        assert any(
-                            "test mode NOT enabled" in str(call) for call in mock_logger.debug.call_args_list
-                        )
-                        assert len(response.diagnostics) == 0
+                # Should log debug about test mode NOT enabled
+                assert any(
+                    "test mode NOT enabled" in str(call) for call in mock_logger.debug.call_args_list
+                )
+                assert len(response.diagnostics) == 0
 
-    @pytest.mark.asyncio
+    @pytest.asyncio
     async def test_handles_config_parsing_error_gracefully(self):
         """Test that config parsing errors don't fail validation."""
         with (
