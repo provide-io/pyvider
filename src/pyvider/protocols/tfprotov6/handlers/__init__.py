@@ -1,6 +1,9 @@
 #
-# pyvider/protocols/tfprotov6/handlers/__init__.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 from pyvider.protocols.tfprotov6.handlers.apply_resource_change import ApplyResourceChangeHandler
 from pyvider.protocols.tfprotov6.handlers.call_function import CallFunctionHandler
@@ -51,3 +54,5 @@ __all__ = [
 ]
 
 # 🐍🏗⛮️
+
+# 🐍🏗️🔚

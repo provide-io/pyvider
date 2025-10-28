@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import inspect
 import time
 from typing import Any
@@ -333,3 +340,5 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         response.error.text = f"{diag.summary}: {diag.detail}"
 
     return response
+
+# 🐍🏗️🔚

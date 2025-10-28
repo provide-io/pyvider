@@ -1,6 +1,9 @@
 #
-# pyvider/src/pyvider/protocols/tfprotov6/handlers/stop_provider.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 import time
 from typing import Any
@@ -79,3 +82,5 @@ async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) ->
 
 
 # 🐍🏗⛮️
+
+# 🐍🏗️🔚
