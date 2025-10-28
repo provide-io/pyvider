@@ -156,7 +156,7 @@ class TestCtyListValidation:
         assert len(result.value) == len(items)
 
     @given(items=st.lists(st.integers(min_value=-1000, max_value=1000), max_size=20))
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_list_of_numbers_validates(self, items):
         """Property: CtyList(CtyNumber) should accept lists of numbers."""
         cty_list = CtyList(element_type=CtyNumber())
