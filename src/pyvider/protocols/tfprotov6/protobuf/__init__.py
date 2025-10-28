@@ -1,6 +1,9 @@
 #
-# protocols/tfprotov6/__init__.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 from google.protobuf.empty_pb2 import Empty
 
@@ -93,4 +96,4 @@ __all__ = [
     "add_to_server",
 ]
 
-# 🐍🏗️
+# 🐍🏗️🔚

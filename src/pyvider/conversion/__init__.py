@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 The pyvider.conversion package provides the primary bridge between the wire
 protocol (via DynamicValue) and the framework's internal CtyValue representation.
@@ -20,3 +25,5 @@ __all__ = [
     "unmarshal",
     "unmarshal_value",
 ]
+
+# 🐍🏗️🔚

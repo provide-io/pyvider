@@ -1,4 +1,8 @@
-# pyvider/src/pyvider/conversion/utils.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Provides general-purpose, high-level conversion utilities for the framework.
 """
@@ -41,3 +45,5 @@ def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyVa
     final_list_type = CtyList(element_type=unified_object_type)
 
     return final_list_type.validate(dict_list)  # type: ignore[no-any-return]
+
+# 🐍🏗️🔚

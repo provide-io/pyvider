@@ -1,4 +1,10 @@
-# pyvider-schema/src/pyvider/schema/types/object.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -55,3 +61,5 @@ class PvsObjectType(PvsType):
             attribute_types=attribute_types,
             optional_attributes=frozenset(optional_attributes),  # type: ignore[arg-type]
         )
+
+# 🐍🏗️🔚
