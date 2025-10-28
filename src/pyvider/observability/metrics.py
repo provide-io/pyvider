@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Pyvider Observability - Metrics Collection.
 
@@ -145,3 +150,5 @@ provider_configure_errors = counter(
     "pyvider.provider.configure.errors.total",
     description="Total number of provider configure errors",
 )
+
+# 🐍🏗️🔚

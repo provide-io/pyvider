@@ -61,26 +61,24 @@ class TestPlanResourceChangeHandlerStructure:
         """Test that handler increments request counter."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests"
-        ) as mock_requests:
-            with patch("pyvider.hub.hub.get_component") as mock_get:
-                mock_get.return_value = None
+        ) as mock_requests, patch("pyvider.hub.hub.get_component") as mock_get:
+            mock_get.return_value = None
 
-                await PlanResourceChangeHandler(sample_request, context=None)
+            await PlanResourceChangeHandler(sample_request, context=None)
 
-                mock_requests.inc.assert_called_with(handler="PlanResourceChange")
+            mock_requests.inc.assert_called_with(handler="PlanResourceChange")
 
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self, sample_request):
         """Test that handler records duration metric."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration"
-        ) as mock_duration:
-            with patch("pyvider.hub.hub.get_component") as mock_get:
-                mock_get.return_value = None
+        ) as mock_duration, patch("pyvider.hub.hub.get_component") as mock_get:
+            mock_get.return_value = None
 
-                await PlanResourceChangeHandler(sample_request, context=None)
+            await PlanResourceChangeHandler(sample_request, context=None)
 
-                assert mock_duration.observe.called
+            assert mock_duration.observe.called
 
 
 class TestGetResourceAndProviderInstances:
@@ -198,21 +196,20 @@ class TestPlanResourceChangeEdgeCases:
     @pytest.mark.asyncio
     async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider):
         """Test handling of validation errors."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
-            ) as mock_unmarshal:
-                from pyvider.cty.exceptions import CtyValidationError
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
+        ) as mock_unmarshal:
+            from pyvider.cty.exceptions import CtyValidationError
 
-                mock_get.side_effect = lambda comp_type, name: {
-                    ("resource", "test_resource"): mock_resource_class,
-                    ("singleton", "provider"): mock_provider,
-                }.get((comp_type, name))
-                mock_unmarshal.side_effect = CtyValidationError("Invalid type")
+            mock_get.side_effect = lambda comp_type, name: {
+                ("resource", "test_resource"): mock_resource_class,
+                ("singleton", "provider"): mock_provider,
+            }.get((comp_type, name))
+            mock_unmarshal.side_effect = CtyValidationError("Invalid type")
 
-                response = await PlanResourceChangeHandler(sample_request, context=None)
+            response = await PlanResourceChangeHandler(sample_request, context=None)
 
-                assert len(response.diagnostics) >= 1
+            assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
     async def test_with_context_object(self, sample_request):

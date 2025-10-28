@@ -1,7 +1,7 @@
 """Integration tests for PyviderProvider."""
 
-import pytest
 from provide.testkit.mocking import MagicMock, patch
+import pytest
 
 from pyvider.exceptions import FrameworkConfigurationError
 from pyvider.providers.provider import PyviderProvider

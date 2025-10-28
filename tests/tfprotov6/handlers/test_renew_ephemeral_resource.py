@@ -54,17 +54,15 @@ class TestRenewEphemeralResourceStructure:
         """Test that handler records request and duration metrics."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_requests"
-        ) as mock_req:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
-            ) as mock_dur:
-                with patch("pyvider.hub.hub.get_component") as mock_get:
-                    mock_get.return_value = None
+        ) as mock_req, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
+        ) as mock_dur, patch("pyvider.hub.hub.get_component") as mock_get:
+            mock_get.return_value = None
 
-                    await RenewEphemeralResourceHandler(sample_request, context=None)
+            await RenewEphemeralResourceHandler(sample_request, context=None)
 
-                    mock_req.inc.assert_called_once_with(handler="RenewEphemeralResource")
-                    mock_dur.observe.assert_called_once()
+            mock_req.inc.assert_called_once_with(handler="RenewEphemeralResource")
+            mock_dur.observe.assert_called_once()
 
 
 class TestRenewEphemeralResourceImpl:
@@ -73,18 +71,17 @@ class TestRenewEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_renews_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
         """Test successful ephemeral resource renew."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-            ) as mock_asdict:
-                mock_get.return_value = mock_ephemeral_class
-                mock_asdict.return_value = {"token": "new_token"}
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
+        ) as mock_asdict:
+            mock_get.return_value = mock_ephemeral_class
+            mock_asdict.return_value = {"token": "new_token"}
 
-                response = await _renew_ephemeral_resource_impl(sample_request, context=None)
+            response = await _renew_ephemeral_resource_impl(sample_request, context=None)
 
-                assert isinstance(response, pb.RenewEphemeralResource.Response)
-                assert len(response.diagnostics) == 0
-                mock_ephemeral_class.return_value.renew.assert_called_once()
+            assert isinstance(response, pb.RenewEphemeralResource.Response)
+            assert len(response.diagnostics) == 0
+            mock_ephemeral_class.return_value.renew.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_handles_unknown_resource_type(self, sample_request):
@@ -113,36 +110,32 @@ class TestRenewEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_unpacks_private_data(self, sample_request, mock_ephemeral_class):
         """Test that private data is unpacked from msgpack."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.unpackb"
-            ) as mock_unpack:
-                with patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"):
-                    mock_get.return_value = mock_ephemeral_class
-                    mock_unpack.return_value = {"token": "test_token"}
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.unpackb"
+        ) as mock_unpack, patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"):
+            mock_get.return_value = mock_ephemeral_class
+            mock_unpack.return_value = {"token": "test_token"}
 
-                    await _renew_ephemeral_resource_impl(sample_request, context=None)
+            await _renew_ephemeral_resource_impl(sample_request, context=None)
 
-                    mock_unpack.assert_called_once()
+            mock_unpack.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_packs_new_private_state_when_present(self, sample_request, mock_ephemeral_class):
         """Test that new private state is packed to msgpack."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
-            ) as mock_pack:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-                ) as mock_asdict:
-                    mock_get.return_value = mock_ephemeral_class
-                    mock_asdict.return_value = {"token": "new_token"}
-                    mock_pack.return_value = b"\x81\xa5token\xa9new_token"
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
+        ) as mock_pack, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
+        ) as mock_asdict:
+            mock_get.return_value = mock_ephemeral_class
+            mock_asdict.return_value = {"token": "new_token"}
+            mock_pack.return_value = b"\x81\xa5token\xa9new_token"
 
-                    response = await _renew_ephemeral_resource_impl(sample_request, context=None)
+            response = await _renew_ephemeral_resource_impl(sample_request, context=None)
 
-                    mock_pack.assert_called()
-                    assert len(response.private) > 0
+            mock_pack.assert_called()
+            assert len(response.private) > 0
 
     @pytest.mark.asyncio
     async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class):
@@ -153,25 +146,22 @@ class TestRenewEphemeralResourceImpl:
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.renew.return_value = (MagicMock(), renew_time)
 
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-            ) as mock_asdict:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
-                ) as mock_pack:
-                    with patch(
-                        "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.datetime_to_proto"
-                    ) as mock_dt:
-                        mock_get.return_value = mock_ephemeral_class
-                        mock_asdict.return_value = {"token": "new_token"}
-                        mock_pack.return_value = b"\x81\xa5token\xa9new_token"
-                        mock_dt.return_value = Timestamp()
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
+        ) as mock_asdict, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
+        ) as mock_pack, patch(
+            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.datetime_to_proto"
+        ) as mock_dt:
+            mock_get.return_value = mock_ephemeral_class
+            mock_asdict.return_value = {"token": "new_token"}
+            mock_pack.return_value = b"\x81\xa5token\xa9new_token"
+            mock_dt.return_value = Timestamp()
 
-                        response = await _renew_ephemeral_resource_impl(sample_request, context=None)
+            response = await _renew_ephemeral_resource_impl(sample_request, context=None)
 
-                        mock_dt.assert_called_once_with(renew_time)
-                        assert response.HasField("renew_at")
+            mock_dt.assert_called_once_with(renew_time)
+            assert response.HasField("renew_at")
 
     @pytest.mark.asyncio
     async def test_impl_handles_none_returns(self, sample_request, mock_ephemeral_class):

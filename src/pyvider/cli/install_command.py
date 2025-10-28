@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 import shutil
 import sys
@@ -8,7 +15,6 @@ from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
 from pyvider.cli.utils import (
-    _create_venv_symlink,
     _find_actual_venv,
     _place_terraform_provider_script,
     _remove_venv_symlink,
@@ -53,7 +59,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
             _remove_venv_symlink(venv_dir)
         else:
             if not quiet:
-                pout(f"  Virtual environment not found, skipping symlink removal", style="yellow")
+                pout("  Virtual environment not found, skipping symlink removal", style="yellow")
 
         # Try to clean up empty parent directories
         try:
@@ -193,3 +199,5 @@ def install_command(  # noqa: C901
                 bold=True,
             )
             raise click.Abort() from e
+
+# 🐍🏗️🔚

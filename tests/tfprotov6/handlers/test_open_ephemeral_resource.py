@@ -58,17 +58,15 @@ class TestOpenEphemeralResourceStructure:
         """Test that handler records request and duration metrics."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_requests"
-        ) as mock_req:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_duration"
-            ) as mock_dur:
-                with patch("pyvider.hub.hub.get_component") as mock_get:
-                    mock_get.return_value = None
+        ) as mock_req, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_duration"
+        ) as mock_dur, patch("pyvider.hub.hub.get_component") as mock_get:
+            mock_get.return_value = None
 
-                    await OpenEphemeralResourceHandler(sample_request, context=None)
+            await OpenEphemeralResourceHandler(sample_request, context=None)
 
-                    mock_req.inc.assert_called_once_with(handler="OpenEphemeralResource")
-                    mock_dur.observe.assert_called_once()
+            mock_req.inc.assert_called_once_with(handler="OpenEphemeralResource")
+            mock_dur.observe.assert_called_once()
 
 
 class TestOpenEphemeralResourceImpl:
@@ -77,28 +75,24 @@ class TestOpenEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_opens_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
         """Test successful ephemeral resource open."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
-            ) as mock_unmarshal:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
-                ):
-                    with patch(
-                        "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
-                    ) as mock_asdict:
-                        with patch(
-                            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
-                        ) as mock_marshal:
-                            mock_get.return_value = mock_ephemeral_class
-                            mock_unmarshal.return_value = MagicMock()
-                            mock_asdict.return_value = {"key": "value"}
-                            mock_marshal.return_value = pb.DynamicValue()
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+        ) as mock_unmarshal, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+        ), patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"
+        ) as mock_asdict, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal"
+        ) as mock_marshal:
+            mock_get.return_value = mock_ephemeral_class
+            mock_unmarshal.return_value = MagicMock()
+            mock_asdict.return_value = {"key": "value"}
+            mock_marshal.return_value = pb.DynamicValue()
 
-                            response = await _open_ephemeral_resource_impl(sample_request, context=None)
+            response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
-                            assert isinstance(response, pb.OpenEphemeralResource.Response)
-                            assert len(response.diagnostics) == 0
+            assert isinstance(response, pb.OpenEphemeralResource.Response)
+            assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
     async def test_impl_handles_unknown_resource_type(self, sample_request):
@@ -113,19 +107,17 @@ class TestOpenEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_unmarshals_config(self, sample_request, mock_ephemeral_class):
         """Test that config is unmarshaled."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
-            ) as mock_unmarshal:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
-                ):
-                    mock_get.return_value = mock_ephemeral_class
-                    mock_unmarshal.return_value = MagicMock()
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+        ) as mock_unmarshal, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"
+        ):
+            mock_get.return_value = mock_ephemeral_class
+            mock_unmarshal.return_value = MagicMock()
 
-                    await _open_ephemeral_resource_impl(sample_request, context=None)
+            await _open_ephemeral_resource_impl(sample_request, context=None)
 
-                    mock_unmarshal.assert_called_once()
+            mock_unmarshal.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_marshals_result_when_present(self, sample_request, mock_ephemeral_class):
@@ -235,16 +227,15 @@ class TestOpenEphemeralResourceImpl:
         """Test that CtyValidationError is converted to diagnostics."""
         from pyvider.cty.exceptions import CtyValidationError
 
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
-            ) as mock_unmarshal:
-                mock_get.return_value = mock_ephemeral_class
-                mock_unmarshal.side_effect = CtyValidationError("Invalid config")
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"
+        ) as mock_unmarshal:
+            mock_get.return_value = mock_ephemeral_class
+            mock_unmarshal.side_effect = CtyValidationError("Invalid config")
 
-                response = await _open_ephemeral_resource_impl(sample_request, context=None)
+            response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
-                assert len(response.diagnostics) > 0
+            assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
     async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class):

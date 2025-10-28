@@ -146,75 +146,71 @@ class TestStopProviderLogging:
         """Test that implementation logs shutdown initiation."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server_class.get_instance.return_value = mock_server
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger, patch(
+            "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+        ) as mock_server_class:
+            mock_server = AsyncMock()
+            mock_server_class.get_instance.return_value = mock_server
 
-                await _stop_provider_impl(request, context=None)
+            await _stop_provider_impl(request, context=None)
 
-                # Check that info was called with shutdown message
-                assert any(
-                    "StopProvider RPC received" in str(call) for call in mock_logger.info.call_args_list
-                )
+            # Check that info was called with shutdown message
+            assert any(
+                "StopProvider RPC received" in str(call) for call in mock_logger.info.call_args_list
+            )
 
     @pytest.mark.asyncio
     async def test_impl_logs_server_stop_completion(self):
         """Test that implementation logs when server stop completes."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server_class.get_instance.return_value = mock_server
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger, patch(
+            "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+        ) as mock_server_class:
+            mock_server = AsyncMock()
+            mock_server_class.get_instance.return_value = mock_server
 
-                await _stop_provider_impl(request, context=None)
+            await _stop_provider_impl(request, context=None)
 
-                # Check that completion was logged
-                assert any(
-                    "stop completed successfully" in str(call) for call in mock_logger.info.call_args_list
-                )
+            # Check that completion was logged
+            assert any(
+                "stop completed successfully" in str(call) for call in mock_logger.info.call_args_list
+            )
 
     @pytest.mark.asyncio
     async def test_impl_logs_warning_when_no_server(self):
         """Test that implementation logs warning when no server instance."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server_class.get_instance.return_value = None
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger, patch(
+            "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+        ) as mock_server_class:
+            mock_server_class.get_instance.return_value = None
 
-                await _stop_provider_impl(request, context=None)
+            await _stop_provider_impl(request, context=None)
 
-                # Check that warning was logged
-                mock_logger.warning.assert_called_once()
-                assert "No active RPCPluginServer" in str(mock_logger.warning.call_args)
+            # Check that warning was logged
+            mock_logger.warning.assert_called_once()
+            assert "No active RPCPluginServer" in str(mock_logger.warning.call_args)
 
     @pytest.mark.asyncio
     async def test_impl_logs_error_on_exception(self):
         """Test that implementation logs error when exception occurs."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server.stop.side_effect = RuntimeError("Test error")
-                mock_server_class.get_instance.return_value = mock_server
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger, patch(
+            "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
+        ) as mock_server_class:
+            mock_server = AsyncMock()
+            mock_server.stop.side_effect = RuntimeError("Test error")
+            mock_server_class.get_instance.return_value = mock_server
 
-                with pytest.raises(RuntimeError):
-                    await _stop_provider_impl(request, context=None)
+            with pytest.raises(RuntimeError):
+                await _stop_provider_impl(request, context=None)
 
-                # Check that error was logged
-                mock_logger.error.assert_called_once()
-                assert "Unexpected error" in str(mock_logger.error.call_args)
+            # Check that error was logged
+            mock_logger.error.assert_called_once()
+            assert "Unexpected error" in str(mock_logger.error.call_args)
 
 
 class TestStopProviderEdgeCases:

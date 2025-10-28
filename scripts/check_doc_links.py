@@ -11,10 +11,9 @@ Usage:
     python scripts/check_doc_links.py
 """
 
+from pathlib import Path
 import re
 import sys
-from pathlib import Path
-from typing import Set, List, Tuple
 
 # Base documentation directory
 DOCS_DIR = Path(__file__).parent.parent / "docs"
@@ -37,12 +36,12 @@ def slugify(text: str) -> str:
     return slug
 
 
-def find_markdown_files() -> List[Path]:
+def find_markdown_files() -> list[Path]:
     """Find all markdown files in the docs directory."""
     return list(DOCS_DIR.rglob("*.md"))
 
 
-def extract_links(file_path: Path) -> List[Tuple[str, str, int]]:
+def extract_links(file_path: Path) -> list[tuple[str, str, int]]:
     """
     Extract all markdown links from a file.
 
@@ -64,7 +63,7 @@ def extract_links(file_path: Path) -> List[Tuple[str, str, int]]:
     return links
 
 
-def extract_headings(file_path: Path) -> Set[str]:
+def extract_headings(file_path: Path) -> set[str]:
     """Extract all heading slugs from a file."""
     content = file_path.read_text(encoding='utf-8')
     headings = set()
@@ -92,7 +91,7 @@ def resolve_link_path(source_file: Path, link_url: str) -> Path:
     return resolved
 
 
-def check_file_links(file_path: Path) -> List[str]:
+def check_file_links(file_path: Path) -> list[str]:
     """
     Check all links in a file for broken references.
 

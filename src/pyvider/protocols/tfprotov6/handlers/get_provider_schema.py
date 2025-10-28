@@ -16,8 +16,8 @@ from pyvider.observability import (
 from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
-import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.handlers.utils import get_all_components
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 # --- Module-level Cache using asyncio.Future ---
 _schema_future: asyncio.Future[pb.GetProviderSchema.Response] | None = None

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Pyvider Observability Module.
 
@@ -67,3 +72,5 @@ __all__ = [
     "schema_cache_hits",
     "schema_generation_duration",
 ]
+
+# 🐍🏗️🔚
