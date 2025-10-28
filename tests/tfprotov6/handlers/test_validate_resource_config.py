@@ -5,6 +5,8 @@
 
 """Tests for ValidateResourceConfig handler."""
 
+from typing import Any
+
 import attrs
 import pytest
 
