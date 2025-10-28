@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Modern encryption module for Pyvider private state management.
 
@@ -373,3 +378,5 @@ def reset_encryption_manager() -> None:
 
 # Legacy compatibility (for CONFIG_KEY_NAME used in tests)
 CONFIG_KEY_NAME = "private_state_shared_secret"
+
+# 🐍🏗️🔚

@@ -1,4 +1,8 @@
-# pyvider/common/operation_context.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Manages the operational context for CTY type and value processing.
 """
@@ -46,3 +50,5 @@ def operation_context(context: OperationContext) -> Generator[None, None, None]:
     finally:
         _current_operation_context.reset(token)
         logger.debug(f"🧰🔄📊 Popped operation context, restored to: {_current_operation_context.get().name}")
+
+# 🐍🏗️🔚

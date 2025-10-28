@@ -1,4 +1,10 @@
-# pyvider/common/context.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -88,3 +94,5 @@ class BaseContext:
         from pyvider.protocols.tfprotov6 import protobuf as pb
 
         self._add_diagnostic(pb.Diagnostic.WARNING, summary, detail, path=attribute_path)
+
+# 🐍🏗️🔚

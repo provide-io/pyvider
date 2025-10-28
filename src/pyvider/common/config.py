@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Unified, layered configuration system for the Pyvider framework.
 """
@@ -193,3 +198,5 @@ class PyviderConfig(BaseConfig):
             )
 
         logger.debug("⚙️  Config: All required fields validated successfully")
+
+# 🐍🏗️🔚
