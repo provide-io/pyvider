@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.conversion import cty_to_native
 from pyvider.cty import CtyList, CtyMap, CtyNumber, CtyObject, CtyString
 
@@ -69,3 +76,5 @@ class TestCtyToNativeConversion:
         assert isinstance(native_result["tags"], list)
         assert isinstance(native_result["sub_items"][0], dict)
         assert isinstance(native_result["sub_items"][0]["id"], str)
+
+# 🐍🏗️🔚

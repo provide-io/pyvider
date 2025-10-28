@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import attrs
@@ -100,3 +107,5 @@ async def test_full_lifecycle_with_encryption(encryption_key_env, provider_in_hu
         assert not apply_response.diagnostics
     finally:
         hub.unregister("resource", resource_name)
+
+# 🐍🏗️🔚

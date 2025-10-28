@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Comprehensive lifecycle tests for resources/base.py (44% → 90%+)."""
 
 from typing import Any
@@ -292,3 +297,5 @@ class TestBaseResourceLifecycle:
         result = await resource.read(ctx)
 
         assert result is None
+
+# 🐍🏗️🔚

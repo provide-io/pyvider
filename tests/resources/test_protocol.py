@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for pyvider/resources/protocol.py."""
 
 from pyvider.resources.context import ResourceContext
@@ -63,3 +68,5 @@ class TestResourceProtocol:
         expected_methods = ["validate", "read", "plan", "apply", "delete"]
         for method in expected_methods:
             assert hasattr(ResourceProtocol, method)
+
+# 🐍🏗️🔚

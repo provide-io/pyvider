@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from provide.foundation import logger
 import pytest
 
@@ -21,3 +28,5 @@ def test_sensitive_cty_value_is_redacted_in_logs(caplog):
     log_output = caplog.text
     assert "my-super-secret-api-key" not in log_output
     assert "[SENSITIVE]" in log_output
+
+# 🐍🏗️🔚

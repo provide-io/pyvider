@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from tests.validators.schema_validators import validate_schema_dict
 
 
@@ -8,3 +15,5 @@ def test_schema_validation():
         "block_types": [{"name": "block1", "nested": True}],
     }
     validate_schema_dict(schema)
+
+# 🐍🏗️🔚
