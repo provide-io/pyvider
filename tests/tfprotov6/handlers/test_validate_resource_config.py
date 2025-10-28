@@ -30,7 +30,7 @@ class SampleValidateResource(BaseResource):
     config_class = SampleConfig
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> s_resource:
         return s_resource(
             attributes={
                 "id": a_str(computed=True),
@@ -47,10 +47,10 @@ class SampleValidateResource(BaseResource):
             errors.append("Count must be non-negative")
         return errors
 
-    async def read(self, ctx):
+    async def read(self, ctx: Any) -> Any:
         return ctx.state
 
-    async def _delete_apply(self, ctx) -> None:
+    async def _delete_apply(self, ctx: Any) -> None:
         pass
 
 
@@ -58,7 +58,7 @@ class TestValidateResourceConfigHandler:
     """Tests for ValidateResourceConfigHandler function."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
+    async def test_handler_returns_response_object(self, provider_in_hub: Any) -> None:
         """Test that handler returns proper response object."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -83,7 +83,7 @@ class TestValidateResourceConfigHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_validates_valid_config(self, provider_in_hub) -> None:
+    async def test_handler_validates_valid_config(self, provider_in_hub: Any) -> None:
         """Test handler validates valid configuration."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -108,7 +108,7 @@ class TestValidateResourceConfigHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_detects_invalid_config(self, provider_in_hub) -> None:
+    async def test_handler_detects_invalid_config(self, provider_in_hub: Any) -> None:
         """Test handler detects invalid configuration."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -147,7 +147,7 @@ class TestValidateResourceConfigHandler:
         assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_handler_handles_negative_count(self, provider_in_hub) -> None:
+    async def test_handler_handles_negative_count(self, provider_in_hub: Any) -> None:
         """Test handler detects negative count value."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -177,7 +177,7 @@ class TestValidateResourceConfigImpl:
     """Tests for _validate_resource_config_impl function."""
 
     @pytest.mark.asyncio
-    async def test_impl_returns_empty_diagnostics_for_valid_config(self, provider_in_hub) -> None:
+    async def test_impl_returns_empty_diagnostics_for_valid_config(self, provider_in_hub: Any) -> None:
         """Test implementation returns no diagnostics for valid config."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -202,7 +202,7 @@ class TestValidateResourceConfigImpl:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_values_gracefully(self, provider_in_hub) -> None:
+    async def test_impl_handles_unknown_values_gracefully(self, provider_in_hub: Any) -> None:
         """Test implementation handles unknown/computed values during planning."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -213,7 +213,6 @@ class TestValidateResourceConfigImpl:
             from pyvider.cty import CtyString, CtyValue
 
             # Create config with unknown value
-            {"name": CtyValue.unknown(CtyString()), "count": 5}
             config_cty = cty_type.validate({"name": "placeholder", "count": 5})
             # Make name unknown
             config_cty.value["name"] = CtyValue.unknown(CtyString())
@@ -252,7 +251,7 @@ class TestValidateResourceConfigEdgeCases:
     """Edge case tests for ValidateResourceConfig."""
 
     @pytest.mark.asyncio
-    async def test_handler_with_empty_config(self, provider_in_hub) -> None:
+    async def test_handler_with_empty_config(self, provider_in_hub: Any) -> None:
         """Test handler with empty configuration."""
         hub.register("resource", "test_resource", SampleValidateResource)
 
@@ -270,7 +269,7 @@ class TestValidateResourceConfigEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_metrics_recorded(self, provider_in_hub) -> None:
+    async def test_handler_metrics_recorded(self, provider_in_hub: Any) -> None:
         """Test that handler records metrics."""
         hub.register("resource", "test_resource", SampleValidateResource)
 

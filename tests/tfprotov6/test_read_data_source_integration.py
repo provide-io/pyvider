@@ -29,7 +29,7 @@ class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicOutputState, No
     config_class = None
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> s_data_source:
         return s_data_source({"output": a_dyn(computed=True)})
 
     async def _validate_config(self, config: Any) -> list[str]:

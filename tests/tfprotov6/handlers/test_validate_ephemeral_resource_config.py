@@ -138,7 +138,9 @@ class TestValidateEphemeralResourceConfigImpl:
             mock_unmarshal.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_converts_cty_to_attrs(self, sample_request, mock_resource_class) -> None:
+    async def test_impl_converts_cty_to_attrs(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that cty_to_attrs_instance is called."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -157,7 +159,9 @@ class TestValidateEphemeralResourceConfigImpl:
             mock_cty.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_handles_validation_errors(self, sample_request, mock_resource_class) -> None:
+    async def test_impl_handles_validation_errors(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that CtyValidationError is converted to diagnostics."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -173,7 +177,9 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_pyvider_errors(self, sample_request, mock_resource_class) -> None:
+    async def test_impl_handles_pyvider_errors(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that PyviderError exceptions are converted to diagnostics."""
         from pyvider.exceptions import ResourceError
 
@@ -191,7 +197,9 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_generic_exceptions(self, sample_request, mock_resource_class) -> None:
+    async def test_impl_handles_generic_exceptions(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that generic exceptions are converted to diagnostics."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -207,7 +215,9 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_calls_validate_if_exists(self, sample_request, mock_resource_class) -> None:
+    async def test_impl_calls_validate_if_exists(
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that validate() method is called if it exists."""
         mock_instance = MagicMock()
         mock_instance.validate = MagicMock()
@@ -236,7 +246,7 @@ class TestValidateEphemeralResourceConfigEdgeCases:
 
     @pytest.mark.asyncio
     async def test_impl_appends_validation_error_diagnostics(
-        self, sample_request, mock_resource_class
+        self, sample_request: pb.ValidateEphemeralResourceConfig.Request, mock_resource_class: MagicMock
     ) -> None:
         """Test that validation errors from validate() are added as diagnostics."""
         # Mock validate to return error messages

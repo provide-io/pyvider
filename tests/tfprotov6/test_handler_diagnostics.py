@@ -28,7 +28,7 @@ class DiagnosticTestDataSource(BaseDataSource):
     state_class = None
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> s_data_source:
         return s_data_source(
             attributes={
                 "name": a_str(required=True),

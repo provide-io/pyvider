@@ -18,7 +18,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.ValidateProviderConfig.Request:
     """Create sample ValidateProviderConfig request."""
     return pb.ValidateProviderConfig.Request()
 
@@ -27,14 +27,14 @@ class TestValidateProviderConfigStructure:
     """Test handler structure and basic functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request) -> None:
+    async def test_handler_returns_response(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test handler returns correct response type."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
         assert isinstance(response, pb.ValidateProviderConfig.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_returns_empty_diagnostics_on_success(self, sample_request) -> None:
+    async def test_handler_returns_empty_diagnostics_on_success(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test handler returns empty diagnostics when validation passes."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
@@ -45,7 +45,7 @@ class TestValidateProviderConfigImplementation:
     """Test handler implementation details."""
 
     @pytest.mark.asyncio
-    async def test_impl_successful_validation(self, sample_request) -> None:
+    async def test_impl_successful_validation(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test successful validation returns empty diagnostics."""
         response = await _validate_provider_config_impl(sample_request, context=None)
 
@@ -53,7 +53,7 @@ class TestValidateProviderConfigImplementation:
         assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_exception(self, sample_request) -> None:
+    async def test_impl_handles_exception(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test implementation handles exceptions gracefully."""
         # Create a mock request that raises an exception when bool() is called on msgpack
         bad_request = MagicMock()
@@ -71,7 +71,7 @@ class TestValidateProviderConfigMetrics:
     """Test metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_records_request_metric(self, sample_request) -> None:
+    async def test_records_request_metric(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test request counter incremented."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_requests"
@@ -81,7 +81,7 @@ class TestValidateProviderConfigMetrics:
             mock_requests.inc.assert_called_once_with(handler="ValidateProviderConfig")
 
     @pytest.mark.asyncio
-    async def test_records_duration_metric(self, sample_request) -> None:
+    async def test_records_duration_metric(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test duration observer called."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_duration"
@@ -93,7 +93,7 @@ class TestValidateProviderConfigMetrics:
             assert call_args[1]["handler"] == "ValidateProviderConfig"
 
     @pytest.mark.asyncio
-    async def test_records_error_metric_on_exception(self, sample_request) -> None:
+    async def test_records_error_metric_on_exception(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test error counter incremented on exception."""
         with (
             patch(
@@ -117,6 +117,7 @@ class TestValidateProviderConfigTestModeDetection:
     @pytest.mark.asyncio
     async def test_detects_test_mode_enabled(self) -> None:
         """Test that test mode enabled is detected and logged."""
+        from pyvider.cty import CtyBool, CtyObject, CtyValue
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
@@ -125,7 +126,6 @@ class TestValidateProviderConfigTestModeDetection:
         ):
             mock_provider = MagicMock()
             mock_schema = MagicMock()
-            from pyvider.cty import CtyBool, CtyObject, CtyValue
 
             mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
             mock_provider.schema = mock_schema
@@ -161,13 +161,13 @@ class TestValidateProviderConfigTestModeDetection:
     @pytest.mark.asyncio
     async def test_detects_test_mode_disabled(self) -> None:
         """Test that test mode disabled is detected and logged."""
+        from pyvider.cty import CtyBool, CtyObject, CtyValue
+
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
-            from pyvider.cty import CtyBool, CtyObject, CtyValue
-
             mock_provider = MagicMock()
             mock_schema = MagicMock()
             mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
@@ -226,7 +226,7 @@ class TestValidateProviderConfigEdgeCases:
     """Test edge cases."""
 
     @pytest.mark.asyncio
-    async def test_with_none_context(self, sample_request) -> None:
+    async def test_with_none_context(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test with None context."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
