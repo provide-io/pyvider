@@ -7,7 +7,7 @@ from pyvider.resources.protocol import ResourceProtocol
 class TestResourceProtocol:
     """Tests for ResourceProtocol runtime checking."""
 
-    def test_protocol_is_runtime_checkable(self):
+    def test_protocol_is_runtime_checkable(self) -> None:
         """Test that ResourceProtocol is marked as runtime_checkable."""
         # ResourceProtocol should be runtime checkable
         # Check if it's a Protocol by verifying it has the _is_protocol attribute
@@ -22,11 +22,11 @@ class TestResourceProtocol:
         )
         assert is_protocol
 
-    async def test_valid_implementation_is_recognized(self):
+    async def test_valid_implementation_is_recognized(self) -> None:
         """Test that a valid implementation is recognized as conforming to the protocol."""
 
         class ValidResource:
-            async def validate(self, config):
+            async def validate(self, config) -> None:
                 pass
 
             async def read(self, ctx: ResourceContext):
@@ -38,18 +38,18 @@ class TestResourceProtocol:
             async def apply(self, ctx: ResourceContext):
                 return {}, b""
 
-            async def delete(self, ctx: ResourceContext):
+            async def delete(self, ctx: ResourceContext) -> None:
                 pass
 
         # Should be recognized as implementing the protocol
         resource = ValidResource()
         assert isinstance(resource, ResourceProtocol)
 
-    async def test_partial_implementation_not_recognized(self):
+    async def test_partial_implementation_not_recognized(self) -> None:
         """Test that a partial implementation is not recognized as conforming."""
 
         class PartialResource:
-            async def validate(self, config):
+            async def validate(self, config) -> None:
                 pass
 
             # Missing other methods
@@ -58,7 +58,7 @@ class TestResourceProtocol:
         # Should NOT be recognized as implementing the protocol
         assert not isinstance(resource, ResourceProtocol)
 
-    def test_protocol_methods_are_defined(self):
+    def test_protocol_methods_are_defined(self) -> None:
         """Test that all expected methods are defined in the protocol."""
         expected_methods = ["validate", "read", "plan", "apply", "delete"]
         for method in expected_methods:

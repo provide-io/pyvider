@@ -19,11 +19,11 @@ from pyvider.functions.adapters import (
 class TestExtractParametersMeta:
     """Tests for _extract_parameters_meta function."""
 
-    def test_extracts_required_parameter(self):
+    def test_extracts_required_parameter(self) -> None:
         """Test extracting required parameter."""
         import inspect
 
-        def test_func(name: str):
+        def test_func(name: str) -> None:
             pass
 
         sig = inspect.signature(test_func)
@@ -35,11 +35,11 @@ class TestExtractParametersMeta:
         assert isinstance(result["parameters"][0]["cty_type"], CtyString)
         assert result["parameters"][0]["allow_null"] is False
 
-    def test_extracts_optional_parameter(self):
+    def test_extracts_optional_parameter(self) -> None:
         """Test extracting optional parameter."""
         import inspect
 
-        def test_func(name: str | None):
+        def test_func(name: str | None) -> None:
             pass
 
         sig = inspect.signature(test_func)
@@ -49,11 +49,11 @@ class TestExtractParametersMeta:
         assert len(result["parameters"]) == 1
         assert result["parameters"][0]["allow_null"] is True
 
-    def test_extracts_parameter_with_default_as_variadic(self):
+    def test_extracts_parameter_with_default_as_variadic(self) -> None:
         """Test that parameter with default becomes variadic."""
         import inspect
 
-        def test_func(name: str, count: int = 10):
+        def test_func(name: str, count: int = 10) -> None:
             pass
 
         sig = inspect.signature(test_func)
@@ -69,11 +69,11 @@ class TestExtractParametersMeta:
         assert result["variadic_parameter"]["name"] == "count"
         assert result["variadic_parameter"]["allow_null"] is True
 
-    def test_extracts_var_positional_as_variadic(self):
+    def test_extracts_var_positional_as_variadic(self) -> None:
         """Test extracting *args as variadic parameter."""
         import inspect
 
-        def test_func(name: str, *values: int):
+        def test_func(name: str, *values: int) -> None:
             pass
 
         sig = inspect.signature(test_func)
@@ -84,11 +84,11 @@ class TestExtractParametersMeta:
         assert result["variadic_parameter"] is not None
         assert result["variadic_parameter"]["name"] == "values"
 
-    def test_skips_keyword_only_parameters(self):
+    def test_skips_keyword_only_parameters(self) -> None:
         """Test that keyword-only parameters are skipped."""
         import inspect
 
-        def test_func(name: str, *, internal: str = "test"):
+        def test_func(name: str, *, internal: str = "test") -> None:
             pass
 
         sig = inspect.signature(test_func)
@@ -99,12 +99,12 @@ class TestExtractParametersMeta:
         assert len(result["parameters"]) == 1
         assert result["parameters"][0]["name"] == "name"
 
-    def test_skips_self_parameter(self):
+    def test_skips_self_parameter(self) -> None:
         """Test that self parameter is skipped."""
         import inspect
 
         class TestClass:
-            def test_method(self, name: str):
+            def test_method(self, name: str) -> None:
                 pass
 
         method = TestClass().test_method
@@ -117,25 +117,25 @@ class TestExtractParametersMeta:
         assert result["parameters"][0]["name"] == "name"
 
     @mock.patch("pyvider.functions.adapters.logger")
-    def test_warns_on_multiple_defaults(self, mock_logger):
+    def test_warns_on_multiple_defaults(self, mock_logger) -> None:
         """Test warning on multiple default parameters."""
         import inspect
 
-        def test_func(name: str = "default1", count: int = 10):
+        def test_func(name: str = "default1", count: int = 10) -> None:
             pass
 
         sig = inspect.signature(test_func)
         type_hints = {"name": str, "count": int}
-        result = _extract_parameters_meta(test_func, sig, type_hints)
+        _extract_parameters_meta(test_func, sig, type_hints)
 
         # Should log a warning
         assert mock_logger.warning.called
 
-    def test_uses_parameter_descriptions_from_metadata(self):
+    def test_uses_parameter_descriptions_from_metadata(self) -> None:
         """Test that parameter descriptions come from metadata."""
         import inspect
 
-        def test_func(name: str):
+        def test_func(name: str) -> None:
             pass
 
         test_func._function_metadata = {"param_descriptions": {"name": "The name parameter"}}
@@ -150,21 +150,21 @@ class TestExtractParametersMeta:
 class TestExtractReturnTypeMeta:
     """Tests for _extract_return_type_meta function."""
 
-    def test_extracts_str_return_type(self):
+    def test_extracts_str_return_type(self) -> None:
         """Test extracting str return type."""
         type_hints = {"return": str}
         result = _extract_return_type_meta(type_hints)
 
         assert isinstance(result["cty_type"], CtyString)
 
-    def test_extracts_int_return_type(self):
+    def test_extracts_int_return_type(self) -> None:
         """Test extracting int return type."""
         type_hints = {"return": int}
         result = _extract_return_type_meta(type_hints)
 
         assert isinstance(result["cty_type"], CtyNumber)
 
-    def test_defaults_to_dynamic_when_no_return_type(self):
+    def test_defaults_to_dynamic_when_no_return_type(self) -> None:
         """Test that missing return type defaults to CtyDynamic."""
         type_hints = {}
         result = _extract_return_type_meta(type_hints)
@@ -175,10 +175,10 @@ class TestExtractReturnTypeMeta:
 class TestExtractDocstringMeta:
     """Tests for _extract_docstring_meta function."""
 
-    def test_extracts_summary_from_docstring(self):
+    def test_extracts_summary_from_docstring(self) -> None:
         """Test extracting summary from docstring."""
 
-        def test_func():
+        def test_func() -> None:
             """This is the summary line.
 
             This is more detail.
@@ -191,10 +191,10 @@ class TestExtractDocstringMeta:
         assert base_meta["summary"] == "This is the summary line."
         assert "This is more detail" in base_meta["description"]
 
-    def test_preserves_existing_summary(self):
+    def test_preserves_existing_summary(self) -> None:
         """Test that existing summary is preserved."""
 
-        def test_func():
+        def test_func() -> None:
             """Docstring summary."""
             pass
 
@@ -203,10 +203,10 @@ class TestExtractDocstringMeta:
 
         assert base_meta["summary"] == "Existing summary"
 
-    def test_handles_missing_docstring(self):
+    def test_handles_missing_docstring(self) -> None:
         """Test handling functions without docstring."""
 
-        def test_func():
+        def test_func() -> None:
             pass
 
         base_meta = {}
@@ -219,7 +219,7 @@ class TestExtractDocstringMeta:
 class TestFunctionToDict:
     """Tests for function_to_dict function."""
 
-    def test_converts_simple_function(self):
+    def test_converts_simple_function(self) -> None:
         """Test converting a simple function."""
 
         def test_func(name: str) -> str:
@@ -233,10 +233,10 @@ class TestFunctionToDict:
         assert result["parameters"][0]["name"] == "name"
         assert isinstance(result["return"]["cty_type"], CtyString)
 
-    def test_uses_existing_metadata(self):
+    def test_uses_existing_metadata(self) -> None:
         """Test that existing metadata is used."""
 
-        def test_func(name: str):
+        def test_func(name: str) -> None:
             pass
 
         test_func._function_metadata = {"name": "custom_name"}
@@ -245,7 +245,7 @@ class TestFunctionToDict:
 
         assert result["name"] == "custom_name"
 
-    def test_handles_function_with_defaults(self):
+    def test_handles_function_with_defaults(self) -> None:
         """Test function with default parameters."""
 
         def test_func(name: str, count: int = 10) -> int:
@@ -257,10 +257,10 @@ class TestFunctionToDict:
         assert result["variadic_parameter"]["name"] == "count"
 
     @mock.patch("pyvider.functions.adapters.logger")
-    def test_handles_type_hint_resolution_errors(self, mock_logger):
+    def test_handles_type_hint_resolution_errors(self, mock_logger) -> None:
         """Test handling type hint resolution errors."""
 
-        def test_func(name):  # No type hints
+        def test_func(name) -> None:  # No type hints
             pass
 
         result = function_to_dict(test_func)
@@ -268,10 +268,10 @@ class TestFunctionToDict:
         # Should still work but with dynamic types
         assert result["name"] == "test_func"
 
-    def test_includes_docstring_in_output(self):
+    def test_includes_docstring_in_output(self) -> None:
         """Test that docstring is included in output."""
 
-        def test_func(name: str):
+        def test_func(name: str) -> None:
             """This function does something."""
             pass
 

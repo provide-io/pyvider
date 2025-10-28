@@ -5,6 +5,8 @@
 
 """Tests for CallFunction handler - Advanced features (error handling, invoke, integration)."""
 
+from typing import Never
+
 from provide.testkit import mocking as mock
 import pytest
 
@@ -17,7 +19,7 @@ class TestCallFunctionMetrics:
     """Tests for observability metrics in CallFunction."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metrics(self):
+    async def test_handler_records_request_metrics(self) -> None:
         """Test that handler records request metrics."""
         request = pb.CallFunction.Request(
             name="test_function",
@@ -36,7 +38,7 @@ class TestCallFunctionErrorHandling:
     """Tests for error handling in CallFunction."""
 
     @pytest.mark.asyncio
-    async def test_handler_converts_function_errors_to_diagnostics(self):
+    async def test_handler_converts_function_errors_to_diagnostics(self) -> None:
         """Test that function errors are converted to diagnostics."""
         from pyvider.exceptions import FunctionError
 
@@ -50,7 +52,7 @@ class TestCallFunctionErrorHandling:
         func_obj.metadata.variadic_parameter = None
         func_obj.metadata.return_type = CtyString()
 
-        async def failing_func():
+        async def failing_func() -> Never:
             raise FunctionError("Function failed")
 
         func_obj.func = failing_func
@@ -73,11 +75,11 @@ class TestInvokeFunction:
     """Tests for _invoke_function helper - the core invocation logic."""
 
     @pytest.mark.asyncio
-    async def test_invokes_sync_function_with_positional_args(self):
+    async def test_invokes_sync_function_with_positional_args(self) -> None:
         """Test invoking a synchronous function with positional arguments."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def test_func(name: str, count: int):
+        def test_func(name: str, count: int) -> str:
             return f"{name}_{count}"
 
         kwargs = {"name": "test", "count": 42}
@@ -86,11 +88,11 @@ class TestInvokeFunction:
         assert result == "test_42"
 
     @pytest.mark.asyncio
-    async def test_invokes_async_function_with_positional_args(self):
+    async def test_invokes_async_function_with_positional_args(self) -> None:
         """Test invoking an asynchronous function."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        async def async_test_func(name: str, count: int):
+        async def async_test_func(name: str, count: int) -> str:
             return f"{name}_{count}"
 
         kwargs = {"name": "async_test", "count": 99}
@@ -99,11 +101,11 @@ class TestInvokeFunction:
         assert result == "async_test_99"
 
     @pytest.mark.asyncio
-    async def test_invokes_function_with_variadic_args(self):
+    async def test_invokes_function_with_variadic_args(self) -> None:
         """Test invoking a function with *args (VAR_POSITIONAL)."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def variadic_func(name: str, *options):
+        def variadic_func(name: str, *options) -> str:
             return f"{name}: {','.join(str(o) for o in options)}"
 
         kwargs = {"name": "test", "options": (1, 2, 3)}
@@ -112,11 +114,11 @@ class TestInvokeFunction:
         assert result == "test: 1,2,3"
 
     @pytest.mark.asyncio
-    async def test_invokes_function_with_keyword_only_args(self):
+    async def test_invokes_function_with_keyword_only_args(self) -> None:
         """Test invoking a function with keyword-only parameters."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def keyword_func(name: str, *, debug: bool = False):
+        def keyword_func(name: str, *, debug: bool = False) -> str:
             return f"{name}_{'debug' if debug else 'prod'}"
 
         kwargs = {"name": "test", "debug": True}
@@ -125,11 +127,11 @@ class TestInvokeFunction:
         assert result == "test_debug"
 
     @pytest.mark.asyncio
-    async def test_invokes_function_with_mixed_parameters(self):
+    async def test_invokes_function_with_mixed_parameters(self) -> None:
         """Test invoking with positional, variadic, and keyword-only parameters."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def complex_func(name: str, *items, verbose: bool = False):
+        def complex_func(name: str, *items, verbose: bool = False) -> str:
             items_str = ",".join(str(i) for i in items)
             return f"{name}[{items_str}]{'!' if verbose else ''}"
 
@@ -139,7 +141,7 @@ class TestInvokeFunction:
         assert result == "test[a,b,c]!"
 
     @pytest.mark.asyncio
-    async def test_handles_variadic_as_list(self):
+    async def test_handles_variadic_as_list(self) -> None:
         """Test that variadic args work when provided as list instead of tuple."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
@@ -153,7 +155,7 @@ class TestInvokeFunction:
         assert result == 10
 
     @pytest.mark.asyncio
-    async def test_handles_variadic_as_single_value(self):
+    async def test_handles_variadic_as_single_value(self) -> None:
         """Test that single non-tuple variadic value is converted to tuple."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
@@ -167,12 +169,12 @@ class TestInvokeFunction:
         assert result == 1
 
     @pytest.mark.asyncio
-    async def test_wraps_function_errors_as_pyvider_function_error(self):
+    async def test_wraps_function_errors_as_pyvider_function_error(self) -> None:
         """Test that function errors are wrapped in PyviderFunctionError."""
         from pyvider.exceptions import FunctionError as PyviderFunctionError
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def failing_func(x: int):
+        def failing_func(x: int) -> Never:
             raise ValueError("Something went wrong")
 
         kwargs = {"x": 42}
@@ -184,12 +186,12 @@ class TestInvokeFunction:
         assert "Something went wrong" in str(exc_info.value)
 
     @pytest.mark.asyncio
-    async def test_preserves_pyvider_function_errors(self):
+    async def test_preserves_pyvider_function_errors(self) -> None:
         """Test that PyviderFunctionError is re-raised directly."""
         from pyvider.exceptions import FunctionError as PyviderFunctionError
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def failing_func(x: int):
+        def failing_func(x: int) -> Never:
             raise PyviderFunctionError("Direct pyvider error")
 
         kwargs = {"x": 42}
@@ -201,7 +203,7 @@ class TestInvokeFunction:
         assert "Direct pyvider error" in str(exc_info.value)
 
     @pytest.mark.asyncio
-    async def test_logs_successful_invocation(self):
+    async def test_logs_successful_invocation(self) -> None:
         """Test that successful invocations are logged."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
@@ -218,12 +220,12 @@ class TestInvokeFunction:
             assert mock_logger.debug.called
 
     @pytest.mark.asyncio
-    async def test_logs_function_errors(self):
+    async def test_logs_function_errors(self) -> None:
         """Test that function errors are logged."""
         from pyvider.exceptions import FunctionError as PyviderFunctionError
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def error_func():
+        def error_func() -> Never:
             raise RuntimeError("Test error")
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.logger") as mock_logger:
@@ -239,7 +241,7 @@ class TestCallFunctionImplIntegration:
     """Integration tests for _call_function_impl - testing the full flow."""
 
     @pytest.mark.asyncio
-    async def test_impl_validates_argument_count_exact_match(self):
+    async def test_impl_validates_argument_count_exact_match(self) -> None:
         """Test that impl validates exact argument count when no variadic."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -248,7 +250,7 @@ class TestCallFunctionImplIntegration:
             arguments=[pb.DynamicValue(msgpack=b"\xa4test")],  # Only 1 arg, need 2
         )
 
-        def test_func(a: str, b: str):
+        def test_func(a: str, b: str) -> str:
             return f"{a}_{b}"
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
@@ -270,7 +272,7 @@ class TestCallFunctionImplIntegration:
                 assert "Received: 1 arguments" in response.error.text
 
     @pytest.mark.asyncio
-    async def test_impl_validates_minimum_args_with_variadic(self):
+    async def test_impl_validates_minimum_args_with_variadic(self) -> None:
         """Test that impl validates minimum args when variadic present."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -300,7 +302,7 @@ class TestCallFunctionImplIntegration:
                 assert "Received: 0 arguments" in response.error.text
 
     @pytest.mark.asyncio
-    async def test_impl_short_circuits_on_unknown_arguments(self):
+    async def test_impl_short_circuits_on_unknown_arguments(self) -> None:
         """Test that impl returns unknown result when arguments are unknown."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -309,7 +311,7 @@ class TestCallFunctionImplIntegration:
             arguments=[pb.DynamicValue(msgpack=b"\xa4test")],
         )
 
-        def test_func(x: str):
+        def test_func(x: str) -> str:
             return "should not be called"
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
@@ -335,7 +337,7 @@ class TestCallFunctionImplIntegration:
                     # The function should NOT have been invoked (short-circuited)
 
     @pytest.mark.asyncio
-    async def test_impl_injects_capabilities_before_invocation(self):
+    async def test_impl_injects_capabilities_before_invocation(self) -> None:
         """Test that capabilities are injected before function invocation."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -373,7 +375,7 @@ class TestCallFunctionImplIntegration:
                         assert mock_inject.call_args[0][0] == test_func
 
     @pytest.mark.asyncio
-    async def test_impl_marshals_result_correctly(self):
+    async def test_impl_marshals_result_correctly(self) -> None:
         """Test that function result is marshaled to protobuf."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -411,7 +413,7 @@ class TestCallFunctionImplIntegration:
                         assert response.HasField("result")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_function_name(self):
+    async def test_impl_handles_missing_function_name(self) -> None:
         """Test that impl handles empty function name."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
@@ -424,5 +426,6 @@ class TestCallFunctionImplIntegration:
 
         assert response.HasField("error")
         assert "Function name is required" in response.error.text
+
 
 # 🐍🏗️🔚

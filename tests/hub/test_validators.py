@@ -16,7 +16,7 @@ def reset_validators():
     Validators._registry.clear()
 
 
-def test_register_validator():
+def test_register_validator() -> None:
     """Test registering a validator."""
 
     @Validators.register("test_validator")
@@ -28,7 +28,7 @@ def test_register_validator():
     assert Validators._registry["test_validator"] == my_validator
 
 
-def test_register_multiple_validators():
+def test_register_multiple_validators() -> None:
     """Test registering multiple validators."""
 
     @Validators.register("validator_1")
@@ -44,7 +44,7 @@ def test_register_multiple_validators():
     assert len(Validators._registry) == 2
 
 
-def test_attach_validator_to_metadata():
+def test_attach_validator_to_metadata() -> None:
     """Test attaching validators to metadata."""
 
     @Validators.register("length_check")
@@ -52,7 +52,7 @@ def test_attach_validator_to_metadata():
         pass
 
     class MockMetadata:
-        def __init__(self):
+        def __init__(self) -> None:
             self.validators = []
             self.description = "test attribute"
 
@@ -63,7 +63,7 @@ def test_attach_validator_to_metadata():
     assert metadata.validators[0] == length_check
 
 
-def test_attach_multiple_validators_to_metadata():
+def test_attach_multiple_validators_to_metadata() -> None:
     """Test attaching multiple validators to metadata."""
 
     @Validators.register("validator_a")
@@ -75,7 +75,7 @@ def test_attach_multiple_validators_to_metadata():
         pass
 
     class MockMetadata:
-        def __init__(self):
+        def __init__(self) -> None:
             self.validators = []
             self.description = "test attribute"
 
@@ -85,11 +85,11 @@ def test_attach_multiple_validators_to_metadata():
     assert len(metadata.validators) == 2
 
 
-def test_attach_unregistered_validator_raises_error():
+def test_attach_unregistered_validator_raises_error() -> None:
     """Test that attaching an unregistered validator raises an error."""
 
     class MockMetadata:
-        def __init__(self):
+        def __init__(self) -> None:
             self.validators = []
             self.description = "test attribute"
 
@@ -99,7 +99,7 @@ def test_attach_unregistered_validator_raises_error():
         Validators.attach(metadata, "nonexistent")
 
 
-def test_attach_validator_to_metadata_without_validators_list():
+def test_attach_validator_to_metadata_without_validators_list() -> None:
     """Test attaching validator to metadata without validators list."""
 
     @Validators.register("test_validator")
@@ -107,7 +107,7 @@ def test_attach_validator_to_metadata_without_validators_list():
         pass
 
     class MockMetadataNoList:
-        def __init__(self):
+        def __init__(self) -> None:
             self.description = "test attribute"
 
     metadata = MockMetadataNoList()
@@ -117,7 +117,7 @@ def test_attach_validator_to_metadata_without_validators_list():
     assert not hasattr(metadata, "validators")
 
 
-def test_validate_with_registered_validator():
+def test_validate_with_registered_validator() -> None:
     """Test validating a value with a registered validator."""
 
     @Validators.register("string_validator")
@@ -132,7 +132,7 @@ def test_validate_with_registered_validator():
     Validators.validate("string_validator", "test", MockMetadata())
 
 
-def test_validate_with_failing_validator():
+def test_validate_with_failing_validator() -> None:
     """Test validation failure."""
 
     @Validators.register("positive_number")
@@ -147,7 +147,7 @@ def test_validate_with_failing_validator():
         Validators.validate("positive_number", -5, MockMetadata())
 
 
-def test_validate_with_unregistered_validator():
+def test_validate_with_unregistered_validator() -> None:
     """Test validation with unregistered validator."""
 
     class MockMetadata:
@@ -157,7 +157,7 @@ def test_validate_with_unregistered_validator():
         Validators.validate("missing", "value", MockMetadata())
 
 
-def test_validator_receives_metadata():
+def test_validator_receives_metadata() -> None:
     """Test that validators receive metadata correctly."""
     received_metadata = []
 
@@ -175,7 +175,7 @@ def test_validator_receives_metadata():
     assert received_metadata[0] == meta
 
 
-def test_multiple_attach_calls_accumulate():
+def test_multiple_attach_calls_accumulate() -> None:
     """Test that multiple attach calls accumulate validators."""
 
     @Validators.register("validator_1")
@@ -187,7 +187,7 @@ def test_multiple_attach_calls_accumulate():
         pass
 
     class MockMetadata:
-        def __init__(self):
+        def __init__(self) -> None:
             self.validators = []
             self.description = "test"
 

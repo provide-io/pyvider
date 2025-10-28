@@ -5,6 +5,8 @@
 
 """TODO: Add module docstring."""
 
+from typing import Never
+
 import pytest
 
 from pyvider.schema.exceptions import (
@@ -17,17 +19,17 @@ from pyvider.schema.exceptions import (
 )
 
 
-def test_pyvider_schema_error():
+def test_pyvider_schema_error() -> Never:
     with pytest.raises(PyviderSchemaError):
         raise PyviderSchemaError("test error")
 
 
-def test_schema_conversion_error():
+def test_schema_conversion_error() -> Never:
     with pytest.raises(SchemaConversionError):
         raise SchemaConversionError("test conversion error")
 
 
-def test_schema_conversion_error_str():
+def test_schema_conversion_error_str() -> None:
     err = SchemaConversionError("test conversion error")
     assert str(err) == "test conversion error"
 
@@ -41,23 +43,24 @@ def test_schema_conversion_error_str():
     assert str(err) == "[Schema: my_schema] test conversion error (Detail: some detail)"
 
 
-def test_pvs_validation_error():
+def test_pvs_validation_error() -> Never:
     with pytest.raises(PvsValidationError):
         raise PvsValidationError("test validation error")
 
 
-def test_pvs_schema_definition_error():
+def test_pvs_schema_definition_error() -> Never:
     with pytest.raises(PvsSchemaDefinitionError):
         raise PvsSchemaDefinitionError("test schema definition error")
 
 
-def test_pvs_attribute_error():
+def test_pvs_attribute_error() -> Never:
     with pytest.raises(PvsAttributeError):
         raise PvsAttributeError("test attribute error")
 
 
-def test_pvs_block_error():
+def test_pvs_block_error() -> Never:
     with pytest.raises(PvsBlockError):
         raise PvsBlockError("test block error")
+
 
 # 🐍🏗️🔚

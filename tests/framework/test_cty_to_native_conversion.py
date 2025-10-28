@@ -8,7 +8,7 @@ class TestCtyToNativeConversion:
     the suspected root cause of the string and JQ function failures.
     """
 
-    def test_cty_to_native_on_list_of_primitives(self):
+    def test_cty_to_native_on_list_of_primitives(self) -> None:
         """
         TDD 1: Verifies that a CtyValue containing a list of CtyStrings is
         correctly unwrapped to a native Python list[str].
@@ -23,7 +23,7 @@ class TestCtyToNativeConversion:
         assert isinstance(native_result, list)
         assert all(isinstance(item, str) for item in native_result)
 
-    def test_cty_to_native_on_map_of_primitives(self):
+    def test_cty_to_native_on_map_of_primitives(self) -> None:
         """
         TDD 2: Verifies that a CtyValue containing a map of CtyNumbers is
         correctly unwrapped to a native Python dict[str, int | float].
@@ -39,7 +39,7 @@ class TestCtyToNativeConversion:
         assert isinstance(native_result["a"], int)
         assert isinstance(native_result["b"], float)
 
-    def test_cty_to_native_on_complex_nested_object(self):
+    def test_cty_to_native_on_complex_nested_object(self) -> None:
         """
         TDD 3: Verifies that `cty_to_native` works recursively on a complex,
         deeply nested data structure.

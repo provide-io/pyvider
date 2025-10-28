@@ -6,7 +6,7 @@ from pyvider.resources.lifecycle import (
 )
 
 
-def test_resource_state_enum():
+def test_resource_state_enum() -> None:
     assert ResourceState.UNKNOWN.value == "UNKNOWN"
     assert ResourceState.PLANNED.value == "PLANNED"
     assert ResourceState.CREATING.value == "CREATING"
@@ -17,7 +17,7 @@ def test_resource_state_enum():
     assert ResourceState.FAILED.value == "FAILED"
 
 
-def test_resource_lifecycle_init():
+def test_resource_lifecycle_init() -> None:
     lifecycle = ResourceLifecycle()
     assert lifecycle.state == ResourceState.UNKNOWN
     assert lifecycle.last_operation is None
@@ -25,7 +25,7 @@ def test_resource_lifecycle_init():
     assert lifecycle.error is None
 
 
-def test_resource_lifecycle_transition_to():
+def test_resource_lifecycle_transition_to() -> None:
     lifecycle = ResourceLifecycle()
     before = datetime.now(UTC)
     lifecycle.transition_to(ResourceState.CREATED, "create")

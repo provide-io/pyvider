@@ -54,4 +54,5 @@ async def test_upgrade_handles_empty_state() -> None:
     assert len(response.diagnostics) == 0
     assert response.upgraded_state.json == b"{}"
 
+
 # 🐍🏗️🔚

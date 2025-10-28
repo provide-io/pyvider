@@ -45,7 +45,7 @@ class TestRenewEphemeralResourceStructure:
     """Test handler structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test that handler returns proper response object."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -55,7 +55,7 @@ class TestRenewEphemeralResourceStructure:
             assert isinstance(response, pb.RenewEphemeralResource.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_metrics(self, sample_request):
+    async def test_handler_records_metrics(self, sample_request) -> None:
         """Test that handler records request and duration metrics."""
         with (
             patch(
@@ -78,7 +78,7 @@ class TestRenewEphemeralResourceImpl:
     """Test implementation logic."""
 
     @pytest.mark.asyncio
-    async def test_impl_renews_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
+    async def test_impl_renews_ephemeral_successfully(self, sample_request, mock_ephemeral_class) -> None:
         """Test successful ephemeral resource renew."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -94,7 +94,7 @@ class TestRenewEphemeralResourceImpl:
             mock_ephemeral_class.return_value.renew.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_resource_type(self, sample_request):
+    async def test_impl_handles_unknown_resource_type(self, sample_request) -> None:
         """Test handling of unknown ephemeral resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -104,7 +104,7 @@ class TestRenewEphemeralResourceImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_private_state_class(self, sample_request):
+    async def test_impl_handles_missing_private_state_class(self, sample_request) -> None:
         """Test handling when resource doesn't define private_state_class."""
         mock_class = MagicMock()
         mock_class.private_state_class = None
@@ -118,7 +118,7 @@ class TestRenewEphemeralResourceImpl:
             assert "private_state_class" in response.diagnostics[0].detail
 
     @pytest.mark.asyncio
-    async def test_impl_unpacks_private_data(self, sample_request, mock_ephemeral_class):
+    async def test_impl_unpacks_private_data(self, sample_request, mock_ephemeral_class) -> None:
         """Test that private data is unpacked from msgpack."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -135,7 +135,9 @@ class TestRenewEphemeralResourceImpl:
             mock_unpack.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_packs_new_private_state_when_present(self, sample_request, mock_ephemeral_class):
+    async def test_impl_packs_new_private_state_when_present(
+        self, sample_request, mock_ephemeral_class
+    ) -> None:
         """Test that new private state is packed to msgpack."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -152,7 +154,7 @@ class TestRenewEphemeralResourceImpl:
             assert len(response.private) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class):
+    async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class) -> None:
         """Test that renew_at is set when returned."""
         from google.protobuf.timestamp_pb2 import Timestamp
 
@@ -179,7 +181,7 @@ class TestRenewEphemeralResourceImpl:
             assert response.HasField("renew_at")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_none_returns(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_none_returns(self, sample_request, mock_ephemeral_class) -> None:
         """Test handling when renew returns (None, None)."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.renew.return_value = (None, None)
@@ -192,7 +194,7 @@ class TestRenewEphemeralResourceImpl:
             assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class) -> None:
         """Test that PyviderError exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.renew.side_effect = ResourceError("Renew failed")
@@ -205,7 +207,7 @@ class TestRenewEphemeralResourceImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_generic_exceptions(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_generic_exceptions(self, sample_request, mock_ephemeral_class) -> None:
         """Test that generic exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.renew.side_effect = RuntimeError("Unexpected error")
@@ -216,5 +218,6 @@ class TestRenewEphemeralResourceImpl:
             response = await _renew_ephemeral_resource_impl(sample_request, context=None)
 
             assert len(response.diagnostics) > 0
+
 
 # 🐍🏗️🔚

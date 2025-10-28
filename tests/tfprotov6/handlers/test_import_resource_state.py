@@ -15,7 +15,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.mark.asyncio
-async def test_import_resource_state_returns_empty_response():
+async def test_import_resource_state_returns_empty_response() -> None:
     """
     Verifies that ImportResourceState returns a response with warning diagnostic.
     This handler is currently unimplemented.
@@ -35,7 +35,7 @@ async def test_import_resource_state_returns_empty_response():
 
 
 @pytest.mark.asyncio
-async def test_import_resource_state_handles_empty_id():
+async def test_import_resource_state_handles_empty_id() -> None:
     """
     Verifies that ImportResourceState handles empty ID.
     """
@@ -52,7 +52,7 @@ async def test_import_resource_state_handles_empty_id():
 
 
 @pytest.mark.asyncio
-async def test_import_resource_state_records_error_metric_on_exception():
+async def test_import_resource_state_records_error_metric_on_exception() -> None:
     """Test that handler increments error counter on exception."""
     request = pb.ImportResourceState.Request(
         type_name="test_resource",
@@ -72,7 +72,7 @@ async def test_import_resource_state_records_error_metric_on_exception():
 
 
 @pytest.mark.asyncio
-async def test_import_resource_state_records_metrics():
+async def test_import_resource_state_records_metrics() -> None:
     """Test that handler records request and duration metrics."""
     request = pb.ImportResourceState.Request(
         type_name="test_resource",
@@ -87,5 +87,6 @@ async def test_import_resource_state_records_metrics():
 
             mock_requests.inc.assert_called_once_with(handler="ImportResourceState")
             assert mock_duration.observe.call_count == 1
+
 
 # 🐍🏗️🔚

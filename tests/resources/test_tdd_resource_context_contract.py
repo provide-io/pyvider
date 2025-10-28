@@ -73,7 +73,7 @@ class ContextAwareResource(BaseResource):
         private_state = self.private_state_class(plan_id="plan-123")
         return base_plan, private_state
 
-    async def read(self, ctx: ResourceContext):
+    async def read(self, ctx: ResourceContext) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -81,7 +81,7 @@ class ContextAwareResource(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_plan_handler_populates_full_resource_context(encryption_key_env, provider_in_hub):
+async def test_plan_handler_populates_full_resource_context(encryption_key_env, provider_in_hub) -> None:
     resource_name = "context_aware_resource"
     hub.register("resource", resource_name, ContextAwareResource)
     try:

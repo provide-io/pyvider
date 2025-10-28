@@ -73,12 +73,12 @@ class ValidatableDataSource(BaseDataSource[Any, Any, ValidationConfig]):
 
 
 class TestValidationContract:
-    def test_subclass_must_implement_all_abstract_methods(self):
+    def test_subclass_must_implement_all_abstract_methods(self) -> None:
         with pytest.raises(TypeError, match="Can't instantiate abstract class IncompleteResource"):
             IncompleteResource()
 
     @pytest.mark.asyncio
-    async def test_validate_calls_and_returns_from_validate_config(self, mocker: MockerFixture):
+    async def test_validate_calls_and_returns_from_validate_config(self, mocker: MockerFixture) -> None:
         resource = ValidatableResource()
         spy = mocker.spy(resource, "_validate_config")
         valid_config = ValidationConfig(name="valid")
@@ -92,7 +92,7 @@ class TestValidationContract:
         spy.assert_called_once_with(invalid_config)
 
     @pytest.mark.asyncio
-    async def test_validate_handles_none_config_gracefully(self, mocker: MockerFixture):
+    async def test_validate_handles_none_config_gracefully(self, mocker: MockerFixture) -> None:
         resource = ValidatableResource()
         spy = mocker.spy(resource, "_validate_config")
         errors = await resource.validate(None)
@@ -101,7 +101,7 @@ class TestValidationContract:
 
     @pytest.mark.asyncio
     @pytest.mark.usefixtures("discovered_components_session")
-    async def test_resource_handler_uses_validation_contract(self):
+    async def test_resource_handler_uses_validation_contract(self) -> None:
         resource_name = "validatable_resource_for_handler"
         hub.register("resource", resource_name, ValidatableResource)
         try:

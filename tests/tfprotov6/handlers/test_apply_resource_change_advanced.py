@@ -15,7 +15,7 @@ class TestProcessPrivateState:
     """Tests for _process_private_state helper function."""
 
     @pytest.mark.asyncio
-    async def test_returns_none_when_no_private_state_class(self):
+    async def test_returns_none_when_no_private_state_class(self) -> None:
         """Test that returns None when resource has no private_state_class."""
         from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
 
@@ -26,7 +26,7 @@ class TestProcessPrivateState:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_returns_none_when_private_state_class_is_none(self):
+    async def test_returns_none_when_private_state_class_is_none(self) -> None:
         """Test that returns None when private_state_class is None."""
         from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _process_private_state
 
@@ -37,7 +37,7 @@ class TestProcessPrivateState:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_returns_none_when_planned_private_is_empty(self):
+    async def test_returns_none_when_planned_private_is_empty(self) -> None:
         """Test that returns None when planned_private is empty."""
         import attrs
 
@@ -54,7 +54,7 @@ class TestProcessPrivateState:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_deserializes_valid_private_state(self):
+    async def test_deserializes_valid_private_state(self) -> None:
         """Test successful deserialization of private state."""
         import attrs
         import msgpack
@@ -85,7 +85,7 @@ class TestProcessPrivateState:
             mock_decrypt.assert_called_once_with(fake_encrypted)
 
     @pytest.mark.asyncio
-    async def test_raises_resource_error_on_deserialization_failure(self):
+    async def test_raises_resource_error_on_deserialization_failure(self) -> None:
         """Test that raises ResourceError when deserialization fails."""
         import attrs
 
@@ -107,7 +107,7 @@ class TestProcessPrivateState:
 class TestCreateResourceContext:
     """Tests for _create_resource_context helper function."""
 
-    def test_creates_context_with_all_fields(self):
+    def test_creates_context_with_all_fields(self) -> None:
         """Test creating resource context with all fields populated."""
         import attrs
 
@@ -169,7 +169,7 @@ class TestCreateResourceContext:
 class TestHandleApplyResult:
     """Tests for _handle_apply_result helper function."""
 
-    def test_handles_none_new_state(self):
+    def test_handles_none_new_state(self) -> None:
         """Test handling None new state (delete operation)."""
         from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.apply_resource_change import _handle_apply_result
@@ -188,7 +188,7 @@ class TestHandleApplyResult:
 
         assert response.new_state.msgpack == b"\xc0"
 
-    def test_marshals_new_state_successfully(self):
+    def test_marshals_new_state_successfully(self) -> None:
         """Test successful marshaling of new state."""
         import attrs
 
@@ -232,7 +232,7 @@ class TestHandleApplyResult:
 
             assert response.new_state.msgpack == b"marshaled"
 
-    def test_raises_error_on_invalid_refinement(self):
+    def test_raises_error_on_invalid_refinement(self) -> None:
         """Test that raises error when new state is not valid refinement of planned state."""
         import attrs
 
@@ -275,7 +275,7 @@ class TestHandleApplyResult:
             with pytest.raises(ResourceLifecycleContractError, match="not a valid refinement"):
                 _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
 
-    def test_encrypts_and_sets_private_state(self):
+    def test_encrypts_and_sets_private_state(self) -> None:
         """Test that private state is serialized and encrypted."""
         import attrs
 
@@ -321,5 +321,6 @@ class TestHandleApplyResult:
 
             assert response.private == b"encrypted_private"
             mock_encrypt.assert_called_once()
+
 
 # 🐍🏗️🔚

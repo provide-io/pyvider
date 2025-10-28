@@ -46,7 +46,7 @@ class TestCreateResourceContext:
     """Tests for _create_resource_context function."""
 
     @pytest.mark.asyncio
-    async def test_creates_resource_context_with_all_fields(self):
+    async def test_creates_resource_context_with_all_fields(self) -> None:
         """Test that resource context is created with all fields."""
         from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _create_resource_context
@@ -84,7 +84,7 @@ class TestCreateResourceContext:
 class TestHandlePlannedStateDict:
     """Tests for _handle_planned_state_dict function."""
 
-    def test_handles_planned_state_with_values(self):
+    def test_handles_planned_state_with_values(self) -> None:
         """Test handling planned state dict with values."""
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
 
@@ -115,7 +115,7 @@ class TestHandlePlannedStateDict:
 
             assert mock_marshal.called
 
-    def test_handles_planned_state_with_unknown_values(self):
+    def test_handles_planned_state_with_unknown_values(self) -> None:
         """Test handling planned state with unknown values."""
         from pyvider.cty import CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
@@ -157,7 +157,7 @@ class TestHandlePlannedStateDict:
 
             assert mock_marshal.called
 
-    def test_marks_unset_computed_fields_as_unknown(self):
+    def test_marks_unset_computed_fields_as_unknown(self) -> None:
         """Test that unset computed fields are marked as unknown when unknowns present."""
         from pyvider.cty import CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
@@ -200,7 +200,7 @@ class TestHandlePlannedStateDict:
 
             assert mock_marshal.called
 
-    def test_raises_type_error_for_non_object_schema(self):
+    def test_raises_type_error_for_non_object_schema(self) -> None:
         """Test that TypeError is raised if schema is not an object type."""
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _handle_planned_state_dict
 
@@ -218,7 +218,7 @@ class TestPlanResourceChangeImplementation:
     """Tests for _plan_resource_change_impl function."""
 
     @pytest.mark.asyncio
-    async def test_impl_with_successful_plan(self, sample_request, mock_resource_class, mock_provider):
+    async def test_impl_with_successful_plan(self, sample_request, mock_resource_class, mock_provider) -> None:
         """Test successful plan execution."""
         from pyvider.cty import CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
@@ -252,7 +252,9 @@ class TestPlanResourceChangeImplementation:
             assert isinstance(response, pb.PlanResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_impl_with_planned_private_state(self, sample_request, mock_resource_class, mock_provider):
+    async def test_impl_with_planned_private_state(
+        self, sample_request, mock_resource_class, mock_provider
+    ) -> None:
         """Test plan with planned private state returned."""
         import attrs
 
@@ -290,9 +292,7 @@ class TestPlanResourceChangeImplementation:
             patch(
                 "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
             ) as mock_create_ctx,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict"
-            ) as mock_handle,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict"),
             patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.encrypt") as mock_encrypt,
         ):
             mock_get.side_effect = lambda comp_type, name: {
@@ -318,7 +318,7 @@ class TestPlanResourceChangeImplementation:
     @pytest.mark.asyncio
     async def test_impl_returns_early_on_error_diagnostics(
         self, sample_request, mock_resource_class, mock_provider
-    ):
+    ) -> None:
         """Test that implementation returns early when error diagnostics are present."""
         from pyvider.cty import CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
@@ -356,5 +356,6 @@ class TestPlanResourceChangeImplementation:
             # Should return early, not call marshal
             assert len(response.diagnostics) == 1
             assert response.diagnostics[0].summary == "Test error"
+
 
 # 🐍🏗️🔚

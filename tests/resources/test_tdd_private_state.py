@@ -35,7 +35,7 @@ class ResourceWithPrivateState(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx):
+    async def read(self, ctx) -> None:
         pass
 
     async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]):
@@ -48,7 +48,7 @@ class ResourceWithPrivateState(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_private_state_roundtrip():
+async def test_private_state_roundtrip() -> None:
     """
     TDD Contract: Verifies that a structured private state object can be
     serialized to bytes by one handler and correctly deserialized back
@@ -70,5 +70,6 @@ async def test_private_state_roundtrip():
 
     # THEN the rehydrated object is identical to the original
     assert rehydrated_private_state_obj == planned_private_state_obj
+
 
 # 🐍🏗️🔚

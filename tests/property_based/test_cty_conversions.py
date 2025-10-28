@@ -71,7 +71,7 @@ class TestCtyStringValidation:
 
     @given(text=st.text(max_size=1000))
     @settings(max_examples=50)
-    def test_string_accepts_any_text(self, text):
+    def test_string_accepts_any_text(self, text) -> None:
         """Property: CtyString should accept any text value."""
         import unicodedata
 
@@ -85,7 +85,7 @@ class TestCtyStringValidation:
 
     @given(value=st.one_of(st.integers(), st.floats(), st.booleans()))
     @settings(max_examples=30)
-    def test_string_rejects_non_string_primitives(self, value):
+    def test_string_rejects_non_string_primitives(self, value) -> None:
         """Property: CtyString should reject non-string primitive types."""
         from pyvider.cty.exceptions.validation import CtyStringValidationError
 
@@ -109,7 +109,7 @@ class TestCtyNumberValidation:
         )
     )
     @settings(max_examples=50)
-    def test_number_accepts_numeric_values(self, num):
+    def test_number_accepts_numeric_values(self, num) -> None:
         """Property: CtyNumber should accept integers and floats."""
         from decimal import Decimal
 
@@ -121,7 +121,7 @@ class TestCtyNumberValidation:
 
     @given(value=st.text(min_size=1, alphabet=st.characters(whitelist_categories=("Lu", "Ll"))))
     @settings(max_examples=30)
-    def test_number_rejects_non_numeric_types(self, value):
+    def test_number_rejects_non_numeric_types(self, value) -> None:
         """Property: CtyNumber should reject non-numeric string types."""
         from pyvider.cty.exceptions.validation import CtyNumberValidationError
 
@@ -139,7 +139,7 @@ class TestCtyBoolValidation:
 
     @given(value=st.booleans())
     @settings(max_examples=20)
-    def test_bool_accepts_boolean_values(self, value):
+    def test_bool_accepts_boolean_values(self, value) -> None:
         """Property: CtyBool should accept boolean values."""
         cty_bool = CtyBool()
         result = cty_bool.validate(value)
@@ -153,7 +153,7 @@ class TestCtyListValidation:
 
     @given(items=st.lists(st.text(max_size=50), max_size=20))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_list_of_strings_validates(self, items):
+    def test_list_of_strings_validates(self, items) -> None:
         """Property: CtyList(CtyString) should accept lists of strings."""
         cty_list = CtyList(element_type=CtyString())
         result = cty_list.validate(items)
@@ -162,7 +162,7 @@ class TestCtyListValidation:
 
     @given(items=st.lists(st.integers(min_value=-1000, max_value=1000), max_size=20))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_list_of_numbers_validates(self, items):
+    def test_list_of_numbers_validates(self, items) -> None:
         """Property: CtyList(CtyNumber) should accept lists of numbers."""
         cty_list = CtyList(element_type=CtyNumber())
         result = cty_list.validate(items)
@@ -171,14 +171,14 @@ class TestCtyListValidation:
 
     @given(items=st.lists(st.booleans(), max_size=20))
     @settings(max_examples=20)
-    def test_list_of_bools_validates(self, items):
+    def test_list_of_bools_validates(self, items) -> None:
         """Property: CtyList(CtyBool) should accept lists of booleans."""
         cty_list = CtyList(element_type=CtyBool())
         result = cty_list.validate(items)
         assert isinstance(result, CtyValue)
         assert len(result.value) == len(items)
 
-    def test_empty_list_validates(self):
+    def test_empty_list_validates(self) -> None:
         """Property: CtyList should accept empty lists."""
         cty_list = CtyList(element_type=CtyDynamic())
         result = cty_list.validate([])
@@ -195,7 +195,7 @@ class TestCtyMapValidation:
         )
     )
     @settings(max_examples=30)
-    def test_map_of_strings_validates(self, mapping):
+    def test_map_of_strings_validates(self, mapping) -> None:
         """Property: CtyMap(CtyString) should accept dicts with string values."""
         cty_map = CtyMap(element_type=CtyString())
         result = cty_map.validate(mapping)
@@ -210,7 +210,7 @@ class TestCtyMapValidation:
         )
     )
     @settings(max_examples=30)
-    def test_map_of_numbers_validates(self, mapping):
+    def test_map_of_numbers_validates(self, mapping) -> None:
         """Property: CtyMap(CtyNumber) should accept dicts with number values."""
         cty_map = CtyMap(element_type=CtyNumber())
         result = cty_map.validate(mapping)
@@ -223,7 +223,7 @@ class TestCtyObjectValidation:
 
     @given(name=st.text(min_size=1, max_size=50), age=st.integers(min_value=0, max_value=150))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_object_with_fixed_schema_validates(self, name, age):
+    def test_object_with_fixed_schema_validates(self, name, age) -> None:
         """Property: CtyObject should validate objects matching its schema."""
         import unicodedata
 
@@ -241,7 +241,7 @@ class TestCtyObjectValidation:
 
     @given(data=cty_dict(max_keys=5))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_dynamic_object_validates_any_dict(self, data):
+    def test_dynamic_object_validates_any_dict(self, data) -> None:
         """Property: CtyObject with inferred types should validate any dict."""
         # Skip if empty dict (no attributes to infer)
         assume(len(data) > 0)
@@ -261,7 +261,7 @@ class TestUnifyAndValidateListOfObjects:
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_unify_returns_cty_value(self, dict_list):
+    def test_unify_returns_cty_value(self, dict_list) -> None:
         """Property: unify_and_validate_list_of_objects should return a CtyValue."""
         assume(len(dict_list) > 0)
         result = unify_and_validate_list_of_objects(dict_list)
@@ -269,13 +269,13 @@ class TestUnifyAndValidateListOfObjects:
 
     @given(dict_list=cty_list_of_dicts(min_items=1, max_items=5))
     @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
-    def test_unify_preserves_list_length(self, dict_list):
+    def test_unify_preserves_list_length(self, dict_list) -> None:
         """Property: Result should have same length as input list."""
         assume(len(dict_list) > 0)
         result = unify_and_validate_list_of_objects(dict_list)
         assert len(result.value) == len(dict_list)
 
-    def test_unify_empty_list_returns_dynamic(self):
+    def test_unify_empty_list_returns_dynamic(self) -> None:
         """Property: Empty list should return CtyList(CtyDynamic) with empty value."""
         result = unify_and_validate_list_of_objects([])
         assert isinstance(result, CtyValue)
@@ -290,7 +290,7 @@ class TestUnifyAndValidateListOfObjects:
         )
     )
     @settings(max_examples=20)
-    def test_unify_with_common_keys_preserves_keys(self, common_keys):
+    def test_unify_with_common_keys_preserves_keys(self, common_keys) -> None:
         """Property: Common keys across all dicts should be non-optional."""
         # Create a list where all dicts have the same keys
         dict_list = [{key: f"value_{i}_{key}" for key in common_keys} for i in range(3)]
@@ -308,29 +308,30 @@ class TestUnifyAndValidateListOfObjects:
 class TestCtyTypeEquality:
     """Property-based tests for CTY type equality."""
 
-    def test_same_primitive_types_are_equal(self):
+    def test_same_primitive_types_are_equal(self) -> None:
         """Property: Two instances of the same primitive type should be equal."""
         assert CtyString().equal(CtyString())
         assert CtyNumber().equal(CtyNumber())
         assert CtyBool().equal(CtyBool())
         assert CtyDynamic().equal(CtyDynamic())
 
-    def test_different_primitive_types_are_not_equal(self):
+    def test_different_primitive_types_are_not_equal(self) -> None:
         """Property: Different primitive types should not be equal."""
         assert not CtyString().equal(CtyNumber())
         assert not CtyNumber().equal(CtyBool())
         assert not CtyBool().equal(CtyString())
 
-    def test_list_types_with_same_element_type_are_equal(self):
+    def test_list_types_with_same_element_type_are_equal(self) -> None:
         """Property: CtyList with same element type should be equal."""
         list1 = CtyList(element_type=CtyString())
         list2 = CtyList(element_type=CtyString())
         assert list1.equal(list2)
 
-    def test_list_types_with_different_element_types_are_not_equal(self):
+    def test_list_types_with_different_element_types_are_not_equal(self) -> None:
         """Property: CtyList with different element types should not be equal."""
         list1 = CtyList(element_type=CtyString())
         list2 = CtyList(element_type=CtyNumber())
         assert not list1.equal(list2)
+
 
 # 🐍🏗️🔚

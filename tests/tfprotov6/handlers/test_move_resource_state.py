@@ -16,7 +16,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.mark.asyncio
-async def test_move_resource_state_returns_empty_response():
+async def test_move_resource_state_returns_empty_response() -> None:
     """
     Verifies that MoveResourceState returns a response with warning diagnostic.
     This handler is currently unimplemented.
@@ -35,7 +35,7 @@ async def test_move_resource_state_returns_empty_response():
 
 
 @pytest.mark.asyncio
-async def test_move_resource_state_handles_same_type():
+async def test_move_resource_state_handles_same_type() -> None:
     """
     Verifies that MoveResourceState handles same source and target types.
     """
@@ -52,7 +52,7 @@ async def test_move_resource_state_handles_same_type():
 
 
 @pytest.mark.asyncio
-async def test_move_resource_state_records_metrics():
+async def test_move_resource_state_records_metrics() -> None:
     """Test that handler records request metrics."""
     request = pb.MoveResourceState.Request(
         source_type_name="source_resource",
@@ -72,7 +72,7 @@ async def test_move_resource_state_records_metrics():
 
 
 @pytest.mark.asyncio
-async def test_move_resource_state_records_errors_on_exception():
+async def test_move_resource_state_records_errors_on_exception() -> None:
     """Test that handler records error metrics when exception occurs."""
     request = pb.MoveResourceState.Request(
         source_type_name="source_resource",
@@ -92,5 +92,6 @@ async def test_move_resource_state_records_errors_on_exception():
 
                 # Verify error metric was recorded
                 mock_errors.inc.assert_called_once_with(handler="MoveResourceState")
+
 
 # 🐍🏗️🔚

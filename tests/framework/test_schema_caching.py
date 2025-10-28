@@ -38,7 +38,9 @@ async def mock_provider_in_hub(mocker: MockerFixture):
 
 
 @pytest.mark.asyncio
-async def test_get_provider_schema_handler_avoids_race_condition(mocker: MockerFixture, mock_provider_in_hub):
+async def test_get_provider_schema_handler_avoids_race_condition(
+    mocker: MockerFixture, mock_provider_in_hub
+) -> None:
     """
     TDD Contract: Verifies that even with many concurrent requests, the
     underlying schema computation is only ever executed once.

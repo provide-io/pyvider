@@ -19,7 +19,7 @@ class TestGetResourceAndProviderInstances:
     """Tests for _get_resource_and_provider_instances helper function."""
 
     @pytest.mark.asyncio
-    async def test_raises_error_when_resource_not_registered(self):
+    async def test_raises_error_when_resource_not_registered(self) -> None:
         """Test that it raises ResourceError when resource type not found."""
         from pyvider.exceptions import ResourceError
 
@@ -27,7 +27,7 @@ class TestGetResourceAndProviderInstances:
             await _get_resource_and_provider_instances("nonexistent_resource")
 
     @pytest.mark.asyncio
-    async def test_raises_error_when_provider_not_in_hub(self, provider_in_hub):
+    async def test_raises_error_when_provider_not_in_hub(self, provider_in_hub) -> None:
         """Test that it raises RuntimeError when provider not in hub."""
         # Register a test resource first
         from pyvider.hub import hub
@@ -48,7 +48,7 @@ class TestGetResourceAndProviderInstances:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_returns_resource_and_provider_when_both_exist(self, provider_in_hub):
+    async def test_returns_resource_and_provider_when_both_exist(self, provider_in_hub) -> None:
         """Test that it returns both resource class and provider instance."""
         # Register a test resource
         from pyvider.hub import hub
@@ -71,7 +71,7 @@ class TestApplyResourceChangeHandler:
     """Tests for ApplyResourceChangeHandler main functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub):
+    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
         """Test that handler returns proper response object."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
@@ -91,7 +91,7 @@ class TestApplyResourceChangeHandler:
         assert isinstance(response, pb.ApplyResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_handles_unknown_resource_type(self):
+    async def test_handler_handles_unknown_resource_type(self) -> None:
         """Test that handler properly handles unknown resource type."""
         request = pb.ApplyResourceChange.Request(
             type_name="unknown_resource",
@@ -114,7 +114,7 @@ class TestApplyResourceChangeMetrics:
     """Tests for observability metrics in ApplyResourceChange."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metrics(self):
+    async def test_handler_records_request_metrics(self) -> None:
         """Test that handler records request metrics."""
         # Note: Metrics implementation may vary, just verify handler completes
         request = pb.ApplyResourceChange.Request(
@@ -135,7 +135,7 @@ class TestApplyResourceChangeMetrics:
         assert isinstance(response, pb.ApplyResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metrics_on_failure(self):
+    async def test_handler_records_error_metrics_on_failure(self) -> None:
         """Test that handler records error metrics on failure."""
         request = pb.ApplyResourceChange.Request(
             type_name="unknown_resource",
@@ -152,7 +152,7 @@ class TestApplyResourceChangeContextHandling:
     """Tests for operation context handling."""
 
     @pytest.mark.asyncio
-    async def test_handler_uses_operation_context(self):
+    async def test_handler_uses_operation_context(self) -> None:
         """Test that handler uses operation context for diagnostics."""
         request = pb.ApplyResourceChange.Request(
             type_name="unknown_resource",
@@ -173,7 +173,7 @@ class TestApplyResourceChangeEdgeCases:
     """Edge case tests for ApplyResourceChange."""
 
     @pytest.mark.asyncio
-    async def test_handler_with_null_planned_state(self, provider_in_hub):
+    async def test_handler_with_null_planned_state(self, provider_in_hub) -> None:
         """Test handler behavior with null planned state."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
@@ -188,7 +188,7 @@ class TestApplyResourceChangeEdgeCases:
         assert isinstance(response, pb.ApplyResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_with_empty_type_name(self):
+    async def test_handler_with_empty_type_name(self) -> None:
         """Test handler behavior with empty type name."""
         request = pb.ApplyResourceChange.Request(
             type_name="",
@@ -202,7 +202,7 @@ class TestApplyResourceChangeEdgeCases:
         assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_handler_with_malformed_json_state(self, provider_in_hub):
+    async def test_handler_with_malformed_json_state(self, provider_in_hub) -> None:
         """Test handler behavior with malformed JSON state."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
@@ -222,7 +222,7 @@ class TestApplyResourceChangeLogging:
     """Tests for logging in ApplyResourceChange (for mutation testing)."""
 
     @pytest.mark.asyncio
-    async def test_handler_logs_on_unknown_resource(self, caplog):
+    async def test_handler_logs_on_unknown_resource(self, caplog) -> None:
         """Test that handler logs when resource type is unknown."""
         import logging
 
@@ -239,7 +239,7 @@ class TestApplyResourceChangeLogging:
         # (Note: actual log level and content may vary)
 
     @pytest.mark.asyncio
-    async def test_handler_logs_metrics_info(self, caplog, provider_in_hub):
+    async def test_handler_logs_metrics_info(self, caplog, provider_in_hub) -> None:
         """Test that handler logs metrics information."""
         import logging
 
@@ -261,5 +261,6 @@ class TestApplyResourceChangeLogging:
 
         # Handler should log some operational information
         # (Note: actual implementation may vary)
+
 
 # 🐍🏗️🔚

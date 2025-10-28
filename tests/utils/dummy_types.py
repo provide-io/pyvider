@@ -32,7 +32,7 @@ from pyvider.exceptions import (
 class DummyType(CtyType[CtyString]):
     metadata: dict[str, Any] = field(factory=dict)
 
-    def __init__(self, children=None):
+    def __init__(self, children=None) -> None:
         self._children = children or {}
         super().__init__(metadata={"type": "dummy"})
 
@@ -62,7 +62,7 @@ class DummyStringType(CtyType[CtyString]):
     min_length: int = field(default=0)
     max_length: int | None = field(default=None)
 
-    def __init__(self, min_length: int = 0, max_length: int | None = None):
+    def __init__(self, min_length: int = 0, max_length: int | None = None) -> None:
         # Set metadata directly using object.__setattr__ to avoid AttributeError
         object.__setattr__(self, "metadata", TypeMetadata(description="dummy string"))
 
@@ -126,7 +126,7 @@ class DummyNumberType(CtyType[CtyNumber]):
     min_value: float | None = field(default=None)
     max_value: float | None = field(default=None)
 
-    def __init__(self, min_value: int = 0, max_value: int | None = None):
+    def __init__(self, min_value: int = 0, max_value: int | None = None) -> None:
         # Set metadata directly using object.__setattr__ to avoid AttributeError
         object.__setattr__(self, "metadata", TypeMetadata(description="dummy string"))
 
@@ -378,5 +378,6 @@ class DummyMapType(CtyType[CtyMap]):
 
     def __str__(self) -> str:
         return f"DummyMapType(key_type={self.key_type}, value_type={self.value_type})"
+
 
 # 🐍🏗️🔚

@@ -2,7 +2,7 @@
 # Configuration for mutation testing
 
 
-def pre_mutation(context):
+def pre_mutation(context) -> None:
     """
     Called before each mutation is tested.
     Can be used to skip certain mutations.

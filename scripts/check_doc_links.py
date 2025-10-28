@@ -107,7 +107,7 @@ def check_file_links(file_path: Path) -> list[str]:
     # Get headings from this file for anchor validation
     file_headings = extract_headings(file_path)
 
-    for link_text, link_url, line_num in links:
+    for _link_text, link_url, line_num in links:
         # Skip external links (http/https)
         if link_url.startswith(("http://", "https://", "mailto:")):
             continue

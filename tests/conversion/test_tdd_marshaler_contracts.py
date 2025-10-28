@@ -12,7 +12,7 @@ from pyvider.cty import CtyMark, CtyString
 from pyvider.schema import a_str, s_resource
 
 
-def test_apply_schema_marks_adds_sensitive_mark():
+def test_apply_schema_marks_adds_sensitive_mark() -> None:
     """
     TDD Contract: Verifies that the marshalling process automatically
     adds a 'sensitive' mark to a value when the schema dictates it.
@@ -30,5 +30,6 @@ def test_apply_schema_marks_adds_sensitive_mark():
 
     # THEN the resulting value must have the sensitive mark
     assert marked_value.has_mark(CtyMark("sensitive"))
+
 
 # 🐍🏗️🔚

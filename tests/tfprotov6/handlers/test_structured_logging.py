@@ -13,6 +13,8 @@ structured logging with:
 - Success and failure tracking
 """
 
+import contextlib
+
 import msgpack
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
 import pytest
@@ -48,7 +50,7 @@ class TestOperationFieldPresence:
     """Test that all handlers include 'operation' field in logs."""
 
     @pytest.mark.asyncio
-    async def test_read_data_source_logs_with_operation(self):
+    async def test_read_data_source_logs_with_operation(self) -> None:
         """Test read_data_source includes operation field."""
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -57,10 +59,8 @@ class TestOperationFieldPresence:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _read_data_source_impl(request, context=None)
-                except Exception:
-                    pass
 
                 # Check that debug was called with operation field
                 assert mock_logger.debug.called
@@ -69,7 +69,7 @@ class TestOperationFieldPresence:
                 assert call_kwargs["operation"] == "read_data_source"
 
     @pytest.mark.asyncio
-    async def test_validate_data_resource_logs_with_operation(self):
+    async def test_validate_data_resource_logs_with_operation(self) -> None:
         """Test validate_data_resource_config includes operation field."""
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -78,10 +78,8 @@ class TestOperationFieldPresence:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _validate_data_resource_config_impl(request, context=None)
-                except Exception:
-                    pass
 
                 assert mock_logger.debug.called
                 call_kwargs = mock_logger.debug.call_args[1]
@@ -89,7 +87,7 @@ class TestOperationFieldPresence:
                 assert call_kwargs["operation"] == "validate_data_resource_config"
 
     @pytest.mark.asyncio
-    async def test_open_ephemeral_logs_with_operation(self):
+    async def test_open_ephemeral_logs_with_operation(self) -> None:
         """Test open_ephemeral_resource includes operation field."""
         request = pb.OpenEphemeralResource.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -98,10 +96,8 @@ class TestOperationFieldPresence:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _open_ephemeral_resource_impl(request, context=None)
-                except Exception:
-                    pass
 
                 assert mock_logger.debug.called
                 call_kwargs = mock_logger.debug.call_args[1]
@@ -109,7 +105,7 @@ class TestOperationFieldPresence:
                 assert call_kwargs["operation"] == "open_ephemeral_resource"
 
     @pytest.mark.asyncio
-    async def test_upgrade_resource_state_logs_with_operation(self):
+    async def test_upgrade_resource_state_logs_with_operation(self) -> None:
         """Test upgrade_resource_state includes operation field."""
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
@@ -127,7 +123,7 @@ class TestErrorLogging:
     """Test that handlers log errors with proper structured data."""
 
     @pytest.mark.asyncio
-    async def test_read_data_source_logs_error_with_context(self):
+    async def test_read_data_source_logs_error_with_context(self) -> None:
         """Test that read_data_source logs errors with error_type and error_message."""
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -136,10 +132,8 @@ class TestErrorLogging:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _read_data_source_impl(request, context=None)
-                except Exception:
-                    pass
 
                 # Should have logged an error
                 assert mock_logger.error.called
@@ -149,7 +143,7 @@ class TestErrorLogging:
                 assert "data_source_type" in call_kwargs
 
     @pytest.mark.asyncio
-    async def test_validate_ephemeral_logs_error_with_type(self):
+    async def test_validate_ephemeral_logs_error_with_type(self) -> None:
         """Test that validate_ephemeral logs errors with error_type."""
         request = pb.ValidateEphemeralResourceConfig.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -162,10 +156,8 @@ class TestErrorLogging:
         ):
             mock_hub.get_component.return_value = None
 
-            try:
+            with contextlib.suppress(Exception):
                 await _validate_ephemeral_resource_config_impl(request, context=None)
-            except Exception:
-                pass
 
             assert mock_logger.error.called
             call_kwargs = mock_logger.error.call_args[1]
@@ -177,7 +169,7 @@ class TestSuccessLogging:
     """Test that handlers log successful operations."""
 
     @pytest.mark.asyncio
-    async def test_close_ephemeral_logs_success(self):
+    async def test_close_ephemeral_logs_success(self) -> None:
         """Test that close_ephemeral logs successful completion."""
         request = pb.CloseEphemeralResource.Request(type_name="test_eph")
         private_data = {"test": "data"}
@@ -202,7 +194,7 @@ class TestSuccessLogging:
                 assert call_kwargs["operation"] == "close_ephemeral_resource"
 
     @pytest.mark.asyncio
-    async def test_upgrade_resource_state_logs_success(self):
+    async def test_upgrade_resource_state_logs_success(self) -> None:
         """Test that upgrade_resource_state logs successful completion."""
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
@@ -221,7 +213,7 @@ class TestWarningLogging:
     """Test that handlers log warnings appropriately."""
 
     @pytest.mark.asyncio
-    async def test_import_resource_state_logs_warning(self):
+    async def test_import_resource_state_logs_warning(self) -> None:
         """Test that import_resource_state logs warning for unimplemented feature."""
         request = pb.ImportResourceState.Request(type_name="test_resource", id="test-id")
 
@@ -235,7 +227,7 @@ class TestWarningLogging:
             assert call_kwargs["operation"] == "import_resource_state"
 
     @pytest.mark.asyncio
-    async def test_move_resource_state_logs_warning(self):
+    async def test_move_resource_state_logs_warning(self) -> None:
         """Test that move_resource_state logs warning for unimplemented feature."""
         request = pb.MoveResourceState.Request(source_type_name="source", target_type_name="target")
 
@@ -252,7 +244,7 @@ class TestLogLevelConsistency:
     """Test that log levels are used consistently."""
 
     @pytest.mark.asyncio
-    async def test_handlers_use_debug_for_entry(self):
+    async def test_handlers_use_debug_for_entry(self) -> None:
         """Test that handlers use DEBUG for entry logging."""
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -261,16 +253,14 @@ class TestLogLevelConsistency:
             with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _validate_data_resource_config_impl(request, context=None)
-                except Exception:
-                    pass
 
                 # First call should be debug for entry
                 assert mock_logger.debug.called
 
     @pytest.mark.asyncio
-    async def test_handlers_use_info_for_success(self):
+    async def test_handlers_use_info_for_success(self) -> None:
         """Test that handlers use INFO for success logging."""
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
@@ -282,7 +272,7 @@ class TestLogLevelConsistency:
             assert mock_logger.info.called
 
     @pytest.mark.asyncio
-    async def test_handlers_use_error_for_failures(self):
+    async def test_handlers_use_error_for_failures(self) -> None:
         """Test that handlers use ERROR for failure logging."""
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -291,10 +281,8 @@ class TestLogLevelConsistency:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _read_data_source_impl(request, context=None)
-                except Exception:
-                    pass
 
                 # Failure should be logged with error
                 assert mock_logger.error.called
@@ -304,7 +292,7 @@ class TestContextualInformation:
     """Test that logs include relevant contextual information."""
 
     @pytest.mark.asyncio
-    async def test_read_data_source_includes_data_source_type(self):
+    async def test_read_data_source_includes_data_source_type(self) -> None:
         """Test that read_data_source logs include data_source_type."""
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -313,17 +301,15 @@ class TestContextualInformation:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
-                try:
+                with contextlib.suppress(Exception):
                     await _read_data_source_impl(request, context=None)
-                except Exception:
-                    pass
 
                 call_kwargs = mock_logger.debug.call_args[1]
                 assert "data_source_type" in call_kwargs
                 assert call_kwargs["data_source_type"] == "test_ds"
 
     @pytest.mark.asyncio
-    async def test_upgrade_resource_state_includes_resource_type(self):
+    async def test_upgrade_resource_state_includes_resource_type(self) -> None:
         """Test that upgrade logs include resource_type."""
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
@@ -336,7 +322,7 @@ class TestContextualInformation:
             assert call_kwargs["resource_type"] == "test_resource"
 
     @pytest.mark.asyncio
-    async def test_error_logs_include_registered_components(self):
+    async def test_error_logs_include_registered_components(self) -> None:
         """Test that error logs include registered component lists for debugging."""
         request = pb.OpenEphemeralResource.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
@@ -356,5 +342,6 @@ class TestContextualInformation:
                     call_kwargs = mock_logger.error.call_args[1]
                     assert "resource_type" in call_kwargs
                     assert call_kwargs["resource_type"] == "test_eph"
+
 
 # 🐍🏗️🔚

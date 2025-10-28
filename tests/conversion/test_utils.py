@@ -69,4 +69,5 @@ def test_unify_and_validate_list_of_objects_promotes_conflicting_types() -> None
     assert first.value["value"].value.value == 1
     assert second.value["value"].value.value == "one"
 
+
 # 🐍🏗️🔚

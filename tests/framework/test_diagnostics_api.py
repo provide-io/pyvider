@@ -46,7 +46,7 @@ class WarningResource(BaseResource):
         base_plan["name"] = config.name or config.old_name
         return base_plan, None
 
-    async def read(self, ctx):
+    async def read(self, ctx) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -54,7 +54,7 @@ class WarningResource(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_plan_handler_collects_attribute_warnings(provider_in_hub):
+async def test_plan_handler_collects_attribute_warnings(provider_in_hub) -> None:
     resource_name = "warning_test_resource"
     hub.register("resource", resource_name, WarningResource)
     try:

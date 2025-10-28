@@ -21,7 +21,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.mark.asyncio
-async def test_passes_through_json_state():
+async def test_passes_through_json_state() -> None:
     """State should be returned unchanged."""
     state_data = {"name": "test", "value": 123}
     state_json = json.dumps(state_data).encode("utf-8")
@@ -39,7 +39,7 @@ async def test_passes_through_json_state():
 
 
 @pytest.mark.asyncio
-async def test_handles_empty_state():
+async def test_handles_empty_state() -> None:
     """Empty state should return empty object."""
     request = pb.UpgradeResourceState.Request(
         type_name="test_resource",
@@ -51,5 +51,6 @@ async def test_handles_empty_state():
 
     assert response.upgraded_state.json == b"{}"
     assert len(response.diagnostics) == 0
+
 
 # 🐍🏗️🔚

@@ -72,12 +72,12 @@ class SampleResource(BaseResource[Any, SampleState, SampleConfig]):
 class TestFromCtyConversion:
     """Tests for BaseResource.from_cty() and conversion helpers."""
 
-    def test_from_cty_with_null_value(self):
+    def test_from_cty_with_null_value(self) -> None:
         """Test from_cty returns None for null values."""
         result = SampleResource.from_cty(None, SampleConfig)
         assert result is None
 
-    def test_from_cty_with_valid_cty_value(self):
+    def test_from_cty_with_valid_cty_value(self) -> None:
         """Test from_cty converts CtyValue to attrs class."""
         cty_type = CtyObject({"name": CtyString(), "count": CtyNumber()})
         cty_value = cty_type.validate({"name": "test", "count": 10})
@@ -88,7 +88,7 @@ class TestFromCtyConversion:
         assert result.name == "test"
         assert result.count == 10
 
-    def test_handle_cty_value_with_null(self):
+    def test_handle_cty_value_with_null(self) -> None:
         """Test _handle_cty_value returns None for null."""
         cty_type = CtyString()
         null_value = CtyValue.null(cty_type)
@@ -97,7 +97,7 @@ class TestFromCtyConversion:
 
         assert result is None
 
-    def test_handle_cty_value_with_unknown_primitive(self):
+    def test_handle_cty_value_with_unknown_primitive(self) -> None:
         """Test _handle_cty_value returns None for unknown primitive."""
         cty_type = CtyString()
         unknown_value = CtyValue.unknown(cty_type)
@@ -106,7 +106,7 @@ class TestFromCtyConversion:
 
         assert result is None
 
-    def test_handle_cty_value_with_unknown_object(self):
+    def test_handle_cty_value_with_unknown_object(self) -> None:
         """Test _handle_cty_value processes unknown objects."""
         cty_type = CtyObject({"name": CtyString()})
         unknown_value = CtyValue.unknown(cty_type)
@@ -117,7 +117,7 @@ class TestFromCtyConversion:
         # Result depends on the value structure
         assert result is not None or result is None  # Either way is valid
 
-    def test_handle_list_conversion(self):
+    def test_handle_list_conversion(self) -> None:
         """Test _handle_list_conversion converts list items."""
         data = ["item1", "item2", "item3"]
 
@@ -127,7 +127,7 @@ class TestFromCtyConversion:
         assert len(result) == 3
         assert result[0] == "item1"
 
-    def test_handle_dict_conversion(self):
+    def test_handle_dict_conversion(self) -> None:
         """Test _handle_dict_conversion converts dict values."""
         data = {"key1": "value1", "key2": "value2"}
 
@@ -137,7 +137,7 @@ class TestFromCtyConversion:
         assert result["key1"] == "value1"
         assert result["key2"] == "value2"
 
-    def test_handle_attrs_conversion_success(self):
+    def test_handle_attrs_conversion_success(self) -> None:
         """Test _handle_attrs_conversion creates attrs instance."""
         data = {"name": "test", "count": 5}
 
@@ -147,13 +147,13 @@ class TestFromCtyConversion:
         assert result.name == "test"
         assert result.count == 5
 
-    def test_handle_attrs_conversion_with_non_dict_returns_none(self):
+    def test_handle_attrs_conversion_with_non_dict_returns_none(self) -> None:
         """Test _handle_attrs_conversion returns None for non-dict."""
         result = SampleResource._handle_attrs_conversion("not a dict", SampleConfig)
 
         assert result is None
 
-    def test_handle_attrs_conversion_with_missing_required_field_returns_none(self):
+    def test_handle_attrs_conversion_with_missing_required_field_returns_none(self) -> None:
         """Test _handle_attrs_conversion returns None for missing required fields."""
         # Missing 'name' field which is required
         data = {"count": 5}
@@ -162,13 +162,13 @@ class TestFromCtyConversion:
 
         assert result is None
 
-    def test_handle_attrs_conversion_raises_on_other_type_errors(self):
+    def test_handle_attrs_conversion_raises_on_other_type_errors(self) -> None:
         """Test _handle_attrs_conversion raises TypeError for non-missing-field errors."""
 
         # Create a malformed attrs class that will cause a different TypeError
         @attrs.define
         class BadConfig:
-            def __init__(self):
+            def __init__(self) -> None:
                 raise TypeError("Custom error not about missing fields")
 
         data = {"field": "value"}
@@ -176,24 +176,24 @@ class TestFromCtyConversion:
         with pytest.raises(TypeError, match="Could not create"):
             SampleResource._handle_attrs_conversion(data, BadConfig)
 
-    def test_cty_to_attrs_recursive_with_none(self):
+    def test_cty_to_attrs_recursive_with_none(self) -> None:
         """Test _cty_to_attrs_recursive returns None for None."""
         result = SampleResource._cty_to_attrs_recursive(None, str)
         assert result is None
 
-    def test_cty_to_attrs_recursive_with_unknown_sentinel(self):
+    def test_cty_to_attrs_recursive_with_unknown_sentinel(self) -> None:
         """Test _cty_to_attrs_recursive returns None for unknown sentinel."""
         result = SampleResource._cty_to_attrs_recursive(_UNREFINED_UNKNOWN_SENTINEL, str)
         assert result is None
 
-    def test_cty_to_attrs_recursive_with_union_type(self):
+    def test_cty_to_attrs_recursive_with_union_type(self) -> None:
         """Test _cty_to_attrs_recursive handles Union types."""
         from typing import Union
 
         result = SampleResource._cty_to_attrs_recursive("test", Union[str, None])
         assert result == "test"
 
-    def test_cty_to_attrs_recursive_with_list(self):
+    def test_cty_to_attrs_recursive_with_list(self) -> None:
         """Test _cty_to_attrs_recursive handles list."""
         data = ["a", "b", "c"]
 
@@ -201,7 +201,7 @@ class TestFromCtyConversion:
 
         assert result == ["a", "b", "c"]
 
-    def test_cty_to_attrs_recursive_with_dict(self):
+    def test_cty_to_attrs_recursive_with_dict(self) -> None:
         """Test _cty_to_attrs_recursive handles dict."""
         data = {"key": "value"}
 
@@ -209,7 +209,7 @@ class TestFromCtyConversion:
 
         assert result == {"key": "value"}
 
-    def test_cty_to_attrs_recursive_with_attrs_class(self):
+    def test_cty_to_attrs_recursive_with_attrs_class(self) -> None:
         """Test _cty_to_attrs_recursive creates attrs instance."""
         data = {"name": "test", "count": 10}
 
@@ -222,7 +222,7 @@ class TestFromCtyConversion:
 class TestCtyToDictPreservingUnknown:
     """Tests for _cty_to_dict_preserving_unknown helper."""
 
-    def test_preserves_unknown_values(self, caplog):
+    def test_preserves_unknown_values(self, caplog) -> None:
         """Test that unknown CtyValues are preserved."""
         import logging
 
@@ -242,7 +242,7 @@ class TestCtyToDictPreservingUnknown:
         assert isinstance(result["value"], CtyValue)
         assert result["value"].is_unknown
 
-    def test_converts_known_values(self):
+    def test_converts_known_values(self) -> None:
         """Test that known values are converted to native types."""
         cty_type = CtyObject({"name": CtyString(), "active": CtyBool()})
         cty_value = cty_type.validate({"name": "test", "active": True})
@@ -252,7 +252,7 @@ class TestCtyToDictPreservingUnknown:
         assert result["name"] == "test"
         assert result["active"] is True
 
-    def test_returns_empty_dict_for_null(self):
+    def test_returns_empty_dict_for_null(self) -> None:
         """Test returns empty dict for null value."""
         cty_type = CtyObject({"name": CtyString()})
         null_value = CtyValue.null(cty_type)
@@ -261,7 +261,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == {}
 
-    def test_returns_empty_dict_for_none(self, caplog):
+    def test_returns_empty_dict_for_none(self, caplog) -> None:
         """Test returns empty dict for None."""
         import logging
 
@@ -271,7 +271,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == {}
 
-    def test_handles_non_object_types(self, caplog):
+    def test_handles_non_object_types(self, caplog) -> None:
         """Test handles non-CtyObject types."""
         import logging
 
@@ -283,7 +283,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == "test"
 
-    def test_handles_non_cty_values_in_dict(self, caplog):
+    def test_handles_non_cty_values_in_dict(self, caplog) -> None:
         """Test handles non-CtyValue items in dictionary."""
         import logging
 
@@ -305,7 +305,7 @@ class TestLifecycleHooks:
     """Tests for lifecycle hook methods."""
 
     @pytest.mark.asyncio
-    async def test_create_hook_default_implementation(self):
+    async def test_create_hook_default_implementation(self) -> None:
         """Test _create hook default implementation."""
         resource = SampleResource()
         base_plan = {"name": "test", "count": 5}
@@ -318,7 +318,7 @@ class TestLifecycleHooks:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_update_hook_default_implementation(self):
+    async def test_update_hook_default_implementation(self) -> None:
         """Test _update hook default implementation."""
         resource = SampleResource()
         base_plan = {"name": "updated", "count": 10}
@@ -331,7 +331,7 @@ class TestLifecycleHooks:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_delete_plan_hook_default_implementation(self):
+    async def test_delete_plan_hook_default_implementation(self) -> None:
         """Test _delete_plan hook default implementation."""
         resource = SampleResource()
 
@@ -343,7 +343,7 @@ class TestLifecycleHooks:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_create_apply_hook_default_implementation(self):
+    async def test_create_apply_hook_default_implementation(self) -> None:
         """Test _create_apply hook default implementation."""
         resource = SampleResource()
         planned_state = SampleState(id="new-id", name="created", count=1)
@@ -362,7 +362,7 @@ class TestLifecycleHooks:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_update_apply_hook_default_implementation(self):
+    async def test_update_apply_hook_default_implementation(self) -> None:
         """Test _update_apply hook default implementation."""
         resource = SampleResource()
         planned_state = SampleState(id="res-123", name="updated", count=2)

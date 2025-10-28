@@ -42,7 +42,7 @@ from pyvider.observability import (
 class TestMetricsImport:
     """Test that all metrics are importable and have correct types."""
 
-    def test_all_metrics_importable(self):
+    def test_all_metrics_importable(self) -> None:
         """Verify all metrics can be imported from observability module."""
         # Counter metrics
         assert resource_operations is not None
@@ -87,7 +87,7 @@ class TestMetricsImport:
         assert schema_generation_duration is not None
         assert function_duration is not None
 
-    def test_metrics_have_names(self):
+    def test_metrics_have_names(self) -> None:
         """Verify all metrics have name attributes."""
         assert hasattr(resource_operations, "name")
         assert hasattr(handler_duration, "name")
@@ -97,127 +97,127 @@ class TestMetricsImport:
 class TestCounterMetrics:
     """Test counter metric functionality."""
 
-    def test_resource_operations_counter(self):
+    def test_resource_operations_counter(self) -> None:
         """Test resource_operations counter increments correctly."""
         initial_value = resource_operations.value
         resource_operations.inc(operation="create", resource_type="test")
         assert resource_operations.value == initial_value + 1
 
-    def test_resource_create_counter(self):
+    def test_resource_create_counter(self) -> None:
         """Test resource_create_total counter."""
         initial_value = resource_create_total.value
         resource_create_total.inc(resource_type="aws_instance")
         assert resource_create_total.value == initial_value + 1
 
-    def test_resource_read_counter(self):
+    def test_resource_read_counter(self) -> None:
         """Test resource_read_total counter."""
         initial_value = resource_read_total.value
         resource_read_total.inc(resource_type="aws_instance")
         assert resource_read_total.value == initial_value + 1
 
-    def test_resource_update_counter(self):
+    def test_resource_update_counter(self) -> None:
         """Test resource_update_total counter."""
         initial_value = resource_update_total.value
         resource_update_total.inc(resource_type="aws_instance")
         assert resource_update_total.value == initial_value + 1
 
-    def test_resource_delete_counter(self):
+    def test_resource_delete_counter(self) -> None:
         """Test resource_delete_total counter."""
         initial_value = resource_delete_total.value
         resource_delete_total.inc(resource_type="aws_instance")
         assert resource_delete_total.value == initial_value + 1
 
-    def test_resource_errors_counter(self):
+    def test_resource_errors_counter(self) -> None:
         """Test resource_errors counter."""
         initial_value = resource_errors.value
         resource_errors.inc(operation="create", error_type="ValidationError")
         assert resource_errors.value == initial_value + 1
 
-    def test_handler_requests_counter(self):
+    def test_handler_requests_counter(self) -> None:
         """Test handler_requests counter."""
         initial_value = handler_requests.value
         handler_requests.inc(handler="ApplyResourceChange")
         assert handler_requests.value == initial_value + 1
 
-    def test_handler_errors_counter(self):
+    def test_handler_errors_counter(self) -> None:
         """Test handler_errors counter."""
         initial_value = handler_errors.value
         handler_errors.inc(handler="ApplyResourceChange", error="RuntimeError")
         assert handler_errors.value == initial_value + 1
 
-    def test_components_discovered_counter(self):
+    def test_components_discovered_counter(self) -> None:
         """Test components_discovered counter."""
         initial_value = components_discovered.value
         components_discovered.inc(component_type="resource")
         assert components_discovered.value == initial_value + 1
 
-    def test_discovery_errors_counter(self):
+    def test_discovery_errors_counter(self) -> None:
         """Test discovery_errors counter."""
         initial_value = discovery_errors.value
         discovery_errors.inc(error_type="ImportError")
         assert discovery_errors.value == initial_value + 1
 
-    def test_schema_cache_hits_counter(self):
+    def test_schema_cache_hits_counter(self) -> None:
         """Test schema_cache_hits counter."""
         initial_value = schema_cache_hits.value
         schema_cache_hits.inc()
         assert schema_cache_hits.value == initial_value + 1
 
-    def test_datasource_read_counter(self):
+    def test_datasource_read_counter(self) -> None:
         """Test datasource_read_total counter."""
         initial_value = datasource_read_total.value
         datasource_read_total.inc(datasource_type="aws_ami")
         assert datasource_read_total.value == initial_value + 1
 
-    def test_datasource_errors_counter(self):
+    def test_datasource_errors_counter(self) -> None:
         """Test datasource_errors counter."""
         initial_value = datasource_errors.value
         datasource_errors.inc(datasource_type="aws_ami", error="NotFoundError")
         assert datasource_errors.value == initial_value + 1
 
-    def test_function_calls_counter(self):
+    def test_function_calls_counter(self) -> None:
         """Test function_calls counter."""
         initial_value = function_calls.value
         function_calls.inc(function_name="test_function")
         assert function_calls.value == initial_value + 1
 
-    def test_function_errors_counter(self):
+    def test_function_errors_counter(self) -> None:
         """Test function_errors counter."""
         initial_value = function_errors.value
         function_errors.inc(function_name="test_function", error="ValueError")
         assert function_errors.value == initial_value + 1
 
-    def test_ephemeral_open_counter(self):
+    def test_ephemeral_open_counter(self) -> None:
         """Test ephemeral_open_total counter."""
         initial_value = ephemeral_open_total.value
         ephemeral_open_total.inc(ephemeral_type="aws_credentials")
         assert ephemeral_open_total.value == initial_value + 1
 
-    def test_ephemeral_renew_counter(self):
+    def test_ephemeral_renew_counter(self) -> None:
         """Test ephemeral_renew_total counter."""
         initial_value = ephemeral_renew_total.value
         ephemeral_renew_total.inc(ephemeral_type="aws_credentials")
         assert ephemeral_renew_total.value == initial_value + 1
 
-    def test_ephemeral_close_counter(self):
+    def test_ephemeral_close_counter(self) -> None:
         """Test ephemeral_close_total counter."""
         initial_value = ephemeral_close_total.value
         ephemeral_close_total.inc(ephemeral_type="aws_credentials")
         assert ephemeral_close_total.value == initial_value + 1
 
-    def test_ephemeral_errors_counter(self):
+    def test_ephemeral_errors_counter(self) -> None:
         """Test ephemeral_errors counter."""
         initial_value = ephemeral_errors.value
         ephemeral_errors.inc(ephemeral_type="aws_credentials", operation="open")
         assert ephemeral_errors.value == initial_value + 1
 
-    def test_provider_configure_counter(self):
+    def test_provider_configure_counter(self) -> None:
         """Test provider_configure_total counter."""
         initial_value = provider_configure_total.value
         provider_configure_total.inc()
         assert provider_configure_total.value == initial_value + 1
 
-    def test_provider_configure_errors_counter(self):
+    def test_provider_configure_errors_counter(self) -> None:
         """Test provider_configure_errors counter."""
         initial_value = provider_configure_errors.value
         provider_configure_errors.inc(error="ConfigurationError")
@@ -227,13 +227,13 @@ class TestCounterMetrics:
 class TestHistogramMetrics:
     """Test histogram metric functionality."""
 
-    def test_handler_duration_histogram(self):
+    def test_handler_duration_histogram(self) -> None:
         """Test handler_duration histogram records observations."""
         initial_count = handler_duration.count
         handler_duration.observe(0.123, handler="ApplyResourceChange")
         assert handler_duration.count == initial_count + 1
 
-    def test_handler_duration_multiple_observations(self):
+    def test_handler_duration_multiple_observations(self) -> None:
         """Test handler_duration with multiple observations."""
         initial_count = handler_duration.count
         handler_duration.observe(0.1, handler="PlanResourceChange")
@@ -241,19 +241,19 @@ class TestHistogramMetrics:
         handler_duration.observe(0.3, handler="PlanResourceChange")
         assert handler_duration.count == initial_count + 3
 
-    def test_discovery_duration_histogram(self):
+    def test_discovery_duration_histogram(self) -> None:
         """Test discovery_duration histogram."""
         initial_count = discovery_duration.count
         discovery_duration.observe(1.5, phase="component_discovery")
         assert discovery_duration.count == initial_count + 1
 
-    def test_schema_generation_duration_histogram(self):
+    def test_schema_generation_duration_histogram(self) -> None:
         """Test schema_generation_duration histogram."""
         initial_count = schema_generation_duration.count
         schema_generation_duration.observe(0.05, schema_type="resource")
         assert schema_generation_duration.count == initial_count + 1
 
-    def test_function_duration_histogram(self):
+    def test_function_duration_histogram(self) -> None:
         """Test function_duration histogram."""
         initial_count = function_duration.count
         function_duration.observe(0.01, function_name="test_function")
@@ -263,31 +263,31 @@ class TestHistogramMetrics:
 class TestMetricsWithLabels:
     """Test metrics with various label combinations."""
 
-    def test_counter_with_no_labels(self):
+    def test_counter_with_no_labels(self) -> None:
         """Test counter increments without labels."""
         initial_value = schema_cache_hits.value
         schema_cache_hits.inc()
         assert schema_cache_hits.value == initial_value + 1
 
-    def test_counter_with_single_label(self):
+    def test_counter_with_single_label(self) -> None:
         """Test counter increments with single label."""
         initial_value = resource_create_total.value
         resource_create_total.inc(resource_type="test")
         assert resource_create_total.value == initial_value + 1
 
-    def test_counter_with_multiple_labels(self):
+    def test_counter_with_multiple_labels(self) -> None:
         """Test counter increments with multiple labels."""
         initial_value = resource_errors.value
         resource_errors.inc(operation="create", error_type="ValidationError", resource="test")
         assert resource_errors.value == initial_value + 1
 
-    def test_histogram_with_labels(self):
+    def test_histogram_with_labels(self) -> None:
         """Test histogram observations with labels."""
         initial_count = handler_duration.count
         handler_duration.observe(0.5, handler="Test", method="POST")
         assert handler_duration.count == initial_count + 1
 
-    def test_counter_increments_by_custom_value(self):
+    def test_counter_increments_by_custom_value(self) -> None:
         """Test counter can increment by values other than 1."""
         initial_value = resource_operations.value
         resource_operations.inc(5, operation="bulk_create")
@@ -297,7 +297,7 @@ class TestMetricsWithLabels:
 class TestMetricsIntegration:
     """Integration tests for metrics in realistic scenarios."""
 
-    def test_resource_lifecycle_metrics(self):
+    def test_resource_lifecycle_metrics(self) -> None:
         """Test complete resource lifecycle metrics."""
         # Create
         create_initial = resource_create_total.value
@@ -319,7 +319,7 @@ class TestMetricsIntegration:
         resource_delete_total.inc(resource_type="test_resource")
         assert resource_delete_total.value == delete_initial + 1
 
-    def test_handler_success_flow(self):
+    def test_handler_success_flow(self) -> None:
         """Test handler metrics for successful request."""
         requests_initial = handler_requests.value
         duration_initial = handler_duration.count
@@ -331,7 +331,7 @@ class TestMetricsIntegration:
         assert handler_requests.value == requests_initial + 1
         assert handler_duration.count == duration_initial + 1
 
-    def test_handler_error_flow(self):
+    def test_handler_error_flow(self) -> None:
         """Test handler metrics for failed request."""
         requests_initial = handler_requests.value
         errors_initial = handler_errors.value
@@ -346,7 +346,7 @@ class TestMetricsIntegration:
         assert handler_errors.value == errors_initial + 1
         assert handler_duration.count == duration_initial + 1
 
-    def test_ephemeral_resource_lifecycle(self):
+    def test_ephemeral_resource_lifecycle(self) -> None:
         """Test ephemeral resource lifecycle metrics."""
         open_initial = ephemeral_open_total.value
         renew_initial = ephemeral_renew_total.value
@@ -359,5 +359,6 @@ class TestMetricsIntegration:
         assert ephemeral_open_total.value == open_initial + 1
         assert ephemeral_renew_total.value == renew_initial + 1
         assert ephemeral_close_total.value == close_initial + 1
+
 
 # 🐍🏗️🔚

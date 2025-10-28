@@ -22,7 +22,7 @@ from pyvider.schema import a_bool, a_num, a_str, b_list, b_single, s_data_source
 class TestPvsAttributeToProto:
     """Tests for _pvs_attribute_to_proto function."""
 
-    def test_converts_string_attribute(self):
+    def test_converts_string_attribute(self) -> None:
         """Test converting a string attribute to proto."""
         attr = a_str(required=True, description="Test string")
         proto = _pvs_attribute_to_proto(attr)
@@ -33,7 +33,7 @@ class TestPvsAttributeToProto:
         assert proto.description == "Test string"
         assert proto.optional is False
 
-    def test_converts_number_attribute(self):
+    def test_converts_number_attribute(self) -> None:
         """Test converting a number attribute to proto."""
         attr = a_num(optional=True, description="Test number")
         proto = _pvs_attribute_to_proto(attr)
@@ -43,7 +43,7 @@ class TestPvsAttributeToProto:
         assert proto.required is False
         assert proto.description == "Test number"
 
-    def test_converts_boolean_attribute(self):
+    def test_converts_boolean_attribute(self) -> None:
         """Test converting a boolean attribute to proto."""
         attr = a_bool(computed=True)
         proto = _pvs_attribute_to_proto(attr)
@@ -51,21 +51,21 @@ class TestPvsAttributeToProto:
         assert isinstance(proto, pb.Schema.Attribute)
         assert proto.computed is True
 
-    def test_converts_sensitive_attribute(self):
+    def test_converts_sensitive_attribute(self) -> None:
         """Test converting a sensitive attribute to proto."""
         attr = a_str(sensitive=True, required=True)
         proto = _pvs_attribute_to_proto(attr)
 
         assert proto.sensitive is True
 
-    def test_converts_deprecated_attribute(self):
+    def test_converts_deprecated_attribute(self) -> None:
         """Test converting a deprecated attribute to proto."""
         attr = a_str(deprecated=True, optional=True)
         proto = _pvs_attribute_to_proto(attr)
 
         assert proto.deprecated is True
 
-    def test_attribute_type_encoding(self):
+    def test_attribute_type_encoding(self) -> None:
         """Test that attribute type is properly encoded as JSON bytes."""
         attr = a_str(required=True)
         proto = _pvs_attribute_to_proto(attr)
@@ -80,7 +80,7 @@ class TestPvsAttributeToProto:
 class TestPvsNestedBlockToProto:
     """Tests for _pvs_nested_block_to_proto function."""
 
-    def test_converts_single_nested_block(self):
+    def test_converts_single_nested_block(self) -> None:
         """Test converting a SINGLE nesting mode block."""
         block = b_single("config", attributes={"name": a_str()})
         proto = _pvs_nested_block_to_proto(block)
@@ -89,14 +89,14 @@ class TestPvsNestedBlockToProto:
         assert proto.type_name == "config"
         assert proto.nesting == pb.Schema.NestedBlock.NestingMode.SINGLE
 
-    def test_converts_list_nested_block(self):
+    def test_converts_list_nested_block(self) -> None:
         """Test converting a LIST nesting mode block."""
         block = b_list("items", attributes={"value": a_str()})
         proto = _pvs_nested_block_to_proto(block)
 
         assert proto.nesting == pb.Schema.NestedBlock.NestingMode.LIST
 
-    def test_nested_block_with_min_max_items(self):
+    def test_nested_block_with_min_max_items(self) -> None:
         """Test nested block with min/max items."""
         block = b_list("items", attributes={"value": a_str()}, min_items=1, max_items=10)
         proto = _pvs_nested_block_to_proto(block)
@@ -104,7 +104,7 @@ class TestPvsNestedBlockToProto:
         assert proto.min_items == 1
         assert proto.max_items == 10
 
-    def test_nested_block_without_min_max_defaults_to_zero(self):
+    def test_nested_block_without_min_max_defaults_to_zero(self) -> None:
         """Test that missing min/max items defaults to 0."""
         block = b_single("config", attributes={"name": a_str()})
         proto = _pvs_nested_block_to_proto(block)
@@ -112,7 +112,7 @@ class TestPvsNestedBlockToProto:
         assert proto.min_items == 0
         assert proto.max_items == 0
 
-    def test_nested_block_contains_inner_block(self):
+    def test_nested_block_contains_inner_block(self) -> None:
         """Test that nested block properly converts inner block structure."""
         block = b_single("config", attributes={"name": a_str(), "count": a_num()})
         proto = _pvs_nested_block_to_proto(block)
@@ -124,7 +124,7 @@ class TestPvsNestedBlockToProto:
 class TestPvsObjectTypeToProto:
     """Tests for _pvs_object_type_to_proto function."""
 
-    def test_converts_empty_object_type(self):
+    def test_converts_empty_object_type(self) -> None:
         """Test converting an object type with no attributes."""
         from pyvider.schema.types import PvsObjectType
 
@@ -135,7 +135,7 @@ class TestPvsObjectTypeToProto:
         assert len(proto.attributes) == 0
         assert len(proto.block_types) == 0
 
-    def test_converts_object_type_with_attributes(self):
+    def test_converts_object_type_with_attributes(self) -> None:
         """Test converting object type with attributes."""
         schema = s_resource(attributes={"name": a_str(), "count": a_num()})
         proto = _pvs_object_type_to_proto(schema.block)
@@ -145,7 +145,7 @@ class TestPvsObjectTypeToProto:
         assert "name" in attr_names
         assert "count" in attr_names
 
-    def test_converts_object_type_with_nested_blocks(self):
+    def test_converts_object_type_with_nested_blocks(self) -> None:
         """Test converting object type with nested blocks."""
         from pyvider.schema.types import PvsObjectType
 
@@ -157,7 +157,7 @@ class TestPvsObjectTypeToProto:
         assert len(proto.block_types) == 1
         assert proto.block_types[0].type_name == "config"
 
-    def test_object_type_with_description(self):
+    def test_object_type_with_description(self) -> None:
         """Test object type description is included."""
         from pyvider.schema.types import PvsObjectType
 
@@ -166,7 +166,7 @@ class TestPvsObjectTypeToProto:
 
         assert proto.description == "Test description"
 
-    def test_object_type_with_deprecated_flag(self):
+    def test_object_type_with_deprecated_flag(self) -> None:
         """Test object type deprecated flag."""
         from pyvider.schema.types import PvsObjectType
 
@@ -175,7 +175,7 @@ class TestPvsObjectTypeToProto:
 
         assert proto.deprecated is True
 
-    def test_object_type_version_is_one(self):
+    def test_object_type_version_is_one(self) -> None:
         """Test that object type version is always 1."""
         from pyvider.schema.types import PvsObjectType
 
@@ -189,7 +189,7 @@ class TestPvsSchemaToProto:
     """Tests for pvs_schema_to_proto async function."""
 
     @pytest.mark.asyncio
-    async def test_converts_resource_schema(self):
+    async def test_converts_resource_schema(self) -> None:
         """Test converting a resource schema to proto."""
         schema = s_resource(attributes={"name": a_str(required=True)})
         proto = await pvs_schema_to_proto(schema)
@@ -199,7 +199,7 @@ class TestPvsSchemaToProto:
         assert isinstance(proto.block, pb.Schema.Block)
 
     @pytest.mark.asyncio
-    async def test_converts_data_source_schema(self):
+    async def test_converts_data_source_schema(self) -> None:
         """Test converting a data source schema to proto."""
         schema = s_data_source(attributes={"id": a_str()})
         proto = await pvs_schema_to_proto(schema)
@@ -208,7 +208,7 @@ class TestPvsSchemaToProto:
         assert isinstance(proto.block, pb.Schema.Block)
 
     @pytest.mark.asyncio
-    async def test_schema_version_preserved(self):
+    async def test_schema_version_preserved(self) -> None:
         """Test that schema version is preserved."""
         schema = s_resource(attributes={"name": a_str()})
         original_version = schema.version
@@ -217,7 +217,7 @@ class TestPvsSchemaToProto:
         assert proto.version == original_version
 
     @pytest.mark.asyncio
-    async def test_complex_nested_schema(self):
+    async def test_complex_nested_schema(self) -> None:
         """Test converting a complex schema with nested blocks."""
         from pyvider.schema.types import PvsObjectType, PvsSchema
 
@@ -239,14 +239,14 @@ class TestPvsSchemaToProto:
 class TestSchemaAdapterEdgeCases:
     """Edge case tests for schema adapter."""
 
-    def test_attribute_with_empty_description(self):
+    def test_attribute_with_empty_description(self) -> None:
         """Test attribute with empty description."""
         attr = a_str(required=True, description="")
         proto = _pvs_attribute_to_proto(attr)
 
         assert proto.description == ""
 
-    def test_attribute_with_all_flags_false(self):
+    def test_attribute_with_all_flags_false(self) -> None:
         """Test attribute with all boolean flags false."""
         # Create attribute with default flags (all False except what's default)
         attr = a_str()
@@ -259,14 +259,14 @@ class TestSchemaAdapterEdgeCases:
         assert isinstance(proto.sensitive, bool)
         assert isinstance(proto.deprecated, bool)
 
-    def test_nested_block_with_empty_attributes(self):
+    def test_nested_block_with_empty_attributes(self) -> None:
         """Test nested block with no attributes."""
         block = b_single("empty_config", attributes={})
         proto = _pvs_nested_block_to_proto(block)
 
         assert len(proto.block.attributes) == 0
 
-    def test_deeply_nested_blocks(self):
+    def test_deeply_nested_blocks(self) -> None:
         """Test schema with deeply nested blocks."""
         from pyvider.schema.types import PvsObjectType
 
@@ -290,5 +290,6 @@ class TestSchemaAdapterEdgeCases:
         level1_block = proto.block_types[0]
         assert level1_block.type_name == "level1"
         assert len(level1_block.block.block_types) == 1
+
 
 # 🐍🏗️🔚

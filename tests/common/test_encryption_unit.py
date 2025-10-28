@@ -62,7 +62,7 @@ class TestEncryptionCore:
         if os.path.exists(config_path):
             os.unlink(config_path)
 
-    def test_encrypt_decrypt_roundtrip(self, encryption_key_env):
+    def test_encrypt_decrypt_roundtrip(self, encryption_key_env) -> None:
         """Test that data can be encrypted and decrypted successfully"""
         test_data = b"sensitive information that needs protection"
 
@@ -72,7 +72,7 @@ class TestEncryptionCore:
         assert decrypted == test_data
         assert encrypted != test_data
 
-    def test_encryption_produces_different_output(self, encryption_key_env):
+    def test_encryption_produces_different_output(self, encryption_key_env) -> None:
         """Test that encryption produces different output each time (nonce randomization)"""
         test_data = b"same input data"
 
@@ -83,12 +83,12 @@ class TestEncryptionCore:
         assert decrypt(encrypted1) == test_data
         assert decrypt(encrypted2) == test_data
 
-    def test_encrypt_empty_data(self, encryption_key_env):
+    def test_encrypt_empty_data(self, encryption_key_env) -> None:
         """Test encryption of empty data"""
         assert encrypt(b"") == b""
         assert decrypt(b"") == b""
 
-    def test_encrypt_various_data_sizes(self, encryption_key_env):
+    def test_encrypt_various_data_sizes(self, encryption_key_env) -> None:
         """Test encryption of various data sizes"""
         test_cases = [
             b"a",  # Single byte
@@ -104,7 +104,7 @@ class TestEncryptionCore:
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
 
-    def test_encryption_structure(self, encryption_key_env):
+    def test_encryption_structure(self, encryption_key_env) -> None:
         """Test that encrypted data has the expected structure (version + salt + nonce + ciphertext)"""
         test_data = b"test data for structure verification"
         encrypted = encrypt(test_data)
@@ -117,7 +117,7 @@ class TestEncryptionCore:
         # Check version byte
         assert encrypted[0] == 0x01  # VERSION_CURRENT
 
-    def test_decrypt_invalid_ciphertext_fails(self, encryption_key_env):
+    def test_decrypt_invalid_ciphertext_fails(self, encryption_key_env) -> None:
         """Test that decrypting invalid ciphertext fails with proper error"""
         invalid_data = b"this is not valid encrypted data"
 
@@ -125,14 +125,14 @@ class TestEncryptionCore:
         with pytest.raises(EncryptionError):
             decrypt(invalid_data)
 
-    def test_decrypt_too_short_data_fails(self, encryption_key_env):
+    def test_decrypt_too_short_data_fails(self, encryption_key_env) -> None:
         """Test that data too short to contain a nonce fails"""
         short_data = b"short"  # Less than 12 bytes
 
         with pytest.raises(EncryptionError, match="Ciphertext too short"):
             decrypt(short_data)
 
-    def test_decrypt_corrupted_nonce_fails(self, encryption_key_env):
+    def test_decrypt_corrupted_nonce_fails(self, encryption_key_env) -> None:
         """Test that corrupted nonce in ciphertext fails"""
         test_data = b"test data"
         encrypted = encrypt(test_data)
@@ -144,7 +144,7 @@ class TestEncryptionCore:
         with pytest.raises(EncryptionError, match="Decryption failed"):
             decrypt(corrupted)
 
-    def test_decrypt_corrupted_ciphertext_fails(self, encryption_key_env):
+    def test_decrypt_corrupted_ciphertext_fails(self, encryption_key_env) -> None:
         """Test that corrupted ciphertext fails"""
         test_data = b"test data"
         encrypted = encrypt(test_data)
@@ -169,7 +169,7 @@ class TestKeyDerivation:
         yield
         reset_encryption_manager()
 
-    def test_encrypt_from_environment_variable(self):
+    def test_encrypt_from_environment_variable(self) -> None:
         """Test encryption with key derived from environment variable"""
         test_secret = "test-secret-from-env"
         test_data = b"test data"
@@ -181,7 +181,7 @@ class TestKeyDerivation:
             assert decrypted == test_data
             assert len(encrypted) > len(test_data)  # Has version + salt + nonce + MAC
 
-    def test_encrypt_from_config_file(self):
+    def test_encrypt_from_config_file(self) -> None:
         """Test encryption with key from config file (via environment)"""
         test_data = b"test data"
 
@@ -194,7 +194,7 @@ class TestKeyDerivation:
 
             assert decrypted == test_data
 
-    def test_encrypt_no_secret_fails(self):
+    def test_encrypt_no_secret_fails(self) -> None:
         """Test that missing shared secret raises proper error"""
         with patch.dict(os.environ, {}, clear=True), patch.object(PyviderConfig, "get") as mock_get:
             mock_get.return_value = None
@@ -204,7 +204,7 @@ class TestKeyDerivation:
             with pytest.raises(ConfigurationError, match="Private state shared secret"):
                 encrypt(b"test data")
 
-    def test_salt_randomization(self):
+    def test_salt_randomization(self) -> None:
         """Test that different encryptions use different salts"""
         test_secret = "test-salt-randomization"
         test_data = b"same plaintext"
@@ -224,7 +224,7 @@ class TestKeyDerivation:
             assert decrypt(encrypted1) == test_data
             assert decrypt(encrypted2) == test_data
 
-    def test_different_secrets_produce_different_ciphertexts(self):
+    def test_different_secrets_produce_different_ciphertexts(self) -> None:
         """Test that different secrets produce different ciphertexts"""
         test_data = b"same plaintext"
 
@@ -245,7 +245,7 @@ class TestKeyDerivation:
             with pytest.raises(EncryptionError):
                 decrypt(encrypted2)  # encrypted with secret2
 
-    def test_same_secret_can_decrypt(self):
+    def test_same_secret_can_decrypt(self) -> None:
         """Test that the same secret can decrypt previously encrypted data"""
         test_secret = "consistent-secret"
         test_data = b"test data"
@@ -262,7 +262,7 @@ class TestKeyDerivation:
 
         assert decrypted == test_data
 
-    def test_hkdf_info_parameter(self):
+    def test_hkdf_info_parameter(self) -> None:
         """Test that HKDF uses the correct info parameter"""
         # Info should be well-defined (salt is now random per encryption)
         assert HKDF_INFO == b"pyvider-private-state-v1"
@@ -271,7 +271,7 @@ class TestKeyDerivation:
 class TestEncryptionSecurity:
     """Test security properties of the encryption implementation"""
 
-    def test_encryption_key_not_leaked_in_exceptions(self, encryption_key_env):
+    def test_encryption_key_not_leaked_in_exceptions(self, encryption_key_env) -> None:
         """Test that encryption keys are not leaked in exception messages"""
         invalid_data = b"invalid encrypted data"
 
@@ -284,17 +284,17 @@ class TestEncryptionSecurity:
             # No long hex strings that could be key material
             assert len([word for word in error_message.split() if len(word) > 30]) == 0
 
-    def test_ciphertext_does_not_contain_plaintext(self, encryption_key_env):
+    def test_ciphertext_does_not_contain_plaintext(self, encryption_key_env) -> None:
         """Test that ciphertext does not contain recognizable plaintext"""
         plaintext = b"this is very secret information that should not be visible"
         encrypted = encrypt(plaintext)
 
         # The encrypted data should not contain any of the original words
-        encrypted_str = encrypted.decode("latin1", errors="ignore").lower()
+        encrypted.decode("latin1", errors="ignore").lower()
         for word in [b"secret", b"information", b"visible"]:
             assert word not in encrypted
 
-    def test_key_derivation_is_deterministic(self):
+    def test_key_derivation_is_deterministic(self) -> None:
         """Test that key derivation is deterministic for the same salt and secret"""
         from cryptography.hazmat.primitives import hashes
         from cryptography.hazmat.primitives.kdf.hkdf import HKDF
@@ -311,7 +311,7 @@ class TestEncryptionSecurity:
             salt=test_salt,
             info=HKDF_INFO,
         )
-        expected_key = hkdf.derive(test_secret.encode("utf-8"))
+        hkdf.derive(test_secret.encode("utf-8"))
 
         # Encrypt and extract the derived key behavior by decrypting
         # We can't access _derive_key directly, but we can verify determinism
@@ -336,7 +336,7 @@ class TestEncryptionSecurity:
             assert extracted_salt == test_salt
 
     @pytest.mark.parametrize("data_size", [1, 16, 256, 1024, 4096])
-    def test_encryption_timing_independence(self, encryption_key_env, data_size):
+    def test_encryption_timing_independence(self, encryption_key_env, data_size) -> None:
         """Test that encryption time doesn't vary significantly with data content"""
         # This is a basic test - sophisticated timing analysis would require more complex testing
         data_zeros = b"\x00" * data_size
@@ -357,7 +357,7 @@ class TestEncryptionSecurity:
 class TestEncryptionCompatibility:
     """Test compatibility and edge cases"""
 
-    def test_encryption_with_unicode_secrets(self):
+    def test_encryption_with_unicode_secrets(self) -> None:
         """Test that unicode secrets work correctly"""
         unicode_secret = "🔐🗝️💾 unicode secret with emojis"
 
@@ -370,7 +370,7 @@ class TestEncryptionCompatibility:
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
 
-    def test_encryption_with_very_long_secret(self):
+    def test_encryption_with_very_long_secret(self) -> None:
         """Test encryption with very long shared secret"""
         long_secret = "x" * 10000  # 10KB secret
 
@@ -382,7 +382,7 @@ class TestEncryptionCompatibility:
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
 
-    def test_encryption_with_special_characters_secret(self):
+    def test_encryption_with_special_characters_secret(self) -> None:
         """Test encryption with special characters in secret"""
         special_secret = "!@#$%^&*()_+-={}[]|\\:;\"'<>,.?/~`"
 
@@ -393,5 +393,6 @@ class TestEncryptionCompatibility:
             encrypted = encrypt(test_data)
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
+
 
 # 🐍🏗️🔚

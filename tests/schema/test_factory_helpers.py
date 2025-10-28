@@ -48,14 +48,14 @@ class TestAUnknownHelper:
         ],
         ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
-    def test_a_unknown_with_various_types(self, schema_builder, expected_type):
+    def test_a_unknown_with_various_types(self, schema_builder, expected_type) -> None:
         result = a_unknown(schema_builder)
         assert isinstance(result, CtyValue)
         assert result.is_unknown, "Value MUST be unknown"
         assert not result.is_null, "Value MUST NOT be null"
         assert result.vtype.equal(expected_type), "The CtyType of the value must match the schema"
 
-    def test_a_unknown_with_complex_object_schema(self):
+    def test_a_unknown_with_complex_object_schema(self) -> None:
         schema_builder = s_resource(
             attributes={
                 "name": a_str(),
@@ -70,7 +70,7 @@ class TestAUnknownHelper:
         assert isinstance(result.vtype, CtyObject)
 
     @pytest.mark.parametrize("invalid_input", ["not a schema builder", 12345, None])
-    def test_a_unknown_raises_type_error_for_invalid_input(self, invalid_input):
+    def test_a_unknown_raises_type_error_for_invalid_input(self, invalid_input) -> None:
         with pytest.raises(TypeError, match="a_unknown.. expects a schema builder instance"):
             a_unknown(invalid_input)
 
@@ -92,14 +92,14 @@ class TestANullHelper:
         ],
         ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
-    def test_a_null_with_various_types(self, schema_builder, expected_type):
+    def test_a_null_with_various_types(self, schema_builder, expected_type) -> None:
         result = a_null(schema_builder)
         assert isinstance(result, CtyValue)
         assert not result.is_unknown, "Null values are always considered known"
         assert result.is_null, "Value MUST be null"
         assert result.vtype.equal(expected_type), "The CtyType of the value must match the schema"
 
-    def test_a_null_with_complex_object_schema(self):
+    def test_a_null_with_complex_object_schema(self) -> None:
         schema_builder = s_resource(
             attributes={"id": a_str(), "config": a_obj(attributes={"enabled": a_bool()})}
         )
@@ -111,8 +111,9 @@ class TestANullHelper:
         assert isinstance(result.vtype, CtyObject)
 
     @pytest.mark.parametrize("invalid_input", ["not a schema builder", 12345, None])
-    def test_a_null_raises_type_error_for_invalid_input(self, invalid_input):
+    def test_a_null_raises_type_error_for_invalid_input(self, invalid_input) -> None:
         with pytest.raises(TypeError, match="a_null.. expects a schema builder instance"):
             a_null(invalid_input)
+
 
 # 🐍🏗️🔚

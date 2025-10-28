@@ -1,7 +1,7 @@
 from tests.validators.schema_validators import validate_schema_dict
 
 
-def test_schema_validation():
+def test_schema_validation() -> None:
     schema = {
         "description": "Valid schema",
         "attributes": [{"name": "attr1", "type": "string"}],

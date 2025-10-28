@@ -44,7 +44,7 @@ class DiagnosticTestDataSource(BaseDataSource):
 
 
 @pytest.mark.asyncio
-async def test_create_diagnostic_from_ctyattibutevalidationerror():
+async def test_create_diagnostic_from_ctyattibutevalidationerror() -> None:
     """
     Verifies that a CtyAttributeValidationError for a missing attribute
     is converted into a clear diagnostic.
@@ -63,7 +63,7 @@ async def test_create_diagnostic_from_ctyattibutevalidationerror():
 
 
 @pytest.mark.asyncio
-async def test_create_diagnostic_from_ctynumbervalidationerror():
+async def test_create_diagnostic_from_ctynumbervalidationerror() -> None:
     """
     Verifies that a specific primitive error (CtyNumberValidationError)
     is converted into a diagnostic with a precise detail message.
@@ -82,7 +82,7 @@ async def test_create_diagnostic_from_ctynumbervalidationerror():
 
 
 @pytest.mark.asyncio
-async def test_create_diagnostic_from_generic_ctyvalidationerror():
+async def test_create_diagnostic_from_generic_ctyvalidationerror() -> None:
     """
     Verifies that a generic CtyValidationError falls back to the
     generic detail message.
@@ -94,5 +94,6 @@ async def test_create_diagnostic_from_generic_ctyvalidationerror():
     assert diag.summary == "🐍🏗️ ⚠️ A generic validation error."
     assert diag.detail == "A configuration validation error occurred."
     assert not diag.attribute.steps
+
 
 # 🐍🏗️🔚

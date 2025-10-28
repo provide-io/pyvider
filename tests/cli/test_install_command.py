@@ -17,13 +17,13 @@ from pyvider.cli.install_command import _uninstall_provider, is_running_as_binar
 class TestIsRunningAsBinary:
     """Tests for is_running_as_binary function."""
 
-    def test_returns_false_in_normal_mode(self):
+    def test_returns_false_in_normal_mode(self) -> None:
         """Test that it returns False in normal Python mode."""
         # In normal mode, sys.frozen is not set
         result = is_running_as_binary()
         assert result is False
 
-    def test_returns_true_when_frozen_attribute_exists(self):
+    def test_returns_true_when_frozen_attribute_exists(self) -> None:
         """Test that it returns True when sys.frozen is set."""
         import sys
 
@@ -43,7 +43,7 @@ class TestIsRunningAsBinary:
 class TestInstallCommandValidation:
     """Tests for install command validation logic."""
 
-    def test_install_requires_pyvider_project(self, tmp_path):
+    def test_install_requires_pyvider_project(self, tmp_path) -> None:
         """Test that install command requires a pyvider project."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -51,7 +51,7 @@ class TestInstallCommandValidation:
             assert result.exit_code != 0
             assert "pyvider.toml" in result.output or "pyproject.toml" in result.output
 
-    def test_install_accepts_pyvider_toml(self, tmp_path):
+    def test_install_accepts_pyvider_toml(self, tmp_path) -> None:
         """Test that install command accepts pyvider.toml."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -65,7 +65,7 @@ class TestInstallCommandValidation:
                     # Should not fail validation
                     assert "must be run from a directory" not in result.output
 
-    def test_install_accepts_pyproject_with_tool_pyvider(self, tmp_path):
+    def test_install_accepts_pyproject_with_tool_pyvider(self, tmp_path) -> None:
         """Test that install command accepts pyproject.toml with [tool.pyvider]."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -79,7 +79,7 @@ class TestInstallCommandValidation:
                     # Should not fail validation
                     assert "must be run from a directory" not in result.output
 
-    def test_install_rejects_pyproject_without_tool_pyvider(self, tmp_path):
+    def test_install_rejects_pyproject_without_tool_pyvider(self, tmp_path) -> None:
         """Test that install command rejects pyproject.toml without [tool.pyvider]."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -94,7 +94,7 @@ class TestInstallCommandValidation:
 class TestInstallCommandBinaryMode:
     """Tests for install command in binary mode."""
 
-    def test_binary_mode_copies_executable(self, tmp_path):
+    def test_binary_mode_copies_executable(self, tmp_path) -> None:
         """Test that binary mode copies the executable."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -120,7 +120,7 @@ class TestInstallCommandBinaryMode:
                         if result.exit_code == 0:
                             assert "Success" in result.output or "installed" in result.output.lower()
 
-    def test_binary_mode_handles_copy_error(self, tmp_path):
+    def test_binary_mode_handles_copy_error(self, tmp_path) -> None:
         """Test that binary mode handles copy errors gracefully."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -142,7 +142,7 @@ class TestInstallCommandBinaryMode:
 class TestInstallCommandDevelopmentMode:
     """Tests for install command in development mode."""
 
-    def test_development_mode_invokes_prep_provider(self, tmp_path):
+    def test_development_mode_invokes_prep_provider(self, tmp_path) -> None:
         """Test that development mode invokes prep_provider."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -158,7 +158,7 @@ class TestInstallCommandDevelopmentMode:
                     if result.exit_code == 0 or "Development Mode" in result.output:
                         assert mock_invoke.called or "Development Mode" in result.output
 
-    def test_development_mode_handles_prep_provider_error(self, tmp_path):
+    def test_development_mode_handles_prep_provider_error(self, tmp_path) -> None:
         """Test that development mode handles prep_provider errors."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -179,7 +179,7 @@ class TestInstallCommandDevelopmentMode:
 class TestInstallCommandEdgeCases:
     """Edge case tests for install command."""
 
-    def test_install_creates_plugin_directory_if_missing(self, tmp_path):
+    def test_install_creates_plugin_directory_if_missing(self, tmp_path) -> None:
         """Test that install creates the plugin directory if it doesn't exist."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -198,7 +198,7 @@ class TestInstallCommandEdgeCases:
                     # The main point is that it doesn't fail when directory doesn't exist
                     assert result.exit_code == 0 or "Success" in result.output
 
-    def test_install_warns_when_replacing_existing_binary(self, tmp_path):
+    def test_install_warns_when_replacing_existing_binary(self, tmp_path) -> None:
         """Test that install warns when replacing an existing binary."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -227,7 +227,7 @@ class TestInstallCommandEdgeCases:
                         if result.exit_code == 0:
                             assert "Warning" in result.output or "replaced" in result.output.lower()
 
-    def test_install_handles_unreadable_pyproject(self, tmp_path):
+    def test_install_handles_unreadable_pyproject(self, tmp_path) -> None:
         """Test that install handles unreadable pyproject.toml gracefully."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -246,7 +246,7 @@ class TestInstallCommandEdgeCases:
 class TestUninstallCommand:
     """Tests for --uninstall flag and _uninstall_provider function."""
 
-    def test_uninstall_provider_removes_script(self, tmp_path):
+    def test_uninstall_provider_removes_script(self, tmp_path) -> None:
         """Test that _uninstall_provider removes the provider script."""
         from pyvider.cli.context import PyviderContext
 
@@ -265,7 +265,7 @@ class TestUninstallCommand:
         # Verify script was removed
         assert not provider_script.exists()
 
-    def test_uninstall_provider_removes_symlink(self, tmp_path):
+    def test_uninstall_provider_removes_symlink(self, tmp_path) -> None:
         """Test that _uninstall_provider removes the venv symlink."""
         from pyvider.cli.context import PyviderContext
 
@@ -290,7 +290,7 @@ class TestUninstallCommand:
         # Verify symlink was removed
         assert not symlink_path.exists() and not symlink_path.is_symlink()
 
-    def test_uninstall_provider_idempotent(self, tmp_path):
+    def test_uninstall_provider_idempotent(self, tmp_path) -> None:
         """Test that _uninstall_provider is idempotent."""
         from pyvider.cli.context import PyviderContext
 
@@ -306,7 +306,7 @@ class TestUninstallCommand:
             # Call again - should still succeed
             _uninstall_provider(ctx, quiet=True)
 
-    def test_uninstall_requires_pyvider_project(self, tmp_path):
+    def test_uninstall_requires_pyvider_project(self, tmp_path) -> None:
         """Test that --uninstall requires a pyvider project."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -319,7 +319,7 @@ class TestUninstallCommand:
 class TestReinstallCommand:
     """Tests for --reinstall flag."""
 
-    def test_reinstall_uninstalls_then_installs(self, tmp_path):
+    def test_reinstall_uninstalls_then_installs(self, tmp_path) -> None:
         """Test that --reinstall performs uninstall then install."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -340,7 +340,7 @@ class TestReinstallCommand:
 class TestMutuallyExclusiveFlags:
     """Tests for mutually exclusive flag validation."""
 
-    def test_uninstall_and_reinstall_are_mutually_exclusive(self, tmp_path):
+    def test_uninstall_and_reinstall_are_mutually_exclusive(self, tmp_path) -> None:
         """Test that --uninstall and --reinstall cannot be used together."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):
@@ -357,7 +357,7 @@ class TestMutuallyExclusiveFlags:
 class TestInstallCommandSymlinkCreation:
     """Tests for symlink creation during install."""
 
-    def test_install_calls_place_provider_script(self, tmp_path):
+    def test_install_calls_place_provider_script(self, tmp_path) -> None:
         """Test that install calls _place_terraform_provider_script in development mode."""
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):

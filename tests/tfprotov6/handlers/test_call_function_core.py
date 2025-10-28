@@ -22,10 +22,10 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 class TestProcessFunctionArguments:
     """Tests for _process_function_arguments helper function."""
 
-    def test_processes_simple_arguments(self):
+    def test_processes_simple_arguments(self) -> None:
         """Test processing simple required arguments."""
 
-        def test_func(name: str, count: int):
+        def test_func(name: str, count: int) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -54,10 +54,10 @@ class TestProcessFunctionArguments:
                 assert kwargs == {"name": "test", "count": 42}
                 assert has_unknown is False
 
-    def test_detects_unknown_arguments(self):
+    def test_detects_unknown_arguments(self) -> None:
         """Test that unknown arguments are detected."""
 
-        def test_func(name: str):
+        def test_func(name: str) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -67,14 +67,14 @@ class TestProcessFunctionArguments:
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal:
             mock_unmarshal.return_value = CtyValue(vtype=CtyString(), value="test", is_unknown=True)
 
-            kwargs, has_unknown = _process_function_arguments([arg_proto], params_meta, None, func_sig)
+            _kwargs, has_unknown = _process_function_arguments([arg_proto], params_meta, None, func_sig)
 
             assert has_unknown is True
 
-    def test_processes_variadic_arguments(self):
+    def test_processes_variadic_arguments(self) -> None:
         """Test processing variadic arguments."""
 
-        def test_func(name: str, *options):
+        def test_func(name: str, *options) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -104,10 +104,10 @@ class TestProcessFunctionArguments:
                 assert kwargs["options"] == (1, 2)
                 assert has_unknown is False
 
-    def test_skips_none_values_with_defaults(self):
+    def test_skips_none_values_with_defaults(self) -> None:
         """Test that None values are skipped when parameter has default."""
 
-        def test_func(name: str, count: int = 10):
+        def test_func(name: str, count: int = 10) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -129,17 +129,17 @@ class TestProcessFunctionArguments:
                 ]
                 mock_to_native.side_effect = ["test", None]
 
-                kwargs, has_unknown = _process_function_arguments(
+                kwargs, _has_unknown = _process_function_arguments(
                     [arg1_proto, arg2_proto], params_meta, None, func_sig
                 )
 
                 assert kwargs == {"name": "test"}
                 assert "count" not in kwargs
 
-    def test_detects_unknown_in_variadic_args(self):
+    def test_detects_unknown_in_variadic_args(self) -> None:
         """Test that unknown values in variadic args are detected."""
 
-        def test_func(*args):
+        def test_func(*args) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -155,7 +155,7 @@ class TestProcessFunctionArguments:
                 CtyValue(vtype=CtyDynamic(), value=2, is_unknown=True),
             ]
 
-            kwargs, has_unknown = _process_function_arguments(
+            _kwargs, has_unknown = _process_function_arguments(
                 [arg1_proto, arg2_proto], params_meta, variadic_meta, func_sig
             )
 
@@ -165,7 +165,7 @@ class TestProcessFunctionArguments:
 class TestInjectCapabilities:
     """Tests for _inject_capabilities helper function."""
 
-    def test_injects_capability_when_parent_capability_exists(self):
+    def test_injects_capability_when_parent_capability_exists(self) -> None:
         """Test that capability is injected when parent_capability is set."""
         func_obj = mock.MagicMock()
         func_obj.__name__ = "test_func"
@@ -181,7 +181,7 @@ class TestInjectCapabilities:
 
             assert "test_capability" in kwargs
 
-    def test_does_not_inject_when_no_parent_capability(self):
+    def test_does_not_inject_when_no_parent_capability(self) -> None:
         """Test that nothing is injected when no parent_capability."""
         func_obj = mock.MagicMock()
         func_obj.__name__ = "test_func"
@@ -193,7 +193,7 @@ class TestInjectCapabilities:
 
         assert kwargs == {"name": "test"}
 
-    def test_does_not_inject_when_parent_is_provider(self):
+    def test_does_not_inject_when_parent_is_provider(self) -> None:
         """Test that nothing is injected when parent_capability is 'provider'."""
         func_obj = mock.MagicMock()
         func_obj.__name__ = "test_func"
@@ -210,7 +210,7 @@ class TestCallFunctionHandler:
     """Tests for CallFunctionHandler main functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self):
+    async def test_handler_returns_response_object(self) -> None:
         """Test that handler returns proper response object."""
         request = pb.CallFunction.Request(
             name="test_function",
@@ -225,7 +225,7 @@ class TestCallFunctionHandler:
         assert isinstance(response, pb.CallFunction.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_handles_unknown_function(self):
+    async def test_handler_handles_unknown_function(self) -> None:
         """Test handler with unknown function."""
         request = pb.CallFunction.Request(
             name="nonexistent_function",
@@ -239,7 +239,7 @@ class TestCallFunctionHandler:
         assert response.HasField("error")
 
     @pytest.mark.asyncio
-    async def test_handler_with_unknown_arguments(self):
+    async def test_handler_with_unknown_arguments(self) -> None:
         """Test handler returns unknown result when arguments are unknown."""
         request = pb.CallFunction.Request(
             name="test_function",
@@ -251,7 +251,7 @@ class TestCallFunctionHandler:
         func_obj.metadata.variadic_parameter = None
         func_obj.metadata.return_type = CtyString()
 
-        def test_func(arg):
+        def test_func(arg) -> str:
             return "result"
 
         func_obj.func = test_func
@@ -269,7 +269,7 @@ class TestCallFunctionHandler:
         # Should return unknown result without calling function
 
     @pytest.mark.asyncio
-    async def test_handler_processes_request_successfully(self):
+    async def test_handler_processes_request_successfully(self) -> None:
         """Test handler processes request without crashing."""
         request = pb.CallFunction.Request(
             name="test_function",
@@ -283,5 +283,6 @@ class TestCallFunctionHandler:
             response = await CallFunctionHandler(request, context=None)
 
         assert isinstance(response, pb.CallFunction.Response)
+
 
 # 🐍🏗️🔚

@@ -14,7 +14,7 @@ from pyvider.functions.base import FunctionParameter, FunctionReturnType
 class TestFunctionParameter:
     """Tests for FunctionParameter class."""
 
-    def test_create_valid_parameter(self):
+    def test_create_valid_parameter(self) -> None:
         """Test creating a valid function parameter."""
         param = FunctionParameter(
             name="test_param",
@@ -29,7 +29,7 @@ class TestFunctionParameter:
         assert param.allow_null is True
         assert param.allow_unknown is False
 
-    def test_parameter_with_defaults(self):
+    def test_parameter_with_defaults(self) -> None:
         """Test parameter with default values."""
         param = FunctionParameter(name="simple", type=CtyNumber())
         assert param.name == "simple"
@@ -37,7 +37,7 @@ class TestFunctionParameter:
         assert param.allow_null is False
         assert param.allow_unknown is False
 
-    def test_parameter_with_different_types(self):
+    def test_parameter_with_different_types(self) -> None:
         """Test parameters with various CTY types."""
         string_param = FunctionParameter(name="str_param", type=CtyString())
         assert isinstance(string_param.type, CtyString)
@@ -51,12 +51,12 @@ class TestFunctionParameter:
         list_param = FunctionParameter(name="list_param", type=CtyList(element_type=CtyString()))
         assert isinstance(list_param.type, CtyList)
 
-    def test_invalid_parameter_name_empty(self):
+    def test_invalid_parameter_name_empty(self) -> None:
         """Test that empty parameter name raises ValueError."""
         with pytest.raises(ValueError, match="Invalid parameter name"):
             FunctionParameter(name="", type=CtyString())
 
-    def test_invalid_parameter_name_not_identifier(self):
+    def test_invalid_parameter_name_not_identifier(self) -> None:
         """Test that invalid identifier raises ValueError."""
         with pytest.raises(ValueError, match="Invalid parameter name"):
             FunctionParameter(name="123invalid", type=CtyString())
@@ -67,7 +67,7 @@ class TestFunctionParameter:
         with pytest.raises(ValueError, match="Invalid parameter name"):
             FunctionParameter(name="invalid name", type=CtyString())
 
-    def test_invalid_parameter_type(self):
+    def test_invalid_parameter_type(self) -> None:
         """Test that non-CtyType raises TypeError."""
         with pytest.raises(TypeError, match="must be an instance of CtyType"):
             FunctionParameter(name="test", type="not_a_cty_type")  # type: ignore
@@ -75,7 +75,7 @@ class TestFunctionParameter:
         with pytest.raises(TypeError, match="must be an instance of CtyType"):
             FunctionParameter(name="test", type=123)  # type: ignore
 
-    def test_parameter_frozen(self):
+    def test_parameter_frozen(self) -> None:
         """Test that FunctionParameter is immutable."""
         param = FunctionParameter(name="test", type=CtyString())
         with pytest.raises(Exception):  # attrs frozen raises FrozenInstanceError
@@ -85,12 +85,12 @@ class TestFunctionParameter:
 class TestFunctionReturnType:
     """Tests for FunctionReturnType class."""
 
-    def test_create_valid_return_type(self):
+    def test_create_valid_return_type(self) -> None:
         """Test creating a valid return type."""
         ret_type = FunctionReturnType(type=CtyString())
         assert isinstance(ret_type.type, CtyString)
 
-    def test_return_type_with_different_types(self):
+    def test_return_type_with_different_types(self) -> None:
         """Test return types with various CTY types."""
         string_ret = FunctionReturnType(type=CtyString())
         assert isinstance(string_ret.type, CtyString)
@@ -104,7 +104,7 @@ class TestFunctionReturnType:
         dynamic_ret = FunctionReturnType(type=CtyDynamic())
         assert isinstance(dynamic_ret.type, CtyDynamic)
 
-    def test_invalid_return_type(self):
+    def test_invalid_return_type(self) -> None:
         """Test that non-CtyType raises TypeError."""
         with pytest.raises(TypeError, match="must be an instance of CtyType"):
             FunctionReturnType(type="not_a_cty_type")  # type: ignore
@@ -112,7 +112,7 @@ class TestFunctionReturnType:
         with pytest.raises(TypeError, match="must be an instance of CtyType"):
             FunctionReturnType(type=None)  # type: ignore
 
-    def test_return_type_frozen(self):
+    def test_return_type_frozen(self) -> None:
         """Test that FunctionReturnType is immutable."""
         ret_type = FunctionReturnType(type=CtyString())
         with pytest.raises(Exception):  # attrs frozen raises FrozenInstanceError
@@ -122,7 +122,7 @@ class TestFunctionReturnType:
 class TestFunctionParameterEdgeCases:
     """Edge case tests for function parameters."""
 
-    def test_parameter_name_with_underscores(self):
+    def test_parameter_name_with_underscores(self) -> None:
         """Test valid names with underscores."""
         param = FunctionParameter(name="valid_name", type=CtyString())
         assert param.name == "valid_name"
@@ -130,7 +130,7 @@ class TestFunctionParameterEdgeCases:
         param2 = FunctionParameter(name="_private", type=CtyString())
         assert param2.name == "_private"
 
-    def test_parameter_allow_both_null_and_unknown(self):
+    def test_parameter_allow_both_null_and_unknown(self) -> None:
         """Test parameter allowing both null and unknown."""
         param = FunctionParameter(
             name="flexible",
@@ -141,7 +141,7 @@ class TestFunctionParameterEdgeCases:
         assert param.allow_null is True
         assert param.allow_unknown is True
 
-    def test_parameter_with_long_description(self):
+    def test_parameter_with_long_description(self) -> None:
         """Test parameter with long description."""
         long_desc = "This is a very long description " * 10
         param = FunctionParameter(

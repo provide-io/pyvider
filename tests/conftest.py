@@ -135,4 +135,5 @@ def encryption_key_env(monkeypatch):
     monkeypatch.delenv(env_var_name, raising=False)
     encryption._ENCRYPTION_KEY = None
 
+
 # 🐍🏗️🔚

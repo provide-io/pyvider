@@ -61,7 +61,7 @@ class SampleReadResource(BaseResource):
             return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
         return None
 
-    async def _delete_apply(self, ctx):
+    async def _delete_apply(self, ctx) -> None:
         pass
 
 
@@ -69,7 +69,7 @@ class TestReadResourceHandler:
     """Tests for ReadResourceHandler function."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub):
+    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
         """Test that handler returns proper response object."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -94,7 +94,7 @@ class TestReadResourceHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_reads_and_updates_state(self, provider_in_hub):
+    async def test_handler_reads_and_updates_state(self, provider_in_hub) -> None:
         """Test handler reads resource and updates state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -125,7 +125,7 @@ class TestReadResourceHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_preserves_private_state(self, provider_in_hub, encryption_key_env):
+    async def test_handler_preserves_private_state(self, provider_in_hub, encryption_key_env) -> None:
         """Test handler preserves private state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -157,7 +157,7 @@ class TestReadResourceHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_handles_unknown_resource_type(self):
+    async def test_handler_handles_unknown_resource_type(self) -> None:
         """Test handler handles unknown resource type."""
         request = pb.ReadResource.Request(
             type_name="nonexistent_resource",
@@ -174,7 +174,7 @@ class TestReadResourceImpl:
     """Tests for _read_resource_impl function."""
 
     @pytest.mark.asyncio
-    async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub):
+    async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub) -> None:
         """Test implementation returns null state when resource deleted."""
 
         class DeletedResource(BaseResource):
@@ -187,11 +187,11 @@ class TestReadResourceImpl:
             async def _validate_config(self, config) -> list[str]:
                 return []
 
-            async def read(self, ctx):
+            async def read(self, ctx) -> None:
                 # Simulate resource deleted
                 return None
 
-            async def _delete_apply(self, ctx):
+            async def _delete_apply(self, ctx) -> None:
                 pass
 
         hub.register("resource", "test_resource", DeletedResource)
@@ -218,7 +218,7 @@ class TestReadResourceImpl:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_provider_in_hub(self, provider_in_hub):
+    async def test_impl_handles_missing_provider_in_hub(self, provider_in_hub) -> None:
         """Test implementation handles missing provider gracefully."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -253,7 +253,7 @@ class TestReadResourceEdgeCases:
     """Edge case tests for ReadResource."""
 
     @pytest.mark.asyncio
-    async def test_handler_with_empty_state(self, provider_in_hub):
+    async def test_handler_with_empty_state(self, provider_in_hub) -> None:
         """Test handler with empty current state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -271,7 +271,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_with_malformed_private_state(self, provider_in_hub, encryption_key_env):
+    async def test_handler_with_malformed_private_state(self, provider_in_hub, encryption_key_env) -> None:
         """Test handler with malformed private state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -299,7 +299,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_metrics_recorded(self, provider_in_hub):
+    async def test_handler_metrics_recorded(self, provider_in_hub) -> None:
         """Test that handler records metrics."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -325,7 +325,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_records_errors_on_exception(self, provider_in_hub):
+    async def test_handler_records_errors_on_exception(self, provider_in_hub) -> None:
         """Test that handler records error metrics when exception occurs."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -359,7 +359,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_appends_context_diagnostics(self, provider_in_hub):
+    async def test_handler_appends_context_diagnostics(self, provider_in_hub) -> None:
         """Test that handler appends diagnostics from resource context to response."""
 
         class ResourceWithContextDiagnostics(BaseResource):
@@ -386,7 +386,7 @@ class TestReadResourceEdgeCases:
                 # Return updated state
                 return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
 
-            async def _delete_apply(self, ctx):
+            async def _delete_apply(self, ctx) -> None:
                 pass
 
         hub.register("resource", "test_resource", ResourceWithContextDiagnostics)
@@ -413,5 +413,6 @@ class TestReadResourceEdgeCases:
             assert response.diagnostics[0].summary == "Context warning"
         finally:
             hub.unregister("resource", "test_resource")
+
 
 # 🐍🏗️🔚

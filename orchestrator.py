@@ -8,7 +8,7 @@
 import subprocess
 
 
-def main():
+def main() -> None:
     """Reads a list of files and runs the conformation script on each."""
     with open("python_files.txt") as f:
         files = f.readlines()

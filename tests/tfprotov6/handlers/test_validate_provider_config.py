@@ -27,14 +27,14 @@ class TestValidateProviderConfigStructure:
     """Test handler structure and basic functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test handler returns correct response type."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
         assert isinstance(response, pb.ValidateProviderConfig.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_returns_empty_diagnostics_on_success(self, sample_request):
+    async def test_handler_returns_empty_diagnostics_on_success(self, sample_request) -> None:
         """Test handler returns empty diagnostics when validation passes."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
@@ -45,7 +45,7 @@ class TestValidateProviderConfigImplementation:
     """Test handler implementation details."""
 
     @pytest.mark.asyncio
-    async def test_impl_successful_validation(self, sample_request):
+    async def test_impl_successful_validation(self, sample_request) -> None:
         """Test successful validation returns empty diagnostics."""
         response = await _validate_provider_config_impl(sample_request, context=None)
 
@@ -53,7 +53,7 @@ class TestValidateProviderConfigImplementation:
         assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_exception(self, sample_request):
+    async def test_impl_handles_exception(self, sample_request) -> None:
         """Test implementation handles exceptions gracefully."""
         # Create a mock request that raises an exception when bool() is called on msgpack
         bad_request = MagicMock()
@@ -71,7 +71,7 @@ class TestValidateProviderConfigMetrics:
     """Test metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_records_request_metric(self, sample_request):
+    async def test_records_request_metric(self, sample_request) -> None:
         """Test request counter incremented."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_requests"
@@ -81,7 +81,7 @@ class TestValidateProviderConfigMetrics:
             mock_requests.inc.assert_called_once_with(handler="ValidateProviderConfig")
 
     @pytest.mark.asyncio
-    async def test_records_duration_metric(self, sample_request):
+    async def test_records_duration_metric(self, sample_request) -> None:
         """Test duration observer called."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_duration"
@@ -93,7 +93,7 @@ class TestValidateProviderConfigMetrics:
             assert call_args[1]["handler"] == "ValidateProviderConfig"
 
     @pytest.mark.asyncio
-    async def test_records_error_metric_on_exception(self, sample_request):
+    async def test_records_error_metric_on_exception(self, sample_request) -> None:
         """Test error counter incremented on exception."""
         with (
             patch(
@@ -115,69 +115,58 @@ class TestValidateProviderConfigTestModeDetection:
     """Test test mode detection and logging."""
 
     @pytest.mark.asyncio
-    async def test_detects_test_mode_enabled(self):
+    async def test_detects_test_mode_enabled(self) -> None:
         """Test that test mode enabled is detected and logged."""
-
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-            ) as mock_logger,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
-                    mock_provider = MagicMock()
-                    mock_schema = MagicMock()
-                    from pyvider.cty import CtyValue, CtyObject, CtyBool
+            mock_provider = MagicMock()
+            mock_schema = MagicMock()
+            from pyvider.cty import CtyBool, CtyObject, CtyValue
 
-                    mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
-                    mock_provider.schema = mock_schema
+            mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
+            mock_provider.schema = mock_schema
 
-                    # Create a config class that will have provider_testmode = True
-                    mock_config_class = MagicMock()
-                    mock_config_instance = MagicMock()
-                    mock_config_instance.provider_testmode = True
-                    mock_config_class.return_value = mock_config_instance
-                    mock_provider.config_class = mock_config_class
+            # Create a config class that will have provider_testmode = True
+            mock_config_class = MagicMock()
+            mock_config_instance = MagicMock()
+            mock_config_instance.provider_testmode = True
+            mock_config_class.return_value = mock_config_instance
+            mock_provider.config_class = mock_config_class
 
-                    mock_hub.get_component.return_value = mock_provider
+            mock_hub.get_component.return_value = mock_provider
 
-                    # Mock unmarshal to return a non-unknown value
-                    mock_cty_value = CtyValue(True, CtyBool())
-                    mock_unmarshal.return_value = mock_cty_value
+            # Mock unmarshal to return a non-unknown value
+            mock_cty_value = CtyValue(True, CtyBool())
+            mock_unmarshal.return_value = mock_cty_value
 
-                    # Create request with config
-                    request = pb.ValidateProviderConfig.Request()
-                    request.config.msgpack = b"\xc3"  # True in msgpack
+            # Create request with config
+            request = pb.ValidateProviderConfig.Request()
+            request.config.msgpack = b"\xc3"  # True in msgpack
 
-                    with patch(
-                        "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
-                    ) as mock_from_cty:
-                        mock_from_cty.return_value = mock_config_instance
+            with patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
+            ) as mock_from_cty:
+                mock_from_cty.return_value = mock_config_instance
 
-                        response = await _validate_provider_config_impl(request, context=None)
+                response = await _validate_provider_config_impl(request, context=None)
 
-                        # Should log warning about test mode
-                        assert any(
-                            "test mode ENABLED" in str(call) for call in mock_logger.warning.call_args_list
-                        )
-                        assert len(response.diagnostics) == 0
+                # Should log warning about test mode
+                assert any("test mode ENABLED" in str(call) for call in mock_logger.warning.call_args_list)
+                assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_detects_test_mode_disabled(self):
+    async def test_detects_test_mode_disabled(self) -> None:
         """Test that test mode disabled is detected and logged."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-            ) as mock_logger,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
-            from pyvider.cty import CtyValue, CtyObject, CtyBool
+            from pyvider.cty import CtyBool, CtyObject, CtyValue
 
             mock_provider = MagicMock()
             mock_schema = MagicMock()
@@ -206,49 +195,42 @@ class TestValidateProviderConfigTestModeDetection:
                 response = await _validate_provider_config_impl(request, context=None)
 
                 # Should log debug about test mode NOT enabled
-                assert any(
-                    "test mode NOT enabled" in str(call) for call in mock_logger.debug.call_args_list
-                )
+                assert any("test mode NOT enabled" in str(call) for call in mock_logger.debug.call_args_list)
                 assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_handles_config_parsing_error_gracefully(self):
+    async def test_handles_config_parsing_error_gracefully(self) -> None:
         """Test that config parsing errors don't fail validation."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-            ) as mock_logger,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
-                    mock_provider = MagicMock()
-                    mock_hub.get_component.return_value = mock_provider
+            mock_provider = MagicMock()
+            mock_hub.get_component.return_value = mock_provider
 
-                    # Make unmarshal raise an exception
-                    mock_unmarshal.side_effect = ValueError("Invalid config format")
+            # Make unmarshal raise an exception
+            mock_unmarshal.side_effect = ValueError("Invalid config format")
 
-                    request = pb.ValidateProviderConfig.Request()
-                    request.config.msgpack = b"\x00"
+            request = pb.ValidateProviderConfig.Request()
+            request.config.msgpack = b"\x00"
 
-                    response = await _validate_provider_config_impl(request, context=None)
+            response = await _validate_provider_config_impl(request, context=None)
 
-                    # Should log debug about parse error but still succeed
-                    assert any(
-                        "Could not parse config" in str(call) for call in mock_logger.debug.call_args_list
-                    )
-                    assert len(response.diagnostics) == 0
+            # Should log debug about parse error but still succeed
+            assert any("Could not parse config" in str(call) for call in mock_logger.debug.call_args_list)
+            assert len(response.diagnostics) == 0
 
 
 class TestValidateProviderConfigEdgeCases:
     """Test edge cases."""
 
     @pytest.mark.asyncio
-    async def test_with_none_context(self, sample_request):
+    async def test_with_none_context(self, sample_request) -> None:
         """Test with None context."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
         assert isinstance(response, pb.ValidateProviderConfig.Response)
+
 
 # 🐍🏗️🔚

@@ -48,7 +48,7 @@ class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicState, None]):
 
 
 @pytest.mark.asyncio
-async def test_call_function_integration_avoids_recursion():
+async def test_call_function_integration_avoids_recursion() -> None:
     hub.register("function", "test_identity", identity_func)
     try:
         complex_input = {"level1": {"items": [{"tag": "A"}]}}
@@ -61,7 +61,7 @@ async def test_call_function_integration_avoids_recursion():
 
 
 @pytest.mark.asyncio
-async def test_read_data_source_integration_avoids_recursion():
+async def test_read_data_source_integration_avoids_recursion() -> None:
     hub.register("data_source", "test_dynamic_ds", DynamicDataSource)
     try:
         request = pb.ReadDataSource.Request(type_name="test_dynamic_ds")
@@ -69,5 +69,6 @@ async def test_read_data_source_integration_avoids_recursion():
         assert not response.diagnostics
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
+
 
 # 🐍🏗️🔚

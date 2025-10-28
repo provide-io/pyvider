@@ -8,7 +8,7 @@
 from pathlib import Path
 
 
-def test_version_is_available():
+def test_version_is_available() -> None:
     """Test that __version__ is available in the package."""
     # Import from source, not installed package
     import importlib.util
@@ -22,14 +22,14 @@ def test_version_is_available():
         assert isinstance(module.__version__, str)
 
 
-def test_version_module_exists():
+def test_version_module_exists() -> None:
     """Test that _version module can be imported."""
     from pyvider import _version
 
     assert hasattr(_version, "__version__")
 
 
-def test_init_module_structure():
+def test_init_module_structure() -> None:
     """Test the __init__.py module structure."""
     import importlib.util
 
@@ -41,5 +41,6 @@ def test_init_module_structure():
         # Check __all__ is defined
         assert hasattr(module, "__all__")
         assert "__version__" in module.__all__
+
 
 # 🐍🏗️🔚

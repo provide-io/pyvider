@@ -18,7 +18,7 @@ from pyvider.exceptions.foundation import (
 
 
 class TestFoundationExceptions:
-    def test_simple_foundation_exceptions(self):
+    def test_simple_foundation_exceptions(self) -> None:
         """Test simple exceptions from foundation.py for instantiation."""
         assert str(PyviderError("test")) == "test"
         assert str(CapabilityError("test")) == "test"
@@ -27,7 +27,7 @@ class TestFoundationExceptions:
         assert str(DataSourceError("test")) == "test"
         assert str(FunctionError("test")) == "test"
 
-    def test_invalid_type_error_init(self):
+    def test_invalid_type_error_init(self) -> None:
         err_default = InvalidTypeError()
         # Note: f-string curly braces must be doubled for the heredoc if this whole block
         # were inside an agent f-string. Here, it's a direct literal.
@@ -36,11 +36,12 @@ class TestFoundationExceptions:
         err_custom = InvalidTypeError(expected_type="int", actual_type="str")
         assert str(err_custom) == "Invalid type: expected 'int', got 'str'."
 
-    def test_unsupported_type_error_init(self):
+    def test_unsupported_type_error_init(self) -> None:
         err_default = UnsupportedTypeError()
         assert str(err_default) == "Unsupported type encountered: 'unknown'."
 
         err_custom = UnsupportedTypeError(type_name="MyType")
         assert str(err_custom) == "Unsupported type encountered: 'MyType'."
+
 
 # 🐍🏗️🔚

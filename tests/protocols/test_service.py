@@ -6,6 +6,7 @@
 """TODO: Add module docstring."""
 
 import asyncio
+import contextlib
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
 import pytest
@@ -19,7 +20,7 @@ def shutdown_event():
     return asyncio.Event()
 
 
-def test_protocol_service_init(shutdown_event):
+def test_protocol_service_init(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
     assert isinstance(service._setup_complete, asyncio.Event)
     assert service._stream_active is True
@@ -28,7 +29,7 @@ def test_protocol_service_init(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_handle_shutdown(shutdown_event):
+async def test_handle_shutdown(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
     await service._message_queue.put("message1")
     await service._message_queue.put("message2")
@@ -44,7 +45,7 @@ async def test_handle_shutdown(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_start_stream_success(shutdown_event):
+async def test_start_stream_success(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
     service._setup_complete.set()
     context = MagicMock()
@@ -53,7 +54,7 @@ async def test_start_stream_success(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_start_stream_timeout(shutdown_event):
+async def test_start_stream_timeout(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
     context = MagicMock()
     context.set_code = MagicMock()
@@ -67,7 +68,7 @@ async def test_start_stream_timeout(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_shutdown(shutdown_event):
+async def test_shutdown(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
 
     mock_shutdown_manager = MagicMock()
@@ -88,7 +89,7 @@ async def test_shutdown(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_stop_stream(shutdown_event):
+async def test_stop_stream(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
     response = await service.StopStream(MagicMock(), MagicMock())
     assert isinstance(response, pb.Empty)
@@ -96,7 +97,7 @@ async def test_stop_stream(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio_success(shutdown_event):
+async def test_stream_stdio_success(shutdown_event) -> None:
     service = ProtocolService(shutdown_event)
 
     async def mock_iterator():
@@ -116,7 +117,7 @@ async def test_stream_stdio_success(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio_with_shutdown_event(shutdown_event):
+async def test_stream_stdio_with_shutdown_event(shutdown_event) -> None:
     """Test StreamStdio stops when shutdown event is set."""
     service = ProtocolService(shutdown_event)
 
@@ -139,7 +140,7 @@ async def test_stream_stdio_with_shutdown_event(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio_with_none_messages(shutdown_event):
+async def test_stream_stdio_with_none_messages(shutdown_event) -> None:
     """Test StreamStdio handles None messages correctly."""
     service = ProtocolService(shutdown_event)
 
@@ -161,7 +162,7 @@ async def test_stream_stdio_with_none_messages(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio_error_handling(shutdown_event):
+async def test_stream_stdio_error_handling(shutdown_event) -> None:
     """Test StreamStdio error handling during message processing."""
     service = ProtocolService(shutdown_event)
 
@@ -172,7 +173,7 @@ async def test_stream_stdio_error_handling(shutdown_event):
     request_iterator = mock_iterator()
 
     with pytest.raises(RuntimeError, match="Stream error"):
-        async for response in service.StreamStdio(request_iterator, MagicMock()):
+        async for _response in service.StreamStdio(request_iterator, MagicMock()):
             pass
 
     # Stream should be deactivated after error
@@ -180,7 +181,7 @@ async def test_stream_stdio_error_handling(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_start_stream_generic_exception(shutdown_event):
+async def test_start_stream_generic_exception(shutdown_event) -> None:
     """Test StartStream handles generic exceptions."""
     service = ProtocolService(shutdown_event)
     context = MagicMock()
@@ -199,7 +200,7 @@ async def test_start_stream_generic_exception(shutdown_event):
 
 
 @pytest.mark.asyncio
-async def test_heartbeat_method(shutdown_event):
+async def test_heartbeat_method(shutdown_event) -> None:
     """Test _heartbeat method runs until stream is inactive."""
     import asyncio
 
@@ -216,17 +217,15 @@ async def test_heartbeat_method(shutdown_event):
 
     # Cancel the heartbeat task since it sleeps for 5 seconds
     heartbeat_task.cancel()
-    try:
+    with contextlib.suppress(asyncio.CancelledError):
         await heartbeat_task
-    except asyncio.CancelledError:
-        pass
 
     # Verify stream is inactive
     assert service._stream_active is False
 
 
 @pytest.mark.asyncio
-async def test_heartbeat_error_handling(shutdown_event):
+async def test_heartbeat_error_handling(shutdown_event) -> None:
     """Test _heartbeat handles errors gracefully."""
     service = ProtocolService(shutdown_event)
 
@@ -254,9 +253,8 @@ async def test_heartbeat_error_handling(shutdown_event):
     # Cancel if still running
     if not heartbeat_task.done():
         heartbeat_task.cancel()
-        try:
+        with contextlib.suppress(asyncio.CancelledError):
             await heartbeat_task
-        except asyncio.CancelledError:
-            pass
+
 
 # 🐍🏗️🔚

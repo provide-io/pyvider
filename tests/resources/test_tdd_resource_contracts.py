@@ -41,7 +41,7 @@ class ContractTestResource(BaseResource):
     config_class = ContractConfig
     state_class = ContractState
 
-    def __init__(self, mocker: MockerFixture):
+    def __init__(self, mocker: MockerFixture) -> None:
         self._mocker = mocker
         # Spy on the methods we want to test
         self._create = AsyncMock(return_value=({}, None))
@@ -64,7 +64,7 @@ class ContractTestResource(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx: ResourceContext):
+    async def read(self, ctx: ResourceContext) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -75,7 +75,7 @@ class ContractTestResource(BaseResource):
 
 @pytest.mark.asyncio
 class TestResourceContracts:
-    async def test_tdd1_create_plan_contract(self, mocker: MockerFixture):
+    async def test_tdd1_create_plan_contract(self, mocker: MockerFixture) -> None:
         """
         TDD 1: Verifies the `base_plan` passed to `_create` contains all config values.
         """
@@ -102,7 +102,7 @@ class TestResourceContracts:
         assert base_plan_arg["name"] == "new-server"
         assert base_plan_arg["location"] == "us-west-1"
 
-    async def test_tdd2_update_context_contract(self, mocker: MockerFixture):
+    async def test_tdd2_update_context_contract(self, mocker: MockerFixture) -> None:
         """
         TDD 2: Verifies `_update` receives a context with both prior state and new config.
         """
@@ -143,7 +143,7 @@ class TestResourceContracts:
         assert base_plan_arg["name"] == "new-name"
         assert base_plan_arg["location"] == "us-west-2"
 
-    async def test_tdd3_apply_consistency_contract(self, mocker: MockerFixture):
+    async def test_tdd3_apply_consistency_contract(self, mocker: MockerFixture) -> None:
         """
         TDD 3: Verifies `_update_apply` receives the correct planned state.
         """
@@ -162,5 +162,6 @@ class TestResourceContracts:
 
         assert ctx_arg.planned_state is planned_state_from_plan
         assert ctx_arg.state is prior_state
+
 
 # 🐍🏗️🔚

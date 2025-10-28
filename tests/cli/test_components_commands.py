@@ -21,7 +21,7 @@ from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType
 class TestHandleDiscoveryErrors:
     """Tests for _handle_discovery_errors function."""
 
-    def test_exits_when_discovery_errors_present(self):
+    def test_exits_when_discovery_errors_present(self) -> None:
         """Test that function exits when discovery errors are present."""
         ctx = mock.MagicMock()
         ctx.discovery_errors = [("test_module", "Import failed")]
@@ -31,7 +31,7 @@ class TestHandleDiscoveryErrors:
 
         assert exc_info.value.code == 1
 
-    def test_does_nothing_when_no_errors(self):
+    def test_does_nothing_when_no_errors(self) -> None:
         """Test that function returns normally when no errors."""
         ctx = mock.MagicMock()
         ctx.discovery_errors = []
@@ -39,7 +39,7 @@ class TestHandleDiscoveryErrors:
         # Should not raise
         _handle_discovery_errors(ctx)
 
-    def test_does_nothing_when_errors_is_none(self):
+    def test_does_nothing_when_errors_is_none(self) -> None:
         """Test that function returns normally when errors is None."""
         ctx = mock.MagicMock()
         ctx.discovery_errors = None
@@ -51,7 +51,7 @@ class TestHandleDiscoveryErrors:
 class TestDisplayAttribute:
     """Tests for _display_attribute function."""
 
-    def test_displays_required_attribute(self):
+    def test_displays_required_attribute(self) -> None:
         """Test displaying a required attribute."""
         attr = PvsAttribute(name="test_attr", type=CtyString(), required=True)
 
@@ -61,7 +61,7 @@ class TestDisplayAttribute:
             # Should have called pout for attribute name and type
             assert mock_pout.call_count >= 2
 
-    def test_displays_optional_attribute(self):
+    def test_displays_optional_attribute(self) -> None:
         """Test displaying an optional attribute."""
         attr = PvsAttribute(name="optional_attr", type=CtyNumber(), optional=True)
 
@@ -70,7 +70,7 @@ class TestDisplayAttribute:
 
             assert mock_pout.call_count >= 2
 
-    def test_displays_attribute_with_description(self):
+    def test_displays_attribute_with_description(self) -> None:
         """Test displaying attribute with description."""
         attr = PvsAttribute(name="described_attr", type=CtyBool(), description="This is a test attribute")
 
@@ -80,7 +80,7 @@ class TestDisplayAttribute:
             # Should include description in output
             assert mock_pout.call_count >= 3
 
-    def test_displays_attribute_with_default(self):
+    def test_displays_attribute_with_default(self) -> None:
         """Test displaying attribute with default value."""
         attr = PvsAttribute(name="default_attr", type=CtyString(), default="default_value")
 
@@ -90,7 +90,7 @@ class TestDisplayAttribute:
             # Should include default in output
             assert mock_pout.call_count >= 3
 
-    def test_displays_sensitive_attribute(self):
+    def test_displays_sensitive_attribute(self) -> None:
         """Test displaying sensitive attribute."""
         attr = PvsAttribute(name="secret", type=CtyString(), sensitive=True)
 
@@ -99,7 +99,7 @@ class TestDisplayAttribute:
 
             assert mock_pout.call_count >= 2
 
-    def test_displays_computed_attribute(self):
+    def test_displays_computed_attribute(self) -> None:
         """Test displaying computed attribute."""
         attr = PvsAttribute(name="computed_val", type=CtyNumber(), computed=True)
 
@@ -112,7 +112,7 @@ class TestDisplayAttribute:
 class TestDisplayBlockType:
     """Tests for _display_block_type function."""
 
-    def test_displays_simple_block(self):
+    def test_displays_simple_block(self) -> None:
         """Test displaying a simple block type."""
         block_content = PvsObjectType(attributes={"name": PvsAttribute(name="name", type=CtyString())})
         # Create a mock block with nesting attribute
@@ -129,7 +129,7 @@ class TestDisplayBlockType:
             # Should have output for block name and attributes
             assert mock_pout.call_count >= 2
 
-    def test_displays_block_with_description(self):
+    def test_displays_block_with_description(self) -> None:
         """Test displaying block with description."""
         block_content = PvsObjectType(attributes={})
         block = mock.MagicMock(spec=PvsNestedBlock)
@@ -148,7 +148,7 @@ class TestDisplayBlockType:
 class TestDisplayBlockContent:
     """Tests for _display_block_content function."""
 
-    def test_displays_block_with_attributes(self):
+    def test_displays_block_with_attributes(self) -> None:
         """Test displaying block content with attributes."""
         block = PvsObjectType(
             attributes={
@@ -163,7 +163,7 @@ class TestDisplayBlockContent:
             # Should display both attributes
             assert mock_pout.call_count >= 4
 
-    def test_displays_block_with_nested_blocks(self):
+    def test_displays_block_with_nested_blocks(self) -> None:
         """Test displaying block content with nested blocks."""
         nested_content = PvsObjectType(attributes={"inner": PvsAttribute(name="inner", type=CtyString())})
         nested_block = mock.MagicMock(spec=PvsNestedBlock)
@@ -181,7 +181,7 @@ class TestDisplayBlockContent:
             # Should display nested block
             assert mock_pout.call_count >= 1
 
-    def test_displays_empty_block(self):
+    def test_displays_empty_block(self) -> None:
         """Test displaying empty block content."""
         block = PvsObjectType(attributes={}, block_types=[])
 
@@ -190,5 +190,6 @@ class TestDisplayBlockContent:
 
             # Should not crash, may or may not call pout
             assert mock_pout.call_count >= 0
+
 
 # 🐍🏗️🔚

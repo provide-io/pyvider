@@ -24,7 +24,7 @@ def discovery(hub):
 class TestComponentDiscoveryInit:
     """Test ComponentDiscovery initialization."""
 
-    def test_init_with_hub(self, hub):
+    def test_init_with_hub(self, hub) -> None:
         """Test initialization with hub."""
         discovery = ComponentDiscovery(hub)
 
@@ -37,7 +37,7 @@ class TestDiscoverAll:
     """Test discover_all method."""
 
     @pytest.mark.asyncio
-    async def test_discover_all_no_entry_points(self, discovery):
+    async def test_discover_all_no_entry_points(self, discovery) -> None:
         """Test discover_all when no entry points are found."""
         # Mock entry_points to return empty
         with patch("importlib.metadata.entry_points") as mock_entry_points:
@@ -50,7 +50,7 @@ class TestDiscoverAll:
                 mock_discover.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_discover_all_with_entry_points(self, discovery):
+    async def test_discover_all_with_entry_points(self, discovery) -> None:
         """Test discover_all when entry points are found."""
         # Create mock entry points
         mock_ep1 = MagicMock()
@@ -73,7 +73,7 @@ class TestDiscoverAll:
                 mock_discover.assert_any_call("another.module", strict=False)
 
     @pytest.mark.asyncio
-    async def test_discover_all_entry_points_query_error(self, discovery):
+    async def test_discover_all_entry_points_query_error(self, discovery) -> None:
         """Test discover_all when querying entry points fails."""
         with patch("importlib.metadata.entry_points") as mock_entry_points:
             mock_entry_points.side_effect = RuntimeError("Entry point query failed")
@@ -85,7 +85,7 @@ class TestDiscoverAll:
             assert len(discovery._discovered_modules) == 0
 
     @pytest.mark.asyncio
-    async def test_discover_all_strict_mode(self, discovery):
+    async def test_discover_all_strict_mode(self, discovery) -> None:
         """Test discover_all in strict mode propagates errors."""
         # Create a mock entry point that will trigger an error
         mock_ep = MagicMock()
@@ -106,7 +106,7 @@ class TestDiscoverPackage:
     """Test _discover_package method."""
 
     @pytest.mark.asyncio
-    async def test_discover_package_success(self, discovery):
+    async def test_discover_package_success(self, discovery) -> None:
         """Test successful package discovery."""
         mock_module = MagicMock()
         mock_module.__name__ = "test.module"
@@ -123,7 +123,7 @@ class TestDiscoverPackage:
                 assert "test.module" in discovery._discovered_modules
 
     @pytest.mark.asyncio
-    async def test_discover_package_already_discovered(self, discovery):
+    async def test_discover_package_already_discovered(self, discovery) -> None:
         """Test that already discovered packages are skipped."""
         discovery._discovered_modules.add("test.module")
 
@@ -134,7 +134,7 @@ class TestDiscoverPackage:
             mock_import.assert_not_called()
 
     @pytest.mark.asyncio
-    async def test_discover_package_import_error_non_strict(self, discovery):
+    async def test_discover_package_import_error_non_strict(self, discovery) -> None:
         """Test ImportError handling in non-strict mode."""
         with patch("importlib.import_module") as mock_import:
             mock_import.side_effect = ImportError("Module not found")
@@ -148,7 +148,7 @@ class TestDiscoverPackage:
             assert isinstance(discovery.import_errors[0][1], ImportError)
 
     @pytest.mark.asyncio
-    async def test_discover_package_import_error_strict(self, discovery):
+    async def test_discover_package_import_error_strict(self, discovery) -> None:
         """Test ImportError handling in strict mode."""
         with patch("importlib.import_module") as mock_import:
             mock_import.side_effect = ImportError("Module not found")
@@ -158,7 +158,7 @@ class TestDiscoverPackage:
                 await discovery._discover_package("nonexistent.module", strict=True)
 
     @pytest.mark.asyncio
-    async def test_discover_package_module_not_found_error(self, discovery):
+    async def test_discover_package_module_not_found_error(self, discovery) -> None:
         """Test ModuleNotFoundError handling."""
         with patch("importlib.import_module") as mock_import:
             mock_import.side_effect = ModuleNotFoundError("No module named 'test'")
@@ -172,7 +172,7 @@ class TestDiscoverPackage:
             assert isinstance(discovery.import_errors[0][1], ModuleNotFoundError)
 
     @pytest.mark.asyncio
-    async def test_discover_package_generic_exception_non_strict(self, discovery):
+    async def test_discover_package_generic_exception_non_strict(self, discovery) -> None:
         """Test generic exception handling in non-strict mode."""
         with patch("importlib.import_module") as mock_import:
             mock_import.side_effect = RuntimeError("Unexpected error")
@@ -186,7 +186,7 @@ class TestDiscoverPackage:
             assert isinstance(discovery.import_errors[0][1], RuntimeError)
 
     @pytest.mark.asyncio
-    async def test_discover_package_generic_exception_strict(self, discovery):
+    async def test_discover_package_generic_exception_strict(self, discovery) -> None:
         """Test generic exception handling in strict mode."""
         with patch("importlib.import_module") as mock_import:
             mock_import.side_effect = RuntimeError("Unexpected error")
@@ -200,7 +200,7 @@ class TestProcessModule:
     """Test _process_module method."""
 
     @pytest.mark.asyncio
-    async def test_process_module_with_registered_resource(self, discovery):
+    async def test_process_module_with_registered_resource(self, discovery) -> None:
         """Test processing module with registered resource."""
 
         class TestResource:
@@ -228,7 +228,7 @@ class TestProcessModule:
                         assert discovery.hub.get_component("resource", "test_resource") == TestResource
 
     @pytest.mark.asyncio
-    async def test_process_module_with_registered_data_source(self, discovery):
+    async def test_process_module_with_registered_data_source(self, discovery) -> None:
         """Test processing module with registered data source."""
 
         class TestDataSource:
@@ -256,10 +256,10 @@ class TestProcessModule:
                         assert discovery.hub.get_component("data_source", "test_data_source") == TestDataSource
 
     @pytest.mark.asyncio
-    async def test_process_module_with_registered_function(self, discovery):
+    async def test_process_module_with_registered_function(self, discovery) -> None:
         """Test processing module with registered function."""
 
-        def test_function():
+        def test_function() -> None:
             pass
 
         test_function._is_registered_function = True
@@ -283,7 +283,7 @@ class TestProcessModule:
                     assert discovery.hub.get_component("function", "test_function") == test_function
 
     @pytest.mark.asyncio
-    async def test_process_module_with_registered_capability(self, discovery):
+    async def test_process_module_with_registered_capability(self, discovery) -> None:
         """Test processing module with registered capability."""
 
         class TestCapability:
@@ -311,7 +311,7 @@ class TestProcessModule:
                         assert discovery.hub.get_component("capability", "test_capability") == TestCapability
 
     @pytest.mark.asyncio
-    async def test_process_module_skips_abstract_classes(self, discovery):
+    async def test_process_module_skips_abstract_classes(self, discovery) -> None:
         """Test that abstract classes are skipped."""
 
         class AbstractTestClass(ABC):
@@ -339,7 +339,7 @@ class TestProcessModule:
                         assert discovery.hub.get_component("resource", "abstract_resource") is None
 
     @pytest.mark.asyncio
-    async def test_process_module_skips_non_class_non_function(self, discovery):
+    async def test_process_module_skips_non_class_non_function(self, discovery) -> None:
         """Test that non-class, non-function objects are skipped."""
         mock_module = MagicMock()
         mock_module.__name__ = "test.module"
@@ -359,7 +359,7 @@ class TestProcessModule:
                     assert len(discovery.hub.list_components()) == 0
 
     @pytest.mark.asyncio
-    async def test_process_module_without_registered_name(self, discovery):
+    async def test_process_module_without_registered_name(self, discovery) -> None:
         """Test that components without _registered_name are not registered."""
 
         class TestResourceNoName:

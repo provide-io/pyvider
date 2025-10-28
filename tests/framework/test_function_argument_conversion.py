@@ -13,14 +13,14 @@ def simulate_unmarshal_and_convert(arg_proto: pb.DynamicValue, param_cty_type: "
 
 
 class TestFunctionArgumentConversion:
-    def test_list_of_strings_conversion(self):
+    def test_list_of_strings_conversion(self) -> None:
         native_list = ["Terraform", "100"]
         cty_val = CtyDynamic().validate(native_list)
         arg_proto = marshal(cty_val, schema=CtyDynamic())
         result = simulate_unmarshal_and_convert(arg_proto, CtyDynamic())
         assert result == ["Terraform", "100"]
 
-    def test_list_of_numbers_conversion(self):
+    def test_list_of_numbers_conversion(self) -> None:
         native_list = [10, 20, 30.5]
         cty_val = CtyDynamic().validate(native_list)
         arg_proto = marshal(cty_val, schema=CtyDynamic())

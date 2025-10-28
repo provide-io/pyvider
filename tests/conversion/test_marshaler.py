@@ -17,7 +17,7 @@ from pyvider.schema.types import PvsAttribute, PvsObjectType
 class TestMarshal:
     """Tests for marshal function."""
 
-    def test_marshal_simple_string(self):
+    def test_marshal_simple_string(self) -> None:
         """Test marshaling a simple string value."""
         schema = CtyString()
         value = CtyValue(vtype=CtyString(), value="test")
@@ -27,7 +27,7 @@ class TestMarshal:
         assert isinstance(result, pb.DynamicValue)
         assert result.msgpack is not None
 
-    def test_marshal_simple_number(self):
+    def test_marshal_simple_number(self) -> None:
         """Test marshaling a number value."""
         schema = CtyNumber()
         value = CtyValue(vtype=CtyNumber(), value=42)
@@ -37,7 +37,7 @@ class TestMarshal:
         assert isinstance(result, pb.DynamicValue)
         assert result.msgpack is not None
 
-    def test_marshal_raw_dict_value(self):
+    def test_marshal_raw_dict_value(self) -> None:
         """Test marshaling a raw dict (not CtyValue)."""
         schema = CtyObject(attribute_types={"name": CtyString()})
         value = {"name": "test"}
@@ -47,7 +47,7 @@ class TestMarshal:
         assert isinstance(result, pb.DynamicValue)
         assert result.msgpack is not None
 
-    def test_marshal_attrs_instance(self):
+    def test_marshal_attrs_instance(self) -> None:
         """Test marshaling an attrs instance."""
 
         @attrs.define
@@ -61,7 +61,7 @@ class TestMarshal:
 
         assert isinstance(result, pb.DynamicValue)
 
-    def test_marshal_with_sensitive_marks(self):
+    def test_marshal_with_sensitive_marks(self) -> None:
         """Test that sensitive attributes are marked."""
         schema = PvsObjectType(attributes={"password": PvsAttribute(type=CtyString(), sensitive=True)})
         value = CtyValue(
@@ -73,7 +73,7 @@ class TestMarshal:
 
         assert isinstance(result, pb.DynamicValue)
 
-    def test_marshal_invalid_schema_type_raises_error(self):
+    def test_marshal_invalid_schema_type_raises_error(self) -> None:
         """Test that invalid schema type raises TypeError."""
         with pytest.raises(TypeError, match="Schema must be a CtyType or PvsType"):
             marshal("value", schema="not_a_schema")  # type: ignore
@@ -82,7 +82,7 @@ class TestMarshal:
 class TestUnmarshal:
     """Tests for unmarshal function."""
 
-    def test_unmarshal_from_msgpack(self):
+    def test_unmarshal_from_msgpack(self) -> None:
         """Test unmarshaling from msgpack data."""
         schema = CtyString()
         # First marshal to get valid msgpack
@@ -95,7 +95,7 @@ class TestUnmarshal:
         assert isinstance(result, CtyValue)
         assert result.value == "test"
 
-    def test_unmarshal_number_from_msgpack(self):
+    def test_unmarshal_number_from_msgpack(self) -> None:
         """Test unmarshaling a number."""
         schema = CtyNumber()
         value = CtyValue(vtype=CtyNumber(), value=42)
@@ -106,7 +106,7 @@ class TestUnmarshal:
         assert isinstance(result, CtyValue)
         assert result.value == 42
 
-    def test_unmarshal_empty_dynamic_value_returns_null(self):
+    def test_unmarshal_empty_dynamic_value_returns_null(self) -> None:
         """Test that empty DynamicValue returns null CtyValue."""
         schema = CtyString()
         dv = pb.DynamicValue()  # Empty
@@ -116,7 +116,7 @@ class TestUnmarshal:
         assert isinstance(result, CtyValue)
         assert result.is_null
 
-    def test_unmarshal_json_raises_not_implemented(self):
+    def test_unmarshal_json_raises_not_implemented(self) -> None:
         """Test that JSON unmarshaling raises NotImplementedError."""
         schema = CtyString()
         dv = pb.DynamicValue(json=b'{"value": "test"}')
@@ -124,7 +124,7 @@ class TestUnmarshal:
         with pytest.raises(NotImplementedError, match="JSON unmarshalling"):
             unmarshal(dv, schema=schema)
 
-    def test_unmarshal_invalid_schema_type_raises_error(self):
+    def test_unmarshal_invalid_schema_type_raises_error(self) -> None:
         """Test that invalid schema type raises TypeError."""
         dv = pb.DynamicValue(msgpack=b"\x00")
 
@@ -135,7 +135,7 @@ class TestUnmarshal:
 class TestMarshalValue:
     """Tests for marshal_value convenience function."""
 
-    def test_marshal_value_delegates_to_marshal(self):
+    def test_marshal_value_delegates_to_marshal(self) -> None:
         """Test that marshal_value calls marshal with correct parameters."""
         value = CtyValue(vtype=CtyString(), value="test")
         cty_type = CtyString()
@@ -149,7 +149,7 @@ class TestMarshalValue:
 class TestUnmarshalValue:
     """Tests for unmarshal_value convenience function."""
 
-    def test_unmarshal_value_delegates_to_unmarshal(self):
+    def test_unmarshal_value_delegates_to_unmarshal(self) -> None:
         """Test that unmarshal_value calls unmarshal with correct parameters."""
         value = CtyValue(vtype=CtyString(), value="test")
         cty_type = CtyString()
@@ -164,7 +164,7 @@ class TestUnmarshalValue:
 class TestRoundTrip:
     """Round-trip tests for marshal/unmarshal."""
 
-    def test_roundtrip_string(self):
+    def test_roundtrip_string(self) -> None:
         """Test marshal -> unmarshal roundtrip for string."""
         schema = CtyString()
         original = CtyValue(vtype=CtyString(), value="test string")
@@ -174,7 +174,7 @@ class TestRoundTrip:
 
         assert result.value == original.value
 
-    def test_roundtrip_number(self):
+    def test_roundtrip_number(self) -> None:
         """Test marshal -> unmarshal roundtrip for number."""
         schema = CtyNumber()
         original = CtyValue(vtype=CtyNumber(), value=12345.67)
@@ -184,7 +184,7 @@ class TestRoundTrip:
 
         assert result.value == original.value
 
-    def test_roundtrip_object(self):
+    def test_roundtrip_object(self) -> None:
         """Test marshal -> unmarshal roundtrip for object."""
         schema = CtyObject(attribute_types={"name": CtyString(), "age": CtyNumber()})
         original = CtyValue(
@@ -200,5 +200,6 @@ class TestRoundTrip:
 
         assert result.value["name"].value == "Alice"
         assert result.value["age"].value == 30
+
 
 # 🐍🏗️🔚

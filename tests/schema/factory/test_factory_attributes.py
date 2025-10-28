@@ -28,4 +28,5 @@ class TestAttributeFactoriesCoverage:
         assert "description" in cty_obj_type.optional_attributes
         assert "count" not in cty_obj_type.optional_attributes
 
+
 # 🐍🏗️🔚

@@ -17,7 +17,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 class TestDictToProtoFunctionBasics:
     """Test basic function conversion from dict to protobuf."""
 
-    def test_converts_simple_function(self):
+    def test_converts_simple_function(self) -> None:
         """Test converting a simple function with basic parameters."""
         func_dict = {
             "name": "test_func",
@@ -44,7 +44,7 @@ class TestDictToProtoFunctionBasics:
         assert result.parameters[0].description == "First parameter"
         assert result.parameters[0].allow_null_value is False
 
-    def test_converts_function_with_multiple_parameters(self):
+    def test_converts_function_with_multiple_parameters(self) -> None:
         """Test function with multiple required parameters."""
         func_dict = {
             "name": "multi_param_func",
@@ -68,7 +68,7 @@ class TestDictToProtoFunctionBasics:
 class TestDictToProtoFunctionVariadic:
     """Test variadic parameter handling."""
 
-    def test_converts_function_with_variadic_parameter(self):
+    def test_converts_function_with_variadic_parameter(self) -> None:
         """Test function with variadic (optional) parameter."""
         func_dict = {
             "name": "variadic_func",
@@ -97,7 +97,7 @@ class TestDictToProtoFunctionVariadic:
         assert result.variadic_parameter.description == "Optional parameters"
         assert result.variadic_parameter.allow_null_value is True
 
-    def test_handles_function_without_variadic(self):
+    def test_handles_function_without_variadic(self) -> None:
         """Test function without variadic parameter."""
         func_dict = {
             "name": "no_variadic",
@@ -114,7 +114,7 @@ class TestDictToProtoFunctionVariadic:
 class TestDictToProtoFunctionReturnTypes:
     """Test return type handling."""
 
-    def test_converts_function_with_return_type(self):
+    def test_converts_function_with_return_type(self) -> None:
         """Test function with explicit return type."""
         func_dict = {
             "name": "return_func",
@@ -129,7 +129,7 @@ class TestDictToProtoFunctionReturnTypes:
         type_dict = json.loads(getattr(result, "return").type.decode("utf-8"))
         assert isinstance(type_dict, list)  # CtyList is encoded as ["list", element_type]
 
-    def test_handles_function_without_explicit_return(self):
+    def test_handles_function_without_explicit_return(self) -> None:
         """Test function without explicit return data defaults to CtyDynamic."""
         func_dict = {
             "name": "no_return",
@@ -147,7 +147,7 @@ class TestDictToProtoFunctionReturnTypes:
 class TestDictToProtoFunctionMissingCtyTypes:
     """Test handling of missing CtyType in parameters."""
 
-    def test_handles_missing_parameter_cty_type(self):
+    def test_handles_missing_parameter_cty_type(self) -> None:
         """Test warning when parameter CtyType is missing."""
         func_dict = {
             "name": "missing_type",
@@ -169,7 +169,7 @@ class TestDictToProtoFunctionMissingCtyTypes:
             assert result is not None
             assert len(result.parameters) == 1
 
-    def test_handles_missing_variadic_cty_type(self):
+    def test_handles_missing_variadic_cty_type(self) -> None:
         """Test warning when variadic parameter CtyType is missing."""
         func_dict = {
             "name": "missing_variadic_type",
@@ -189,7 +189,7 @@ class TestDictToProtoFunctionMissingCtyTypes:
             # Should still create variadic with CtyDynamic
             assert result.variadic_parameter is not None
 
-    def test_handles_missing_return_cty_type(self):
+    def test_handles_missing_return_cty_type(self) -> None:
         """Test warning when return CtyType is missing."""
         func_dict = {
             "name": "missing_return_type",
@@ -213,7 +213,7 @@ class TestDictToProtoFunctionMissingCtyTypes:
 class TestDictToProtoFunctionErrorHandling:
     """Test error handling during conversion."""
 
-    def test_handles_conversion_exception(self):
+    def test_handles_conversion_exception(self) -> None:
         """Test that exceptions are caught and logged."""
         func_dict = {
             "name": "error_func",
@@ -236,7 +236,7 @@ class TestDictToProtoFunctionErrorHandling:
                 assert "error_func" in str(mock_logger.error.call_args)
                 assert "JSON encoding failed" in str(mock_logger.error.call_args)
 
-    def test_returns_none_on_construction_error(self):
+    def test_returns_none_on_construction_error(self) -> None:
         """Test that None is returned when protobuf construction fails."""
         # This is a bit tricky to test, but we can simulate by patching pb.Function
         func_dict = {
@@ -258,7 +258,7 @@ class TestDictToProtoFunctionErrorHandling:
 class TestDictToProtoFunctionComplexTypes:
     """Test conversion of complex CtyTypes."""
 
-    def test_converts_list_type_parameter(self):
+    def test_converts_list_type_parameter(self) -> None:
         """Test parameter with CtyList type."""
         func_dict = {
             "name": "list_func",
@@ -282,7 +282,7 @@ class TestDictToProtoFunctionComplexTypes:
         assert isinstance(type_dict, list)
         assert type_dict[0] == "list"
 
-    def test_converts_map_type_parameter(self):
+    def test_converts_map_type_parameter(self) -> None:
         """Test parameter with CtyMap type."""
         func_dict = {
             "name": "map_func",
@@ -306,7 +306,7 @@ class TestDictToProtoFunctionComplexTypes:
         assert isinstance(type_dict, list)
         assert type_dict[0] == "map"
 
-    def test_converts_nested_collection_types(self):
+    def test_converts_nested_collection_types(self) -> None:
         """Test parameter with nested collection types."""
         func_dict = {
             "name": "nested_func",
@@ -330,7 +330,7 @@ class TestDictToProtoFunctionComplexTypes:
 class TestDictToProtoFunctionMetadata:
     """Test metadata handling (summary, description, deprecation)."""
 
-    def test_includes_summary_and_description(self):
+    def test_includes_summary_and_description(self) -> None:
         """Test that summary and description are included."""
         func_dict = {
             "name": "documented_func",
@@ -345,7 +345,7 @@ class TestDictToProtoFunctionMetadata:
         assert result.summary == "Short summary"
         assert result.description == "Longer description with details"
 
-    def test_includes_deprecation_message(self):
+    def test_includes_deprecation_message(self) -> None:
         """Test that deprecation message is included."""
         func_dict = {
             "name": "deprecated_func",
@@ -359,7 +359,7 @@ class TestDictToProtoFunctionMetadata:
 
         assert result.deprecation_message == "Use new_func instead"
 
-    def test_handles_missing_optional_metadata(self):
+    def test_handles_missing_optional_metadata(self) -> None:
         """Test that missing optional metadata doesn't cause issues."""
         func_dict = {
             "name": "minimal_func",
@@ -379,7 +379,7 @@ class TestDictToProtoFunctionMetadata:
 class TestDictToProtoFunctionAllowUnknownValues:
     """Test that allow_unknown_values is always set to True."""
 
-    def test_parameters_allow_unknown_values(self):
+    def test_parameters_allow_unknown_values(self) -> None:
         """Test that parameters have allow_unknown_values=True."""
         func_dict = {
             "name": "test_func",
@@ -395,7 +395,7 @@ class TestDictToProtoFunctionAllowUnknownValues:
         for param in result.parameters:
             assert param.allow_unknown_values is True
 
-    def test_variadic_parameter_allows_unknown_values(self):
+    def test_variadic_parameter_allows_unknown_values(self) -> None:
         """Test that variadic parameter has allow_unknown_values=True."""
         func_dict = {
             "name": "test_func",
@@ -412,5 +412,6 @@ class TestDictToProtoFunctionAllowUnknownValues:
         result = dict_to_proto_function(func_dict)
 
         assert result.variadic_parameter.allow_unknown_values is True
+
 
 # 🐍🏗️🔚

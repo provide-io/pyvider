@@ -49,14 +49,14 @@ class EncryptionTestResource(BaseResource):
         assert ctx.private_state == MockPrivateState(session_id="abc-123", version=1)
         return ctx.planned_state, ctx.private_state
 
-    async def read(self, ctx):
+    async def read(self, ctx) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
         pass
 
 
-def test_encryption_raises_error_when_secret_is_missing(monkeypatch):
+def test_encryption_raises_error_when_secret_is_missing(monkeypatch) -> None:
     env_var_name = f"PYVIDER_{CONFIG_KEY_NAME.upper()}"
     monkeypatch.delenv(env_var_name, raising=False)
     monkeypatch.setattr("pyvider.common.config.PyviderConfig.get", lambda self, key, default=None: None)
@@ -67,7 +67,7 @@ def test_encryption_raises_error_when_secret_is_missing(monkeypatch):
         encrypt(b"some data")
 
 
-def test_encryption_decryption_roundtrip(encryption_key_env):
+def test_encryption_decryption_roundtrip(encryption_key_env) -> None:
     original_plaintext = b"this is a very secret message"
     encrypted = encrypt(original_plaintext)
     decrypted = decrypt(encrypted)
@@ -75,7 +75,7 @@ def test_encryption_decryption_roundtrip(encryption_key_env):
 
 
 @pytest.mark.asyncio
-async def test_full_lifecycle_with_encryption(encryption_key_env, provider_in_hub):
+async def test_full_lifecycle_with_encryption(encryption_key_env, provider_in_hub) -> None:
     resource_name = "encryption_test_resource"
     hub.register("resource", resource_name, EncryptionTestResource)
     try:

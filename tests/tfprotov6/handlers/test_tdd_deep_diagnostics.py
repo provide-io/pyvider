@@ -194,4 +194,5 @@ class TestDeepDiagnosticPaths:
             expected_summary_contains="Attribute cannot be null",
         )
 
+
 # 🐍🏗️🔚

@@ -44,14 +44,14 @@ TYPE_HINT_TEST_CASES = [
 
 
 @pytest.mark.parametrize("py_type, expected_cty_class", TYPE_HINT_TEST_CASES)
-def test_function_adapter_type_inference(py_type, expected_cty_class):
+def test_function_adapter_type_inference(py_type, expected_cty_class) -> None:
     """
     Verifies that the function adapter correctly infers the CtyType
     from a wide range of Python type hints.
     """
 
     # Dynamically create a dummy function with the type hint to test
-    def dummy_func(param: py_type):
+    def dummy_func(param: py_type) -> None:
         pass
 
     # Adapt the function and inspect the inferred parameter type
@@ -67,5 +67,6 @@ def test_function_adapter_type_inference(py_type, expected_cty_class):
     if expected_cty_class is CtyList and py_type is list[dict[str, bool]]:
         assert isinstance(inferred_param_type.element_type, CtyMap)
         assert isinstance(inferred_param_type.element_type.element_type, CtyBool)
+
 
 # 🐍🏗️🔚

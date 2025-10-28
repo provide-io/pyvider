@@ -44,7 +44,7 @@ class TestFunctionDispatch:
     validates argument counts and types, and handles errors gracefully.
     """
 
-    async def test_dispatch_success_with_valid_args(self):
+    async def test_dispatch_success_with_valid_args(self) -> None:
         """TDD: Handler succeeds with correct argument types."""
         arg1 = marshal(10, schema=CtyNumber())
         arg2 = marshal(20, schema=CtyNumber())
@@ -56,7 +56,7 @@ class TestFunctionDispatch:
         result_cty = unmarshal(response.result, schema=CtyNumber())
         assert result_cty.value == 30
 
-    async def test_dispatch_fails_with_wrong_arg_count(self):
+    async def test_dispatch_fails_with_wrong_arg_count(self) -> None:
         """TDD: Handler returns an error for incorrect number of arguments."""
         arg1 = marshal(10, schema=CtyNumber())
         request = pb.CallFunction.Request(name="add_numbers", arguments=[arg1])
@@ -68,7 +68,7 @@ class TestFunctionDispatch:
         assert "Expected: 2 arguments" in response.error.text
         assert "Received: 1 arguments" in response.error.text
 
-    async def test_dispatch_fails_with_wrong_arg_type(self):
+    async def test_dispatch_fails_with_wrong_arg_type(self) -> None:
         """TDD: Handler returns a type validation error for mismatched types."""
         arg1 = marshal(10, schema=CtyNumber())
         arg2 = marshal("twenty", schema=CtyString())  # This is the wrong type
@@ -81,7 +81,7 @@ class TestFunctionDispatch:
         assert "Number validation error" in response.error.text
         assert "Cannot represent str value 'twenty' as Decimal" in response.error.text
 
-    async def test_dispatch_handles_optional_null_arg(self):
+    async def test_dispatch_handles_optional_null_arg(self) -> None:
         """TDD: Handler correctly uses default value when a null is passed for an optional argument."""
         arg1 = marshal("World", schema=CtyString())
         arg2 = marshal(None, schema=CtyString())  # Pass null for the optional arg

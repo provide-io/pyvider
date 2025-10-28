@@ -25,7 +25,7 @@ from pyvider.common.launch_context import (
 )
 
 
-def test_detect_launch_context_collects_environment(monkeypatch):
+def test_detect_launch_context_collects_environment(monkeypatch) -> None:
     monkeypatch.setitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", "1")
     monkeypatch.setitem(lc.os.environ, "PSPF_TOKEN", "secret")
     monkeypatch.setattr(lc.sys, "argv", ["/app/__main__.py"])
@@ -47,16 +47,16 @@ def test_detect_launch_context_collects_environment(monkeypatch):
     assert context.working_directory == "/workspace"
 
 
-def test_is_pspf_launch_detects_cache_path():
+def test_is_pspf_launch_detects_cache_path() -> None:
     assert _is_pspf_launch("terraform-provider-pyvider", "/tmp/.cache/pspf/python") is True
 
 
-def test_is_module_launch_with_main(monkeypatch):
+def test_is_module_launch_with_main(monkeypatch) -> None:
     monkeypatch.setattr(lc.sys, "argv", ["/tmp/pyvider/__main__.py"])
     assert _is_module_launch() is True
 
 
-def test_is_editable_install_detects_src(monkeypatch):
+def test_is_editable_install_detects_src(monkeypatch) -> None:
     dummy_pyvider = types.SimpleNamespace(
         __file__="/repo/src/pyvider/__init__.py",
         __path__=["/repo/src/pyvider"],
@@ -65,12 +65,12 @@ def test_is_editable_install_detects_src(monkeypatch):
     assert _is_editable_install("/repo/.venv/bin/pyvider") is True
 
 
-def test_get_module_name_defaults(monkeypatch):
+def test_get_module_name_defaults(monkeypatch) -> None:
     monkeypatch.setattr(lc.sys, "argv", ["pyvider"])
     assert _get_module_name() == "pyvider"
 
 
-def test_analyze_executable_reports_files(tmp_path):
+def test_analyze_executable_reports_files(tmp_path) -> None:
     script = tmp_path / "main.py"
     script.write_text("print('hi')")
     info = _analyze_executable(str(script))
@@ -79,7 +79,7 @@ def test_analyze_executable_reports_files(tmp_path):
     assert info["suffix"] == ".py"
 
 
-def test_analyze_cache_structure_lists_directories(tmp_path, monkeypatch):
+def test_analyze_cache_structure_lists_directories(tmp_path, monkeypatch) -> None:
     bin_dir = tmp_path / "cache" / "bin"
     bin_dir.mkdir(parents=True)
     (tmp_path / "cache" / "metadata").mkdir(parents=True)
@@ -96,7 +96,7 @@ def test_analyze_cache_structure_lists_directories(tmp_path, monkeypatch):
     assert "metadata" in structure["contents"]
 
 
-def test_log_launch_context_uses_logger(monkeypatch):
+def test_log_launch_context_uses_logger(monkeypatch) -> None:
     captured = []
     context = LaunchContext(
         method=LaunchMethod.UNKNOWN,
@@ -116,11 +116,11 @@ def test_log_launch_context_uses_logger(monkeypatch):
     assert any("Launch Context" in entry for entry in captured)
 
 
-def test_is_direct_script_launch_handles_py_extension():
+def test_is_direct_script_launch_handles_py_extension() -> None:
     assert _is_direct_script_launch("/tmp/tool.py") is True
 
 
-def test_detect_launch_method_prefers_direct_script(monkeypatch):
+def test_detect_launch_method_prefers_direct_script(monkeypatch) -> None:
     monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: False)
     monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
     monkeypatch.setattr(lc, "_is_editable_install", lambda exe: False)
@@ -130,7 +130,7 @@ def test_detect_launch_method_prefers_direct_script(monkeypatch):
     assert details["script_path"] == "/tmp/script.py"
 
 
-def test_detect_launch_method_prefers_pspf(monkeypatch):
+def test_detect_launch_method_prefers_pspf(monkeypatch) -> None:
     calls = {}
     monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: calls.setdefault("pspf", True))
     monkeypatch.setattr(lc, "_get_pspf_details", lambda: {"cache": "info"})
@@ -141,7 +141,7 @@ def test_detect_launch_method_prefers_pspf(monkeypatch):
     assert details["cache"] == "info"
 
 
-def test_detect_launch_method_handles_editable(monkeypatch):
+def test_detect_launch_method_handles_editable(monkeypatch) -> None:
     monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: False)
     monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
     monkeypatch.setattr(lc, "_is_editable_install", lambda exe: True)
@@ -153,7 +153,7 @@ def test_detect_launch_method_handles_editable(monkeypatch):
     assert details["executable_path"] == "/repo/.venv/bin/pyvider"
 
 
-def test_detect_launch_method_returns_unknown(monkeypatch):
+def test_detect_launch_method_returns_unknown(monkeypatch) -> None:
     calls = {}
     monkeypatch.setattr(lc, "_is_pspf_launch", lambda exe, py: calls.setdefault("pspf", True) and False)
     monkeypatch.setattr(lc, "_is_module_launch", lambda: False)
@@ -166,5 +166,6 @@ def test_detect_launch_method_returns_unknown(monkeypatch):
     assert method is LaunchMethod.UNKNOWN
     assert details["reason"].startswith("Could not determine")
     assert details["executable_analysis"]["name"] == "custom"
+
 
 # 🐍🏗️🔚

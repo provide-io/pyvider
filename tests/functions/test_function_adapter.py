@@ -42,7 +42,7 @@ def union_func(val: str | int) -> str:
 
 
 class TestFunctionAdapter:
-    def test_adapt_simple_function(self):
+    def test_adapt_simple_function(self) -> None:
         """TDD: Verifies adaptation of basic Python type hints."""
         meta = function_to_dict(simple_func)
 
@@ -60,7 +60,7 @@ class TestFunctionAdapter:
 
         assert isinstance(meta["return"]["cty_type"], CtyBool)
 
-    def test_adapt_collection_function(self):
+    def test_adapt_collection_function(self) -> None:
         """TDD: Verifies adaptation of list and dict type hints."""
         meta = function_to_dict(collection_func)
 
@@ -82,7 +82,7 @@ class TestFunctionAdapter:
         assert isinstance(return_type, CtyList)
         assert isinstance(return_type.element_type, CtyNumber)
 
-    def test_adapt_optional_parameters(self):
+    def test_adapt_optional_parameters(self) -> None:
         """TDD: Verifies adaptation of optional and default-value parameters."""
         meta = function_to_dict(optional_func)
 
@@ -101,7 +101,7 @@ class TestFunctionAdapter:
         assert variadic["allow_null"] is True
         assert isinstance(variadic["cty_type"], CtyNumber)
 
-    def test_adapt_dynamic_types(self):
+    def test_adapt_dynamic_types(self) -> None:
         """TDD: Verifies that `Any` correctly maps to `CtyDynamic`."""
         meta = function_to_dict(dynamic_func)
 
@@ -109,7 +109,7 @@ class TestFunctionAdapter:
         assert isinstance(params["val"]["cty_type"], CtyDynamic)
         assert isinstance(meta["return"]["cty_type"], CtyDynamic)
 
-    def test_adapt_union_types(self):
+    def test_adapt_union_types(self) -> None:
         """TDD: Verifies that a complex Union type maps to CtyDynamic."""
         meta = function_to_dict(union_func)
 

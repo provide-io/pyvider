@@ -40,7 +40,7 @@ class DynamicDataSource(BaseDataSource["test_dynamic_ds", DynamicOutputState, No
 
 
 @pytest.mark.asyncio
-async def test_read_data_source_with_dynamic_output():
+async def test_read_data_source_with_dynamic_output() -> None:
     hub.register("data_source", "test_dynamic_ds", DynamicDataSource)
     try:
         request = pb.ReadDataSource.Request(type_name="test_dynamic_ds")
@@ -51,5 +51,6 @@ async def test_read_data_source_with_dynamic_output():
         assert response.state.msgpack is not None
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
+
 
 # 🐍🏗️🔚

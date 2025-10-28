@@ -20,7 +20,7 @@ DEBUG_DUMP_FILE = Path("/tmp/pyvider_debug_dump.msgpack")
 
 @pytest.mark.skipif(not DEBUG_DUMP_FILE.exists(), reason="Debug dump file not found")
 @pytest.mark.asyncio
-async def test_unmarshal_captured_payload_avoids_recursion():
+async def test_unmarshal_captured_payload_avoids_recursion() -> None:
     """
     This test reads the captured failing payload and attempts to unmarshal it,
     which will trigger the RecursionError with the broken code.
@@ -39,5 +39,6 @@ async def test_unmarshal_captured_payload_avoids_recursion():
         assert not result_cty_val.is_null, "Unmarshalled value should not be null"
     except RecursionError:
         pytest.fail("unmarshal_value caused a RecursionError with the captured payload.")
+
 
 # 🐍🏗️🔚

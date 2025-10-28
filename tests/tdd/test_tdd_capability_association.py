@@ -26,7 +26,7 @@ class OrphanResource(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx: Any):
+    async def read(self, ctx: Any) -> None:
         pass
 
     async def _create(self, ctx: Any, base_plan: dict):
@@ -44,7 +44,7 @@ class TestTddCapabilityAssociation:
         yield
         hub.registry = {}
 
-    async def test_provider_setup_succeeds_for_provider_component(self):
+    async def test_provider_setup_succeeds_for_provider_component(self) -> None:
         """A component without `component_of` is a provider component and should succeed."""
         hub.register("resource", "orphan_resource", OrphanResource)
         provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
@@ -52,5 +52,6 @@ class TestTddCapabilityAssociation:
             await provider.setup()
         except FrameworkConfigurationError:
             pytest.fail("Provider setup failed for a valid provider component.")
+
 
 # 🐍🏗️🔚

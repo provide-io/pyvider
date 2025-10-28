@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 
 
-def _append_path():
+def _append_path() -> None:
     """Append necessary paths."""
     # Get the base path of the frozen application
     base_path = Path(sys._MEIPASS if hasattr(sys, "_MEIPASS") else Path(sys.executable).parent)

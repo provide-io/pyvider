@@ -101,7 +101,7 @@ class MockConnectionResource(BaseEphemeralResource):
 
 
 @pytest.mark.asyncio
-async def test_ephemeral_resource_full_lifecycle():
+async def test_ephemeral_resource_full_lifecycle() -> None:
     """
     TDD: Verifies the entire ephemeral resource lifecycle from validation to close.
     """

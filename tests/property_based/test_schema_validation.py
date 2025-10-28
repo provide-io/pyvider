@@ -11,7 +11,7 @@ from pyvider.schema import a_bool, a_list, a_map, a_num, a_str, s_data_source
 
 
 @given(name=st.text(min_size=1, max_size=100))
-def test_required_string_accepts_any_non_empty_string(name: str):
+def test_required_string_accepts_any_non_empty_string(name: str) -> None:
     """
     Property: A required string attribute should accept any non-empty string.
     """
@@ -24,7 +24,7 @@ def test_required_string_accepts_any_non_empty_string(name: str):
 @given(
     count=st.integers(min_value=-(2**31), max_value=2**31),
 )
-def test_number_attribute_accepts_integers(count: int):
+def test_number_attribute_accepts_integers(count: int) -> None:
     """
     Property: A number attribute should accept any integer.
     """
@@ -33,7 +33,7 @@ def test_number_attribute_accepts_integers(count: int):
 
 
 @given(enabled=st.booleans())
-def test_bool_attribute_accepts_booleans(enabled: bool):
+def test_bool_attribute_accepts_booleans(enabled: bool) -> None:
     """
     Property: A boolean attribute should accept any boolean value.
     """
@@ -43,7 +43,7 @@ def test_bool_attribute_accepts_booleans(enabled: bool):
 
 @given(items=st.lists(st.text(min_size=0, max_size=50), min_size=0, max_size=20))
 @settings(suppress_health_check=[HealthCheck.too_slow])
-def test_list_attribute_schema_creation(items: list[str]):
+def test_list_attribute_schema_creation(items: list[str]) -> None:
     """
     Property: Creating a list attribute schema should always succeed.
     """
@@ -59,7 +59,7 @@ def test_list_attribute_schema_creation(items: list[str]):
         max_size=10,
     )
 )
-def test_map_attribute_schema_creation(mapping: dict[str, int]):
+def test_map_attribute_schema_creation(mapping: dict[str, int]) -> None:
     """
     Property: Creating a map attribute schema should always succeed.
     """
@@ -75,7 +75,7 @@ def test_map_attribute_schema_creation(mapping: dict[str, int]):
     ),
     description=st.text(min_size=0, max_size=200),
 )
-def test_attribute_with_description(name: str, description: str):
+def test_attribute_with_description(name: str, description: str) -> None:
     """
     Property: Creating an attribute with any description should succeed.
     """
@@ -87,7 +87,7 @@ def test_attribute_with_description(name: str, description: str):
     min_items=st.integers(min_value=0, max_value=10),
     max_items=st.integers(min_value=0, max_value=20),
 )
-def test_list_with_size_constraints(min_items: int, max_items: int):
+def test_list_with_size_constraints(min_items: int, max_items: int) -> None:
     """
     Property: Creating a list with size constraints should succeed when min <= max.
     """
@@ -102,7 +102,7 @@ def test_list_with_size_constraints(min_items: int, max_items: int):
     required=st.booleans(),
     optional=st.booleans(),
 )
-def test_attribute_required_optional_flags(required: bool, optional: bool):
+def test_attribute_required_optional_flags(required: bool, optional: bool) -> None:
     """
     Property: An attribute can be created with any combination of required/optional flags.
     """
@@ -115,7 +115,7 @@ def test_attribute_required_optional_flags(required: bool, optional: bool):
 @given(
     default_value=st.one_of(st.none(), st.text(min_size=0, max_size=50)),
 )
-def test_optional_attribute_with_default(default_value):
+def test_optional_attribute_with_default(default_value) -> None:
     """
     Property: Creating an optional attribute with a default value should succeed.
     """
@@ -130,7 +130,7 @@ def test_optional_attribute_with_default(default_value):
 @given(
     num_attributes=st.integers(min_value=1, max_value=10),
 )
-def test_schema_with_multiple_attributes(num_attributes: int):
+def test_schema_with_multiple_attributes(num_attributes: int) -> None:
     """
     Property: A schema can be created with any positive number of attributes.
     """
@@ -142,7 +142,7 @@ def test_schema_with_multiple_attributes(num_attributes: int):
 @given(
     sensitive=st.booleans(),
 )
-def test_sensitive_attribute_flag(sensitive: bool):
+def test_sensitive_attribute_flag(sensitive: bool) -> None:
     """
     Property: An attribute can be marked as sensitive or not.
     """
@@ -153,7 +153,7 @@ def test_sensitive_attribute_flag(sensitive: bool):
 @given(
     nested_depth=st.integers(min_value=1, max_value=5),
 )
-def test_nested_list_schema_creation(nested_depth: int):
+def test_nested_list_schema_creation(nested_depth: int) -> None:
     """
     Property: Deeply nested list schemas can be created.
     """
@@ -163,5 +163,6 @@ def test_nested_list_schema_creation(nested_depth: int):
         schema = a_list(schema)
 
     assert schema is not None
+
 
 # 🐍🏗️🔚

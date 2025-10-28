@@ -69,4 +69,5 @@ def test_attribute_warning_with_dot_path() -> None:
     assert step_values == ["config", "value"]
     assert diag.severity == pb.Diagnostic.WARNING
 
+
 # 🐍🏗️🔚

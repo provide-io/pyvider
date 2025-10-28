@@ -65,7 +65,7 @@ def test_requires_capability_async_raises_when_provider_missing() -> None:
         hub.unregister("singleton", "provider")
 
     @requires_capability
-    async def async_method(self):
+    async def async_method(self) -> str:
         return "unreachable"
 
     class Component:
@@ -102,5 +102,6 @@ def test_requires_capability_async_injects_parent() -> None:
     finally:
         _restore_component("capability", "async_parent", existing_capability)
         _restore_component("singleton", "provider", existing_provider)
+
 
 # 🐍🏗️🔚

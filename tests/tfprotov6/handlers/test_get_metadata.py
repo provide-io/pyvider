@@ -45,7 +45,7 @@ class TestGetMetadataHandlerStructure:
     """Tests for GetMetadata handler response structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test that handler returns GetMetadata.Response."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.return_value = {}
@@ -55,7 +55,7 @@ class TestGetMetadataHandlerStructure:
             assert isinstance(response, pb.GetMetadata.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_calls_implementation(self, sample_request):
+    async def test_handler_calls_implementation(self, sample_request) -> None:
         """Test that handler delegates to implementation."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl:
             mock_impl.return_value = pb.GetMetadata.Response()
@@ -69,7 +69,7 @@ class TestGetMetadataImpl:
     """Tests for GetMetadata implementation."""
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_resources(self, sample_request, mock_hub_with_components):
+    async def test_impl_discovers_resources(self, sample_request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered resources."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -81,7 +81,7 @@ class TestGetMetadataImpl:
             assert "another_resource" in resource_names
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_data_sources(self, sample_request, mock_hub_with_components):
+    async def test_impl_discovers_data_sources(self, sample_request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered data sources."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -90,7 +90,7 @@ class TestGetMetadataImpl:
             assert response.data_sources[0].type_name == "test_data_source"
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_functions(self, sample_request, mock_hub_with_components):
+    async def test_impl_discovers_functions(self, sample_request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered functions."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -101,7 +101,7 @@ class TestGetMetadataImpl:
             assert "another_function" in function_names
 
     @pytest.mark.asyncio
-    async def test_impl_sets_server_capabilities(self, sample_request, mock_hub_empty):
+    async def test_impl_sets_server_capabilities(self, sample_request, mock_hub_empty) -> None:
         """Test that implementation sets correct server capabilities."""
         with patch("pyvider.hub.hub", mock_hub_empty):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -111,7 +111,7 @@ class TestGetMetadataImpl:
             assert response.server_capabilities.move_resource_state is True
 
     @pytest.mark.asyncio
-    async def test_impl_handles_empty_registry(self, sample_request, mock_hub_empty):
+    async def test_impl_handles_empty_registry(self, sample_request, mock_hub_empty) -> None:
         """Test that implementation handles empty registry gracefully."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_empty):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -122,7 +122,7 @@ class TestGetMetadataImpl:
             assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_exception(self, sample_request):
+    async def test_impl_handles_exception(self, sample_request) -> None:
         """Test that implementation handles exceptions gracefully."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.side_effect = RuntimeError("Registry error")
@@ -135,7 +135,9 @@ class TestGetMetadataImpl:
             assert "Provider metadata discovery failed" in response.diagnostics[0].summary
 
     @pytest.mark.asyncio
-    async def test_impl_returns_no_diagnostics_on_success(self, sample_request, mock_hub_with_components):
+    async def test_impl_returns_no_diagnostics_on_success(
+        self, sample_request, mock_hub_with_components
+    ) -> None:
         """Test that successful execution returns no diagnostics."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -147,7 +149,7 @@ class TestGetMetadataMetrics:
     """Tests for GetMetadata metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request):
+    async def test_handler_records_request_metric(self, sample_request) -> None:
         """Test that handler increments request counter."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_requests") as mock_requests:
             with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
@@ -158,7 +160,7 @@ class TestGetMetadataMetrics:
                 mock_requests.inc.assert_called_once_with(handler="GetMetadata")
 
     @pytest.mark.asyncio
-    async def test_handler_records_duration_metric(self, sample_request):
+    async def test_handler_records_duration_metric(self, sample_request) -> None:
         """Test that handler records duration metric."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_duration") as mock_duration:
             with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
@@ -172,7 +174,7 @@ class TestGetMetadataMetrics:
                 assert call_args[0][0] >= 0
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self, sample_request):
+    async def test_handler_records_error_metric_on_failure(self, sample_request) -> None:
         """Test that handler increments error counter on failure."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_errors") as mock_errors:
             with patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl:
@@ -188,7 +190,7 @@ class TestGetMetadataLogging:
     """Tests for GetMetadata logging behavior."""
 
     @pytest.mark.asyncio
-    async def test_impl_logs_discovery(self, sample_request, mock_hub_with_components):
+    async def test_impl_logs_discovery(self, sample_request, mock_hub_with_components) -> None:
         """Test that implementation logs component discovery."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
@@ -198,7 +200,7 @@ class TestGetMetadataLogging:
                 assert any("GetMetadata" in str(call) for call in mock_logger.debug.call_args_list)
 
     @pytest.mark.asyncio
-    async def test_impl_logs_discovered_resources(self, sample_request, mock_hub_with_components):
+    async def test_impl_logs_discovered_resources(self, sample_request, mock_hub_with_components) -> None:
         """Test that discovered resources are logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
@@ -208,7 +210,7 @@ class TestGetMetadataLogging:
                 assert any("resource" in str(call).lower() for call in mock_logger.debug.call_args_list)
 
     @pytest.mark.asyncio
-    async def test_impl_logs_errors(self, sample_request):
+    async def test_impl_logs_errors(self, sample_request) -> None:
         """Test that errors are logged."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata.logger") as mock_logger:
             with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
@@ -224,7 +226,7 @@ class TestGetMetadataEdgeCases:
     """Edge case tests for GetMetadata handler."""
 
     @pytest.mark.asyncio
-    async def test_with_context_object(self, sample_request):
+    async def test_with_context_object(self, sample_request) -> None:
         """Test handler with non-None context."""
         context = MagicMock()
 
@@ -236,7 +238,7 @@ class TestGetMetadataEdgeCases:
             assert isinstance(response, pb.GetMetadata.Response)
 
     @pytest.mark.asyncio
-    async def test_with_only_resources(self, sample_request):
+    async def test_with_only_resources(self, sample_request) -> None:
         """Test with only resources registered."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.side_effect = lambda comp_type: (
@@ -250,7 +252,7 @@ class TestGetMetadataEdgeCases:
             assert len(response.functions) == 0
 
     @pytest.mark.asyncio
-    async def test_with_only_data_sources(self, sample_request):
+    async def test_with_only_data_sources(self, sample_request) -> None:
         """Test with only data sources registered."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.side_effect = lambda comp_type: (
@@ -264,7 +266,7 @@ class TestGetMetadataEdgeCases:
             assert len(response.functions) == 0
 
     @pytest.mark.asyncio
-    async def test_with_only_functions(self, sample_request):
+    async def test_with_only_functions(self, sample_request) -> None:
         """Test with only functions registered."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.side_effect = lambda comp_type: (
@@ -276,5 +278,6 @@ class TestGetMetadataEdgeCases:
             assert len(response.resources) == 0
             assert len(response.data_sources) == 0
             assert len(response.functions) == 1
+
 
 # 🐍🏗️🔚

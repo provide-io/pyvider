@@ -128,7 +128,7 @@ def collection_cty_with_unknowns(simple_cty_type: CtyObject) -> CtyValue:
 # --- Test Cases ---
 
 
-def test_from_cty_simple_conversion(simple_cty_known: CtyValue):
+def test_from_cty_simple_conversion(simple_cty_known: CtyValue) -> None:
     result = BaseResource.from_cty(simple_cty_known, SimpleConfig)
     assert isinstance(result, SimpleConfig)
     assert result.name == "test"
@@ -137,25 +137,25 @@ def test_from_cty_simple_conversion(simple_cty_known: CtyValue):
     assert result.optional_field is None
 
 
-def test_from_cty_with_null_value(simple_cty_with_null: CtyValue):
+def test_from_cty_with_null_value(simple_cty_with_null: CtyValue) -> None:
     result = BaseResource.from_cty(simple_cty_with_null, SimpleConfig)
     assert isinstance(result, SimpleConfig)
     assert result.optional_field is None
 
 
-def test_from_cty_top_level_null():
+def test_from_cty_top_level_null() -> None:
     null_cty = CtyValue.null(CtyObject({"a": CtyString()}))
     result = BaseResource.from_cty(null_cty, SimpleConfig)
     assert result is None
 
 
-def test_from_cty_top_level_unknown():
+def test_from_cty_top_level_unknown() -> None:
     unknown_cty = CtyValue.unknown(CtyObject({"a": CtyString()}))
     result = BaseResource.from_cty(unknown_cty, SimpleConfig)
     assert result is None
 
 
-def test_from_cty_nested_object_conversion(nested_cty_known: CtyValue):
+def test_from_cty_nested_object_conversion(nested_cty_known: CtyValue) -> None:
     result = BaseResource.from_cty(nested_cty_known, NestedConfig)
     assert isinstance(result, NestedConfig)
     assert result.id == "nested-123"
@@ -163,7 +163,7 @@ def test_from_cty_nested_object_conversion(nested_cty_known: CtyValue):
     assert result.simple.name == "test"
 
 
-def test_from_cty_with_nested_unknown_value(nested_cty_with_inner_unknown: CtyValue):
+def test_from_cty_with_nested_unknown_value(nested_cty_with_inner_unknown: CtyValue) -> None:
     result = BaseResource.from_cty(nested_cty_with_inner_unknown, NestedConfig)
     assert isinstance(result, NestedConfig)
     assert result.id == "nested-456"
@@ -173,7 +173,7 @@ def test_from_cty_with_nested_unknown_value(nested_cty_with_inner_unknown: CtyVa
     assert result.simple.count is None
 
 
-def test_from_cty_collection_with_unknowns(collection_cty_with_unknowns: CtyValue):
+def test_from_cty_collection_with_unknowns(collection_cty_with_unknowns: CtyValue) -> None:
     result = BaseResource.from_cty(collection_cty_with_unknowns, CollectionConfig)
     assert isinstance(result, CollectionConfig)
     assert isinstance(result.items, list)
@@ -186,12 +186,13 @@ def test_from_cty_collection_with_unknowns(collection_cty_with_unknowns: CtyValu
     assert result.items[2].count == 3
 
 
-def test_from_cty_ignores_extra_attributes():
+def test_from_cty_ignores_extra_attributes() -> None:
     cty_val = CtyObject(
         {"name": CtyString(), "count": CtyNumber(), "enabled": CtyBool(), "extra": CtyString()}
     ).validate({"name": "test", "count": 1, "enabled": True, "extra": "ignore-me"})
     result = BaseResource.from_cty(cty_val, SimpleConfig)
     assert isinstance(result, SimpleConfig)
     assert not hasattr(result, "extra")
+
 
 # 🐍🏗️🔚

@@ -147,12 +147,12 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         # Register the first provider as the singleton "provider" for backwards compatibility
         # TODO: In the future, handlers should route to the correct provider based on resource type
-        primary_provider = list(provider_instances.values())[0]
+        primary_provider = next(iter(provider_instances.values()))
         hub.register("singleton", "provider", primary_provider)
         logger.debug(
             "Primary provider registered in hub",
             operation="hub_register",
-            provider=list(provider_classes.keys())[0],
+            provider=next(iter(provider_classes.keys())),
         )
 
         protocol = PyviderProtocol()

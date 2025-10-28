@@ -48,4 +48,5 @@ def validate_plugin_output(plugin_path: str, expected_output: str) -> None:
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"Plugin execution failed with error: {e}") from e
 
+
 # 🐍🏗️🔚

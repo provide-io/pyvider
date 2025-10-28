@@ -75,7 +75,7 @@ def get_module_docstring_and_body(content):
         return None, content.strip()
 
 
-def conform_file(filepath):
+def conform_file(filepath) -> None:
     """Conforms a single Python file to the header/footer protocol."""
     try:
         with open(filepath, encoding="utf-8") as f:
@@ -130,12 +130,9 @@ def conform_file(filepath):
         print(f"Error writing to {filepath}: {e}")
 
 
-def main():
+def main() -> None:
     """Main function to find all Python files and conform them."""
-    if len(sys.argv) > 1:
-        files = sys.argv[1:]
-    else:
-        files = get_python_files()
+    files = sys.argv[1:] if len(sys.argv) > 1 else get_python_files()
 
     for file in files:
         if file.endswith(".py") and os.path.basename(file) not in EXCLUDE_FILES:

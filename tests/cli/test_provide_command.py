@@ -19,7 +19,7 @@ from pyvider.cli.provide_command import TERRAFORM_PLUGIN_MAGIC_COOKIE
 class TestProvideCommandBasics:
     """Test basic provide command functionality."""
 
-    def test_provide_help(self):
+    def test_provide_help(self) -> None:
         """Test provide command help output."""
         runner = CliRunner()
         result = runner.invoke(cli, ["provide", "--help"])
@@ -27,7 +27,7 @@ class TestProvideCommandBasics:
         assert "Starts the provider in gRPC server mode" in result.output
         assert "--force" in result.output
 
-    def test_provide_force_flag_present(self):
+    def test_provide_force_flag_present(self) -> None:
         """Test that --force flag is available."""
         runner = CliRunner()
         result = runner.invoke(cli, ["provide", "--help"])
@@ -39,7 +39,7 @@ class TestProvideCommandBasics:
 class TestProvideInteractiveMode:
     """Test interactive mode when not launched by Terraform."""
 
-    def test_provide_without_magic_cookie_shows_interactive_mode(self):
+    def test_provide_without_magic_cookie_shows_interactive_mode(self) -> None:
         """Test that running without magic cookie shows interactive mode."""
         runner = CliRunner()
         with patch.dict(os.environ, {}, clear=False):
@@ -53,7 +53,7 @@ class TestProvideInteractiveMode:
         assert "Launch Context:" in result.output
         assert "Method:" in result.output
 
-    def test_interactive_mode_shows_launch_context_details(self):
+    def test_interactive_mode_shows_launch_context_details(self) -> None:
         """Test that interactive mode displays launch context details."""
         runner = CliRunner()
         with patch.dict(os.environ, {}, clear=False):
@@ -64,7 +64,7 @@ class TestProvideInteractiveMode:
         assert "Executable:" in result.output
         assert "Python:" in result.output
 
-    def test_interactive_mode_shows_help_info(self):
+    def test_interactive_mode_shows_help_info(self) -> None:
         """Test that interactive mode explains how to use the provider."""
         runner = CliRunner()
         with patch.dict(os.environ, {}, clear=False):
@@ -79,7 +79,7 @@ class TestProvideInteractiveMode:
 class TestProvideDetectionWarnings:
     """Test provider binary name detection."""
 
-    def test_magic_cookie_with_wrong_binary_name_shows_error(self, monkeypatch):
+    def test_magic_cookie_with_wrong_binary_name_shows_error(self, monkeypatch) -> None:
         """Test detection error when magic cookie is set but binary name is wrong."""
         runner = CliRunner()
 
@@ -93,7 +93,7 @@ class TestProvideDetectionWarnings:
         assert "Provider Detection Error" in result.output
         assert "binary name" in result.output.lower()
 
-    def test_force_bypasses_detection_check(self):
+    def test_force_bypasses_detection_check(self) -> None:
         """Test that --force bypasses the binary name detection."""
         runner = CliRunner()
 
@@ -102,7 +102,7 @@ class TestProvideDetectionWarnings:
                 # Mock the server run to avoid actually starting it
                 import asyncio
 
-                def consume_coroutine(coro):
+                def consume_coroutine(coro) -> None:
                     if asyncio.iscoroutine(coro):
                         coro.close()
                     return None
@@ -119,12 +119,12 @@ class TestProvideForceMode:
     """Test --force mode behavior."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_starts_server(self, mock_run):
+    def test_force_mode_starts_server(self, mock_run) -> None:
         """Test that --force mode starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
@@ -135,18 +135,18 @@ class TestProvideForceMode:
 
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
-            result = runner.invoke(cli, ["provide", "--force"])
+            runner.invoke(cli, ["provide", "--force"])
 
         # Should call asyncio.run to start the server (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_uses_dummy_cookie(self, mock_run):
+    def test_force_mode_uses_dummy_cookie(self, mock_run) -> None:
         """Test that --force mode uses a dummy cookie when none is set."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
@@ -157,20 +157,20 @@ class TestProvideForceMode:
 
         with patch.dict(os.environ, {}, clear=False):
             os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
-            result = runner.invoke(cli, ["provide", "--force"])
+            runner.invoke(cli, ["provide", "--force"])
 
         # Verify the server was called (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_keyboard_interrupt_handled_gracefully(self, mock_run):
+    def test_keyboard_interrupt_handled_gracefully(self, mock_run) -> None:
         """Test that KeyboardInterrupt is handled gracefully."""
         # Mock asyncio.run to consume coroutine then raise KeyboardInterrupt on second call
         import asyncio
 
         call_count = [0]
 
-        def consume_then_interrupt(coro):
+        def consume_then_interrupt(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -193,12 +193,12 @@ class TestProvideServerMode:
     """Test actual server mode when magic cookie is present."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_valid_magic_cookie_starts_server(self, mock_run):
+    def test_valid_magic_cookie_starts_server(self, mock_run) -> None:
         """Test that valid magic cookie starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
@@ -210,18 +210,18 @@ class TestProvideServerMode:
         # Set magic cookie and terraform-provider binary name
         with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": TERRAFORM_PLUGIN_MAGIC_COOKIE}, clear=False):
             with patch("sys.argv", ["terraform-provider-pyvider", "provide"]):
-                result = runner.invoke(cli, ["provide"])
+                runner.invoke(cli, ["provide"])
 
         # Should call the server (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_magic_cookie_value_passed_to_server(self, mock_run):
+    def test_magic_cookie_value_passed_to_server(self, mock_run) -> None:
         """Test that the actual magic cookie value is passed to the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
@@ -233,7 +233,7 @@ class TestProvideServerMode:
         cookie_value = "test-magic-cookie-123"
         with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie_value}, clear=False):
             with patch("sys.argv", ["terraform-provider-pyvider", "provide"]):
-                result = runner.invoke(cli, ["provide"])
+                runner.invoke(cli, ["provide"])
 
         # Should call the server (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
@@ -242,7 +242,7 @@ class TestProvideServerMode:
 class TestProvideServerErrorHandling:
     """Test error handling in server mode."""
 
-    def test_server_error_shows_friendly_message(self):
+    def test_server_error_shows_friendly_message(self) -> None:
         """Test that server errors show user-friendly messages."""
         runner = CliRunner()
 
@@ -251,7 +251,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro):
+        def consume_then_error(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -269,7 +269,7 @@ class TestProvideServerErrorHandling:
         # Check if error handling was invoked (output may be empty if all goes to stderr)
         # We at least verify the error path was taken by checking exit code
 
-    def test_server_error_includes_error_details(self):
+    def test_server_error_includes_error_details(self) -> None:
         """Test that server errors include specific error information."""
         runner = CliRunner()
 
@@ -278,7 +278,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro):
+        def consume_then_error(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -293,7 +293,7 @@ class TestProvideServerErrorHandling:
 
         assert result.exit_code == 1
 
-    def test_server_error_includes_github_link(self):
+    def test_server_error_includes_github_link(self) -> None:
         """Test that server errors include link to issue tracker."""
         runner = CliRunner()
 
@@ -302,7 +302,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro):
+        def consume_then_error(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -322,12 +322,12 @@ class TestProvideComponentDiscovery:
     """Test component discovery integration."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_discovery_runs_before_server_start(self, mock_run):
+    def test_discovery_runs_before_server_start(self, mock_run) -> None:
         """Test that component discovery runs before starting the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
@@ -336,7 +336,7 @@ class TestProvideComponentDiscovery:
 
         runner = CliRunner()
 
-        result = runner.invoke(cli, ["provide", "--force"])
+        runner.invoke(cli, ["provide", "--force"])
 
         # Discovery should have run (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
@@ -346,7 +346,7 @@ class TestProvideComponentDiscovery:
 class TestRunProviderServerAsync:
     """Test the async _run_provider_server function."""
 
-    async def test_run_provider_server_basic_initialization(self):
+    async def test_run_provider_server_basic_initialization(self) -> None:
         """Test basic server initialization flow."""
         from pyvider.cli.provide_command import _run_provider_server
 
@@ -359,7 +359,7 @@ class TestRunProviderServerAsync:
 class TestProvideCommandCoverage:
     """Additional tests to improve coverage."""
 
-    def test_script_name_extraction(self):
+    def test_script_name_extraction(self) -> None:
         """Test that script name is correctly extracted from sys.argv."""
         runner = CliRunner()
 
@@ -372,12 +372,12 @@ class TestProvideCommandCoverage:
         assert "terraform-provider-test provide --force" in result.output
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_detection_error_shows_debug_info(self, mock_run):
+    def test_detection_error_shows_debug_info(self, mock_run) -> None:
         """Test that detection error includes debug information."""
         # Mock asyncio.run to consume any coroutines (shouldn't be called but just in case)
         import asyncio
 
-        def consume_coroutine(coro):
+        def consume_coroutine(coro) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None

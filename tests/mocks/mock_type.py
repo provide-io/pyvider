@@ -27,4 +27,5 @@ class MockType(type[str]):
     def __str__(self) -> str:
         return "MockType"
 
+
 # 🐍🏗️🔚

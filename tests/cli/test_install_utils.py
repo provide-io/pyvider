@@ -20,7 +20,7 @@ from pyvider.cli.utils import _create_venv_symlink, _find_actual_venv, _remove_v
 class TestVenvDetection:
     """Test virtual environment detection logic."""
 
-    def test_find_venv_standard_location(self, tmp_path):
+    def test_find_venv_standard_location(self, tmp_path) -> None:
         """Test finding .venv in standard location."""
         venv_dir = tmp_path / ".venv"
         venv_bin = venv_dir / "bin"
@@ -30,7 +30,7 @@ class TestVenvDetection:
         result = _find_actual_venv(tmp_path)
         assert result == venv_dir
 
-    def test_find_venv_alternative_location(self, tmp_path):
+    def test_find_venv_alternative_location(self, tmp_path) -> None:
         """Test finding venv in alternative location."""
         venv_dir = tmp_path / "venv"
         venv_bin = venv_dir / "bin"
@@ -40,7 +40,7 @@ class TestVenvDetection:
         result = _find_actual_venv(tmp_path)
         assert result == venv_dir
 
-    def test_find_venv_platform_specific(self, tmp_path):
+    def test_find_venv_platform_specific(self, tmp_path) -> None:
         """Test finding platform-specific venv (.venv_darwin_arm64)."""
         venv_dir = tmp_path / ".venv_darwin_arm64"
         venv_bin = venv_dir / "bin"
@@ -50,7 +50,7 @@ class TestVenvDetection:
         result = _find_actual_venv(tmp_path)
         assert result == venv_dir
 
-    def test_find_venv_workenv_style(self, tmp_path):
+    def test_find_venv_workenv_style(self, tmp_path) -> None:
         """Test finding workenv-style venv."""
         venv_dir = tmp_path / "workenv" / "pyvider_darwin_arm64"
         venv_bin = venv_dir / "bin"
@@ -60,7 +60,7 @@ class TestVenvDetection:
         result = _find_actual_venv(tmp_path)
         assert result == venv_dir
 
-    def test_find_venv_prefers_standard(self, tmp_path):
+    def test_find_venv_prefers_standard(self, tmp_path) -> None:
         """Test that .venv is preferred over alternatives."""
         # Create multiple venvs
         for venv_name in [".venv", "venv", ".venv_darwin_arm64"]:
@@ -73,12 +73,12 @@ class TestVenvDetection:
         # Should prefer .venv (first in candidate list)
         assert result == tmp_path / ".venv"
 
-    def test_find_venv_not_found(self, tmp_path):
+    def test_find_venv_not_found(self, tmp_path) -> None:
         """Test when no venv exists."""
         result = _find_actual_venv(tmp_path)
         assert result is None
 
-    def test_find_venv_incomplete_venv(self, tmp_path):
+    def test_find_venv_incomplete_venv(self, tmp_path) -> None:
         """Test that incomplete venv (missing activate script) is not found."""
         venv_dir = tmp_path / ".venv"
         venv_bin = venv_dir / "bin"
@@ -88,7 +88,7 @@ class TestVenvDetection:
         result = _find_actual_venv(tmp_path)
         assert result is None
 
-    def test_find_venv_symlink_follows(self, tmp_path):
+    def test_find_venv_symlink_follows(self, tmp_path) -> None:
         """Test that symlinked venvs are followed correctly."""
         # Create real venv
         real_venv = tmp_path / ".venv"
@@ -108,7 +108,7 @@ class TestVenvDetection:
 class TestScriptGeneration:
     """Test script generation logic (integration with actual function)."""
 
-    def test_script_generation_requires_venv(self):
+    def test_script_generation_requires_venv(self) -> None:
         """Test that script generation fails without venv."""
         from provide.foundation.errors import ConfigurationError
 
@@ -132,7 +132,7 @@ class TestScriptGeneration:
             finally:
                 os.chdir(original_cwd)
 
-    def test_script_generation_validates_python(self):
+    def test_script_generation_validates_python(self) -> None:
         """Test that script generation validates Python executable exists."""
         from provide.foundation.errors import ConfigurationError
 
@@ -164,7 +164,7 @@ class TestScriptGeneration:
 class TestVenvDetectionEdgeCases:
     """Test edge cases in venv detection."""
 
-    def test_multiple_platform_venvs_sorted(self, tmp_path):
+    def test_multiple_platform_venvs_sorted(self, tmp_path) -> None:
         """Test that multiple platform venvs are checked in sorted order."""
         # Create multiple platform-specific venvs
         for venv_name in [".venv_linux_amd64", ".venv_darwin_arm64", ".venv_darwin_amd64"]:
@@ -177,7 +177,7 @@ class TestVenvDetectionEdgeCases:
         # Should find first in sorted order
         assert result.name in [".venv_darwin_amd64", ".venv_darwin_arm64", ".venv_linux_amd64"]
 
-    def test_workenv_with_multiple_envs(self, tmp_path):
+    def test_workenv_with_multiple_envs(self, tmp_path) -> None:
         """Test workenv directory with multiple environments."""
         workenv_dir = tmp_path / "workenv"
 
@@ -195,7 +195,7 @@ class TestVenvDetectionEdgeCases:
 class TestSymlinkCreation:
     """Test symlink creation and removal functions."""
 
-    def test_create_venv_symlink(self, tmp_path):
+    def test_create_venv_symlink(self, tmp_path) -> None:
         """Test creating the terraform-provider-pyvider symlink."""
         # Create mock venv structure
         venv_dir = tmp_path / ".venv"
@@ -212,7 +212,7 @@ class TestSymlinkCreation:
         assert symlink_path.is_symlink()
         assert symlink_path.resolve().name == "pyvider"
 
-    def test_create_venv_symlink_replaces_existing(self, tmp_path):
+    def test_create_venv_symlink_replaces_existing(self, tmp_path) -> None:
         """Test that creating symlink replaces an existing one."""
         venv_dir = tmp_path / ".venv"
         venv_bin = venv_dir / "bin"
@@ -233,7 +233,7 @@ class TestSymlinkCreation:
         assert symlink_path.is_symlink()
         assert symlink_path.resolve().name == "pyvider"
 
-    def test_create_venv_symlink_no_bin_directory(self, tmp_path):
+    def test_create_venv_symlink_no_bin_directory(self, tmp_path) -> None:
         """Test that symlink creation fails gracefully if bin directory doesn't exist."""
         from provide.foundation.errors import ConfigurationError
 
@@ -244,7 +244,7 @@ class TestSymlinkCreation:
         with pytest.raises(ConfigurationError, match="Failed to create venv symlink"):
             _create_venv_symlink(venv_dir)
 
-    def test_remove_venv_symlink(self, tmp_path):
+    def test_remove_venv_symlink(self, tmp_path) -> None:
         """Test removing the terraform-provider-pyvider symlink."""
         venv_dir = tmp_path / ".venv"
         venv_bin = venv_dir / "bin"
@@ -261,7 +261,7 @@ class TestSymlinkCreation:
         # Verify symlink is gone
         assert not symlink_path.exists() and not symlink_path.is_symlink()
 
-    def test_remove_venv_symlink_when_not_exists(self, tmp_path):
+    def test_remove_venv_symlink_when_not_exists(self, tmp_path) -> None:
         """Test that removing non-existent symlink doesn't raise error."""
         venv_dir = tmp_path / ".venv"
         venv_bin = venv_dir / "bin"
@@ -270,7 +270,7 @@ class TestSymlinkCreation:
         # Should not raise any error
         _remove_venv_symlink(venv_dir)
 
-    def test_remove_venv_symlink_with_missing_bin(self, tmp_path):
+    def test_remove_venv_symlink_with_missing_bin(self, tmp_path) -> None:
         """Test that removing symlink gracefully handles missing bin directory."""
         venv_dir = tmp_path / ".venv"
         venv_dir.mkdir()

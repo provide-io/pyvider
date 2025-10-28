@@ -66,7 +66,7 @@ class TestBaseResourceLifecycle:
     """Tests for BaseResource lifecycle methods."""
 
     @pytest.mark.asyncio
-    async def test_validate_with_valid_config(self):
+    async def test_validate_with_valid_config(self) -> None:
         """Test validation passes for valid config."""
         resource = SampleResource()
         config = SampleConfig(name="valid", count=10)
@@ -76,7 +76,7 @@ class TestBaseResourceLifecycle:
         assert len(errors) == 0
 
     @pytest.mark.asyncio
-    async def test_validate_with_invalid_config(self):
+    async def test_validate_with_invalid_config(self) -> None:
         """Test validation fails for invalid config."""
         resource = SampleResource()
         config = SampleConfig(name="invalid", count=10)
@@ -87,7 +87,7 @@ class TestBaseResourceLifecycle:
         assert "cannot be 'invalid'" in errors[0]
 
     @pytest.mark.asyncio
-    async def test_validate_with_none_config_returns_empty_list(self):
+    async def test_validate_with_none_config_returns_empty_list(self) -> None:
         """Test validation with None config returns empty list."""
         resource = SampleResource()
 
@@ -96,7 +96,7 @@ class TestBaseResourceLifecycle:
         assert errors == []
 
     @pytest.mark.asyncio
-    async def test_plan_create_operation(self):
+    async def test_plan_create_operation(self) -> None:
         """Test plan for create operation (state is None)."""
         resource = SampleResource()
         schema = SampleResource.get_schema()
@@ -116,14 +116,14 @@ class TestBaseResourceLifecycle:
             planned_state_cty=planned_state_cty,
         )
 
-        planned_state, private_state = await resource.plan(ctx)
+        planned_state, _private_state = await resource.plan(ctx)
 
         assert planned_state is not None
         assert "name" in planned_state
         assert planned_state["name"] == "new-resource"
 
     @pytest.mark.asyncio
-    async def test_plan_update_operation(self):
+    async def test_plan_update_operation(self) -> None:
         """Test plan for update operation (state exists)."""
         resource = SampleResource()
         schema = SampleResource.get_schema()
@@ -144,13 +144,13 @@ class TestBaseResourceLifecycle:
             planned_state_cty=planned_state_cty,
         )
 
-        planned_state, private_state = await resource.plan(ctx)
+        planned_state, _private_state = await resource.plan(ctx)
 
         assert planned_state is not None
         assert planned_state["name"] == "updated-resource"
 
     @pytest.mark.asyncio
-    async def test_plan_delete_operation(self):
+    async def test_plan_delete_operation(self) -> None:
         """Test plan for delete operation (config is None, planned_state is None)."""
         resource = SampleResource()
         state = SampleState(id="res-to-delete", name="old", count=0)
@@ -170,7 +170,7 @@ class TestBaseResourceLifecycle:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_plan_with_validation_errors(self):
+    async def test_plan_with_validation_errors(self) -> None:
         """Test that plan adds validation errors to context."""
         resource = SampleResource()
         schema = SampleResource.get_schema()
@@ -196,7 +196,7 @@ class TestBaseResourceLifecycle:
         assert len(ctx.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_apply_create_operation(self):
+    async def test_apply_create_operation(self) -> None:
         """Test apply for create operation."""
         resource = SampleResource()
 
@@ -209,14 +209,14 @@ class TestBaseResourceLifecycle:
             planned_state=planned_state,
         )
 
-        new_state, private_state = await resource.apply(ctx)
+        new_state, _private_state = await resource.apply(ctx)
 
         assert new_state is not None
         assert new_state.id == "new-id"
         assert new_state.name == "created"
 
     @pytest.mark.asyncio
-    async def test_apply_update_operation(self):
+    async def test_apply_update_operation(self) -> None:
         """Test apply for update operation."""
         resource = SampleResource()
 
@@ -231,14 +231,14 @@ class TestBaseResourceLifecycle:
             planned_state=planned_state,
         )
 
-        new_state, private_state = await resource.apply(ctx)
+        new_state, _private_state = await resource.apply(ctx)
 
         assert new_state is not None
         assert new_state.name == "updated"
         assert new_state.count == 2
 
     @pytest.mark.asyncio
-    async def test_apply_delete_operation(self):
+    async def test_apply_delete_operation(self) -> None:
         """Test apply for delete operation."""
         resource = SampleResource()
 
@@ -258,7 +258,7 @@ class TestBaseResourceLifecycle:
         assert private_state is None
 
     @pytest.mark.asyncio
-    async def test_read_returns_state(self):
+    async def test_read_returns_state(self) -> None:
         """Test read method returns state."""
         resource = SampleResource()
         state = SampleState(id="res-123", name="test", count=5)
@@ -277,7 +277,7 @@ class TestBaseResourceLifecycle:
         assert result.name == "test"
 
     @pytest.mark.asyncio
-    async def test_read_returns_none_for_deleted_resource(self):
+    async def test_read_returns_none_for_deleted_resource(self) -> None:
         """Test read returns None for deleted resource."""
         resource = SampleResource()
         state = SampleState(id="deleted", name="gone", count=0)

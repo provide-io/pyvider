@@ -28,14 +28,14 @@ def valid_schema() -> PvsSchema:
 
 
 class TestSchemaArchitecture:
-    def test_schema_is_composed_correctly(self, valid_schema: PvsSchema):
+    def test_schema_is_composed_correctly(self, valid_schema: PvsSchema) -> None:
         """Ensures the schema block is a PvsObjectType."""
         assert isinstance(valid_schema, PvsSchema)
         assert isinstance(valid_schema.block, PvsObjectType)
         assert "name" in valid_schema.block.attributes
 
     @pytest.mark.asyncio
-    async def test_schema_validation_logic(self, valid_schema: PvsSchema):
+    async def test_schema_validation_logic(self, valid_schema: PvsSchema) -> None:
         """Tests the high-level validation function."""
         valid_config = {"name": "test", "count": 1}
         # The method now raises no exception on success.
@@ -44,5 +44,6 @@ class TestSchemaArchitecture:
         invalid_config = {"name": "test", "count": "not-a-number"}
         with pytest.raises(CtyValidationError, match="Cannot represent str value"):
             valid_schema.validate_config(invalid_config)
+
 
 # 🐍🏗️🔚

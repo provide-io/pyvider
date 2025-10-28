@@ -52,7 +52,7 @@ class TestPlanResourceChangeHandlerStructure:
     """Tests for PlanResourceChange handler response structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test that handler returns PlanResourceChange.Response."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -62,7 +62,7 @@ class TestPlanResourceChangeHandlerStructure:
             assert isinstance(response, pb.PlanResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request):
+    async def test_handler_records_request_metric(self, sample_request) -> None:
         """Test that handler increments request counter."""
         with (
             patch(
@@ -77,7 +77,7 @@ class TestPlanResourceChangeHandlerStructure:
             mock_requests.inc.assert_called_with(handler="PlanResourceChange")
 
     @pytest.mark.asyncio
-    async def test_handler_records_duration_metric(self, sample_request):
+    async def test_handler_records_duration_metric(self, sample_request) -> None:
         """Test that handler records duration metric."""
         with (
             patch(
@@ -96,7 +96,7 @@ class TestGetResourceAndProviderInstances:
     """Tests for _get_resource_and_provider_instances function."""
 
     @pytest.mark.asyncio
-    async def test_gets_both_instances_successfully(self, mock_resource_class, mock_provider):
+    async def test_gets_both_instances_successfully(self, mock_resource_class, mock_provider) -> None:
         """Test successful retrieval of both instances."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.side_effect = lambda comp_type, name: {
@@ -110,7 +110,7 @@ class TestGetResourceAndProviderInstances:
             assert provider is mock_provider
 
     @pytest.mark.asyncio
-    async def test_raises_resource_error_for_unknown_type(self):
+    async def test_raises_resource_error_for_unknown_type(self) -> None:
         """Test that unknown resource type raises ResourceError."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -119,7 +119,7 @@ class TestGetResourceAndProviderInstances:
                 await _get_resource_and_provider_instances("unknown_resource")
 
     @pytest.mark.asyncio
-    async def test_raises_runtime_error_for_missing_provider(self, mock_resource_class):
+    async def test_raises_runtime_error_for_missing_provider(self, mock_resource_class) -> None:
         """Test that missing provider raises RuntimeError."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
 
@@ -138,7 +138,7 @@ class TestProcessPrivateState:
     """Tests for _process_private_state function."""
 
     @pytest.mark.asyncio
-    async def test_returns_none_when_no_private_state_class(self):
+    async def test_returns_none_when_no_private_state_class(self) -> None:
         """Test that None is returned when resource has no private_state_class."""
         mock_resource = MagicMock()
         mock_resource.private_state_class = None
@@ -148,7 +148,7 @@ class TestProcessPrivateState:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_returns_none_when_no_prior_private(self):
+    async def test_returns_none_when_no_prior_private(self) -> None:
         """Test that None is returned when prior_private is empty."""
         mock_resource = MagicMock()
         mock_resource.private_state_class = MagicMock
@@ -158,7 +158,7 @@ class TestProcessPrivateState:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_deserializes_private_state_successfully(self):
+    async def test_deserializes_private_state_successfully(self) -> None:
         """Test successful private state deserialization."""
         mock_private_class = MagicMock()
         mock_resource = MagicMock()
@@ -171,12 +171,12 @@ class TestProcessPrivateState:
                 mock_decrypt.return_value = b"decrypted"
                 mock_unpack.return_value = {"key": "value"}
 
-                result = await _process_private_state(mock_resource, b"encrypted_data")
+                await _process_private_state(mock_resource, b"encrypted_data")
 
                 mock_private_class.assert_called_with(key="value")
 
     @pytest.mark.asyncio
-    async def test_handles_deserialization_error(self):
+    async def test_handles_deserialization_error(self) -> None:
         """Test that deserialization errors are handled gracefully."""
         mock_resource = MagicMock()
         mock_resource.private_state_class = MagicMock
@@ -195,7 +195,7 @@ class TestPlanResourceChangeEdgeCases:
     """Edge case tests for PlanResourceChange handler."""
 
     @pytest.mark.asyncio
-    async def test_handles_missing_resource(self, sample_request):
+    async def test_handles_missing_resource(self, sample_request) -> None:
         """Test handling of missing resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -205,7 +205,7 @@ class TestPlanResourceChangeEdgeCases:
             assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
-    async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider):
+    async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider) -> None:
         """Test handling of validation errors."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -224,7 +224,7 @@ class TestPlanResourceChangeEdgeCases:
             assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
-    async def test_with_context_object(self, sample_request):
+    async def test_with_context_object(self, sample_request) -> None:
         """Test handler with non-None context."""
         context = MagicMock()
 
@@ -240,9 +240,9 @@ class TestPlanResourceChangeMetrics:
     """Tests for PlanResourceChange metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self, sample_request):
+    async def test_handler_records_error_metric_on_failure(self, sample_request) -> None:
         """Test that handler increments error counter on failure."""
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors") as mock_errors:
+        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors"):
             with patch("pyvider.hub.hub.get_component") as mock_get:
                 # Make the handler fail
                 mock_get.side_effect = RuntimeError("Catastrophic failure")
@@ -259,7 +259,7 @@ class TestPlanResourceChangeLogging:
     """Tests for PlanResourceChange logging behavior."""
 
     @pytest.mark.asyncio
-    async def test_logs_debug_info(self, sample_request, mock_resource_class):
+    async def test_logs_debug_info(self, sample_request, mock_resource_class) -> None:
         """Test that debug information is logged during normal execution."""
         # Test without patching logger to see actual logging behavior
         with patch("pyvider.hub.hub.get_component") as mock_get:
@@ -277,7 +277,7 @@ class TestUnmarshalRequestData:
     """Tests for _unmarshal_request_data function."""
 
     @pytest.mark.asyncio
-    async def test_unmarshals_all_request_fields(self):
+    async def test_unmarshals_all_request_fields(self) -> None:
         """Test that all request fields are unmarshaled."""
         from pyvider.cty import CtyString, CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _unmarshal_request_data
@@ -293,8 +293,9 @@ class TestUnmarshalRequestData:
         with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
             mock_unmarshal.return_value = CtyValue.null(CtyString())
 
-            config, prior, proposed = await _unmarshal_request_data(request, mock_schema)
+            _config, _prior, _proposed = await _unmarshal_request_data(request, mock_schema)
 
             assert mock_unmarshal.call_count == 3
+
 
 # 🐍🏗️🔚

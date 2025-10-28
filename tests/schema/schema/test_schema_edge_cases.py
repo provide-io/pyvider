@@ -12,7 +12,7 @@ from pyvider.schema import a_obj, a_str, s_resource
 
 
 @pytest.mark.asyncio
-async def test_null_values():
+async def test_null_values() -> None:
     """
     Tests that providing a null value for a required attribute fails
     validation as expected.
@@ -28,5 +28,6 @@ async def test_null_values():
 
     with pytest.raises(CtyValidationError, match="Attribute cannot be null"):
         schema.validate_config(invalid_config)
+
 
 # 🐍🏗️🔚

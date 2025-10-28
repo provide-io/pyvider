@@ -19,4 +19,5 @@ def simple_resource_schema():
         )
     )
 
+
 # 🐍🏗️🔚

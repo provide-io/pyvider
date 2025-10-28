@@ -138,7 +138,7 @@ class TestValidateEphemeralResourceConfigImpl:
             mock_unmarshal.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_converts_cty_to_attrs(self, sample_request, mock_resource_class):
+    async def test_impl_converts_cty_to_attrs(self, sample_request, mock_resource_class) -> None:
         """Test that cty_to_attrs_instance is called."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -157,7 +157,7 @@ class TestValidateEphemeralResourceConfigImpl:
             mock_cty.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_handles_validation_errors(self, sample_request, mock_resource_class):
+    async def test_impl_handles_validation_errors(self, sample_request, mock_resource_class) -> None:
         """Test that CtyValidationError is converted to diagnostics."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -173,7 +173,7 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_pyvider_errors(self, sample_request, mock_resource_class):
+    async def test_impl_handles_pyvider_errors(self, sample_request, mock_resource_class) -> None:
         """Test that PyviderError exceptions are converted to diagnostics."""
         from pyvider.exceptions import ResourceError
 
@@ -191,7 +191,7 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_generic_exceptions(self, sample_request, mock_resource_class):
+    async def test_impl_handles_generic_exceptions(self, sample_request, mock_resource_class) -> None:
         """Test that generic exceptions are converted to diagnostics."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -207,7 +207,7 @@ class TestValidateEphemeralResourceConfigImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_calls_validate_if_exists(self, sample_request, mock_resource_class):
+    async def test_impl_calls_validate_if_exists(self, sample_request, mock_resource_class) -> None:
         """Test that validate() method is called if it exists."""
         mock_instance = MagicMock()
         mock_instance.validate = MagicMock()
@@ -220,22 +220,24 @@ class TestValidateEphemeralResourceConfigImpl:
                 "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
             ) as mock_cty,
         ):
-                    mock_get.return_value = mock_resource_class
-                    mock_config = MagicMock()
-                    mock_cty.return_value = mock_config
+            mock_get.return_value = mock_resource_class
+            mock_config = MagicMock()
+            mock_cty.return_value = mock_config
 
-                    await _validate_ephemeral_resource_config_impl(sample_request, context=None)
+            await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
-                    # validate should be called with config if it exists
-                    if hasattr(mock_instance, "validate"):
-                        mock_instance.validate.assert_called_once()
+            # validate should be called with config if it exists
+            if hasattr(mock_instance, "validate"):
+                mock_instance.validate.assert_called_once()
 
 
 class TestValidateEphemeralResourceConfigEdgeCases:
     """Test edge cases and error paths."""
 
     @pytest.mark.asyncio
-    async def test_impl_appends_validation_error_diagnostics(self, sample_request, mock_resource_class):
+    async def test_impl_appends_validation_error_diagnostics(
+        self, sample_request, mock_resource_class
+    ) -> None:
         """Test that validation errors from validate() are added as diagnostics."""
         # Mock validate to return error messages
         mock_instance = MagicMock()
@@ -250,15 +252,16 @@ class TestValidateEphemeralResourceConfigEdgeCases:
                 "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
             ),
         ):
-                    mock_get.return_value = mock_resource_class
+            mock_get.return_value = mock_resource_class
 
-                    response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
+            response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
-                    # Should have 2 diagnostics, one for each validation error
-                    assert len(response.diagnostics) == 2
-                    assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
-                    assert "Field 'name' is required" in response.diagnostics[0].summary
-                    assert response.diagnostics[1].severity == pb.Diagnostic.ERROR
-                    assert "Field 'count' must be positive" in response.diagnostics[1].summary
+            # Should have 2 diagnostics, one for each validation error
+            assert len(response.diagnostics) == 2
+            assert response.diagnostics[0].severity == pb.Diagnostic.ERROR
+            assert "Field 'name' is required" in response.diagnostics[0].summary
+            assert response.diagnostics[1].severity == pb.Diagnostic.ERROR
+            assert "Field 'count' must be positive" in response.diagnostics[1].summary
+
 
 # 🐍🏗️🔚

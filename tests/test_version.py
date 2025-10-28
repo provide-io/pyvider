@@ -13,7 +13,7 @@ from pyvider._version import get_version
 
 
 @patch("pyvider._version._find_project_root")
-def test_get_version_from_file(mock_find_root):
+def test_get_version_from_file(mock_find_root) -> None:
     # Mock the return of _find_project_root to be a path-like object
     # with an existing VERSION file
     mock_path = MagicMock()
@@ -30,7 +30,7 @@ def test_get_version_from_file(mock_find_root):
 
 @patch("pyvider._version._find_project_root", return_value=None)
 @patch("importlib.metadata.version", return_value="2.3.4")
-def test_get_version_from_metadata(mock_version, mock_find_root):
+def test_get_version_from_metadata(mock_version, mock_find_root) -> None:
     assert get_version() == "2.3.4"
     mock_find_root.assert_called_once()
     mock_version.assert_called_once_with("pyvider")
@@ -38,9 +38,10 @@ def test_get_version_from_metadata(mock_version, mock_find_root):
 
 @patch("pyvider._version._find_project_root", return_value=None)
 @patch("importlib.metadata.version", side_effect=PackageNotFoundError)
-def test_get_version_fallback(mock_version, mock_find_root):
+def test_get_version_fallback(mock_version, mock_find_root) -> None:
     assert get_version() == "0.0.0-dev"
     mock_find_root.assert_called_once()
     mock_version.assert_called_once_with("pyvider")
+
 
 # 🐍🏗️🔚

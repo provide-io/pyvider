@@ -26,7 +26,7 @@ class TestConfigureProviderHandler:
     """Tests for ConfigureProviderHandler function."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub):
+    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
         """Test that handler returns proper response object."""
         provider = hub.get_component("singleton", "provider")
         schema = provider.schema
@@ -43,7 +43,7 @@ class TestConfigureProviderHandler:
         assert isinstance(response, pb.ConfigureProvider.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_configures_provider_successfully(self, provider_in_hub):
+    async def test_handler_configures_provider_successfully(self, provider_in_hub) -> None:
         """Test handler configures provider with valid config."""
         provider = hub.get_component("singleton", "provider")
         schema = provider.schema
@@ -63,7 +63,7 @@ class TestConfigureProviderHandler:
         assert provider_context is not None
 
     @pytest.mark.asyncio
-    async def test_handler_handles_unknown_config(self, provider_in_hub):
+    async def test_handler_handles_unknown_config(self, provider_in_hub) -> None:
         """Test handler handles unknown configuration during planning."""
         provider = hub.get_component("singleton", "provider")
         schema = provider.schema
@@ -84,7 +84,7 @@ class TestConfigureProviderHandler:
         assert isinstance(response, pb.ConfigureProvider.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_handles_missing_provider(self, provider_in_hub):
+    async def test_handler_handles_missing_provider(self, provider_in_hub) -> None:
         """Test handler handles missing provider instance."""
         # Temporarily remove provider
         provider = hub.get_component("singleton", "provider")
@@ -100,7 +100,7 @@ class TestConfigureProviderHandler:
             hub.register("singleton", "provider", provider)
 
     @pytest.mark.asyncio
-    async def test_impl_creates_provider_context(self, provider_in_hub):
+    async def test_impl_creates_provider_context(self, provider_in_hub) -> None:
         """Test implementation creates and stores provider context."""
         # Clear any existing provider context
         if hub.get_component("singleton", "provider_context"):
@@ -124,7 +124,7 @@ class TestConfigureProviderHandler:
         assert provider_context.config is not None
 
     @pytest.mark.asyncio
-    async def test_handler_metrics_recorded(self, provider_in_hub):
+    async def test_handler_metrics_recorded(self, provider_in_hub) -> None:
         """Test that handler records metrics."""
         provider = hub.get_component("singleton", "provider")
         schema = provider.schema
@@ -142,7 +142,7 @@ class TestConfigureProviderHandler:
         assert isinstance(response, pb.ConfigureProvider.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_on_exception(self, provider_in_hub):
+    async def test_handler_records_error_on_exception(self, provider_in_hub) -> None:
         """Test that handler increments error counter on exceptions."""
         from unittest.mock import patch
 
@@ -162,7 +162,7 @@ class TestConfigureProviderHandler:
                 mock_errors.inc.assert_called_once_with(handler="ConfigureProvider")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_null_config_instance(self, provider_in_hub):
+    async def test_impl_handles_null_config_instance(self, provider_in_hub) -> None:
         """Test handling when config_instance is None."""
         from unittest.mock import patch
 
@@ -190,11 +190,11 @@ class TestConfigureProviderHandler:
             assert "Invalid provider configuration" in response.diagnostics[0].summary
 
     @pytest.mark.asyncio
-    async def test_impl_logs_warning_for_unknown_config(self, provider_in_hub):
+    async def test_impl_logs_warning_for_unknown_config(self, provider_in_hub) -> None:
         """Test that unknown config triggers warning log."""
         from unittest.mock import patch
 
-        provider = hub.get_component("singleton", "provider")
+        hub.get_component("singleton", "provider")
 
         # Create request and mock unmarshal to return unknown CtyValue
         request = pb.ConfigureProvider.Request()
@@ -217,5 +217,6 @@ class TestConfigureProviderHandler:
 
                 # Should return empty response (early return)
                 assert len(response.diagnostics) == 0
+
 
 # 🐍🏗️🔚

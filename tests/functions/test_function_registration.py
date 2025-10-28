@@ -20,7 +20,7 @@ async def my_test_func_for_reg(a: int, b: str) -> str:
 
 # This test now relies on the session-wide discovery fixture to populate the hub.
 @pytest.mark.usefixtures("discovered_components_session")
-def test_register_function_decorator_marks_for_discovery():
+def test_register_function_decorator_marks_for_discovery() -> None:
     # The decorator itself only adds metadata now.
     decorated_func = register_function(
         name="my_registered_func_for_test",

@@ -18,49 +18,49 @@ from pyvider.common.launch_context import LaunchContext, LaunchMethod
 class TestLaunchContextCommand:
     """Tests for launch-context command."""
 
-    def test_launch_context_command_exists(self):
+    def test_launch_context_command_exists(self) -> None:
         """Test that launch-context command is registered."""
         runner = CliRunner()
         result = runner.invoke(cli, ["--help"])
         assert result.exit_code == 0
         assert "launch-context" in result.output
 
-    def test_launch_context_runs_without_errors(self):
+    def test_launch_context_runs_without_errors(self) -> None:
         """Test that launch-context command runs without errors."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
         assert result.exit_code == 0
         assert "Pyvider Launch Context" in result.output
 
-    def test_launch_context_shows_method(self):
+    def test_launch_context_shows_method(self) -> None:
         """Test that launch-context shows the launch method."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
         assert result.exit_code == 0
         assert "Launch Method:" in result.output
 
-    def test_launch_context_shows_executable_path(self):
+    def test_launch_context_shows_executable_path(self) -> None:
         """Test that launch-context shows executable path."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
         assert result.exit_code == 0
         assert "Executable Path:" in result.output
 
-    def test_launch_context_shows_python_executable(self):
+    def test_launch_context_shows_python_executable(self) -> None:
         """Test that launch-context shows Python executable."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
         assert result.exit_code == 0
         assert "Python Executable:" in result.output
 
-    def test_launch_context_shows_working_directory(self):
+    def test_launch_context_shows_working_directory(self) -> None:
         """Test that launch-context shows working directory."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
         assert result.exit_code == 0
         assert "Working Directory:" in result.output
 
-    def test_launch_context_shows_terraform_invoked(self):
+    def test_launch_context_shows_terraform_invoked(self) -> None:
         """Test that launch-context shows Terraform invoked status."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
@@ -71,7 +71,7 @@ class TestLaunchContextCommand:
 class TestLaunchContextFormatOptions:
     """Tests for launch-context format options."""
 
-    def test_launch_context_default_format_is_human(self):
+    def test_launch_context_default_format_is_human(self) -> None:
         """Test that default format is human-readable."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context"])
@@ -79,14 +79,14 @@ class TestLaunchContextFormatOptions:
         # Human format includes emoji and colors
         assert "🚀" in result.output or "Launch Method:" in result.output
 
-    def test_launch_context_accepts_human_format(self):
+    def test_launch_context_accepts_human_format(self) -> None:
         """Test that --format=human works."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--format", "human"])
         assert result.exit_code == 0
         assert "Launch Method:" in result.output
 
-    def test_launch_context_accepts_json_format(self):
+    def test_launch_context_accepts_json_format(self) -> None:
         """Test that --format=json works."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--format", "json"])
@@ -103,7 +103,7 @@ class TestLaunchContextFormatOptions:
         except json.JSONDecodeError:
             pytest.fail("Output is not valid JSON")
 
-    def test_launch_context_json_format_structure(self):
+    def test_launch_context_json_format_structure(self) -> None:
         """Test that JSON format has correct structure."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--format", "json"])
@@ -118,7 +118,7 @@ class TestLaunchContextFormatOptions:
         assert isinstance(data["is_terraform_invoked"], bool)
         assert isinstance(data["details"], dict)
 
-    def test_launch_context_rejects_invalid_format(self):
+    def test_launch_context_rejects_invalid_format(self) -> None:
         """Test that invalid format is rejected."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--format", "xml"])
@@ -128,13 +128,13 @@ class TestLaunchContextFormatOptions:
 class TestLaunchContextVerboseOption:
     """Tests for launch-context --verbose option."""
 
-    def test_launch_context_accepts_verbose_flag(self):
+    def test_launch_context_accepts_verbose_flag(self) -> None:
         """Test that --verbose flag is accepted."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--verbose"])
         assert result.exit_code == 0
 
-    def test_launch_context_verbose_shows_environment_info(self):
+    def test_launch_context_verbose_shows_environment_info(self) -> None:
         """Test that --verbose shows environment information."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--verbose"])
@@ -142,7 +142,7 @@ class TestLaunchContextVerboseOption:
         # Verbose mode should show environment info
         assert "Environment Information:" in result.output or result.exit_code == 0
 
-    def test_launch_context_verbose_with_json_includes_environment(self):
+    def test_launch_context_verbose_with_json_includes_environment(self) -> None:
         """Test that --verbose with JSON includes environment_info."""
         runner = CliRunner()
         result = runner.invoke(cli, ["launch-context", "--format", "json", "--verbose"])
@@ -157,7 +157,7 @@ class TestLaunchContextMethodSpecificHelp:
     """Tests for method-specific help messages."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_pspf_package_shows_specific_help(self, mock_detect):
+    def test_pspf_package_shows_specific_help(self, mock_detect) -> None:
         """Test that PSPF package detection shows specific help."""
         # Mock PSPF launch
         mock_context = LaunchContext(
@@ -177,7 +177,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "PSPF Package" in result.output or "pspf_package" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_script_module_shows_specific_help(self, mock_detect):
+    def test_script_module_shows_specific_help(self, mock_detect) -> None:
         """Test that script module detection shows specific help."""
         # Mock script module launch
         mock_context = LaunchContext(
@@ -197,7 +197,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "Module Launch" in result.output or "script_module" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_editable_install_shows_specific_help(self, mock_detect):
+    def test_editable_install_shows_specific_help(self, mock_detect) -> None:
         """Test that editable install detection shows specific help."""
         # Mock editable install
         mock_context = LaunchContext(
@@ -217,7 +217,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "Development Mode" in result.output or "editable_install" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_unknown_method_shows_warning(self, mock_detect):
+    def test_unknown_method_shows_warning(self, mock_detect) -> None:
         """Test that unknown method shows a warning."""
         # Mock unknown launch
         mock_context = LaunchContext(
@@ -241,7 +241,7 @@ class TestLaunchContextDetailsFormatting:
     """Tests for details formatting in launch-context."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_details_shown_when_present(self, mock_detect):
+    def test_details_shown_when_present(self, mock_detect) -> None:
         """Test that method details are shown when present."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,
@@ -260,7 +260,7 @@ class TestLaunchContextDetailsFormatting:
         assert "Method Details:" in result.output
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_complex_values_formatted_correctly(self, mock_detect):
+    def test_complex_values_formatted_correctly(self, mock_detect) -> None:
         """Test that complex values (lists, dicts) are formatted correctly."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,
@@ -284,7 +284,7 @@ class TestLaunchContextEdgeCases:
     """Edge case tests for launch-context command."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_handles_very_long_paths(self, mock_detect):
+    def test_handles_very_long_paths(self, mock_detect) -> None:
         """Test that very long paths are handled correctly."""
         long_path = "/very/long/path/" + "subdir/" * 50 + "file.py"
         mock_context = LaunchContext(
@@ -303,7 +303,7 @@ class TestLaunchContextEdgeCases:
         assert result.exit_code == 0
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_handles_empty_details(self, mock_detect):
+    def test_handles_empty_details(self, mock_detect) -> None:
         """Test that empty details dict is handled correctly."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_DIRECT,
@@ -323,7 +323,7 @@ class TestLaunchContextEdgeCases:
         # or should handle it gracefully
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_json_output_is_pretty_printed(self, mock_detect):
+    def test_json_output_is_pretty_printed(self, mock_detect) -> None:
         """Test that JSON output is pretty-printed with indentation."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,

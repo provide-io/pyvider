@@ -17,7 +17,7 @@ from pyvider.schema.types.schema import PvsSchema
 class TestPvsSchemaTransformer:
     """Tests for PvsSchemaTransformer class."""
 
-    def test_add_attribute_to_schema(self):
+    def test_add_attribute_to_schema(self) -> None:
         """Test adding a new attribute to a schema."""
         schema = s_resource(attributes={"name": a_str()})
         transformer = PvsSchemaTransformer()
@@ -28,7 +28,7 @@ class TestPvsSchemaTransformer:
         assert "name" in updated_schema.block.attributes
         assert "count" in updated_schema.block.attributes
 
-    def test_add_duplicate_attribute_raises_error(self):
+    def test_add_duplicate_attribute_raises_error(self) -> None:
         """Test that adding a duplicate attribute raises ValueError."""
         schema = s_resource(attributes={"name": a_str()})
         transformer = PvsSchemaTransformer()
@@ -38,7 +38,7 @@ class TestPvsSchemaTransformer:
         with pytest.raises(ValueError, match="already exists"):
             transformer.add_attribute(schema, duplicate_attr)
 
-    def test_remove_attribute_from_schema(self):
+    def test_remove_attribute_from_schema(self) -> None:
         """Test removing an attribute from a schema."""
         schema = s_resource(attributes={"name": a_str(), "count": a_num()})
         transformer = PvsSchemaTransformer()
@@ -48,7 +48,7 @@ class TestPvsSchemaTransformer:
         assert "name" in updated_schema.block.attributes
         assert "count" not in updated_schema.block.attributes
 
-    def test_remove_nonexistent_attribute_raises_error(self):
+    def test_remove_nonexistent_attribute_raises_error(self) -> None:
         """Test that removing a non-existent attribute raises ValueError."""
         schema = s_resource(attributes={"name": a_str()})
         transformer = PvsSchemaTransformer()
@@ -56,7 +56,7 @@ class TestPvsSchemaTransformer:
         with pytest.raises(ValueError, match="not found"):
             transformer.remove_attribute(schema, "nonexistent")
 
-    def test_merge_schemas_combines_attributes(self):
+    def test_merge_schemas_combines_attributes(self) -> None:
         """Test merging multiple schemas combines their attributes."""
         schema1 = s_resource(attributes={"name": a_str()})
         schema2 = s_resource(attributes={"count": a_num()})
@@ -67,7 +67,7 @@ class TestPvsSchemaTransformer:
         assert "name" in merged.block.attributes
         assert "count" in merged.block.attributes
 
-    def test_merge_schemas_with_attribute_conflict_raises_error(self):
+    def test_merge_schemas_with_attribute_conflict_raises_error(self) -> None:
         """Test that merging schemas with conflicting attribute names raises ValueError."""
         schema1 = s_resource(attributes={"name": a_str()})
         schema2 = s_resource(attributes={"name": a_num()})
@@ -76,7 +76,7 @@ class TestPvsSchemaTransformer:
         with pytest.raises(ValueError, match="Cannot merge schemas.*attribute name conflict"):
             transformer.merge_schemas([schema1, schema2])
 
-    def test_merge_schemas_with_description(self):
+    def test_merge_schemas_with_description(self) -> None:
         """Test merging schemas with a custom description."""
         schema1 = s_resource(attributes={"name": a_str()})
         schema2 = s_resource(attributes={"count": a_num()})
@@ -86,7 +86,7 @@ class TestPvsSchemaTransformer:
 
         assert merged.block.description == "Merged schema"
 
-    def test_merge_schemas_with_block_type_conflict_raises_error(self):
+    def test_merge_schemas_with_block_type_conflict_raises_error(self) -> None:
         """Test that merging schemas with conflicting block type names raises ValueError."""
         # Create schemas with block types that have the same name
         from pyvider.schema.types.blocks import NestingMode
@@ -116,7 +116,7 @@ class TestPvsSchemaTransformer:
         with pytest.raises(ValueError, match="Cannot merge schemas.*block type name conflict"):
             transformer.merge_schemas([schema1, schema2])
 
-    def test_merge_schemas_preserves_block_types(self):
+    def test_merge_schemas_preserves_block_types(self) -> None:
         """Test that merging schemas preserves block types when there's no conflict."""
         from pyvider.schema.types.blocks import NestingMode
 
@@ -147,5 +147,6 @@ class TestPvsSchemaTransformer:
         block_type_names = {bt.type_name for bt in merged.block.block_types}
         assert "config1" in block_type_names
         assert "config2" in block_type_names
+
 
 # 🐍🏗️🔚

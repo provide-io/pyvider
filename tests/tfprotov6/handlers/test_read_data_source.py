@@ -42,7 +42,7 @@ class TestReadDataSourceHandlerStructure:
     """Tests for ReadDataSource handler response structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test that handler returns ReadDataSource.Response."""
         with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
             mock_hub.get_component.return_value = None
@@ -52,7 +52,7 @@ class TestReadDataSourceHandlerStructure:
             assert isinstance(response, pb.ReadDataSource.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_calls_implementation(self, sample_request):
+    async def test_handler_calls_implementation(self, sample_request) -> None:
         """Test that handler delegates to implementation."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.read_data_source._read_data_source_impl"
@@ -68,7 +68,7 @@ class TestReadDataSourceImpl:
     """Tests for ReadDataSource implementation."""
 
     @pytest.mark.asyncio
-    async def test_impl_reads_data_successfully(self, sample_request, mock_data_source_class):
+    async def test_impl_reads_data_successfully(self, sample_request, mock_data_source_class) -> None:
         """Test successful data source read."""
         mock_instance = AsyncMock()
         mock_instance.read.return_value = MagicMock(name="test_data")
@@ -107,7 +107,7 @@ class TestReadDataSourceImpl:
                             mock_instance.read.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_handles_none_result(self, sample_request, mock_data_source_class):
+    async def test_impl_handles_none_result(self, sample_request, mock_data_source_class) -> None:
         """Test handling of None return from data source."""
         mock_instance = AsyncMock()
         mock_instance.read.return_value = None
@@ -125,7 +125,7 @@ class TestReadDataSourceImpl:
                     assert response.state.msgpack == b"\xc0"  # null msgpack
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_data_source(self, sample_request):
+    async def test_impl_handles_unknown_data_source(self, sample_request) -> None:
         """Test handling of unknown data source type."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
@@ -142,7 +142,7 @@ class TestReadDataSourceImpl:
             assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
-    async def test_impl_handles_cty_validation_error(self, sample_request, mock_data_source_class):
+    async def test_impl_handles_cty_validation_error(self, sample_request, mock_data_source_class) -> None:
         """Test handling of CTY validation errors."""
         mock_instance = AsyncMock()
         mock_instance.read.return_value = MagicMock()
@@ -168,7 +168,7 @@ class TestReadDataSourceMetrics:
     """Tests for ReadDataSource metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request):
+    async def test_handler_records_request_metric(self, sample_request) -> None:
         """Test that handler increments request counter."""
         with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_requests") as mock_requests:
             with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
@@ -179,7 +179,7 @@ class TestReadDataSourceMetrics:
                 mock_requests.inc.assert_called_once_with(handler="ReadDataSource")
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self, sample_request):
+    async def test_handler_records_error_metric_on_failure(self, sample_request) -> None:
         """Test that handler increments error counter on failure."""
         with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_errors") as mock_errors:
             with patch(
@@ -197,7 +197,7 @@ class TestReadDataSourceCapabilityInjection:
     """Tests for capability injection in data sources."""
 
     @pytest.mark.asyncio
-    async def test_injects_capability_when_parent_capability_is_class(self, sample_request):
+    async def test_injects_capability_when_parent_capability_is_class(self, sample_request) -> None:
         """Test that capability class is instantiated when _parent_capability is set."""
         from pyvider.cty import CtyString, CtyValue
 
@@ -217,7 +217,7 @@ class TestReadDataSourceCapabilityInjection:
         # Track if read was called
         read_called_with_kwargs = {}
 
-        async def mock_read(ctx, **kwargs):
+        async def mock_read(ctx, **kwargs) -> None:
             read_called_with_kwargs.update(kwargs)
             return None
 
@@ -240,7 +240,7 @@ class TestReadDataSourceCapabilityInjection:
                     mock_unmarshal.return_value = CtyValue.null(CtyString())
                     mock_cty_to_attrs.return_value = None
 
-                    response = await _read_data_source_impl(sample_request, context=None)
+                    await _read_data_source_impl(sample_request, context=None)
 
                     # Check that capability was injected
                     assert "test_capability" in read_called_with_kwargs
@@ -248,7 +248,7 @@ class TestReadDataSourceCapabilityInjection:
                     assert read_called_with_kwargs["test_capability"] is not None
 
     @pytest.mark.asyncio
-    async def test_handles_capability_instance_directly(self, sample_request):
+    async def test_handles_capability_instance_directly(self, sample_request) -> None:
         """Test that capability instance is used directly if not a class."""
         from pyvider.cty import CtyString, CtyValue
 
@@ -269,7 +269,7 @@ class TestReadDataSourceCapabilityInjection:
 
         read_called_with_kwargs = {}
 
-        async def mock_read(ctx, **kwargs):
+        async def mock_read(ctx, **kwargs) -> None:
             read_called_with_kwargs.update(kwargs)
             return None
 
@@ -290,14 +290,14 @@ class TestReadDataSourceCapabilityInjection:
                     mock_unmarshal.return_value = CtyValue.null(CtyString())
                     mock_cty_to_attrs.return_value = None
 
-                    response = await _read_data_source_impl(sample_request, context=None)
+                    await _read_data_source_impl(sample_request, context=None)
 
                     # Check that capability instance was used directly
                     assert "test_capability" in read_called_with_kwargs
                     assert read_called_with_kwargs["test_capability"] is mock_capability_instance
 
     @pytest.mark.asyncio
-    async def test_warns_when_capability_not_found(self, sample_request):
+    async def test_warns_when_capability_not_found(self, sample_request) -> None:
         """Test that warning is logged when capability not found."""
         from pyvider.cty import CtyString, CtyValue
 
@@ -313,7 +313,7 @@ class TestReadDataSourceCapabilityInjection:
 
         read_called_with_kwargs = {}
 
-        async def mock_read(ctx, **kwargs):
+        async def mock_read(ctx, **kwargs) -> None:
             read_called_with_kwargs.update(kwargs)
             return None
 
@@ -336,7 +336,7 @@ class TestReadDataSourceCapabilityInjection:
                     mock_unmarshal.return_value = CtyValue.null(CtyString())
                     mock_cty_to_attrs.return_value = None
 
-                    response = await _read_data_source_impl(sample_request, context=None)
+                    await _read_data_source_impl(sample_request, context=None)
 
                     # Should still succeed, just without the capability
                     assert "missing_capability" not in read_called_with_kwargs
@@ -346,7 +346,7 @@ class TestReadDataSourceContextDiagnostics:
     """Tests for context diagnostics handling."""
 
     @pytest.mark.asyncio
-    async def test_appends_context_diagnostics_to_response(self, sample_request):
+    async def test_appends_context_diagnostics_to_response(self, sample_request) -> None:
         """Test that context diagnostics are appended to response."""
         from pyvider.cty import CtyString, CtyValue
 
@@ -367,7 +367,7 @@ class TestReadDataSourceContextDiagnostics:
         diag = pb.Diagnostic(severity=pb.Diagnostic.WARNING, summary="Context warning")
         resource_context_with_diags.diagnostics.append(diag)
 
-        async def mock_read(ctx):
+        async def mock_read(ctx) -> None:
             # Store diagnostic in context
             ctx.diagnostics.append(diag)
             return None
@@ -393,5 +393,6 @@ class TestReadDataSourceContextDiagnostics:
                     # Check that context diagnostic was added to response
                     assert len(response.diagnostics) == 1
                     assert response.diagnostics[0].summary == "Context warning"
+
 
 # 🐍🏗️🔚

@@ -7,6 +7,7 @@
 
 import importlib
 import sys
+from typing import Never
 
 from provide.testkit.logger import mock_logger_factory
 import pytest
@@ -66,7 +67,7 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     """Unexpected errors should be surfaced while falling back to HAS_MSGPACK=False."""
     logger = mock_logger_factory()
 
-    def _boom(_: str):
+    def _boom(_: str) -> Never:
         raise RuntimeError("boom")
 
     original_find_spec = importlib.util.find_spec
@@ -87,5 +88,6 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     message = logger.error.call_args.args[0]
     assert "❌ Error checking msgpack availability" in message
     assert "boom" in message
+
 
 # 🐍🏗️🔚

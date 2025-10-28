@@ -49,7 +49,7 @@ class TestOpenEphemeralResourceStructure:
     """Test handler structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request):
+    async def test_handler_returns_response(self, sample_request) -> None:
         """Test that handler returns proper response object."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -59,7 +59,7 @@ class TestOpenEphemeralResourceStructure:
             assert isinstance(response, pb.OpenEphemeralResource.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_metrics(self, sample_request):
+    async def test_handler_records_metrics(self, sample_request) -> None:
         """Test that handler records request and duration metrics."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_requests") as mock_req,
@@ -78,7 +78,7 @@ class TestOpenEphemeralResourceImpl:
     """Test implementation logic."""
 
     @pytest.mark.asyncio
-    async def test_impl_opens_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
+    async def test_impl_opens_ephemeral_successfully(self, sample_request, mock_ephemeral_class) -> None:
         """Test successful ephemeral resource open."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -98,7 +98,7 @@ class TestOpenEphemeralResourceImpl:
             assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_resource_type(self, sample_request):
+    async def test_impl_handles_unknown_resource_type(self, sample_request) -> None:
         """Test handling of unknown ephemeral resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -108,7 +108,7 @@ class TestOpenEphemeralResourceImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_unmarshals_config(self, sample_request, mock_ephemeral_class):
+    async def test_impl_unmarshals_config(self, sample_request, mock_ephemeral_class) -> None:
         """Test that config is unmarshaled."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -123,7 +123,7 @@ class TestOpenEphemeralResourceImpl:
             mock_unmarshal.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_marshals_result_when_present(self, sample_request, mock_ephemeral_class):
+    async def test_impl_marshals_result_when_present(self, sample_request, mock_ephemeral_class) -> None:
         """Test that result is marshaled when returned."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
@@ -147,7 +147,7 @@ class TestOpenEphemeralResourceImpl:
                             assert response.HasField("result")
 
     @pytest.mark.asyncio
-    async def test_impl_packs_private_state_when_present(self, sample_request, mock_ephemeral_class):
+    async def test_impl_packs_private_state_when_present(self, sample_request, mock_ephemeral_class) -> None:
         """Test that private state is packed to msgpack."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"):
@@ -174,7 +174,7 @@ class TestOpenEphemeralResourceImpl:
                                 assert len(response.private) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class):
+    async def test_impl_sets_renew_at_when_present(self, sample_request, mock_ephemeral_class) -> None:
         """Test that renew_at is set when returned."""
         renew_time = datetime.now(UTC)
         mock_instance = mock_ephemeral_class.return_value
@@ -208,7 +208,7 @@ class TestOpenEphemeralResourceImpl:
                                 assert response.HasField("renew_at")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_none_result(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_none_result(self, sample_request, mock_ephemeral_class) -> None:
         """Test handling when result_obj is None."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.open.return_value = (None, None, None)
@@ -226,7 +226,7 @@ class TestOpenEphemeralResourceImpl:
                     assert len(response.diagnostics) == 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_validation_errors(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_validation_errors(self, sample_request, mock_ephemeral_class) -> None:
         """Test that CtyValidationError is converted to diagnostics."""
         from pyvider.cty.exceptions import CtyValidationError
 
@@ -242,7 +242,7 @@ class TestOpenEphemeralResourceImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class) -> None:
         """Test that PyviderError exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.open.side_effect = ResourceError("Open failed")
@@ -259,7 +259,7 @@ class TestOpenEphemeralResourceImpl:
                     assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_generic_exceptions(self, sample_request, mock_ephemeral_class):
+    async def test_impl_handles_generic_exceptions(self, sample_request, mock_ephemeral_class) -> None:
         """Test that generic exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.open.side_effect = RuntimeError("Unexpected error")
@@ -274,5 +274,6 @@ class TestOpenEphemeralResourceImpl:
                     response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
                     assert len(response.diagnostics) > 0
+
 
 # 🐍🏗️🔚

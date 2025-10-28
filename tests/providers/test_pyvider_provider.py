@@ -15,16 +15,16 @@ from pyvider.providers.provider import PyviderProvider
 class TestPyviderProviderInitialization:
     """Tests for PyviderProvider initialization."""
 
-    def test_provider_initializes_with_correct_metadata(self):
+    def test_provider_initializes_with_correct_metadata(self) -> None:
         """Test that PyviderProvider initializes with correct metadata."""
         provider = PyviderProvider()
         assert provider.metadata.name == "pyvider"
         assert provider.metadata.version == "0.1.0"
         assert provider._configured is False
 
-    def test_provider_has_empty_capabilities_initially(self):
+    def test_provider_has_empty_capabilities_initially(self) -> None:
         """Test that provider starts with empty capabilities dict."""
-        provider = PyviderProvider()
+        PyviderProvider()
         # The class-level capabilities dict is shared, but instance should have access
         assert isinstance(PyviderProvider.capabilities, dict)
 
@@ -33,7 +33,7 @@ class TestPyviderProviderSetup:
     """Tests for PyviderProvider setup method."""
 
     @pytest.mark.asyncio
-    async def test_setup_creates_schema_with_provider_testmode(self):
+    async def test_setup_creates_schema_with_provider_testmode(self) -> None:
         """Test that setup creates schema with provider_testmode attribute."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             # Mock hub to return no capabilities and components
@@ -48,7 +48,7 @@ class TestPyviderProviderSetup:
             assert provider.config_class is not None
 
     @pytest.mark.asyncio
-    async def test_setup_aggregates_capability_schemas(self):
+    async def test_setup_aggregates_capability_schemas(self) -> None:
         """Test that setup aggregates schema contributions from capabilities."""
         from pyvider.schema import a_str
 
@@ -75,7 +75,7 @@ class TestPyviderProviderSetup:
             assert "custom_attr" in provider._final_schema.block.attributes
 
     @pytest.mark.asyncio
-    async def test_setup_stores_capabilities_in_dict(self):
+    async def test_setup_stores_capabilities_in_dict(self) -> None:
         """Test that setup stores capability instances in capabilities dict."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             mock_cap_class = MagicMock()
@@ -97,7 +97,7 @@ class TestPyviderProviderSetup:
             assert provider.capabilities["provider"] is provider
 
     @pytest.mark.asyncio
-    async def test_setup_passes_provider_config_to_capabilities(self):
+    async def test_setup_passes_provider_config_to_capabilities(self) -> None:
         """Test that setup passes provider config to capability constructors."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             mock_provider_ctx = MagicMock()
@@ -124,7 +124,7 @@ class TestPyviderProviderSetup:
             mock_cap_class.assert_called_once_with(config=mock_provider_ctx.config)
 
     @pytest.mark.asyncio
-    async def test_setup_validates_component_capability_associations(self):
+    async def test_setup_validates_component_capability_associations(self) -> None:
         """Test that setup validates components reference registered capabilities."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             # Create a component that references a missing capability
@@ -146,7 +146,7 @@ class TestPyviderProviderSetup:
                 await provider.setup()
 
     @pytest.mark.asyncio
-    async def test_setup_allows_components_with_provider_capability(self):
+    async def test_setup_allows_components_with_provider_capability(self) -> None:
         """Test that components can reference the default 'provider' capability."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             # Create a component that references "provider" capability
@@ -163,7 +163,7 @@ class TestPyviderProviderSetup:
             await provider.setup()
 
     @pytest.mark.asyncio
-    async def test_setup_allows_components_without_parent_capability(self):
+    async def test_setup_allows_components_without_parent_capability(self) -> None:
         """Test that components without _parent_capability default to 'provider'."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             # Create a component without _parent_capability attribute
@@ -183,7 +183,7 @@ class TestPyviderProviderSchemaAccess:
     """Tests for schema access after setup."""
 
     @pytest.mark.asyncio
-    async def test_schema_accessible_after_setup(self):
+    async def test_schema_accessible_after_setup(self) -> None:
         """Test that schema property is accessible after setup."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             mock_hub.get_components.side_effect = lambda comp_type: {}
@@ -196,5 +196,6 @@ class TestPyviderProviderSchemaAccess:
             schema = provider.schema
             assert schema is not None
             assert "provider_testmode" in schema.block.attributes
+
 
 # 🐍🏗️🔚

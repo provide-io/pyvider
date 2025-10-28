@@ -47,7 +47,7 @@ class ResourceWithPrivateStateInRead(BaseResource):
             raise ResourceError("Private state has incorrect type.")
         return self.state_class(name=ctx.state.name, read_version=ctx.private_state.version)
 
-    async def _create(self, ctx, base_plan):
+    async def _create(self, ctx, base_plan) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -55,7 +55,7 @@ class ResourceWithPrivateStateInRead(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_read_handler_provides_private_state_to_context(encryption_key_env, provider_in_hub):
+async def test_read_handler_provides_private_state_to_context(encryption_key_env, provider_in_hub) -> None:
     resource_name = "read_private_state_test_resource"
     hub.register("resource", resource_name, ResourceWithPrivateStateInRead)
     try:

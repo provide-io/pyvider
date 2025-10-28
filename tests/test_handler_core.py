@@ -17,7 +17,7 @@ def mock_provider():
     return MagicMock()
 
 
-def test_post_init(mock_provider):
+def test_post_init(mock_provider) -> None:
     handler = ProviderHandler(provider=mock_provider)
     assert "GetMetadata" in handler._handlers
     assert "GetProviderSchema" in handler._handlers
@@ -42,7 +42,7 @@ def test_post_init(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_delegate_success(mock_provider):
+async def test_delegate_success(mock_provider) -> None:
     handler = ProviderHandler(provider=mock_provider)
 
     mock_handler = AsyncMock(return_value="success")
@@ -58,7 +58,7 @@ async def test_delegate_success(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_delegate_no_handler(mock_provider):
+async def test_delegate_no_handler(mock_provider) -> None:
     handler = ProviderHandler(provider=mock_provider)
     handler._handlers = {}  # empty handlers
 
@@ -73,7 +73,7 @@ async def test_delegate_no_handler(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_delegate_unhandled_exception(mock_provider):
+async def test_delegate_unhandled_exception(mock_provider) -> None:
     handler = ProviderHandler(provider=mock_provider)
 
     mock_handler = AsyncMock(side_effect=Exception("test error"))
@@ -102,7 +102,7 @@ async def test_delegate_unhandled_exception(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_delegate_exception_no_response_class(mock_provider):
+async def test_delegate_exception_no_response_class(mock_provider) -> None:
     """Test that exception is re-raised when response class cannot be found."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -118,7 +118,7 @@ async def test_delegate_exception_no_response_class(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio(mock_provider):
+async def test_stream_stdio(mock_provider) -> None:
     """Test StreamStdio handler consumes request_iterator."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -135,7 +135,7 @@ async def test_stream_stdio(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_stream_stdio_exception_handling(mock_provider):
+async def test_stream_stdio_exception_handling(mock_provider) -> None:
     """Test StreamStdio handles exceptions gracefully."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -152,7 +152,7 @@ async def test_stream_stdio_exception_handling(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_start_stream(mock_provider):
+async def test_start_stream(mock_provider) -> None:
     """Test StartStream handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -167,7 +167,7 @@ async def test_start_stream(mock_provider):
 
 # Test all RPC method wrappers delegate correctly
 @pytest.mark.asyncio
-async def test_get_metadata_delegates(mock_provider):
+async def test_get_metadata_delegates(mock_provider) -> None:
     """Test GetMetadata delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -184,7 +184,7 @@ async def test_get_metadata_delegates(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_get_provider_schema_delegates(mock_provider):
+async def test_get_provider_schema_delegates(mock_provider) -> None:
     """Test GetProviderSchema delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -201,7 +201,7 @@ async def test_get_provider_schema_delegates(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_configure_provider_delegates(mock_provider):
+async def test_configure_provider_delegates(mock_provider) -> None:
     """Test ConfigureProvider delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -218,7 +218,7 @@ async def test_configure_provider_delegates(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_validate_provider_config_delegates(mock_provider):
+async def test_validate_provider_config_delegates(mock_provider) -> None:
     """Test ValidateProviderConfig delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -235,7 +235,7 @@ async def test_validate_provider_config_delegates(mock_provider):
 
 
 @pytest.mark.asyncio
-async def test_stop_provider_delegates(mock_provider):
+async def test_stop_provider_delegates(mock_provider) -> None:
     """Test StopProvider delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -249,5 +249,6 @@ async def test_stop_provider_delegates(mock_provider):
 
     mock_delegate.assert_awaited_once_with("StopProvider", request, context)
     assert result == "stop_response"
+
 
 # 🐍🏗️🔚

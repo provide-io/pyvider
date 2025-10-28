@@ -8,6 +8,7 @@
 from contextlib import redirect_stdout
 from io import StringIO
 from types import ModuleType
+from typing import Never
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -21,7 +22,7 @@ from pyvider.common.launch_context import (
 )
 
 
-def test_detect_launch_context_without_terraform_cookie(monkeypatch):
+def test_detect_launch_context_without_terraform_cookie(monkeypatch) -> None:
     monkeypatch.delitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", raising=False)
     monkeypatch.setattr(lc.sys, "argv", ["/bin/pyvider"])
     monkeypatch.setattr(lc.sys, "executable", "/usr/bin/python3")
@@ -37,7 +38,7 @@ def test_detect_launch_context_without_terraform_cookie(monkeypatch):
     assert context.environment_info["terraform_cookie_present"] is False
 
 
-def test_get_editable_install_details_reports_development_mode(monkeypatch):
+def test_get_editable_install_details_reports_development_mode(monkeypatch) -> None:
     dummy_module = ModuleType("pyvider")
     dummy_module.__file__ = "/repo/src/pyvider/__init__.py"
     dummy_module.__path__ = ["/repo/src/pyvider"]
@@ -49,19 +50,19 @@ def test_get_editable_install_details_reports_development_mode(monkeypatch):
     assert details["is_development_mode"] is True
 
 
-def test_analyze_executable_reports_missing(tmp_path):
+def test_analyze_executable_reports_missing(tmp_path) -> None:
     missing = tmp_path / "missing.py"
     info = _analyze_executable(str(missing))
     assert info["exists"] is False
     assert info["is_file"] is False
 
 
-def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch):
+def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch) -> None:
     python_path = tmp_path / "venv" / "bin" / "python"
     python_path.parent.mkdir(parents=True)
     python_path.write_text("")
 
-    def failing_iterdir(self):  # pragma: no cover - exercised when permissions fail
+    def failing_iterdir(self) -> Never:  # pragma: no cover - exercised when permissions fail
         raise PermissionError("denied")
 
     monkeypatch.setattr(lc.Path, "iterdir", failing_iterdir)
@@ -70,7 +71,7 @@ def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch):
     assert structure["contents"] == ["<access_denied>"]
 
 
-def test_log_launch_context_default_logger(monkeypatch):
+def test_log_launch_context_default_logger(monkeypatch) -> None:
     context = LaunchContext(
         method=LaunchMethod.UNKNOWN,
         executable_path="/bin/app",
@@ -89,5 +90,6 @@ def test_log_launch_context_default_logger(monkeypatch):
     assert result is context
     output = buffer.getvalue()
     assert "Pyvider Launch Context" in output
+
 
 # 🐍🏗️🔚

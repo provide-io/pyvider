@@ -142,11 +142,12 @@ async def test_upgrade_resource_state_handler_records_error_metric() -> None:
         version=0,
     )
 
-    with patch(
-        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_errors"
-    ) as mock_errors, patch(
-        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state._upgrade_resource_state_impl"
-    ) as mock_impl:
+    with (
+        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_errors") as mock_errors,
+        patch(
+            "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state._upgrade_resource_state_impl"
+        ) as mock_impl,
+    ):
         mock_impl.side_effect = RuntimeError("Test error")
 
         with pytest.raises(RuntimeError):
@@ -171,5 +172,6 @@ async def test_upgrade_resource_state_records_metrics() -> None:
 
         mock_requests.inc.assert_called_once_with(handler="UpgradeResourceState")
         assert mock_duration.observe.call_count == 1
+
 
 # 🐍🏗️🔚

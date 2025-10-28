@@ -68,4 +68,5 @@ def test_package_main_aliases_cli_main() -> None:
 
     assert package_entrypoint.main is cli_entrypoint.main
 
+
 # 🐍🏗️🔚

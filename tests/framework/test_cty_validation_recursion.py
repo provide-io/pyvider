@@ -5,7 +5,7 @@ from pyvider.schema.factory import a_str, a_unknown
 
 
 class TestCtyValidationRecursion:
-    def test_cty_dynamic_validation_avoids_recursion_with_ctyvalue(self):
+    def test_cty_dynamic_validation_avoids_recursion_with_ctyvalue(self) -> None:
         """
         TDD Contract: Verifies that CtyDynamic.validate() does not enter an
         infinite recursion loop when it encounters a raw value that is

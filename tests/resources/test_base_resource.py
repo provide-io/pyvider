@@ -29,26 +29,26 @@ class DummyResource(BaseResource):
     config_class = TopLevelConfig
     state_class = None  # Not needed for this test
 
-    def get_schema(self):
+    def get_schema(self) -> None:
         pass
 
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx):
+    async def read(self, ctx) -> None:
         pass
 
-    async def plan(self, ctx):
+    async def plan(self, ctx) -> None:
         pass
 
-    async def apply(self, ctx):
+    async def apply(self, ctx) -> None:
         pass
 
-    async def delete(self, ctx):
+    async def delete(self, ctx) -> None:
         pass
 
 
-def test_from_cty_with_nested_objects():
+def test_from_cty_with_nested_objects() -> None:
     """
     TDD Test for BaseResource.from_cty to ensure it correctly
     deserializes nested CtyObjects into nested attrs classes.
@@ -76,5 +76,6 @@ def test_from_cty_with_nested_objects():
     assert len(result.items) == 2
     assert isinstance(result.items[0], NestedConfig)
     assert result.items[0].setting == "item1"
+
 
 # 🐍🏗️🔚
