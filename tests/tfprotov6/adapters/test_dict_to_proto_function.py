@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for protobuf function_adapter.py module."""
 
 import json
@@ -407,3 +412,5 @@ class TestDictToProtoFunctionAllowUnknownValues:
         result = dict_to_proto_function(func_dict)
 
         assert result.variadic_parameter.allow_unknown_values is True
+
+# 🐍🏗️🔚

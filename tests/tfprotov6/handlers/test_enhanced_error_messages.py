@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for enhanced error messages across protocol handlers.
 
 This module verifies that all enhanced protocol handlers provide:
@@ -293,3 +298,5 @@ class TestErrorMessageConsistency:
         assert "1." in sample_error
         assert "2." in sample_error
         assert "3." in sample_error
+
+# 🐍🏗️🔚

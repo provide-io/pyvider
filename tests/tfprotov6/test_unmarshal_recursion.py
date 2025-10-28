@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 
 import pytest
@@ -32,3 +39,5 @@ async def test_unmarshal_captured_payload_avoids_recursion():
         assert not result_cty_val.is_null, "Unmarshalled value should not be null"
     except RecursionError:
         pytest.fail("unmarshal_value caused a RecursionError with the captured payload.")
+
+# 🐍🏗️🔚

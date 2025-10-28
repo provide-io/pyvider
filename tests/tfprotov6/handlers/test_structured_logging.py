@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for structured logging across protocol handlers.
 
 This module verifies that all enhanced protocol handlers use consistent,
@@ -351,3 +356,5 @@ class TestContextualInformation:
                     call_kwargs = mock_logger.error.call_args[1]
                     assert "resource_type" in call_kwargs
                     assert call_kwargs["resource_type"] == "test_eph"
+
+# 🐍🏗️🔚

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for GetFunctions handler."""
 
 from provide.testkit.mocking import MagicMock, patch
@@ -427,3 +432,5 @@ class TestGetFunctionsEdgeCases:
             # Only the successful function should be in the response
             assert len(response.functions) == 1
             assert "good_func" in response.functions
+
+# 🐍🏗️🔚

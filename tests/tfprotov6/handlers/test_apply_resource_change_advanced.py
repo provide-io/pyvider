@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ApplyResourceChange handler - Advanced private state and context handling."""
 
 from provide.testkit import mocking as mock
@@ -316,3 +321,5 @@ class TestHandleApplyResult:
 
             assert response.private == b"encrypted_private"
             mock_encrypt.assert_called_once()
+
+# 🐍🏗️🔚

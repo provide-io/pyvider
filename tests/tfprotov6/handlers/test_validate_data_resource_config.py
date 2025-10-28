@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ValidateDataResourceConfig handler."""
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -39,10 +44,9 @@ class TestValidateDataResourceConfigHandlerStructure:
 
     @pytest.mark.asyncio
     async def test_handler_returns_response(self, sample_request):
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"),
-            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
-        ):
+        """Test that handler returns ValidateDataResourceConfig.Response."""
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 response = await ValidateDataResourceConfigHandler(sample_request, context=None)
@@ -292,12 +296,12 @@ class TestValidateDataResourceConfigEdgeCases:
         """Test handler with non-None context."""
         context = MagicMock()
 
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"),
-            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
-        ):
-            mock_hub.get_component.return_value = None
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
+            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+                mock_hub.get_component.return_value = None
 
-            response = await ValidateDataResourceConfigHandler(sample_request, context=context)
+                response = await ValidateDataResourceConfigHandler(sample_request, context=context)
 
-            assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+                assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+
+# 🐍🏗️🔚

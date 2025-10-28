@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 
 import pytest
@@ -127,3 +134,5 @@ def encryption_key_env(monkeypatch):
     yield
     monkeypatch.delenv(env_var_name, raising=False)
     encryption._ENCRYPTION_KEY = None
+
+# 🐍🏗️🔚

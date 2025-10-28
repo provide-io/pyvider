@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet
 from pyvider.schema import a_str, b_list, b_map, b_set, s_resource
 
@@ -36,3 +43,5 @@ def test_pvs_object_type_conversion_handles_nested_blocks():
 
     # AND the element types of those collections must be CtyObjects
     assert isinstance(cty_type.attribute_types["users"].element_type, CtyObject)
+
+# 🐍🏗️🔚

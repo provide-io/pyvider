@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.cty.exceptions import (
@@ -61,3 +68,5 @@ async def test_create_diagnostic_from_generic_ctyvalidationerror():
     assert diag.summary == "🐍🏗️ ⚠️ A generic validation error."
     assert diag.detail == "A configuration validation error occurred."
     assert not diag.attribute.steps
+
+# 🐍🏗️🔚

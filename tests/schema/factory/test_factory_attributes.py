@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.cty import CtyObject
 from pyvider.schema import a_num, a_obj, a_str
 from pyvider.schema.types import PvsAttribute
@@ -20,3 +27,5 @@ class TestAttributeFactoriesCoverage:
         cty_obj_type = obj_attr_factory_instance.type
         assert "description" in cty_obj_type.optional_attributes
         assert "count" not in cty_obj_type.optional_attributes
+
+# 🐍🏗️🔚

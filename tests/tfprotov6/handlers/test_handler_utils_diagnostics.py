@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for handlers/utils.py utility functions - Diagnostics and edge cases."""
 
 import attrs
@@ -320,3 +325,5 @@ class TestCreateDiagnosticEdgeCases:
         assert "Custom Summary" in diag.summary
         assert "Custom Detail" in diag.detail
         assert "custom.field: custom_value" in diag.detail
+
+# 🐍🏗️🔚

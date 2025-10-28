@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import attrs
@@ -63,3 +70,5 @@ async def test_private_state_roundtrip():
 
     # THEN the rehydrated object is identical to the original
     assert rehydrated_private_state_obj == planned_private_state_obj
+
+# 🐍🏗️🔚

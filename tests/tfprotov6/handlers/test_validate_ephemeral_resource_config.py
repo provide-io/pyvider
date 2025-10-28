@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ValidateEphemeralResourceConfig handler."""
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -245,3 +250,5 @@ class TestValidateEphemeralResourceConfigEdgeCases:
                     assert "Field 'name' is required" in response.diagnostics[0].summary
                     assert response.diagnostics[1].severity == pb.Diagnostic.ERROR
                     assert "Field 'count' must be positive" in response.diagnostics[1].summary
+
+# 🐍🏗️🔚
