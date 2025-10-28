@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import pytest
@@ -45,3 +52,5 @@ class TestTddCapabilityAssociation:
             await provider.setup()
         except FrameworkConfigurationError:
             pytest.fail("Provider setup failed for a valid provider component.")
+
+# 🐍🏗️🔚

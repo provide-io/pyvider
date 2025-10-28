@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Comprehensive TDD test suite for the CtyValue -> attrs conversion logic.
 This suite validates the refactored single-path, recursive conversion
@@ -188,3 +193,5 @@ def test_from_cty_ignores_extra_attributes():
     result = BaseResource.from_cty(cty_val, SimpleConfig)
     assert isinstance(result, SimpleConfig)
     assert not hasattr(result, "extra")
+
+# 🐍🏗️🔚
