@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 import time
 from typing import Any
@@ -244,3 +251,5 @@ async def _set_future_result(future: asyncio.Future) -> None:
     except Exception as e:
         logger.critical("Catastrophic failure during schema computation task.", exc_info=True)
         future.set_exception(e)
+
+# 🐍🏗️🔚

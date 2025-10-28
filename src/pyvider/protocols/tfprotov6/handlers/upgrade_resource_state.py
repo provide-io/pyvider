@@ -1,6 +1,9 @@
 #
-# pyvider/protocols/tfprotov6/handlers/upgrade_resource_state.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 import json
 import time
@@ -110,3 +113,5 @@ async def _upgrade_resource_state_impl(
                 )
             ]
         )
+
+# 🐍🏗️🔚

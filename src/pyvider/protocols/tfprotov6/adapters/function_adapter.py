@@ -1,4 +1,10 @@
-# pyvider/protocols/tfprotov6/adapters/function_adapter.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import json
 from typing import Any
 
@@ -101,3 +107,5 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
     except Exception as e:
         logger.error(f"Error converting '{func_name}' to protobuf: {e}", exc_info=True)
         return None
+
+# 🐍🏗️🔚

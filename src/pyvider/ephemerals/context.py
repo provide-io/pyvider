@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Generic, TypeVar
 
 from attrs import define, field
@@ -19,3 +26,5 @@ class EphemeralResourceContext(BaseContext, Generic[ConfigType, PrivateStateType
     config: ConfigType | None = None
     private_state: PrivateStateType | None = None
     test_mode_enabled: bool = field(default=False, kw_only=True)
+
+# 🐍🏗️🔚

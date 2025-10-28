@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 GetFunctions handler implementation for Terraform protocol v6.
 This handler uses a multi-layer approach to convert domain function objects
@@ -133,3 +138,5 @@ async def _get_functions_impl(request: pb.GetFunctions.Request, context: Any) ->
                 )
             ]
         )
+
+# 🐍🏗️🔚

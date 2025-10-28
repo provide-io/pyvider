@@ -1,6 +1,8 @@
 #
-# _version.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
 """
 Version handling for pyvider.
 Uses VERSION file with robust fallback mechanisms.
@@ -52,3 +54,5 @@ def get_version() -> str:
 
 
 __version__ = get_version()
+
+# 🐍🏗️🔚

@@ -1,6 +1,9 @@
 #
-# pyvider/protocols/tfprotov6/handlers/get_metadata.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 import time
 from typing import Any
@@ -133,3 +136,5 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
 
 
 # 🐍🏗⛮️
+
+# 🐍🏗️🔚

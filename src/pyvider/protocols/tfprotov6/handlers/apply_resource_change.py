@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import time
 from typing import Any
 
@@ -329,3 +336,5 @@ async def _apply_resource_change_impl(
         response.diagnostics.extend(resource_context.diagnostics)
 
     return response
+
+# 🐍🏗️🔚

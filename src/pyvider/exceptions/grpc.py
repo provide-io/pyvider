@@ -1,4 +1,10 @@
-# pyvider/exceptions/grpc.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from provide.foundation.errors import NetworkError as FoundationNetworkError
 
 from pyvider.exceptions.base import PluginError
@@ -34,3 +40,5 @@ class RateLimitError(NetworkError):
 
     def _default_code(self) -> str:
         return "RATE_LIMIT_ERROR"
+
+# 🐍🏗️🔚

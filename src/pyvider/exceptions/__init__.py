@@ -1,4 +1,8 @@
-# pyvider/exceptions/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Pyvider Framework Custom Exceptions"""
 
 from pyvider.exceptions.base import (
@@ -106,4 +110,4 @@ __all__ = [
     "WireFormatError",
 ]
 
-# 🐍🏗️
+# 🐍🏗️🔚

@@ -1,4 +1,10 @@
-# pyvider/exceptions/registry.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from provide.foundation.errors import ConfigurationError as FoundationConfigurationError
 
 
@@ -14,3 +20,5 @@ class ValidatorRegistrationError(FoundationConfigurationError):
 
     def _default_code(self) -> str:
         return "VALIDATOR_REGISTRATION_ERROR"
+
+# 🐍🏗️🔚
