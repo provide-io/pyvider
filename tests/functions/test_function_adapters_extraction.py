@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for function adapters - Parameter and metadata extraction."""
 
 from provide.testkit import mocking as mock
@@ -274,3 +279,5 @@ class TestFunctionToDict:
 
         assert "description" in result
         assert "This function does something" in result["description"]
+
+# 🐍🏗️🔚

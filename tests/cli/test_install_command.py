@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for install_command module."""
 
 from pathlib import Path
@@ -374,3 +379,5 @@ class TestInstallCommandSymlinkCreation:
                         # Verify _place_terraform_provider_script was called
                         assert mock_place.called
                         assert result.exit_code == 0
+
+# 🐍🏗️🔚
