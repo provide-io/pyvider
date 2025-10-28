@@ -1,0 +1,18 @@
+# pyvider/testmode/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+from __future__ import annotations
+
+"""Pyvider Test Mode Support.
+
+This module provides utilities and fixtures for testing Pyvider components,
+particularly for test-only resources and data sources that require test mode
+to be enabled.
+"""
+
+__all__ = []
+
+
+# <3 🧱🤝🧪🪄
