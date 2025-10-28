@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for capability registration and injection decorators."""
 
 import asyncio
@@ -97,3 +102,5 @@ def test_requires_capability_async_injects_parent() -> None:
     finally:
         _restore_component("capability", "async_parent", existing_capability)
         _restore_component("singleton", "provider", existing_provider)
+
+# 🐍🏗️🔚

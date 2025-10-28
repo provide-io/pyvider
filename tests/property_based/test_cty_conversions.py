@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Property-based tests for CTY type conversions using Hypothesis."""
 
 from hypothesis import HealthCheck, assume, given, settings, strategies as st
@@ -327,3 +332,5 @@ class TestCtyTypeEquality:
         list1 = CtyList(element_type=CtyString())
         list2 = CtyList(element_type=CtyNumber())
         assert not list1.equal(list2)
+
+# 🐍🏗️🔚

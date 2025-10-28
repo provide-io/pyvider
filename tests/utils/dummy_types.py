@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from collections.abc import Callable
 from typing import Any
 
@@ -371,3 +378,5 @@ class DummyMapType(CtyType[CtyMap]):
 
     def __str__(self) -> str:
         return f"DummyMapType(key_type={self.key_type}, value_type={self.value_type})"
+
+# 🐍🏗️🔚

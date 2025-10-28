@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for BaseContext diagnostic helpers."""
 
 from pyvider.common.context import BaseContext
@@ -63,3 +68,5 @@ def test_attribute_warning_with_dot_path() -> None:
     step_values = [_step_value(step) for step in diag.attribute.steps]
     assert step_values == ["config", "value"]
     assert diag.severity == pb.Diagnostic.WARNING
+
+# 🐍🏗️🔚

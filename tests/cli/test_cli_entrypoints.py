@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for CLI entrypoint modules."""
 
 import importlib
@@ -62,3 +67,5 @@ def test_package_main_aliases_cli_main() -> None:
     package_entrypoint = importlib.import_module("pyvider.__main__")
 
     assert package_entrypoint.main is cli_entrypoint.main
+
+# 🐍🏗️🔚

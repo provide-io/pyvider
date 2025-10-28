@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for launch context detection helpers."""
 
 from pathlib import Path
@@ -161,3 +166,5 @@ def test_detect_launch_method_returns_unknown(monkeypatch):
     assert method is LaunchMethod.UNKNOWN
     assert details["reason"].startswith("Could not determine")
     assert details["executable_analysis"]["name"] == "custom"
+
+# 🐍🏗️🔚

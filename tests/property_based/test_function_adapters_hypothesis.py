@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Property-based tests for function adapters using Hypothesis."""
 
 from hypothesis import given, strategies as st
@@ -358,3 +363,5 @@ class TestComplexFunctionSignaturesPropertyBased:
 
 
 # Docstring extraction tests removed - whitespace normalization makes property-based testing difficult
+
+# 🐍🏗️🔚

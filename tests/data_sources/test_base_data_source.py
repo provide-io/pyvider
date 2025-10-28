@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for data sources base module."""
 
 import pytest
@@ -109,3 +114,5 @@ class TestDataSourceEdgeCases:
         # This tests the from_cty class method exists and is callable
         assert hasattr(TestDataSource, "from_cty")
         assert callable(TestDataSource.from_cty)
+
+# 🐍🏗️🔚

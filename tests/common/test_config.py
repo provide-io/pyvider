@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for pyvider/common/config.py."""
 
 from provide.foundation.config import ConfigError as ConfigurationError
@@ -190,3 +195,5 @@ class TestPyviderConfigProperties:
         config = PyviderConfig()
         # With no config file, should be None
         assert config.loaded_file_path is None
+
+# 🐍🏗️🔚
