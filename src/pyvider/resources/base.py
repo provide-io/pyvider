@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from abc import ABC, abstractmethod
 from types import UnionType
 from typing import Any, Generic, TypeVar, get_args, get_origin
@@ -389,3 +396,5 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
     @abstractmethod
     async def _delete_apply(self, ctx: ResourceContext) -> None: ...
+
+# 🐍🏗️🔚

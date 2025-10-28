@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import attrs
@@ -191,3 +198,5 @@ def a_null(schema_builder: PvsAttribute | PvsSchema) -> CtyValue:
     if target_type is None:
         raise TypeError("a_null() expects a schema builder instance like a_str() or s_resource()")
     return CtyValue.null(target_type)
+
+# 🐍🏗️🔚
