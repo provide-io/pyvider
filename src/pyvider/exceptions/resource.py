@@ -1,4 +1,10 @@
-# pyvider/exceptions/resource.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 from provide.foundation.errors import (
@@ -63,3 +69,5 @@ class ResourceLifecycleContractError(FoundationStateError):
 
     def _default_code(self) -> str:
         return "RESOURCE_LIFECYCLE_CONTRACT_ERROR"
+
+# 🐍🏗️🔚

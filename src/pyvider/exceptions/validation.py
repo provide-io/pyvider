@@ -1,4 +1,9 @@
-# pyvider/exceptions/validation.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
 
 from typing import Any
 
@@ -49,3 +54,5 @@ class AttributeValidationError(ValidationError):
         self.attribute_name = attribute_name
         full_message = f"Attribute '{attribute_name}' validation failed: {message}"
         super().__init__(full_message, context=context, detail=detail)
+
+# 🐍🏗️🔚

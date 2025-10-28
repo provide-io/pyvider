@@ -1,6 +1,9 @@
 #
-# pyvider/handler.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 from collections.abc import Callable
 from typing import Any
@@ -175,3 +178,5 @@ class ProviderHandler(ProviderServicer):
 
     async def CallFunction(self, request: Any, context: Any) -> Any:
         return await self._delegate("CallFunction", request, context)
+
+# 🐍🏗️🔚

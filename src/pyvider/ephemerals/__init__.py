@@ -1,4 +1,8 @@
-# pyvider/ephemerals/__init__.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 This package defines the core abstractions for implementing ephemeral resources,
 which are temporary, stateful components like API clients or database connections.
@@ -13,3 +17,5 @@ __all__ = [
     "EphemeralResourceContext",
     "register_ephemeral_resource",
 ]
+
+# 🐍🏗️🔚

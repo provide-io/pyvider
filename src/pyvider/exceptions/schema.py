@@ -1,4 +1,10 @@
-# pyvider/exceptions/schema.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 from provide.foundation.errors import (
@@ -89,3 +95,5 @@ class SchemaConversionError(ConversionError):
         if schema_name:
             message = f"Schema '{schema_name}' conversion failed: {message}"
         super().__init__(message, source_value=source_value, target_type=target_type)
+
+# 🐍🏗️🔚
