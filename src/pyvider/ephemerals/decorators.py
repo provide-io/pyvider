@@ -30,4 +30,5 @@ def register_ephemeral_resource(name: str) -> Callable[[type], type]:
 
     return decorator
 
+
 # 🐍🏗️🔚

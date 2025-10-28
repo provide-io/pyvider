@@ -373,11 +373,14 @@ class TestInstallCommandSymlinkCreation:
 
             with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
                 with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir):
-                    with mock.patch("pyvider.cli.install_command._place_terraform_provider_script") as mock_place:
+                    with mock.patch(
+                        "pyvider.cli.install_command._place_terraform_provider_script"
+                    ) as mock_place:
                         result = runner.invoke(cli, ["install"])
 
                         # Verify _place_terraform_provider_script was called
                         assert mock_place.called
                         assert result.exit_code == 0
+
 
 # 🐍🏗️🔚

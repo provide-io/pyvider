@@ -222,13 +222,14 @@ class TestPlanResourceChangeImplementation:
         mock_resource_handler.plan = AsyncMock(return_value=({"name": "test"}, None))
         mock_resource_class.return_value = mock_resource_handler
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
-        ) as mock_marks, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.marshal"
-        ) as mock_marshal:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+            ) as mock_marks,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.marshal") as mock_marshal,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("resource", "test_resource"): mock_resource_class,
                 ("singleton", "provider"): mock_provider,
@@ -275,17 +276,20 @@ class TestPlanResourceChangeImplementation:
         mock_resource_handler.plan = AsyncMock(return_value=({"name": "test"}, private_state))
         mock_resource_class.return_value = mock_resource_handler
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
-        ) as mock_marks, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
-        ) as mock_create_ctx, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict"
-        ) as mock_handle, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.encrypt"
-        ) as mock_encrypt:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+            ) as mock_marks,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
+            ) as mock_create_ctx,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._handle_planned_state_dict"
+            ) as mock_handle,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.encrypt") as mock_encrypt,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("resource", "test_resource"): mock_resource_class,
                 ("singleton", "provider"): mock_provider,
@@ -318,13 +322,16 @@ class TestPlanResourceChangeImplementation:
         mock_resource_handler.plan = AsyncMock(return_value=({"name": "test"}, None))
         mock_resource_class.return_value = mock_resource_handler
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
-        ) as mock_marks, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
-        ) as mock_create_ctx:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._apply_schema_marks_iterative"
+            ) as mock_marks,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change._create_resource_context"
+            ) as mock_create_ctx,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("resource", "test_resource"): mock_resource_class,
                 ("singleton", "provider"): mock_provider,

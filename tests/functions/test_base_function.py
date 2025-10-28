@@ -152,4 +152,5 @@ class TestFunctionParameterEdgeCases:
         assert param.description == long_desc
         assert len(param.description) > 100
 
+
 # 🐍🏗️🔚

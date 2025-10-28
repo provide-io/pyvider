@@ -36,4 +36,5 @@ def register_resource(
 
     return decorator
 
+
 # 🐍🏗️🔚

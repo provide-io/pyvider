@@ -53,4 +53,5 @@ class BaseDataSource(ABC, Generic[DataSourceType, StateType, ConfigType]):
     @abstractmethod
     async def read(self, ctx: ResourceContext) -> StateType | None: ...
 
+
 # 🐍🏗️🔚

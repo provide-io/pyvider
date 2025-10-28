@@ -32,4 +32,5 @@ class BaseCapability(ABC):
         """
         raise NotImplementedError
 
+
 # 🐍🏗️🔚

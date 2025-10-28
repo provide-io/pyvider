@@ -32,4 +32,5 @@ def register_data_source(
 
     return decorator
 
+
 # 🐍🏗️🔚

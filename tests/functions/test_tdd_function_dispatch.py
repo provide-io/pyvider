@@ -93,4 +93,5 @@ class TestFunctionDispatch:
         result_cty = unmarshal(response.result, schema=CtyString())
         assert result_cty.value == "Hello, World!"
 
+
 # 🐍🏗️🔚

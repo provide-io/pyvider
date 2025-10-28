@@ -275,4 +275,5 @@ class TestIsOptionalTypeHint:
         """Test that union without None returns False."""
         assert _is_optional_type_hint(str | int) is False
 
+
 # 🐍🏗️🔚

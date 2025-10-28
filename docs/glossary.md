@@ -273,7 +273,7 @@ Pyvider's schema type system that maps Python types to Terraform types (CTY).
 ## U
 
 ### Update Operation
-Modifying an existing resource. Implemented in `_update_apply()`.
+Modifying an existing resource. An "update" is triggered when a user modifies a non-computed attribute of an existing resource in their .tf configuration and runs `terraform apply`. Implemented in `_update_apply()`.
 
 ## V
 

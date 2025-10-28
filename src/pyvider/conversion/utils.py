@@ -46,4 +46,5 @@ def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyVa
 
     return final_list_type.validate(dict_list)  # type: ignore[no-any-return]
 
+
 # 🐍🏗️🔚

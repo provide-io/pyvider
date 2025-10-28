@@ -252,4 +252,5 @@ async def _set_future_result(future: asyncio.Future) -> None:
         logger.critical("Catastrophic failure during schema computation task.", exc_info=True)
         future.set_exception(e)
 
+
 # 🐍🏗️🔚

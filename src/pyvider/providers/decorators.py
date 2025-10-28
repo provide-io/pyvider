@@ -27,4 +27,5 @@ def register_provider(name: str) -> Callable[[type], type]:
 
     return decorator
 
+
 # 🐍🏗️🔚

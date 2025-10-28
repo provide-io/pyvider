@@ -118,4 +118,5 @@ class TestFunctionAdapter:
         # so it should default to dynamic.
         assert isinstance(params["val"]["cty_type"], CtyDynamic)
 
+
 # 🐍🏗️🔚

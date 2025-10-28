@@ -199,4 +199,5 @@ def a_null(schema_builder: PvsAttribute | PvsSchema) -> CtyValue:
         raise TypeError("a_null() expects a schema builder instance like a_str() or s_resource()")
     return CtyValue.null(target_type)
 
+
 # 🐍🏗️🔚

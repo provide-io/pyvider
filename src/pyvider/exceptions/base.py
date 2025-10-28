@@ -142,4 +142,5 @@ class ComponentConfigurationError(FrameworkConfigurationError):
     def _default_code(self) -> str:
         return "COMPONENT_CONFIG_ERROR"
 
+
 # 🐍🏗️🔚

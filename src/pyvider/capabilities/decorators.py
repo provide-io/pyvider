@@ -77,4 +77,5 @@ def requires_capability(func: F) -> F:
 
         return sync_wrapper  # type: ignore[return-value]
 
+
 # 🐍🏗️🔚

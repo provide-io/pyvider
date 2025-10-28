@@ -279,4 +279,5 @@ class TestSymlinkCreation:
         # Should not raise any error
         _remove_venv_symlink(venv_dir)
 
+
 # 🐍🏗️🔚

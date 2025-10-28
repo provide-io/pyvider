@@ -52,11 +52,15 @@ class TestRenewEphemeralResourceStructure:
     @pytest.mark.asyncio
     async def test_handler_records_metrics(self, sample_request):
         """Test that handler records request and duration metrics."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_requests"
-        ) as mock_req, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
-        ) as mock_dur, patch("pyvider.hub.hub.get_component") as mock_get:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_requests"
+            ) as mock_req,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
+            ) as mock_dur,
+            patch("pyvider.hub.hub.get_component") as mock_get,
+        ):
             mock_get.return_value = None
 
             await RenewEphemeralResourceHandler(sample_request, context=None)
@@ -71,9 +75,10 @@ class TestRenewEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_renews_ephemeral_successfully(self, sample_request, mock_ephemeral_class):
         """Test successful ephemeral resource renew."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-        ) as mock_asdict:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict") as mock_asdict,
+        ):
             mock_get.return_value = mock_ephemeral_class
             mock_asdict.return_value = {"token": "new_token"}
 
@@ -110,9 +115,13 @@ class TestRenewEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_unpacks_private_data(self, sample_request, mock_ephemeral_class):
         """Test that private data is unpacked from msgpack."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.unpackb"
-        ) as mock_unpack, patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"):
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.unpackb"
+            ) as mock_unpack,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"),
+        ):
             mock_get.return_value = mock_ephemeral_class
             mock_unpack.return_value = {"token": "test_token"}
 
@@ -123,11 +132,11 @@ class TestRenewEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_packs_new_private_state_when_present(self, sample_request, mock_ephemeral_class):
         """Test that new private state is packed to msgpack."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
-        ) as mock_pack, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-        ) as mock_asdict:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb") as mock_pack,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict") as mock_asdict,
+        ):
             mock_get.return_value = mock_ephemeral_class
             mock_asdict.return_value = {"token": "new_token"}
             mock_pack.return_value = b"\x81\xa5token\xa9new_token"
@@ -146,13 +155,14 @@ class TestRenewEphemeralResourceImpl:
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.renew.return_value = (MagicMock(), renew_time)
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict"
-        ) as mock_asdict, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb"
-        ) as mock_pack, patch(
-            "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.datetime_to_proto"
-        ) as mock_dt:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.attrs.asdict") as mock_asdict,
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.msgpack.packb") as mock_pack,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.datetime_to_proto"
+            ) as mock_dt,
+        ):
             mock_get.return_value = mock_ephemeral_class
             mock_asdict.return_value = {"token": "new_token"}
             mock_pack.return_value = b"\x81\xa5token\xa9new_token"

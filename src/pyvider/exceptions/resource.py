@@ -70,4 +70,5 @@ class ResourceLifecycleContractError(FoundationStateError):
     def _default_code(self) -> str:
         return "RESOURCE_LIFECYCLE_CONTRACT_ERROR"
 
+
 # 🐍🏗️🔚

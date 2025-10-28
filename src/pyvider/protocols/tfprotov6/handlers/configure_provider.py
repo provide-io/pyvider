@@ -151,7 +151,9 @@ async def _configure_provider_impl(
             config_instance_type=type(config_instance).__name__,
             has_provider_testmode=hasattr(config_instance, "provider_testmode"),
             provider_testmode_value=test_mode_enabled,
-            config_instance_attrs=dir(config_instance) if hasattr(config_instance, "__dict__") else "no __dict__",
+            config_instance_attrs=dir(config_instance)
+            if hasattr(config_instance, "__dict__")
+            else "no __dict__",
         )
         provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
         hub.register("singleton", "provider_context", provider_context)
@@ -199,5 +201,6 @@ async def _configure_provider_impl(
         response.diagnostics.append(diag)
 
     return response
+
 
 # 🐍🏗️🔚

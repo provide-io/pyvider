@@ -42,4 +42,5 @@ def test_register_function_decorator_marks_for_discovery():
     assert registered_comp is not None
     assert registered_comp == decorated_func
 
+
 # 🐍🏗️🔚

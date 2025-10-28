@@ -208,4 +208,5 @@ def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
 
     return base_meta
 
+
 # 🐍🏗️🔚

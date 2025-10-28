@@ -139,4 +139,5 @@ async def _get_functions_impl(request: pb.GetFunctions.Request, context: Any) ->
             ]
         )
 
+
 # 🐍🏗️🔚

@@ -211,4 +211,5 @@ class TestJSONOutput:
         result = runner.invoke(cli, ["--json", "--help"])
         assert result.exit_code == 0
 
+
 # 🐍🏗️🔚

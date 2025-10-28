@@ -157,11 +157,10 @@ async def test_upgrade_resource_state_records_metrics():
         version=0,
     )
 
-    with patch(
-        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_requests"
-    ) as mock_requests, patch(
-        "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_duration"
-    ) as mock_duration:
+    with (
+        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_requests") as mock_requests,
+        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_duration") as mock_duration,
+    ):
         await UpgradeResourceStateHandler(request, context=None)
 
         mock_requests.inc.assert_called_once_with(handler="UpgradeResourceState")

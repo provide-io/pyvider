@@ -64,4 +64,5 @@ class PyviderProvider(BaseProvider):
                     f"Component '{name}' is associated with capability '{parent_cap_name}', but that capability is not registered."
                 )
 
+
 # 🐍🏗️🔚

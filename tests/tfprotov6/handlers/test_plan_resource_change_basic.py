@@ -59,9 +59,12 @@ class TestPlanResourceChangeHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request):
         """Test that handler increments request counter."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests"
-        ) as mock_requests, patch("pyvider.hub.hub.get_component") as mock_get:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests"
+            ) as mock_requests,
+            patch("pyvider.hub.hub.get_component") as mock_get,
+        ):
             mock_get.return_value = None
 
             await PlanResourceChangeHandler(sample_request, context=None)
@@ -71,9 +74,12 @@ class TestPlanResourceChangeHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self, sample_request):
         """Test that handler records duration metric."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration"
-        ) as mock_duration, patch("pyvider.hub.hub.get_component") as mock_get:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration"
+            ) as mock_duration,
+            patch("pyvider.hub.hub.get_component") as mock_get,
+        ):
             mock_get.return_value = None
 
             await PlanResourceChangeHandler(sample_request, context=None)
@@ -196,9 +202,10 @@ class TestPlanResourceChangeEdgeCases:
     @pytest.mark.asyncio
     async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider):
         """Test handling of validation errors."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal"
-        ) as mock_unmarshal:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal,
+        ):
             from pyvider.cty.exceptions import CtyValidationError
 
             mock_get.side_effect = lambda comp_type, name: {

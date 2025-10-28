@@ -101,6 +101,7 @@ class TestProvideDetectionWarnings:
             with patch("sys.argv", ["wrong-name", "provide", "--force"]):
                 # Mock the server run to avoid actually starting it
                 import asyncio
+
                 def consume_coroutine(coro):
                     if asyncio.iscoroutine(coro):
                         coro.close()
@@ -122,10 +123,12 @@ class TestProvideForceMode:
         """Test that --force mode starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -142,10 +145,12 @@ class TestProvideForceMode:
         """Test that --force mode uses a dummy cookie when none is set."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -162,7 +167,9 @@ class TestProvideForceMode:
         """Test that KeyboardInterrupt is handled gracefully."""
         # Mock asyncio.run to consume coroutine then raise KeyboardInterrupt on second call
         import asyncio
+
         call_count = [0]
+
         def consume_then_interrupt(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
@@ -190,10 +197,12 @@ class TestProvideServerMode:
         """Test that valid magic cookie starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -211,10 +220,12 @@ class TestProvideServerMode:
         """Test that the actual magic cookie value is passed to the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -237,7 +248,9 @@ class TestProvideServerErrorHandling:
 
         # Mock asyncio.run to consume coroutine then raise exception on second call
         import asyncio
+
         call_count = [0]
+
         def consume_then_error(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
@@ -262,7 +275,9 @@ class TestProvideServerErrorHandling:
 
         # Mock asyncio.run to consume coroutine then raise exception on second call
         import asyncio
+
         call_count = [0]
+
         def consume_then_error(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
@@ -284,7 +299,9 @@ class TestProvideServerErrorHandling:
 
         # Mock asyncio.run to consume coroutine then raise exception on second call
         import asyncio
+
         call_count = [0]
+
         def consume_then_error(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
@@ -309,10 +326,12 @@ class TestProvideComponentDiscovery:
         """Test that component discovery runs before starting the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -357,10 +376,12 @@ class TestProvideCommandCoverage:
         """Test that detection error includes debug information."""
         # Mock asyncio.run to consume any coroutines (shouldn't be called but just in case)
         import asyncio
+
         def consume_coroutine(coro):
             if asyncio.iscoroutine(coro):
                 coro.close()
             return None
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -374,5 +395,6 @@ class TestProvideCommandCoverage:
         assert "Debug Info:" in result.output
         assert "sys.argv[0]:" in result.output
         assert "script_name:" in result.output
+
 
 # 🐍🏗️🔚

@@ -23,20 +23,20 @@ import sys
 DOCS_DIR = Path(__file__).parent.parent / "docs"
 
 # Pattern to match markdown links
-LINK_PATTERN = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
+LINK_PATTERN = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 
 # Pattern to match headings for anchor validation
-HEADING_PATTERN = re.compile(r'^#{1,6}\s+(.+)$', re.MULTILINE)
+HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+)$", re.MULTILINE)
 
 
 def slugify(text: str) -> str:
     """Convert heading text to anchor slug (GitHub/MkDocs style)."""
     # Remove markdown formatting
-    text = re.sub(r'[`*_]', '', text)
+    text = re.sub(r"[`*_]", "", text)
     # Convert to lowercase and replace spaces with hyphens
     slug = text.lower().strip()
-    slug = re.sub(r'[^\w\s-]', '', slug)
-    slug = re.sub(r'[-\s]+', '-', slug)
+    slug = re.sub(r"[^\w\s-]", "", slug)
+    slug = re.sub(r"[-\s]+", "-", slug)
     return slug
 
 
@@ -52,11 +52,11 @@ def extract_links(file_path: Path) -> list[tuple[str, str, int]]:
     Returns list of (link_text, link_url, line_number) tuples.
     """
     links = []
-    content = file_path.read_text(encoding='utf-8')
+    content = file_path.read_text(encoding="utf-8")
 
-    for line_num, line in enumerate(content.split('\n'), 1):
+    for line_num, line in enumerate(content.split("\n"), 1):
         # Skip lines with Jinja2/macro template variables
-        if '{{' in line and '}}' in line:
+        if "{{" in line and "}}" in line:
             continue
 
         for match in LINK_PATTERN.finditer(line):
@@ -69,7 +69,7 @@ def extract_links(file_path: Path) -> list[tuple[str, str, int]]:
 
 def extract_headings(file_path: Path) -> set[str]:
     """Extract all heading slugs from a file."""
-    content = file_path.read_text(encoding='utf-8')
+    content = file_path.read_text(encoding="utf-8")
     headings = set()
 
     for match in HEADING_PATTERN.finditer(content):
@@ -83,7 +83,7 @@ def extract_headings(file_path: Path) -> set[str]:
 def resolve_link_path(source_file: Path, link_url: str) -> Path:
     """Resolve a relative link to an absolute path."""
     # Remove anchor if present
-    link_path = link_url.split('#')[0]
+    link_path = link_url.split("#")[0]
 
     if not link_path:  # Just an anchor
         return source_file
@@ -109,16 +109,16 @@ def check_file_links(file_path: Path) -> list[str]:
 
     for link_text, link_url, line_num in links:
         # Skip external links (http/https)
-        if link_url.startswith(('http://', 'https://', 'mailto:')):
+        if link_url.startswith(("http://", "https://", "mailto:")):
             continue
 
         # Skip special links (like `:::`)
-        if link_url.startswith(':::'):
+        if link_url.startswith(":::"):
             continue
 
         # Parse link and anchor
-        if '#' in link_url:
-            link_path_str, anchor = link_url.split('#', 1)
+        if "#" in link_url:
+            link_path_str, anchor = link_url.split("#", 1)
         else:
             link_path_str = link_url
             anchor = None
@@ -142,22 +142,16 @@ def check_file_links(file_path: Path) -> list[str]:
                     if anchor not in target_headings:
                         rel_source = file_path.relative_to(DOCS_DIR)
                         errors.append(
-                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' "
-                            f"in '{link_path_str}'"
+                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in '{link_path_str}'"
                         )
             except Exception as e:
                 rel_source = file_path.relative_to(DOCS_DIR)
-                errors.append(
-                    f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}"
-                )
+                errors.append(f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}")
         else:
             # Just an anchor link (same file)
             if anchor and anchor not in file_headings:
                 rel_source = file_path.relative_to(DOCS_DIR)
-                errors.append(
-                    f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' "
-                    f"in same file"
-                )
+                errors.append(f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in same file")
 
     return errors
 

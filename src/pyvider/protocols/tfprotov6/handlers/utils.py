@@ -84,9 +84,7 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
         )
 
     production_components = {
-        name: comp
-        for name, comp in all_components.items()
-        if not getattr(comp, "_is_test_only", False)
+        name: comp for name, comp in all_components.items() if not getattr(comp, "_is_test_only", False)
     }
     logger.debug(
         f"Filtered {component_type} components for production mode.",
@@ -453,5 +451,6 @@ def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None)
         raise TypeError("Internal validation error: Passed object must be a class.")
 
     return BaseResource.from_cty(cty_val, attrs_cls)
+
 
 # 🐍🏗️🔚

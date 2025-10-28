@@ -149,11 +149,12 @@ class TestErrorLogging:
         request = pb.ValidateEphemeralResourceConfig.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.logger"
-        ) as mock_logger, patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub"
-        ) as mock_hub:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.logger"
+            ) as mock_logger,
+            patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub") as mock_hub,
+        ):
             mock_hub.get_component.return_value = None
 
             try:

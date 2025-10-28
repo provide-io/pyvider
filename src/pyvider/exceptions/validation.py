@@ -55,4 +55,5 @@ class AttributeValidationError(ValidationError):
         full_message = f"Attribute '{attribute_name}' validation failed: {message}"
         super().__init__(full_message, context=context, detail=detail)
 
+
 # 🐍🏗️🔚

@@ -41,4 +41,5 @@ class RateLimitError(NetworkError):
     def _default_code(self) -> str:
         return "RATE_LIMIT_ERROR"
 
+
 # 🐍🏗️🔚

@@ -54,4 +54,5 @@ def register_function(
 
     return decorator
 
+
 # 🐍🏗️🔚

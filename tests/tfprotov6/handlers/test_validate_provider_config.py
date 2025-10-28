@@ -90,11 +90,14 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_error_metric_on_exception(self, sample_request):
         """Test error counter incremented on exception."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_errors"
-        ) as mock_errors, patch(
-            "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
-        ) as mock_impl:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_errors"
+            ) as mock_errors,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
+            ) as mock_impl,
+        ):
             mock_impl.side_effect = RuntimeError("Test error")
 
             with pytest.raises(RuntimeError):
@@ -150,8 +153,7 @@ class TestValidateProviderConfigTestModeDetection:
 
                         # Should log warning about test mode
                         assert any(
-                            "test mode ENABLED" in str(call)
-                            for call in mock_logger.warning.call_args_list
+                            "test mode ENABLED" in str(call) for call in mock_logger.warning.call_args_list
                         )
                         assert len(response.diagnostics) == 0
 
@@ -195,8 +197,7 @@ class TestValidateProviderConfigTestModeDetection:
 
                         # Should log debug about test mode NOT enabled
                         assert any(
-                            "test mode NOT enabled" in str(call)
-                            for call in mock_logger.debug.call_args_list
+                            "test mode NOT enabled" in str(call) for call in mock_logger.debug.call_args_list
                         )
                         assert len(response.diagnostics) == 0
 

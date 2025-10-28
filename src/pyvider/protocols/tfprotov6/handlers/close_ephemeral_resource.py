@@ -127,4 +127,5 @@ async def _close_ephemeral_resource_impl(
 
     return response
 
+
 # 🐍🏗️🔚

@@ -19,6 +19,7 @@ def main():
             print(f"--- Conforming {file} ---")
             subprocess.run(["python3", "conform.py", file])
 
+
 if __name__ == "__main__":
     main()
 

@@ -21,13 +21,14 @@ FOOTER = "# 🐍🏗️🔚"
 
 # Exclude files that are not part of the source code, are vendored, or are this script itself.
 EXCLUDE_FILES = [
-    'conform.py',
-    'build_provider.py',
-    'runtime-hook.py',
-    'tfplugin6_pb2.py',
-    'tfplugin6_pb2_grpc.py',
-    '.mutmut-config.py',
+    "conform.py",
+    "build_provider.py",
+    "runtime-hook.py",
+    "tfplugin6_pb2.py",
+    "tfplugin6_pb2_grpc.py",
+    ".mutmut-config.py",
 ]
+
 
 def get_python_files():
     """Returns a list of all Python files in the current directory and subdirectories, excluding specified files."""
@@ -37,6 +38,7 @@ def get_python_files():
             if filename.endswith(".py") and filename not in EXCLUDE_FILES:
                 files.append(os.path.join(dirpath, filename))
     return files
+
 
 def get_module_docstring_and_body(content):
     """
@@ -92,7 +94,7 @@ def conform_file(filepath):
     code_start_index = 0
     for i, line in enumerate(lines):
         stripped_line = line.strip()
-        if stripped_line and not stripped_line.startswith('#'):
+        if stripped_line and not stripped_line.startswith("#"):
             code_start_index = i
             break
 
@@ -115,7 +117,7 @@ def conform_file(filepath):
     new_header = "\n".join(header_parts)
 
     # Strip old footers and trailing whitespace from body
-    body = re.sub(r'# 🐍🏗️.*', '', body).strip()
+    body = re.sub(r"# 🐍🏗️.*", "", body).strip()
 
     # Construct the final content
     final_content = f"{new_header}\n\n{body}\n\n{FOOTER}\n"
@@ -127,6 +129,7 @@ def conform_file(filepath):
     except OSError as e:
         print(f"Error writing to {filepath}: {e}")
 
+
 def main():
     """Main function to find all Python files and conform them."""
     if len(sys.argv) > 1:
@@ -137,6 +140,7 @@ def main():
     for file in files:
         if file.endswith(".py") and os.path.basename(file) not in EXCLUDE_FILES:
             conform_file(file)
+
 
 if __name__ == "__main__":
     main()

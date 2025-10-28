@@ -85,13 +85,14 @@ class TestDataSourceErrorMessages:
         request = pb.ReadDataSource.Request(type_name="test_data_source")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
-        ) as mock_diag:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
+            ) as mock_diag,
+        ):
             mock_hub.get_component.return_value = None
-            mock_diag.return_value = pb.Diagnostic(
-                severity=pb.Diagnostic.ERROR, summary="Test", detail="Test"
-            )
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test", detail="Test")
 
             response = await _read_data_source_impl(request, context=None)
 

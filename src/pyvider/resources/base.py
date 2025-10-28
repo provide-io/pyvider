@@ -397,4 +397,5 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     @abstractmethod
     async def _delete_apply(self, ctx: ResourceContext) -> None: ...
 
+
 # 🐍🏗️🔚

@@ -49,9 +49,12 @@ class TestCloseEphemeralResourceStructure:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request):
         """Test that handler increments request counter."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_requests"
-        ) as mock_requests, patch("pyvider.hub.hub.get_component") as mock_get:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_requests"
+            ) as mock_requests,
+            patch("pyvider.hub.hub.get_component") as mock_get,
+        ):
             mock_get.return_value = None
 
             await CloseEphemeralResourceHandler(sample_request, context=None)
@@ -108,9 +111,12 @@ class TestCloseEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_unpacks_private_data_correctly(self, sample_request, mock_ephemeral_class):
         """Test that private data is unpacked from msgpack."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.msgpack.unpackb"
-        ) as mock_unpack:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.msgpack.unpackb"
+            ) as mock_unpack,
+        ):
             mock_get.return_value = mock_ephemeral_class
             mock_unpack.return_value = {"token": "test_token"}
 
@@ -123,9 +129,12 @@ class TestCloseEphemeralResourceImpl:
     @pytest.mark.asyncio
     async def test_impl_creates_ephemeral_context(self, sample_request, mock_ephemeral_class):
         """Test that EphemeralResourceContext is created."""
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.EphemeralResourceContext"
-        ) as mock_ctx:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.EphemeralResourceContext"
+            ) as mock_ctx,
+        ):
             mock_get.return_value = mock_ephemeral_class
 
             await _close_ephemeral_resource_impl(sample_request, context=None)
@@ -183,9 +192,12 @@ class TestCloseEphemeralResourceMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_duration(self, sample_request):
         """Test that handler records duration metric."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_duration"
-        ) as mock_duration, patch("pyvider.hub.hub.get_component") as mock_get:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_duration"
+            ) as mock_duration,
+            patch("pyvider.hub.hub.get_component") as mock_get,
+        ):
             mock_get.return_value = None
 
             await CloseEphemeralResourceHandler(sample_request, context=None)
@@ -197,11 +209,14 @@ class TestCloseEphemeralResourceMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_error_on_exception(self, sample_request):
         """Test that handler increments error counter on exceptions."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_errors"
-        ) as mock_errors, patch(
-            "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl"
-        ) as mock_impl:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_errors"
+            ) as mock_errors,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl"
+            ) as mock_impl,
+        ):
             mock_impl.side_effect = RuntimeError("Test error")
 
             with pytest.raises(RuntimeError):

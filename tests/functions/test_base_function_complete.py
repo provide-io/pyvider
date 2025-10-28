@@ -481,4 +481,5 @@ class TestFunctionAdapterEdgeCases:
         result = await adapted(5, 3)
         assert result == 8
 
+
 # 🐍🏗️🔚

@@ -334,4 +334,5 @@ class FunctionAdapter:
             deprecation_message=deprecation_message,
         )
 
+
 # 🐍🏗️🔚
