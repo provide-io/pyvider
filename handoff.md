@@ -1,103 +1,392 @@
-# LLM Handoff & Process Replication Document
+# Pyvider Multi-Provider Architecture - Handoff Document
 
-## 1. Objective
+## Summary of Changes
 
-The primary goal was to enforce a strict header and footer protocol on all Python source files (`.py`) within the repository. This protocol included:
-1.  **First Line:** A shebang (`#!/usr/bin/env python3`) for executables or a comment (`# `) for libraries.
-2.  **SPDX Block:** A specific 3-line copyright and license block.
-3.  **Module Docstring:** A placeholder (`"""TODO: Add module docstring."""`) if one was not present, positioned correctly after the SPDX block.
-4.  **Footer:** A specific single-line comment (`# 🐍🏗️🔚`) at the end of the file.
-5.  **Trailing Newline:** A single trailing newline after the footer.
+Pyvider has been converted from a monolithic provider to a **pure framework** that supports multiple provider implementations. The framework is now ready for component packages like `pyvider-components` and third-party providers.
 
-## 2. Initial Challenge: Environment Constraint
+## What Was Completed
 
-A direct approach of modifying all files at once was not feasible due to a sandbox environment constraint.
+### 1. Pure Framework Architecture ✅
 
--   **Action:** An initial script was created (`conform.py`) to identify and modify all `.py` files in a single operation.
--   **Result:** The operation was immediately terminated with the error: `ERROR: The command affected too many files in the repo.`
--   **Analysis:** This error revealed a fundamental limitation of the execution environment. The total number of files that can be modified in a single "session" or "turn" before committing is limited. Attempts to process files in batches using `xargs -n 20` also failed, indicating the constraint applies to the cumulative diff of the session, not just a single command invocation.
+**Removed:**
+- `[project.entry-points.pyvider]` from pyproject.toml
+- `src/pyvider/providers/capabilities/` directory (CoreProviderCapability)
+- `src/pyvider/providers/provider.py` (PyviderProvider class)
 
-## 3. Core Strategy: The "Chunk, Conform, Verify, Submit" (CCVS) Cycle
+**Result:** pyvider package contains ZERO components by default
 
-To overcome the file modification limit, a new strategy was developed. The core idea was to break the problem into a series of smaller, independent operations, using the `submit` action to reset the environment's modification tracking after each operation.
+### 2. Provider Discovery System ✅
 
-This resulted in a repeatable logic loop:
+**Changes:**
+- Added provider discovery to `src/pyvider/hub/discovery.py:98`
+- Providers are discovered alongside resources/data sources/functions
+- Discovery works via `@register_provider("name")` decorator
 
-1.  **Chunk:** Divide the total set of files into small, manageable groups.
-2.  **Conform:** Apply the required header/footer modifications to one chunk of files.
-3.  **Verify:** Run linters and type checkers to ensure the modifications didn't introduce syntax errors.
-4.  **Submit:** Commit the changes for that single chunk to the repository. This clears the "diff" and allows the next chunk to be processed.
+### 3. Dynamic Provider Instantiation ✅
 
-This loop repeats until all chunks have been processed.
+**Changes in `src/pyvider/cli/provide_command.py`:**
+- Removed hardcoded `PyviderProvider()` instantiation
+- Now discovers all registered providers from hub
+- Instantiates each provider dynamically
+- Clear error when zero providers found
 
-## 4. Detailed Step-by-Step Logic Loop
+### 4. Auto-Discovery in BaseProvider ✅
 
-Here is the precise, reproducible workflow that was executed.
+**Enhanced `src/pyvider/providers/base.py`:**
+- `BaseProvider.setup()` now auto-discovers capabilities
+- Auto-composes provider schema from capability contributions
+- Component packages get this for free - minimal boilerplate
 
-### Step 4.1: Preparation (One-Time Setup)
+### 5. Test Updates ✅
 
-1.  **Generate File List:** Create a definitive list of all target Python files, ensuring to exclude any files from the virtual environment (`.venv/`) which should not be modified.
-    ```bash
-    find . -type f -name "*.py" | grep -v ".venv/" > python_files.txt
-    ```
+**Updated test files:**
+- `tests/conftest.py` - Uses BaseProvider instead of PyviderProvider
+- `tests/framework/test_schema_caching.py`
+- `tests/tdd/test_tdd_capability_association.py`
+- `tests/observability/test_handler_metrics.py`
 
-2.  **Create Chunks:** Split the master file list into smaller files (chunks), each containing a maximum of 20 file paths. The `split` utility is perfect for this.
-    ```bash
-    split -l 20 python_files.txt chunk_
-    ```
-    This creates files named `chunk_aa`, `chunk_ab`, `chunk_ac`, etc.
+**Test Results:** All 1230 tests pass ✅
 
-3.  **Create Conformance Script:** A Python script (`conform.py`) was written to perform the actual header/footer logic. The script is designed to be idempotent and can be run on a single file or a list of files provided as command-line arguments.
+---
 
-    *Key logic within `conform.py`:*
-    *   Reads the entire file content.
-    *   Determines if it's an executable (starts with `#!`).
-    *   Uses Python's `ast` module to safely find and extract any existing module-level docstring to preserve it.
-    *   Strips all old headers, footers, and trailing whitespace.
-    *   Constructs the new, conformant content by combining the header, preserved (or placeholder) docstring, the main body of the code, and the new footer.
-    *   Overwrites the original file with the new content.
+## What Still Needs to Be Done
 
-### Step 4.2: The CCVS Loop (Iterate for each `chunk_` file)
+### Priority 1: Create pyvider-components Package Structure
 
-The following sequence of commands was executed for each chunk file (`chunk_aa`, `chunk_ab`, ... `chunk_ao`).
+The `pyvider-components` package exists but needs migration to the new architecture.
 
-1.  **Conform Chunk:** Execute the conformance script on all files listed in the current chunk.
-    ```bash
-    # Example for the first chunk
-    xargs -n 1 python3 conform.py < chunk_aa
-    ```
+**Required Files to Create:**
 
-2.  **Verify Chunk (Ruff):** Run the `ruff` linter with the `--fix` option. This serves two purposes: it verifies that the conformed files are syntactically correct, and it fixes any simple linting issues that the conformance script may have introduced.
-    ```bash
-    ruff check --fix .
-    ```
+#### 1. **Provider Registration**
 
-3.  **Verify Chunk (Mypy):** Run the `mypy` static type checker. This further ensures the code remains valid.
-    ```bash
-    mypy .
-    ```
-    *(Note: For this task, existing `ruff` and `mypy` errors were ignored, as the primary goal was header/footer conformance, not a full code quality refactor. The key was ensuring these tools ran without crashing, proving the file's integrity.)*
+Create `src/pyvider/components/provider.py`:
+```python
+from pyvider.providers import BaseProvider, ProviderMetadata, register_provider
 
-4.  **Submit Chunk:** Use the `submit` tool to commit the changes for the current chunk. This is the most critical step for resetting the environment's file modification limit.
-    ```python
-    # Example submit call for the first chunk
-    submit(
-        branch_name="chore/conform-files-chunk-1",
-        title="Chore: Conform files to header/footer protocol (Chunk 1)",
-        commit_message="feat: Conform files to header/footer protocol\n\nConforms the first chunk of Python files...",
-        description="..."
-    )
-    ```
+@register_provider("pyvider")
+class PyviderProvider(BaseProvider):
+    """
+    Reference implementation of a Pyvider provider.
 
-### Step 4.3: Cleanup
+    Manages standard components for local file manipulation,
+    HTTP data sources, and utility functions.
+    """
 
-After iterating through and submitting all chunks:
+    def __init__(self):
+        super().__init__(
+            metadata=ProviderMetadata(
+                name="pyvider",
+                version="0.1.0"
+            )
+        )
+```
 
-1.  **Remove Temporary Files:** Delete the scripts and chunk files created during the process to leave the repository clean.
-    ```bash
-    rm conform.py orchestrator.py python_files.txt chunk_*
-    ```
+#### 2. **Core Capability**
 
-2.  **Final Submission:** A final `submit` call is made to wrap up the task.
+Create `src/pyvider/components/capabilities/core.py`:
+```python
+from typing import Any
+from pyvider.capabilities import BaseCapability, register_capability
+from pyvider.schema import PvsAttribute
 
-This methodical, iterative process successfully navigated the environment's constraints and completed the objective across the entire codebase.
+@register_capability("core")
+class CoreCapability(BaseCapability):
+    """
+    Core capability for pyvider provider.
+    Provides base provider configuration (currently empty).
+    """
+
+    def __init__(self, config: Any | None = None):
+        pass
+
+    @staticmethod
+    def get_schema_contribution() -> dict[str, PvsAttribute]:
+        return {}
+```
+
+#### 3. **Entry Point Configuration**
+
+Update `pyvider-components/pyproject.toml`:
+```toml
+[project.entry-points.pyvider]
+pyvider-components = "pyvider.components"
+```
+
+#### 4. **Package __init__.py**
+
+Update `src/pyvider/components/__init__.py` to import provider:
+```python
+# Ensure provider is registered on import
+from pyvider.components.provider import PyviderProvider
+from pyvider.components.capabilities.core import CoreCapability
+
+__all__ = ["PyviderProvider", "CoreCapability"]
+```
+
+---
+
+### Priority 2: Test the Integration
+
+After creating the above files, test the complete workflow:
+
+#### Test 1: Verify Framework is Pure
+```bash
+cd /Users/tim/code/gh/provide-io/pyvider
+
+# Should show NO components
+pyvider components list
+# Expected: "No components found."
+```
+
+#### Test 2: Install pyvider-components in Editable Mode
+```bash
+cd /Users/tim/code/gh/provide-io/pyvider-components
+
+# Install in editable mode
+uv pip install -e .
+
+# or if UV not available:
+pip install -e .
+```
+
+#### Test 3: Verify Components Are Discovered
+```bash
+cd /Users/tim/code/gh/provide-io/pyvider
+
+# Should now show components from pyvider-components
+pyvider components list
+```
+
+**Expected Output:**
+```
+Provider:
+  - pyvider
+
+Capability:
+  - core
+  - api       (if exists in pyvider-components)
+  - lens      (if exists in pyvider-components)
+
+Resource:
+  - file_content
+  - local_directory
+  - timed_token
+  - (... other resources)
+
+Data Source:
+  - http_api
+  - lens_jq
+  - (... other data sources)
+
+Function:
+  - (... functions from pyvider-components)
+```
+
+#### Test 4: Verify Provider Can Start
+```bash
+# Should start without error
+timeout 5 pyvider provide --force 2>&1 | head -20
+```
+
+**Expected:** Should see "Provider setup completed" logs, then timeout (that's ok)
+
+**Should NOT see:** "No providers found" error
+
+#### Test 5: Run Component Tests
+```bash
+cd /Users/tim/code/gh/provide-io/pyvider-components
+
+# Run tests to verify components work
+uv run pytest tests/ -v
+```
+
+---
+
+### Priority 3: Fix Existing Components (If Needed)
+
+The pyvider-components package currently has components that might use old patterns:
+
+**Check for:**
+- Old imports: `from pyvider.providers.provider import PyviderProvider`
+- Old capability registration patterns
+- Hard-coded provider references
+
+**Files to potentially update:**
+- `src/pyvider/components/capabilities/api.py`
+- `src/pyvider/components/capabilities/lens.py`
+- Any component that imports or references PyviderProvider
+
+---
+
+### Priority 4: Documentation Updates
+
+**Files to update:**
+- `pyvider-components/CLAUDE.md` - Update with new provider registration pattern
+- `pyvider-components/README.md` - Document the provider structure
+- `pyvider/docs/` - Update framework documentation
+
+---
+
+## Testing Checklist
+
+- [ ] Framework shows no components when pyvider-components not installed
+- [ ] `uv pip install -e .` in pyvider-components succeeds
+- [ ] `pyvider components list` shows "pyvider" provider
+- [ ] `pyvider components list` shows capabilities, resources, data sources, functions
+- [ ] `pyvider provide --force` starts without "No providers found" error
+- [ ] `pyvider-components` tests pass
+- [ ] Can create a simple Terraform config using pyvider provider
+- [ ] Terraform can run `terraform init` and `terraform plan`
+
+---
+
+## Known Issues / Gaps
+
+### 1. Component-to-Provider Routing
+
+**Current:** The first discovered provider is used for all operations
+**TODO:** Implement routing based on resource type prefix
+
+Example: `lens_deployment` should route to "lens" provider, not "pyvider" provider
+
+**Code Location:** `src/pyvider/cli/provide_command.py:141-149`
+
+**Future Enhancement:**
+```python
+# Instead of using first provider for everything
+primary_provider = list(provider_instances.values())[0]
+
+# Should route based on resource type:
+def get_provider_for_resource(resource_type: str):
+    prefix = resource_type.split('_')[0]  # e.g., "lens" from "lens_deployment"
+    return provider_instances.get(prefix, primary_provider)
+```
+
+### 2. Multiple Provider Instance Support
+
+**Current:** Only one provider instance runs
+**TODO:** Support multiple provider instances with aliases
+
+Terraform allows:
+```hcl
+provider "lens" {
+  alias = "production"
+  api_endpoint = "https://prod.lens.io"
+}
+
+provider "lens" {
+  alias = "staging"
+  api_endpoint = "https://staging.lens.io"
+}
+```
+
+This requires protocol-level changes to track provider aliases.
+
+### 3. Entry Point Group Naming
+
+**Decision Made:** Using `"pyvider"` as entry point group name
+**Alternative Considered:** `"pyvider.components"` (more explicit)
+
+Current: `[project.entry-points.pyvider]`
+
+Both are valid. Consider feedback from early adopters.
+
+---
+
+## Quick Reference
+
+### For pyvider Framework
+
+**Directory:** `/Users/tim/code/gh/provide-io/pyvider`
+
+**Key Commands:**
+```bash
+# List components (should be empty without pyvider-components)
+pyvider components list
+
+# Try to start provider (should error: No providers found)
+pyvider provide --force
+
+# Run tests
+uv run pytest tests/ -v
+```
+
+### For pyvider-components Package
+
+**Directory:** `/Users/tim/code/gh/provide-io/pyvider-components`
+
+**Key Files to Create/Update:**
+- `src/pyvider/components/provider.py` (NEW)
+- `src/pyvider/components/capabilities/core.py` (NEW)
+- `pyproject.toml` (add entry point)
+- `src/pyvider/components/__init__.py` (import provider)
+
+**Key Commands:**
+```bash
+# Install in editable mode
+uv pip install -e .
+
+# Run tests
+uv run pytest tests/ -v
+
+# Check what's registered
+cd ../pyvider
+pyvider components list
+```
+
+---
+
+## Success Criteria
+
+### Minimum Viable Product (MVP)
+
+✅ pyvider framework has zero components
+✅ `pyvider components list` returns "No components found"
+✅ `pyvider provide --force` errors with "No providers found"
+⏳ pyvider-components installs successfully in editable mode
+⏳ After installing pyvider-components, `pyvider components list` shows:
+  - Provider: pyvider
+  - Capabilities, resources, data sources, functions
+⏳ `pyvider provide --force` starts successfully
+⏳ All pyvider-components tests pass
+
+### Stretch Goals
+
+⏳ Create a minimal example provider (pyvider-lens or similar)
+⏳ Document provider creation process
+⏳ Test with Terraform/OpenTofu
+⏳ Implement component-to-provider routing
+⏳ Support multiple provider instances with aliases
+
+---
+
+## Next Steps
+
+1. **Create the missing files** in pyvider-components (Priority 1)
+2. **Test the installation flow** (Priority 2)
+3. **Fix any broken components** (Priority 3)
+4. **Update documentation** (Priority 4)
+5. **Create example Terraform configs** using the pyvider provider
+6. **Consider creating a minimal third-party provider** (e.g., pyvider-lens) to validate the pattern
+
+---
+
+## Questions / Decisions Needed
+
+1. **Capability naming:** Should the core capability be called "core", "provider", or something else?
+2. **Version synchronization:** Should pyvider-components version match pyvider version?
+3. **Dependency specification:** How should pyvider-components specify pyvider dependency version?
+4. **Provider naming:** Should pyvider-components register as "pyvider" or "pyvider-components"?
+   - Recommendation: "pyvider" (cleaner in Terraform configs)
+
+---
+
+## Contact
+
+If you have questions or hit issues:
+- Framework architecture decisions are documented in `src/pyvider/providers/base.py`
+- Discovery logic is in `src/pyvider/hub/discovery.py`
+- All tests pass: `uv run pytest tests/` (1230 passed)
+
+Last Updated: 2025-10-25
+Created By: Claude Code (Assistant)
