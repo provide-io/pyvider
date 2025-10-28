@@ -1,4 +1,10 @@
-# pyvider/schema/types/schema.py
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 from attrs import define, field
@@ -49,3 +55,5 @@ class PvsSchema:
         Since the block is now a PvsObjectType, this is a direct return.
         """
         return self.block
+
+# 🐍🏗️🔚

@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for pyvider CLI with new flexible options."""
 
 from pathlib import Path
@@ -205,3 +210,5 @@ class TestJSONOutput:
         # For now, just verify the flag is accepted
         result = runner.invoke(cli, ["--json", "--help"])
         assert result.exit_code == 0
+
+# 🐍🏗️🔚

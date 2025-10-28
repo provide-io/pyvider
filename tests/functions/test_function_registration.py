@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.functions.decorators import register_function
@@ -34,3 +41,5 @@ def test_register_function_decorator_marks_for_discovery():
     registered_comp = hub.get_component("function", "my_registered_func_for_test")
     assert registered_comp is not None
     assert registered_comp == decorated_func
+
+# 🐍🏗️🔚

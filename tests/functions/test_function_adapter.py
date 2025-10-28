@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
@@ -110,3 +117,5 @@ class TestFunctionAdapter:
         # A Union of str and int cannot be represented by a single primitive CtyType,
         # so it should default to dynamic.
         assert isinstance(params["val"]["cty_type"], CtyDynamic)
+
+# 🐍🏗️🔚

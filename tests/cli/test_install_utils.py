@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Tests for pyvider install command utilities.
 
@@ -273,3 +278,5 @@ class TestSymlinkCreation:
 
         # Should not raise any error
         _remove_venv_symlink(venv_dir)
+
+# 🐍🏗️🔚

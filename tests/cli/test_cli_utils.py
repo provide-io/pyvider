@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for CLI utility helpers."""
 
 from types import SimpleNamespace
@@ -39,3 +44,5 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path):
     assert target_path.exists()
     assert f'INSTALL_DIR="{install_dir}"' in captured["content"]
     assert 'exec pyvider provide "$@"' in captured["content"]
+
+# 🐍🏗️🔚

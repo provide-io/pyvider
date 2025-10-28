@@ -1,6 +1,9 @@
 #
-# pyvider/resources/lifecycle.py
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
 #
+
+"""TODO: Add module docstring."""
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -35,5 +38,4 @@ class ResourceLifecycle:
         self.last_operation = operation
         self.last_updated = datetime.now(UTC)
 
-
-# 🐍🏗️
+# 🐍🏗️🔚

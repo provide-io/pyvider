@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for functions/base.py module."""
 
 import pytest
@@ -146,3 +151,5 @@ class TestFunctionParameterEdgeCases:
         )
         assert param.description == long_desc
         assert len(param.description) > 100
+
+# 🐍🏗️🔚

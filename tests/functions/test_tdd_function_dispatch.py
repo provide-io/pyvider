@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.conversion import marshal, unmarshal
@@ -85,3 +92,5 @@ class TestFunctionDispatch:
         assert not response.error.text, f"Function call failed unexpectedly: {response.error.text}"
         result_cty = unmarshal(response.result, schema=CtyString())
         assert result_cty.value == "Hello, World!"
+
+# 🐍🏗️🔚
