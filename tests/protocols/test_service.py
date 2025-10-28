@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 
 from provide.testkit.mocking import AsyncMock, MagicMock, patch
@@ -251,3 +258,5 @@ async def test_heartbeat_error_handling(shutdown_event):
             await heartbeat_task
         except asyncio.CancelledError:
             pass
+
+# 🐍🏗️🔚

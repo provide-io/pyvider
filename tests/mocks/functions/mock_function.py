@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.hub import register_function
 
 
@@ -15,3 +22,5 @@ def mock_function(data: dict) -> bool:
         bool: True if the data contains the required key 'valid', False otherwise.
     """
     return "valid" in data
+
+# 🐍🏗️🔚

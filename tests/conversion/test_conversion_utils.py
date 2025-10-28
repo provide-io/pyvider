@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for conversion/utils.py."""
 
 from pyvider.conversion.utils import unify_and_validate_list_of_objects
@@ -78,3 +83,5 @@ class TestUnifyAndValidateListOfObjects:
         result = unify_and_validate_list_of_objects(dict_list)
 
         assert len(result.value) == 1
+
+# 🐍🏗️🔚

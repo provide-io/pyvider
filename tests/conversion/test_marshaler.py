@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for conversion/marshaler.py."""
 
 import attrs
@@ -195,3 +200,5 @@ class TestRoundTrip:
 
         assert result.value["name"].value == "Alice"
         assert result.value["age"].value == 30
+
+# 🐍🏗️🔚

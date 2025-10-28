@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Comprehensive tests for schema_adapter module (15% → 85%+)."""
 
 import json
@@ -285,3 +290,5 @@ class TestSchemaAdapterEdgeCases:
         level1_block = proto.block_types[0]
         assert level1_block.type_name == "level1"
         assert len(level1_block.block.block_types) == 1
+
+# 🐍🏗️🔚
