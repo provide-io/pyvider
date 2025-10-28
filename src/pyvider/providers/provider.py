@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import ClassVar
 
 from provide.foundation import logger
@@ -56,3 +63,5 @@ class PyviderProvider(BaseProvider):
                 raise FrameworkConfigurationError(
                     f"Component '{name}' is associated with capability '{parent_cap_name}', but that capability is not registered."
                 )
+
+# 🐍🏗️🔚

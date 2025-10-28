@@ -244,7 +244,6 @@ class TestUninstallCommand:
     def test_uninstall_provider_removes_script(self, tmp_path):
         """Test that _uninstall_provider removes the provider script."""
         from pyvider.cli.context import PyviderContext
-        from pyvider.cli.install_command import _uninstall_provider
 
         # Create mock context
         ctx = mock.Mock(spec=PyviderContext)
@@ -264,7 +263,6 @@ class TestUninstallCommand:
     def test_uninstall_provider_removes_symlink(self, tmp_path):
         """Test that _uninstall_provider removes the venv symlink."""
         from pyvider.cli.context import PyviderContext
-        from pyvider.cli.install_command import _uninstall_provider
 
         # Create mock venv
         venv_dir = tmp_path / ".venv"
@@ -290,7 +288,6 @@ class TestUninstallCommand:
     def test_uninstall_provider_idempotent(self, tmp_path):
         """Test that _uninstall_provider is idempotent."""
         from pyvider.cli.context import PyviderContext
-        from pyvider.cli.install_command import _uninstall_provider
 
         # Create mock context for empty directory
         ctx = mock.Mock(spec=PyviderContext)

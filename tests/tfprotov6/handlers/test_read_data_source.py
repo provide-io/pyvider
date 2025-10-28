@@ -122,17 +122,16 @@ class TestReadDataSourceImpl:
     @pytest.mark.asyncio
     async def test_impl_handles_unknown_data_source(self, sample_request):
         """Test handling of unknown data source type."""
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
-            ) as mock_create_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
-                mock_create_diag.return_value = mock_diag
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
+            "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
+        ) as mock_create_diag:
+            mock_hub.get_component.return_value = None
+            mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Not found")
+            mock_create_diag.return_value = mock_diag
 
-                response = await _read_data_source_impl(sample_request, context=None)
+            response = await _read_data_source_impl(sample_request, context=None)
 
-                assert len(response.diagnostics) >= 1
+            assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
     async def test_impl_handles_cty_validation_error(self, sample_request, mock_data_source_class):

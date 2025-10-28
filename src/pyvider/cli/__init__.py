@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 Pyvider CLI Package
 ==================
@@ -33,3 +38,5 @@ def main() -> None:
 
 # 5. Expose the fully assembled 'cli' object and main function for entry points.
 __all__ = ["cli", "main"]
+
+# 🐍🏗️🔚

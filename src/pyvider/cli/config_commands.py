@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import os
 import tomllib
 from typing import Any
@@ -68,3 +75,5 @@ def show_config(ctx: PyviderContext) -> None:
     pout(f"  Detected Terraform Architecture: {ctx.tf_arch}")
     pout(f"  Effective Provider Version: {ctx.pyvider_version}")
     pout(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")
+
+# 🐍🏗️🔚

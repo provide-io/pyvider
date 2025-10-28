@@ -13,8 +13,8 @@ from pyvider.observability import (
     handler_errors,
     handler_requests,
 )
-import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.handlers.utils import get_all_components
+import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @resilient()

@@ -2,10 +2,8 @@
 
 import asyncio
 import os
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import patch
 
-import click
 from click.testing import CliRunner
 import pytest
 
@@ -341,10 +339,9 @@ class TestProvideCommandCoverage:
         """Test that script name is correctly extracted from sys.argv."""
         runner = CliRunner()
 
-        with patch("sys.argv", ["terraform-provider-test"]):
-            with patch.dict(os.environ, {}, clear=False):
-                os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
-                result = runner.invoke(cli, ["provide"])
+        with patch("sys.argv", ["terraform-provider-test"]), patch.dict(os.environ, {}, clear=False):
+            os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
+            result = runner.invoke(cli, ["provide"])
 
         # Should show interactive mode with correct script name
         assert result.exit_code == 0

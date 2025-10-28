@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from typing import Any
 
 import click
@@ -43,3 +50,5 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
 
 # This decorator is for our custom context object, which is correct for subcommands.
 pass_ctx = click.make_pass_decorator(PyviderContext, ensure=True)
+
+# 🐍🏗️🔚

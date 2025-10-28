@@ -1,6 +1,7 @@
 """Tests for ValidateProviderConfig handler."""
 
 from unittest.mock import MagicMock
+
 from provide.testkit.mocking import patch
 import pytest
 
@@ -91,16 +92,15 @@ class TestValidateProviderConfigMetrics:
         """Test error counter incremented on exception."""
         with patch(
             "pyvider.protocols.tfprotov6.handlers.validate_provider_config.handler_errors"
-        ) as mock_errors:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
-            ) as mock_impl:
-                mock_impl.side_effect = RuntimeError("Test error")
+        ) as mock_errors, patch(
+            "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
+        ) as mock_impl:
+            mock_impl.side_effect = RuntimeError("Test error")
 
-                with pytest.raises(RuntimeError):
-                    await ValidateProviderConfigHandler(sample_request, context=None)
+            with pytest.raises(RuntimeError):
+                await ValidateProviderConfigHandler(sample_request, context=None)
 
-                mock_errors.inc.assert_called_once_with(handler="ValidateProviderConfig")
+            mock_errors.inc.assert_called_once_with(handler="ValidateProviderConfig")
 
 
 class TestValidateProviderConfigTestModeDetection:

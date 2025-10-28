@@ -2,8 +2,6 @@
 
 from types import SimpleNamespace
 
-import pytest
-
 from pyvider.cli.utils import _place_terraform_provider_script
 
 

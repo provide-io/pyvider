@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import asyncio
 import sys
 from typing import Any
@@ -171,3 +178,5 @@ def show_diagnostics(ctx: PyviderContext) -> None:
 
     except Exception as e:
         perr(f"❌ Failed to get diagnostics: {e}")
+
+# 🐍🏗️🔚

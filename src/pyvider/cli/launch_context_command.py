@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """
 CLI command for inspecting Pyvider launch context.
 """
@@ -139,3 +144,5 @@ def _show_method_specific_help(method: LaunchMethod) -> None:
         click.secho("\n⚠️ Unknown Launch Method", fg="yellow", bold=True)
         click.echo("  The launch method could not be determined.")
         click.echo("  Use --verbose flag for more debugging information.")
+
+# 🐍🏗️🔚
