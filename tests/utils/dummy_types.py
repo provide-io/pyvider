@@ -91,7 +91,7 @@ class DummyStringType(CtyType[CtyString]):
             self.validate(deserialized)
             return deserialized
         except Exception as e:
-            raise ValidationError(f"Failed to deserialize string: {e}")
+            raise ValidationError(f"Failed to deserialize string: {e}") from e
 
     def equal(self, other: "CtyType") -> bool:
         return (
@@ -183,7 +183,7 @@ class DummyNumberType(CtyType[CtyNumber]):
             self.validate(deserialized)
             return deserialized
         except ValueError:
-            raise ValidationError(f"Failed to deserialize number: {value}")
+            raise ValidationError(f"Failed to deserialize number: {value}") from None
 
     def equal(self, other: "CtyType") -> bool:
         """
@@ -276,7 +276,7 @@ class DummyListType(CtyType[CtyList]):
             self.validate(deserialized)
             return deserialized
         except Exception as e:
-            raise ValidationError(f"Failed to deserialize list: {e}")
+            raise ValidationError(f"Failed to deserialize list: {e}") from e
 
     def equal(self, other: "CtyType") -> bool:
         return isinstance(other, DummyListType) and self.element_type == other.element_type

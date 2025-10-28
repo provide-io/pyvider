@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 
 def validate_plugin_binary(plugin_path: str) -> None:
@@ -12,7 +13,7 @@ def validate_plugin_binary(plugin_path: str) -> None:
         FileNotFoundError: If the binary does not exist.
         PermissionError: If the binary is not executable.
     """
-    if not os.path.isfile(plugin_path):
+    if not Path(plugin_path).is_file():
         raise FileNotFoundError(f"Plugin binary not found: {plugin_path}")
 
     if not os.access(plugin_path, os.X_OK):

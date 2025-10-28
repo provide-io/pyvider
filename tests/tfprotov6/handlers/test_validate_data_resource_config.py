@@ -39,9 +39,10 @@ class TestValidateDataResourceConfigHandlerStructure:
 
     @pytest.mark.asyncio
     async def test_handler_returns_response(self, sample_request):
-        """Test that handler returns ValidateDataResourceConfig.Response."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"):
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"),
+            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
+        ):
                 mock_hub.get_component.return_value = None
 
                 response = await ValidateDataResourceConfigHandler(sample_request, context=None)

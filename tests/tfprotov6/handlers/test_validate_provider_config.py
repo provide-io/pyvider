@@ -114,14 +114,15 @@ class TestValidateProviderConfigTestModeDetection:
         """Test that test mode enabled is detected and logged."""
         from pyvider.cty import CtyBool, CtyObject, CtyValue
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-                ) as mock_logger:
-                    # Create a provider instance with schema
+            ) as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
+            ) as mock_logger,
+        ):
                     mock_provider = MagicMock()
                     mock_schema = MagicMock()
                     mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
@@ -160,15 +161,15 @@ class TestValidateProviderConfigTestModeDetection:
     @pytest.mark.asyncio
     async def test_detects_test_mode_disabled(self):
         """Test that test mode disabled is detected and logged."""
-        from pyvider.cty import CtyBool, CtyObject, CtyValue
-
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-                ) as mock_logger:
+            ) as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
+            ) as mock_logger,
+        ):
                     mock_provider = MagicMock()
                     mock_schema = MagicMock()
                     mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
@@ -204,13 +205,15 @@ class TestValidateProviderConfigTestModeDetection:
     @pytest.mark.asyncio
     async def test_handles_config_parsing_error_gracefully(self):
         """Test that config parsing errors don't fail validation."""
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal"
-            ) as mock_unmarshal:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
-                ) as mock_logger:
+            ) as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger"
+            ) as mock_logger,
+        ):
                     mock_provider = MagicMock()
                     mock_hub.get_component.return_value = mock_provider
 
