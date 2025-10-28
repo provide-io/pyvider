@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.schema import (
@@ -41,3 +48,5 @@ class TestSchemaTransforms:
         assert "name" in merged_schema.block.attributes
         assert "count" in merged_schema.block.attributes
         assert merged_schema.block.description == "Merged"
+
+# 🐍🏗️🔚

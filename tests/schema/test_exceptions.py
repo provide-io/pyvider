@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.schema.exceptions import (
@@ -52,3 +59,5 @@ def test_pvs_attribute_error():
 def test_pvs_block_error():
     with pytest.raises(PvsBlockError):
         raise PvsBlockError("test block error")
+
+# 🐍🏗️🔚

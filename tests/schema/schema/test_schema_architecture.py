@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 import pytest
 
 from pyvider.cty import CtyValidationError
@@ -37,3 +44,5 @@ class TestSchemaArchitecture:
         invalid_config = {"name": "test", "count": "not-a-number"}
         with pytest.raises(CtyValidationError, match="Cannot represent str value"):
             valid_schema.validate_config(invalid_config)
+
+# 🐍🏗️🔚

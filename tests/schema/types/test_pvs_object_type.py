@@ -1,3 +1,10 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pyvider.cty import CtyNumber, CtyObject, CtyString
 from pyvider.schema.factory import a_num, a_str
 from pyvider.schema.types import PvsObjectType
@@ -28,3 +35,5 @@ class TestPvsObjectType:
         # This test now correctly checks that the *converted* CtyType can validate
         validated = cty_type.validate({"name": "test"})
         assert validated["name"].value == "test"
+
+# 🐍🏗️🔚
