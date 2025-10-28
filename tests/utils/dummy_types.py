@@ -32,7 +32,7 @@ from pyvider.exceptions import (
 class DummyType(CtyType[CtyString]):
     metadata: dict[str, Any] = field(factory=dict)
 
-    def __init__(self, children=None) -> None:
+    def __init__(self, children: Any = None) -> None:
         self._children = children or {}
         super().__init__(metadata={"type": "dummy"})
 
