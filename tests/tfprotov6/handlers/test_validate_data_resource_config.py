@@ -298,6 +298,6 @@ class TestValidateDataResourceConfigEdgeCases:
         ):
             mock_hub.get_component.return_value = None
 
-                response = await ValidateDataResourceConfigHandler(sample_request, context=context)
+            response = await ValidateDataResourceConfigHandler(sample_request, context=context)
 
-                assert isinstance(response, pb.ValidateDataResourceConfig.Response)
+            assert isinstance(response, pb.ValidateDataResourceConfig.Response)

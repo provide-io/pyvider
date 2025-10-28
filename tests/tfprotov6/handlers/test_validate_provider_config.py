@@ -206,7 +206,7 @@ class TestValidateProviderConfigTestModeDetection:
                 )
                 assert len(response.diagnostics) == 0
 
-    @pytest.asyncio
+    @pytest.mark.asyncio
     async def test_handles_config_parsing_error_gracefully(self):
         """Test that config parsing errors don't fail validation."""
         with (
