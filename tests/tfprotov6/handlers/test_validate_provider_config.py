@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for ValidateProviderConfig handler."""
 
 from unittest.mock import MagicMock
@@ -237,3 +242,5 @@ class TestValidateProviderConfigEdgeCases:
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
         assert isinstance(response, pb.ValidateProviderConfig.Response)
+
+# 🐍🏗️🔚

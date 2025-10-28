@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Standalone tests for upgrade_resource_state for mutation testing."""
 
 import json
@@ -48,3 +53,5 @@ async def test_upgrade_handles_empty_state():
     assert isinstance(response, pb.UpgradeResourceState.Response)
     assert len(response.diagnostics) == 0
     assert response.upgraded_state.json == b"{}"
+
+# 🐍🏗️🔚

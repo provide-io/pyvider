@@ -1,3 +1,8 @@
+#
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
 """Tests for PlanResourceChange handler."""
 
 from provide.testkit.mocking import MagicMock, patch
@@ -284,3 +289,5 @@ class TestUnmarshalRequestData:
             config, prior, proposed = await _unmarshal_request_data(request, mock_schema)
 
             assert mock_unmarshal.call_count == 3
+
+# 🐍🏗️🔚
