@@ -13,6 +13,13 @@ def clean_log_level_env(monkeypatch):
     yield
 
 
+@pytest.fixture(autouse=True)
+def clean_log_level_env(monkeypatch):
+    """Ensure PYVIDER_LOG_LEVEL is not set for tests that expect default log level."""
+    monkeypatch.delenv("PYVIDER_LOG_LEVEL", raising=False)
+    yield
+
+
 class TestPyviderConfigInitialization:
     """Tests for PyviderConfig initialization."""
 
