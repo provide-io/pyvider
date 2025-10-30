@@ -46,7 +46,8 @@ def register_function(
         func._function_metadata = metadata  # type: ignore
 
         logger.debug(
-            capability=component_of,
+        "Debug info",
+        capability=component_of,
             test_only=test_only,
         )
         return func

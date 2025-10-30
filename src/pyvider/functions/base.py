@@ -316,7 +316,8 @@ class FunctionAdapter:
                     raise
                 except Exception as e:
                     logger.error(
-                        exc_info=True,
+        "Error occurred",
+        exc_info=True,
                     )
                     raise FunctionError(f"Function '{func_name_call}' execution failed: {e}") from e
 

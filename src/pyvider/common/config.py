@@ -138,7 +138,8 @@ class PyviderConfig(BaseConfig):
         env_var_name = f"PYVIDER_{key.upper()}"
         if (env_val := get_env(env_var_name)) is not None:
             logger.debug(
-                source=env_var_name,
+        "Debug info",
+        source=env_var_name,
                 value=env_val,
             )
             return env_val
@@ -155,7 +156,8 @@ class PyviderConfig(BaseConfig):
 
         if value is not None:
             logger.debug(
-                source=str(self._loaded_from_path),
+        "Debug info",
+        source=str(self._loaded_from_path),
                 value=value,
             )
             return value
