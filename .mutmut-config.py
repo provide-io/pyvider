@@ -1,9 +1,10 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """TODO: Add module docstring."""
+
 
 def pre_mutation(context) -> None:
     """
@@ -25,5 +26,6 @@ def pre_mutation(context) -> None:
     # Skip mutations in __init__ files (mostly imports)
     if "__init__.py" in context.filename:
         context.skip = True
+
 
 # 🐍🏗️🔚

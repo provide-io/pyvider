@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -7,7 +7,6 @@
 
 from typing import Any
 
-from provide.foundation import logger
 import pytest
 
 from pyvider.cty.exceptions import CtyValidationError
@@ -192,5 +191,6 @@ class TestDeepDiagnosticPaths:
             expected_path_str="environments[0].services['api'].volumes[1].mount_path",
             expected_summary_contains="Attribute cannot be null",
         )
+
 
 # 🐍🏗️🔚

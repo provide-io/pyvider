@@ -136,4 +136,5 @@ async def _open_ephemeral_resource_impl(
 
     return response
 
+
 # 🐍🏗️🔚

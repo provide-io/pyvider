@@ -179,4 +179,5 @@ def show_diagnostics(ctx: PyviderContext) -> None:
     except Exception as e:
         perr(f"❌ Failed to get diagnostics: {e}")
 
+
 # 🐍🏗️🔚

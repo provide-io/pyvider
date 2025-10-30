@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -43,5 +43,6 @@ def test_pvs_object_type_conversion_handles_nested_blocks() -> None:
 
     # AND the element types of those collections must be CtyObjects
     assert isinstance(cty_type.attribute_types["users"].element_type, CtyObject)
+
 
 # 🐍🏗️🔚

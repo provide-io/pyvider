@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -122,5 +122,6 @@ def test_is_field_unknown_returns_false_for_non_dict_value() -> None:
     ctx = ResourceContext(config_cty=config_cty)
 
     assert ctx.is_field_unknown("name", source="config") is False
+
 
 # 🐍🏗️🔚

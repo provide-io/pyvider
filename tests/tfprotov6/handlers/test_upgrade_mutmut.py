@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -53,5 +53,6 @@ async def test_upgrade_handles_empty_state() -> None:
     assert isinstance(response, pb.UpgradeResourceState.Response)
     assert len(response.diagnostics) == 0
     assert response.upgraded_state.json == b"{}"
+
 
 # 🐍🏗️🔚

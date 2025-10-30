@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -172,5 +172,6 @@ async def test_upgrade_resource_state_records_metrics() -> None:
 
         mock_requests.inc.assert_called_once_with(handler="UpgradeResourceState")
         assert mock_duration.observe.call_count == 1
+
 
 # 🐍🏗️🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -91,5 +91,6 @@ async def test_get_provider_schema_handler_avoids_race_condition(
     assert isinstance(first_result, pb.GetProviderSchema.Response)
     for result in results:
         assert result is first_result
+
 
 # 🐍🏗️🔚

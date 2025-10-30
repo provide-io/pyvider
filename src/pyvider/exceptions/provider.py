@@ -32,4 +32,5 @@ class ProviderInitializationError(FoundationRuntimeError):
     def _default_code(self) -> str:
         return "PROVIDER_INITIALIZATION_ERROR"
 
+
 # 🐍🏗️🔚

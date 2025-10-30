@@ -62,4 +62,5 @@ class PvsObjectType(PvsType):
             optional_attributes=frozenset(optional_attributes),  # type: ignore[arg-type]
         )
 
+
 # 🐍🏗️🔚

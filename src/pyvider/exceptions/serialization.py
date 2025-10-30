@@ -43,4 +43,5 @@ class DeserializationError(ConversionError):
         self.type_name = type_name
         self.detail = detail
 
+
 # 🐍🏗️🔚

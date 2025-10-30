@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -332,5 +332,6 @@ class TestCtyTypeEquality:
         list1 = CtyList(element_type=CtyString())
         list2 = CtyList(element_type=CtyNumber())
         assert not list1.equal(list2)
+
 
 # 🐍🏗️🔚

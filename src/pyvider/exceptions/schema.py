@@ -96,4 +96,5 @@ class SchemaConversionError(ConversionError):
             message = f"Schema '{schema_name}' conversion failed: {message}"
         super().__init__(message, source_value=source_value, target_type=target_type)
 
+
 # 🐍🏗️🔚

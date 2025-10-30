@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -90,5 +90,6 @@ def test_log_launch_context_default_logger(monkeypatch) -> None:
     assert result is context
     output = buffer.getvalue()
     assert "Pyvider Launch Context" in output
+
 
 # 🐍🏗️🔚

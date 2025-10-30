@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -52,5 +52,6 @@ class TestTddCapabilityAssociation:
             await provider.setup()
         except FrameworkConfigurationError:
             pytest.fail("Provider setup failed for a valid provider component.")
+
 
 # 🐍🏗️🔚

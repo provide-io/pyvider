@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -460,5 +460,6 @@ def test_inheritance_structure() -> None:
     assert issubclass(
         pyvider_exceptions_module.AttributeValidationError, pyvider_exceptions_module.ValidationError
     )
+
 
 # 🐍🏗️🔚

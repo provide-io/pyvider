@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -295,5 +295,6 @@ class TestValidateResourceConfigEdgeCases:
             assert isinstance(response, pb.ValidateResourceConfig.Response)
         finally:
             hub.unregister("resource", "test_resource")
+
 
 # 🐍🏗️🔚

@@ -1,11 +1,11 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """TODO: Add module docstring."""
 
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -138,8 +138,8 @@ class PyviderConfig(BaseConfig):
         env_var_name = f"PYVIDER_{key.upper()}"
         if (env_val := get_env(env_var_name)) is not None:
             logger.debug(
-        "Debug info",
-        source=env_var_name,
+                "Debug info",
+                source=env_var_name,
                 value=env_val,
             )
             return env_val
@@ -156,8 +156,8 @@ class PyviderConfig(BaseConfig):
 
         if value is not None:
             logger.debug(
-        "Debug info",
-        source=str(self._loaded_from_path),
+                "Debug info",
+                source=str(self._loaded_from_path),
                 value=value,
             )
             return value
@@ -195,5 +195,6 @@ class PyviderConfig(BaseConfig):
                 "Private state shared secret is required. Set PYVIDER_PRIVATE_STATE_SHARED_SECRET "
                 "environment variable or define 'private_state_shared_secret' in your config file."
             )
+
 
 # 🐍🏗️🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -27,5 +27,6 @@ class TestAttributeFactoriesCoverage:
         cty_obj_type = obj_attr_factory_instance.type
         assert "description" in cty_obj_type.optional_attributes
         assert "count" not in cty_obj_type.optional_attributes
+
 
 # 🐍🏗️🔚

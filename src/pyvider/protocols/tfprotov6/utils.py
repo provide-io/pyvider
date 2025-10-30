@@ -18,4 +18,5 @@ def datetime_to_proto(dt: datetime.datetime) -> Timestamp:
     ts.FromDatetime(dt)
     return ts
 
+
 # 🐍🏗️🔚

@@ -73,4 +73,5 @@ def show_config(ctx: PyviderContext) -> None:
     pout(f"  Effective Provider Version: {ctx.pyvider_version}")
     pout(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")
 
+
 # 🐍🏗️🔚

@@ -91,4 +91,5 @@ class BaseEphemeralResource(ABC, Generic[ResultType, PrivateStateType, ConfigTyp
         """
         ...
 
+
 # 🐍🏗️🔚

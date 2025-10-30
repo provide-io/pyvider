@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -147,5 +147,6 @@ class TestPvsSchemaTransformer:
         block_type_names = {bt.type_name for bt in merged.block.block_types}
         assert "config1" in block_type_names
         assert "config2" in block_type_names
+
 
 # 🐍🏗️🔚

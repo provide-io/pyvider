@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -274,5 +274,6 @@ class TestIsOptionalTypeHint:
     def test_union_without_none_returns_false(self) -> None:
         """Test that union without None returns False."""
         assert _is_optional_type_hint(str | int) is False
+
 
 # 🐍🏗️🔚

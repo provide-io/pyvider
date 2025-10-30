@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -80,5 +80,6 @@ async def test_plan_handler_collects_attribute_warnings(provider_in_hub) -> None
         assert diag.attribute.steps[0].attribute_name == "old_name"
     finally:
         hub.unregister("resource", resource_name)
+
 
 # 🐍🏗️🔚

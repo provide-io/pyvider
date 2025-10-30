@@ -134,4 +134,5 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
             ]
         )
 
+
 # 🐍🏗️🔚

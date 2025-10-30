@@ -153,9 +153,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
-        logger.debug(
-            f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' executed successfully"
-        )
+        logger.debug(f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' executed successfully")
         return result_py_val
     except PyviderFunctionError:
         raise
@@ -340,5 +338,6 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         response.error.text = f"{diag.summary}: {diag.detail}"
 
     return response
+
 
 # 🐍🏗️🔚

@@ -108,4 +108,5 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
         logger.error(f"Error converting '{func_name}' to protobuf: {e}", exc_info=True)
         return None
 
+
 # 🐍🏗️🔚

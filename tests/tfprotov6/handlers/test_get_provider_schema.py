@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -492,5 +492,6 @@ class TestGetProviderSchemaEdgeCases:
             # The exception should propagate up from the Future
             with pytest.raises(RuntimeError, match="Catastrophic computation error"):
                 await GetProviderSchemaHandler(sample_request, context=None)
+
 
 # 🐍🏗️🔚

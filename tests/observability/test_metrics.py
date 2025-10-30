@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -357,5 +357,6 @@ class TestMetricsIntegration:
         assert ephemeral_open_total.value == open_initial + 1
         assert ephemeral_renew_total.value == renew_initial + 1
         assert ephemeral_close_total.value == close_initial + 1
+
 
 # 🐍🏗️🔚

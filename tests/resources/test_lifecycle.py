@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,5 +42,6 @@ def test_resource_lifecycle_transition_to() -> None:
     assert lifecycle.last_operation == "create"
     assert lifecycle.last_updated is not None
     assert before <= lifecycle.last_updated <= after
+
 
 # 🐍🏗️🔚

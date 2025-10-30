@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -321,5 +321,6 @@ class TestHandleApplyResult:
 
             assert response.private == b"encrypted_private"
             mock_encrypt.assert_called_once()
+
 
 # 🐍🏗️🔚

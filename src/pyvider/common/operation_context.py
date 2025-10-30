@@ -45,4 +45,5 @@ def operation_context(context: OperationContext) -> Generator[None, None, None]:
     finally:
         _current_operation_context.reset(token)
 
+
 # 🐍🏗️🔚

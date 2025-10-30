@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -193,5 +193,6 @@ class TestMetricsModuleExports:
         assert hasattr(handler_duration, "observe")
         assert hasattr(handler_errors, "inc")
         assert hasattr(handler_requests, "inc")
+
 
 # 🐍🏗️🔚

@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -107,5 +107,6 @@ async def test_full_lifecycle_with_encryption(encryption_key_env, provider_in_hu
         assert not apply_response.diagnostics
     finally:
         hub.unregister("resource", resource_name)
+
 
 # 🐍🏗️🔚

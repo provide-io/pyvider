@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -91,5 +91,6 @@ async def test_create_diagnostic_from_generic_ctyvalidationerror() -> None:
     assert diag.severity == pb.Diagnostic.ERROR
     assert diag.detail == "A configuration validation error occurred."
     assert not diag.attribute.steps
+
 
 # 🐍🏗️🔚

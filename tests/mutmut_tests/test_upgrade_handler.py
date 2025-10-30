@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -51,5 +51,6 @@ async def test_handles_empty_state() -> None:
 
     assert response.upgraded_state.json == b"{}"
     assert len(response.diagnostics) == 0
+
 
 # 🐍🏗️🔚

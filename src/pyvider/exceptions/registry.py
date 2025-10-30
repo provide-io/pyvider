@@ -21,4 +21,5 @@ class ValidatorRegistrationError(FoundationConfigurationError):
     def _default_code(self) -> str:
         return "VALIDATOR_REGISTRATION_ERROR"
 
+
 # 🐍🏗️🔚

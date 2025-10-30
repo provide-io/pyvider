@@ -27,4 +27,5 @@ class ResourceOperationError(ResourceError):
 class ResourceStateError(ResourceError):
     """Raised when resource state is invalid."""
 
+
 # 🐍🏗️🔚

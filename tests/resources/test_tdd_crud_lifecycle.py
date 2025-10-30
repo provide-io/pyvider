@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -146,5 +146,6 @@ class TestCrudLifecycleDispatcher:
         resource._delete_apply.assert_called_once()
         resource._create_apply.assert_not_called()
         resource._update_apply.assert_not_called()
+
 
 # 🐍🏗️🔚

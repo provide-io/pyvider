@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -158,5 +158,6 @@ async def test_ephemeral_resource_full_lifecycle() -> None:
 
     finally:
         hub.unregister("ephemeral_resource", resource_name)
+
 
 # 🐍🏗️🔚

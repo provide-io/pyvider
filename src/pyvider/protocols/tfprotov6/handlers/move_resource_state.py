@@ -61,4 +61,5 @@ async def _move_resource_state_impl(
     )
     return pb.MoveResourceState.Response(diagnostics=[diag])
 
+
 # 🐍🏗️🔚

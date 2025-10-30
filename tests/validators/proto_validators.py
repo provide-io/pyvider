@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -33,5 +33,6 @@ def validate_proto(proto: Any) -> None:
                 raise ValueError(f"Proto block missing 'name': {block}")
             if not hasattr(block, "nested") or not isinstance(block.nested, bool):
                 raise ValueError(f"Proto block 'nested' must be a boolean: {block}")
+
 
 # 🐍🏗️🔚

@@ -38,4 +38,5 @@ class ResourceLifecycle:
         self.last_operation = operation
         self.last_updated = datetime.now(UTC)
 
+
 # 🐍🏗️🔚

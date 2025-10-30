@@ -37,4 +37,5 @@ def setup_provider_directory() -> Path:
     plugin_dir.mkdir(parents=True, exist_ok=True)
     return plugin_dir
 
+
 # 🐍🏗️🔚

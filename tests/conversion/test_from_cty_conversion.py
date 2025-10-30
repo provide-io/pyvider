@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -191,5 +191,6 @@ def test_from_cty_ignores_extra_attributes() -> None:
     result = BaseResource.from_cty(cty_val, SimpleConfig)
     assert isinstance(result, SimpleConfig)
     assert not hasattr(result, "extra")
+
 
 # 🐍🏗️🔚

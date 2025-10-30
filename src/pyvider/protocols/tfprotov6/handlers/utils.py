@@ -413,7 +413,11 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
             detail = str(exc)
             if hasattr(exc, "detail") and exc.detail:
                 detail += f"\n\nDetails:\n{exc.detail}"
-        elif isinstance(exc, FunctionError) or isinstance(exc, ResourceError | DataSourceError) or isinstance(exc, PyviderError):
+        elif (
+            isinstance(exc, FunctionError)
+            or isinstance(exc, ResourceError | DataSourceError)
+            or isinstance(exc, PyviderError)
+        ):
             detail = str(exc)
         else:
             detail = (
@@ -440,5 +444,6 @@ def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None)
         raise TypeError("Internal validation error: Passed object must be a class.")
 
     return BaseResource.from_cty(cty_val, attrs_cls)
+
 
 # 🐍🏗️🔚

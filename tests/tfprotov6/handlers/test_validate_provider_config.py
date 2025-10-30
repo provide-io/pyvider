@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -34,7 +34,9 @@ class TestValidateProviderConfigStructure:
         assert isinstance(response, pb.ValidateProviderConfig.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_returns_empty_diagnostics_on_success(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
+    async def test_handler_returns_empty_diagnostics_on_success(
+        self, sample_request: pb.ValidateProviderConfig.Request
+    ) -> None:
         """Test handler returns empty diagnostics when validation passes."""
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
@@ -93,7 +95,9 @@ class TestValidateProviderConfigMetrics:
             assert call_args[1]["handler"] == "ValidateProviderConfig"
 
     @pytest.mark.asyncio
-    async def test_records_error_metric_on_exception(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
+    async def test_records_error_metric_on_exception(
+        self, sample_request: pb.ValidateProviderConfig.Request
+    ) -> None:
         """Test error counter incremented on exception."""
         with (
             patch(
@@ -231,5 +235,6 @@ class TestValidateProviderConfigEdgeCases:
         response = await ValidateProviderConfigHandler(sample_request, context=None)
 
         assert isinstance(response, pb.ValidateProviderConfig.Response)
+
 
 # 🐍🏗️🔚

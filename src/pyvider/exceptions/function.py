@@ -104,4 +104,5 @@ class FunctionValidationError(FoundationValidationError):
     def _default_code(self) -> str:
         return "FUNCTION_VALIDATION_ERROR"
 
+
 # 🐍🏗️🔚

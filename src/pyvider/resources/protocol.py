@@ -39,4 +39,5 @@ class ResourceProtocol(Protocol[ResourceType, StateType, ConfigType]):
         """Delete the resource."""
         ...
 
+
 # 🐍🏗️🔚

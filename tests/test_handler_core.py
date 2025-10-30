@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -249,5 +249,6 @@ async def test_stop_provider_delegates(mock_provider) -> None:
 
     mock_delegate.assert_awaited_once_with("StopProvider", request, context)
     assert result == "stop_response"
+
 
 # 🐍🏗️🔚

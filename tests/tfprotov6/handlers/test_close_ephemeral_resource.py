@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -228,5 +228,6 @@ class TestCloseEphemeralResourceMetrics:
                 await CloseEphemeralResourceHandler(sample_request, context=None)
 
             mock_errors.inc.assert_called_once_with(handler="CloseEphemeralResource")
+
 
 # 🐍🏗️🔚

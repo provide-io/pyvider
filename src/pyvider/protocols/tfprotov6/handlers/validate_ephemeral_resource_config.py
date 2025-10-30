@@ -126,4 +126,5 @@ async def _validate_ephemeral_resource_config_impl(
 
     return response
 
+
 # 🐍🏗️🔚

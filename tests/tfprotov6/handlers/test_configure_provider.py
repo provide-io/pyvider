@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -217,5 +217,6 @@ class TestConfigureProviderHandler:
 
                 # Should return empty response (early return)
                 assert len(response.diagnostics) == 0
+
 
 # 🐍🏗️🔚

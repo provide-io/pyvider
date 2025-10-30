@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -83,5 +83,6 @@ async def test_read_handler_provides_private_state_to_context(encryption_key_env
         assert new_state_cty.value["read_version"].value == 2
     finally:
         hub.unregister("resource", resource_name)
+
 
 # 🐍🏗️🔚
