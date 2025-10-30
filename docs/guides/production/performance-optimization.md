@@ -1,5 +1,9 @@
 # Performance Optimization
 
+!!! info "Alpha Status"
+    pyvider is in alpha. This guide covers **stable** functionality.
+    See [project status](../../index.md) for details.
+
 Building fast, efficient Terraform providers is essential for a good user experience. This guide covers performance optimization techniques for Pyvider providers.
 
 ## Table of Contents

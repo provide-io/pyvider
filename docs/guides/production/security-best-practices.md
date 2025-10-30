@@ -1,5 +1,9 @@
 # Security Best Practices
 
+!!! info "Alpha Status"
+    pyvider is in alpha. This guide covers **stable** functionality.
+    See [project status](../../index.md) for details.
+
 Building secure Terraform providers is critical as they often handle sensitive credentials, infrastructure access, and confidential data. This guide covers security best practices for Pyvider providers.
 
 ## Table of Contents

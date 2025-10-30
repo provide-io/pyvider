@@ -1,5 +1,9 @@
 # Production Readiness Guide
 
+!!! info "Alpha Status"
+    pyvider is in alpha. This guide covers **stable** functionality.
+    See [project status](../../index.md) for details.
+
 This guide covers operational concerns for building production-ready Pyvider providers, including error handling, logging, performance optimization, testing, and security.
 
 For foundational design patterns and code organization, see [Best Practices](../production/best-practices.md).
