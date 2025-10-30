@@ -100,6 +100,7 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
                 capability_instance = capability_class
             native_kwargs[parent_capability] = capability_instance
             logger.debug(
+                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{function_obj.__name__}'"
             )
         else:
             logger.warning(
@@ -153,6 +154,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
         logger.debug(
+            f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' executed successfully"
         )
         return result_py_val
     except PyviderFunctionError:
