@@ -28,6 +28,8 @@ def register_resource(
         if component_of:
             cls._parent_capability = component_of  # type: ignore
         logger.debug(
+            "📊 Marked resource for discovery",
+            resource=name,
             capability=component_of,
             test_only=test_only,
         )
