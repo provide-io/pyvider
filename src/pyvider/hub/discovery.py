@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -47,6 +47,7 @@ class ComponentDiscovery:
 
         for entry_point in entry_points:
             logger.debug(
+                "🛰️🔍 Discovered entry point",
                 name=entry_point.name,
                 module=entry_point.value,
             )
@@ -112,6 +113,9 @@ class ComponentDiscovery:
                     if name:
                         self.hub.register(comp_type, name, obj)
                         logger.debug(
+                            "🛰️🔍✅ Registered component",
+                            component_type=comp_type,
+                            component_name=name,
                             module=module.__name__,
                         )
                     break

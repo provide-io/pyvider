@@ -80,6 +80,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
             pass
 
         if not quiet:
+            pout("✅ Provider uninstalled successfully", fg="green", bold=True)
 
     except Exception as e:
         pout(f"❌ Failed to uninstall provider: {e}", fg="red", bold=True)

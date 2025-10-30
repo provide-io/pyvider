@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -9,8 +9,6 @@ from collections.abc import Generator
 import contextlib
 from contextvars import ContextVar
 from enum import Enum, auto
-
-from provide.foundation import logger
 
 
 class OperationContext(Enum):

@@ -184,6 +184,7 @@ class PyviderConfig(BaseConfig):
                 timeout_val = int(env_timeout)
                 object.__setattr__(self, "max_discovery_timeout", timeout_val)
             except ValueError:
+                pass
 
     def validate_required_fields(self) -> None:
         """Validates that all required fields are properly configured."""
