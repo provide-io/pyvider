@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -28,13 +28,11 @@ def register_resource(
         if component_of:
             cls._parent_capability = component_of  # type: ignore
         logger.debug(
-            f"🔧 Marked resource '{name}' for discovery",
             capability=component_of,
             test_only=test_only,
         )
         return cls
 
     return decorator
-
 
 # 🐍🏗️🔚

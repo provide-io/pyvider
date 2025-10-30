@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -61,6 +61,5 @@ def test_pvs_attribute_error() -> Never:
 def test_pvs_block_error() -> Never:
     with pytest.raises(PvsBlockError):
         raise PvsBlockError("test block error")
-
 
 # 🐍🏗️🔚

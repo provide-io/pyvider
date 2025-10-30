@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -28,6 +28,5 @@ class PvsNestedBlock:
     description: str | None = field(default=None)
     min_items: int | None = field(default=None)
     max_items: int | None = field(default=None)
-
 
 # 🐍🏗️🔚

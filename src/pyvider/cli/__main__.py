@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-The canonical entry point for the Pyvider CLI application.
-"""
+"""The canonical entry point for the Pyvider CLI application."""
 
 import asyncio
 

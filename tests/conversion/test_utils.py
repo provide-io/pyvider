@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -68,6 +68,5 @@ def test_unify_and_validate_list_of_objects_promotes_conflicting_types() -> None
     first, second = result.value
     assert first.value["value"].value.value == 1
     assert second.value["value"].value.value == "one"
-
 
 # 🐍🏗️🔚

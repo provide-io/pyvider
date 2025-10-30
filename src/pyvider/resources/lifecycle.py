@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -37,6 +37,5 @@ class ResourceLifecycle:
         self.state = state
         self.last_operation = operation
         self.last_updated = datetime.now(UTC)
-
 
 # 🐍🏗️🔚

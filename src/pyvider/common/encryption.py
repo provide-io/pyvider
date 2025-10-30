@@ -1,10 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Modern encryption module for Pyvider private state management.
+"""Modern encryption module for Pyvider private state management.
 
 This module provides secure encryption/decryption for Terraform provider private state
 using AES-256-GCM with HKDF key derivation. Features include:
@@ -19,8 +18,7 @@ using AES-256-GCM with HKDF key derivation. Features include:
 Encryption format:
     [1 byte: version][16 bytes: salt][12 bytes: nonce][N bytes: ciphertext+tag]
 
-Version 0x01: HKDF-SHA256 + AES-256-GCM
-"""
+Version 0x01: HKDF-SHA256 + AES-256-GCM"""
 
 from __future__ import annotations
 

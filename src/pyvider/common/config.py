@@ -1,11 +1,16 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Unified, layered configuration system for the Pyvider framework.
-"""
+"""TODO: Add module docstring."""
+
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Unified, layered configuration system for the Pyvider framework."""
 
 import os
 from pathlib import Path
@@ -120,7 +125,6 @@ class PyviderConfig(BaseConfig):
 
     def get(self, key: str, default: Any = None) -> Any:
         """Gets a configuration value from the highest priority source."""
-        logger.debug(f"⚙️  Config: Requesting key '{key}'")
 
         # First check if this is a typed field
         from attrs import fields
@@ -128,14 +132,12 @@ class PyviderConfig(BaseConfig):
         for fld in fields(type(self)):
             if fld.name == key and not fld.name.startswith("_"):
                 value = getattr(self, key)
-                logger.debug(f"⚙️  Config: Found typed field '{key}'", value=value)
                 return value
 
         # Fallback to legacy behavior for dynamic keys
         env_var_name = f"PYVIDER_{key.upper()}"
         if (env_val := get_env(env_var_name)) is not None:
             logger.debug(
-                f"⚙️  Config: Found value for '{key}' in environment variable",
                 source=env_var_name,
                 value=env_val,
             )
@@ -153,13 +155,11 @@ class PyviderConfig(BaseConfig):
 
         if value is not None:
             logger.debug(
-                f"⚙️  Config: Found value for '{key}' in config file",
                 source=str(self._loaded_from_path),
                 value=value,
             )
             return value
 
-        logger.debug(f"⚙️  Config: Using default value for '{key}'", default_value=default)
         return default
 
     @property
@@ -172,12 +172,10 @@ class PyviderConfig(BaseConfig):
         env_secret = get_env("PYVIDER_PRIVATE_STATE_SHARED_SECRET")
         if env_secret:
             object.__setattr__(self, "private_state_shared_secret", env_secret)
-            logger.debug("⚙️  Config: Loaded private_state_shared_secret from environment")
 
         env_log_level = get_env("PYVIDER_LOG_LEVEL")
         if env_log_level:
             object.__setattr__(self, "log_level", env_log_level.upper())  # Normalize case
-            logger.debug("⚙️  Config: Loaded log_level from environment")
 
         # Load other typed fields
         env_timeout = get_env("PYVIDER_MAX_DISCOVERY_TIMEOUT")
@@ -185,9 +183,7 @@ class PyviderConfig(BaseConfig):
             try:
                 timeout_val = int(env_timeout)
                 object.__setattr__(self, "max_discovery_timeout", timeout_val)
-                logger.debug("⚙️  Config: Loaded max_discovery_timeout from environment")
             except ValueError:
-                logger.warning("⚙️  Config: Invalid max_discovery_timeout value, using default")
 
     def validate_required_fields(self) -> None:
         """Validates that all required fields are properly configured."""
@@ -196,8 +192,5 @@ class PyviderConfig(BaseConfig):
                 "Private state shared secret is required. Set PYVIDER_PRIVATE_STATE_SHARED_SECRET "
                 "environment variable or define 'private_state_shared_secret' in your config file."
             )
-
-        logger.debug("⚙️  Config: All required fields validated successfully")
-
 
 # 🐍🏗️🔚

@@ -1,10 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """TODO: Add module docstring."""
-
 
 class PyviderError(Exception):
     """Base class for all Pyvider errors."""
@@ -44,8 +43,5 @@ class UnsupportedTypeError(PyviderError):
 
     def __init__(self, type_name: str = "unknown") -> None:
         super().__init__(f"Unsupported type encountered: '{type_name}'.")
-
-
-# 🐍🏗
 
 # 🐍🏗️🔚

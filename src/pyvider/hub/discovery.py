@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -47,14 +47,12 @@ class ComponentDiscovery:
 
         for entry_point in entry_points:
             logger.debug(
-                "🛰️🔍📦 Found component package entry point",
                 name=entry_point.name,
                 module=entry_point.value,
             )
             await self._discover_package(entry_point.value, strict=strict)
 
         component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
-        logger.info("🛰️🔍✅ Component discovery complete", components=component_counts)
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
         """Recursively discover all modules within a given package name."""
@@ -114,10 +112,8 @@ class ComponentDiscovery:
                     if name:
                         self.hub.register(comp_type, name, obj)
                         logger.debug(
-                            f"🛰️🔍✅ Registered {comp_type}: {name}",
                             module=module.__name__,
                         )
                     break
-
 
 # 🐍🏗️🔚

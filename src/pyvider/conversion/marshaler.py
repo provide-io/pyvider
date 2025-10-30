@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -136,6 +136,5 @@ def marshal_value(value: CtyValue, declared_return_type: CtyType) -> pb.DynamicV
 
 def unmarshal_value(value: pb.DynamicValue, cty_type: CtyType) -> CtyValue:
     return unmarshal(value, schema=cty_type)
-
 
 # 🐍🏗️🔚

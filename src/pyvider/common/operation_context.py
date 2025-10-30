@@ -1,11 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Manages the operational context for CTY type and value processing.
-"""
+"""Manages the operational context for CTY type and value processing."""
 
 from collections.abc import Generator
 import contextlib
@@ -43,13 +41,10 @@ def get_current_operation() -> OperationContext:
 @contextlib.contextmanager
 def operation_context(context: OperationContext) -> Generator[None, None, None]:
     """A context manager to temporarily set the CTY operational context."""
-    logger.debug(f"🧰🔄📊 Pushing operation context: {context.name}")
     token = _current_operation_context.set(context)
     try:
         yield
     finally:
         _current_operation_context.reset(token)
-        logger.debug(f"🧰🔄📊 Popped operation context, restored to: {_current_operation_context.get().name}")
-
 
 # 🐍🏗️🔚

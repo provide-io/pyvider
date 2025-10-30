@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -73,7 +73,6 @@ class ProviderHandler(ProviderServicer):
             "GetFunctions": GetFunctionsHandler,
             "CallFunction": CallFunctionHandler,
         }
-        logger.debug("🛎️ 🔧 ✅ ProviderHandler initialized with handlers")
 
     async def _delegate(self, method: str, request: Any, context: Any) -> Any:
         """Delegate a request to its handler."""
@@ -178,6 +177,5 @@ class ProviderHandler(ProviderServicer):
 
     async def CallFunction(self, request: Any, context: Any) -> Any:
         return await self._delegate("CallFunction", request, context)
-
 
 # 🐍🏗️🔚

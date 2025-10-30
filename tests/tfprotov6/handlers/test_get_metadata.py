@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -278,6 +278,5 @@ class TestGetMetadataEdgeCases:
             assert len(response.resources) == 0
             assert len(response.data_sources) == 0
             assert len(response.functions) == 1
-
 
 # 🐍🏗️🔚

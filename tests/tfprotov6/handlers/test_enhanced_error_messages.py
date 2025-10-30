@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -9,8 +9,7 @@ This module verifies that all enhanced protocol handlers provide:
 - Clear, actionable error messages
 - Suggestion sections for resolution
 - Troubleshooting steps
-- Proper context in error objects
-"""
+- Proper context in error objects"""
 
 import msgpack
 from provide.testkit.mocking import MagicMock, patch
@@ -298,6 +297,5 @@ class TestErrorMessageConsistency:
         assert "1." in sample_error
         assert "2." in sample_error
         assert "3." in sample_error
-
 
 # 🐍🏗️🔚

@@ -1,17 +1,15 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-TDD Test for the GetProviderSchemaHandler Caching Mechanism.
+"""TDD Test for the GetProviderSchemaHandler Caching Mechanism.
 
 This test defines the contract for the schema caching logic, ensuring that
 the expensive schema computation is performed exactly once, even under
 concurrent load. This validates the pattern of using asyncio.Future to
 handle a "compute-once, await-many" scenario, which is more robust and
-idiomatic than using a simple lock for this purpose.
-"""
+idiomatic than using a simple lock for this purpose."""
 
 import asyncio
 

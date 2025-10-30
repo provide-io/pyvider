@@ -1,10 +1,9 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 """TODO: Add module docstring."""
-
 
 class PyviderSchemaError(Exception):
     """Base class for all schema-related errors."""
@@ -51,6 +50,5 @@ class PvsBlockError(PyviderSchemaError):
     """Raised when a block definition is invalid. (Retained for general block-like errors)."""
 
     pass
-
 
 # 🐍🏗️🔚

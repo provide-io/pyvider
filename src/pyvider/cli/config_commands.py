@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,7 +42,6 @@ def show_config(ctx: PyviderContext) -> None:
 
     loaded_path = ctx.config.loaded_file_path
     if loaded_path:
-        pout("  Status: ✅ Found and Loaded", style="green")
         try:
             with loaded_path.open("rb") as f:
                 data = tomllib.load(f)
@@ -57,7 +56,6 @@ def show_config(ctx: PyviderContext) -> None:
         pout("  Status: ⚠️  Not Found", style="yellow")
 
     # --- Environment Variable Section ---
-    pout("\n🌍 Environment Variables (PYVIDER_*):", style="cyan")
     found_env_var = False
     for key, value in sorted(os.environ.items()):
         if key.startswith("PYVIDER_"):
@@ -70,11 +68,9 @@ def show_config(ctx: PyviderContext) -> None:
         pout("  (No PYVIDER_* environment variables set)")
 
     # --- Derived Settings Section ---
-    pout("\n⚙️  Derived Settings:", style="cyan")
     pout(f"  Detected Terraform OS: {ctx.tf_os}")
     pout(f"  Detected Terraform Architecture: {ctx.tf_arch}")
     pout(f"  Effective Provider Version: {ctx.pyvider_version}")
     pout(f"  Terraform Plugin Directory: {ctx.tf_plugin_dir}")
-
 
 # 🐍🏗️🔚

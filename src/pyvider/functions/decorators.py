@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -46,13 +46,11 @@ def register_function(
         func._function_metadata = metadata  # type: ignore
 
         logger.debug(
-            f"🧰 Marked function '{name}' for discovery",
             capability=component_of,
             test_only=test_only,
         )
         return func
 
     return decorator
-
 
 # 🐍🏗️🔚

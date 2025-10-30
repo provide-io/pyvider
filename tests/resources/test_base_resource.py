@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -76,6 +76,5 @@ def test_from_cty_with_nested_objects() -> None:
     assert len(result.items) == 2
     assert isinstance(result.items[0], NestedConfig)
     assert result.items[0].setting == "item1"
-
 
 # 🐍🏗️🔚

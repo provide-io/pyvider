@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -207,6 +207,5 @@ def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
     _extract_docstring_meta(func_obj, base_meta)
 
     return base_meta
-
 
 # 🐍🏗️🔚

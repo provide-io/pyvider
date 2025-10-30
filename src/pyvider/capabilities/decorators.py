@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -76,6 +76,5 @@ def requires_capability(func: F) -> F:
             return func(*args, **kwargs)
 
         return sync_wrapper  # type: ignore[return-value]
-
 
 # 🐍🏗️🔚

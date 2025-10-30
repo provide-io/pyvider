@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -201,6 +201,5 @@ async def _configure_provider_impl(
         response.diagnostics.append(diag)
 
     return response
-
 
 # 🐍🏗️🔚

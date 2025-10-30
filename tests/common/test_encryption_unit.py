@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Unit tests for the pyvider.common.encryption module
+"""Unit tests for the pyvider.common.encryption module
 
 Tests the core encryption functionality independently of the Terraform protocol
-to ensure cryptographic security and proper error handling.
-"""
+to ensure cryptographic security and proper error handling."""
 
 import os
 
@@ -393,6 +391,5 @@ class TestEncryptionCompatibility:
             encrypted = encrypt(test_data)
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
-
 
 # 🐍🏗️🔚

@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-TDD Contract for the CRUD Resource Lifecycle.
+"""TDD Contract for the CRUD Resource Lifecycle.
 
 This test suite defines the expected behavior of the BaseResource dispatcher
-and the contracts for the _create, _update, _create_apply, and _update_apply hooks.
-"""
+and the contracts for the _create, _update, _create_apply, and _update_apply hooks."""
 
 from typing import Any
 
@@ -162,6 +160,5 @@ class TestResourceContracts:
 
         assert ctx_arg.planned_state is planned_state_from_plan
         assert ctx_arg.state is prior_state
-
 
 # 🐍🏗️🔚

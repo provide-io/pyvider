@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -10,8 +10,7 @@ structured logging with:
 - operation field in all log statements
 - Appropriate log levels (DEBUG, INFO, WARNING, ERROR)
 - Relevant contextual information
-- Success and failure tracking
-"""
+- Success and failure tracking"""
 
 import contextlib
 
@@ -342,6 +341,5 @@ class TestContextualInformation:
                     call_kwargs = mock_logger.error.call_args[1]
                     assert "resource_type" in call_kwargs
                     assert call_kwargs["resource_type"] == "test_eph"
-
 
 # 🐍🏗️🔚

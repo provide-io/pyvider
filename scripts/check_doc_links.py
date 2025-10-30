@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Check for broken links in markdown documentation.
+"""Check for broken links in markdown documentation.
 
 This script scans all markdown files in the docs/ directory and verifies:
 1. Internal links point to existing files
@@ -12,8 +11,7 @@ This script scans all markdown files in the docs/ directory and verifies:
 3. No duplicate headings that could cause anchor conflicts
 
 Usage:
-    python scripts/check_doc_links.py
-"""
+    python scripts/check_doc_links.py"""
 
 from pathlib import Path
 import re
@@ -180,7 +178,6 @@ def main() -> int:
         print(f"Total: {len(all_errors)} broken link(s)")
         return 1
     else:
-        print("✅ All documentation links are valid!")
         return 0
 
 

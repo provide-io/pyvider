@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -166,6 +166,5 @@ def test_detect_launch_method_returns_unknown(monkeypatch) -> None:
     assert method is LaunchMethod.UNKNOWN
     assert details["reason"].startswith("Could not determine")
     assert details["executable_analysis"]["name"] == "custom"
-
 
 # 🐍🏗️🔚

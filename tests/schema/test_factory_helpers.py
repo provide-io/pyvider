@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -114,6 +114,5 @@ class TestANullHelper:
     def test_a_null_raises_type_error_for_invalid_input(self, invalid_input) -> None:
         with pytest.raises(TypeError, match="a_null.. expects a schema builder instance"):
             a_null(invalid_input)
-
 
 # 🐍🏗️🔚

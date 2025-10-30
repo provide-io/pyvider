@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -344,6 +344,5 @@ class TestLaunchContextEdgeCases:
         assert "  " in result.output  # Should have indentation
         data = json.loads(result.output)
         assert data is not None
-
 
 # 🐍🏗️🔚

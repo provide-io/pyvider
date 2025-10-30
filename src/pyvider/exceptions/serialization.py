@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,6 +42,5 @@ class DeserializationError(ConversionError):
         super().__init__(full_message, source_value=source_value, target_type=type_name)
         self.type_name = type_name
         self.detail = detail
-
 
 # 🐍🏗️🔚

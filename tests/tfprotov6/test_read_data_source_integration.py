@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -51,6 +51,5 @@ async def test_read_data_source_with_dynamic_output() -> None:
         assert response.state.msgpack is not None
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
-
 
 # 🐍🏗️🔚

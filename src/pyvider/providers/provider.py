@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -63,6 +63,5 @@ class PyviderProvider(BaseProvider):
                 raise FrameworkConfigurationError(
                     f"Component '{name}' is associated with capability '{parent_cap_name}', but that capability is not registered."
                 )
-
 
 # 🐍🏗️🔚

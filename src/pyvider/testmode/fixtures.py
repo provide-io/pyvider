@@ -1,5 +1,9 @@
-"""
-Pyvider Test Mode Fixtures.
+# 
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""Pyvider Test Mode Fixtures.
 
 Provides pytest fixtures for testing Pyvider components that require test mode,
 particularly test-only resources and data sources.
@@ -11,8 +15,7 @@ Example usage:
     >>> @pytest.mark.usefixtures("provider_with_test_mode")
     >>> async def test_test_only_resource():
     ...     # Test mode is enabled, test-only components can be accessed
-    ...     # Test proceeds with test mode enabled
-"""
+    ...     # Test proceeds with test mode enabled"""
 
 from __future__ import annotations
 
@@ -66,3 +69,5 @@ def provider_with_test_mode(provider_in_hub: Any) -> Generator[None]:
 
     # Clean up
     hub.unregister("singleton", "provider_context")
+
+# 🐍🏗️🔚

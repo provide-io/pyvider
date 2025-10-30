@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -35,6 +35,5 @@ class TestPvsObjectType:
         # This test now correctly checks that the *converted* CtyType can validate
         validated = cty_type.validate({"name": "test"})
         assert validated["name"].value == "test"
-
 
 # 🐍🏗️🔚

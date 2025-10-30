@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -28,6 +28,5 @@ async def test_null_values() -> None:
 
     with pytest.raises(CtyValidationError, match="Attribute cannot be null"):
         schema.validate_config(invalid_config)
-
 
 # 🐍🏗️🔚

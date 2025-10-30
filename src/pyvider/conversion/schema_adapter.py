@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -66,6 +66,5 @@ def _pvs_nested_block_to_proto(nb: PvsNestedBlock) -> pb.Schema.NestedBlock:
         min_items=nb.min_items or 0,
         max_items=nb.max_items or 0,
     )
-
 
 # 🐍🏗️🔚

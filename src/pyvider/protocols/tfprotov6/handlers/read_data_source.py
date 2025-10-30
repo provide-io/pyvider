@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -207,6 +207,5 @@ async def _read_data_source_impl(
         response.diagnostics.extend(resource_context.diagnostics)
 
     return response
-
 
 # 🐍🏗️🔚

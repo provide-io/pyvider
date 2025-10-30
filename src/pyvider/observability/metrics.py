@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Pyvider Observability - Metrics Collection.
+"""Pyvider Observability - Metrics Collection.
 
 Provides centralized metrics for provider operations, resource lifecycle,
-and handler performance monitoring.
-"""
+and handler performance monitoring."""
 
 from __future__ import annotations
 

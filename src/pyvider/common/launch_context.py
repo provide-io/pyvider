@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Launch context detection for Pyvider.
+"""Launch context detection for Pyvider.
 
 This module detects how Pyvider was launched and provides context information
-about the execution environment.
-"""
+about the execution environment."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -329,6 +327,5 @@ def log_launch_context(logger_func: Callable[[str], None] | None = None) -> Laun
     log_func(str(context))
 
     return context
-
 
 # 🐍🏗️🔚

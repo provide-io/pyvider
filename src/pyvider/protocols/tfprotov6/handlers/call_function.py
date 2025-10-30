@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -100,7 +100,6 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
                 capability_instance = capability_class
             native_kwargs[parent_capability] = capability_instance
             logger.debug(
-                f"FUNCTION_DISPATCH 🔧 Auto-injected capability '{parent_capability}' for '{function_obj.__name__}'"
             )
         else:
             logger.warning(
@@ -154,7 +153,6 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
         logger.debug(
-            f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' returned: {type(result_py_val)} = {result_py_val}"
         )
         return result_py_val
     except PyviderFunctionError:
@@ -340,6 +338,5 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         response.error.text = f"{diag.summary}: {diag.detail}"
 
     return response
-
 
 # 🐍🏗️🔚

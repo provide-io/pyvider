@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -69,7 +69,6 @@ async def assert_deep_diagnostic(
     assert actual_path_str == expected_path_str, (
         f"Path mismatch: expected '{expected_path_str}', got '{actual_path_str}'"
     )
-    logger.info(f"✅ Successfully validated diagnostic for path: {actual_path_str}")
 
 
 @pytest.mark.asyncio
@@ -193,6 +192,5 @@ class TestDeepDiagnosticPaths:
             expected_path_str="environments[0].services['api'].volumes[1].mount_path",
             expected_summary_contains="Attribute cannot be null",
         )
-
 
 # 🐍🏗️🔚

@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -17,6 +17,5 @@ def datetime_to_proto(dt: datetime.datetime) -> Timestamp:
     ts = Timestamp()
     ts.FromDatetime(dt)
     return ts
-
 
 # 🐍🏗️🔚

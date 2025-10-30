@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -79,8 +79,5 @@ async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) ->
         # Since StopProvider.Response has no diagnostics field, we can only log.
         # Terraform will see the RPC error.
         raise  # Re-raise to ensure gRPC layer handles it as an RPC failure
-
-
-# 🐍🏗⛮️
 
 # 🐍🏗️🔚

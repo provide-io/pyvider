@@ -1,13 +1,11 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Pyvider Observability Module.
+"""Pyvider Observability Module.
 
-Provides metrics, tracing, and profiling capabilities for the Pyvider framework.
-"""
+Provides metrics, tracing, and profiling capabilities for the Pyvider framework."""
 
 from pyvider.observability.metrics import (
     components_discovered,

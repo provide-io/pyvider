@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -372,7 +372,6 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
     )
 
     if isinstance(exc, specific_validation_errors):
-        summary = f"🐍🏗️ ⚠️ {exc.message}"
         detail = f"Validation failed for a value of type '{exc.type_name}'."
         if hasattr(exc, "value") and exc.value is not None:
             value_repr = repr(exc.value)
@@ -381,7 +380,6 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
             detail += f" The invalid value provided was {value_repr}."
         attribute_path = exc.path
     elif isinstance(exc, CtyValidationError):
-        summary = f"🐍🏗️ ⚠️ {exc.message}"
         detail = "A configuration validation error occurred."
         attribute_path = exc.path
     # Check if this is a foundation error with context
@@ -412,21 +410,16 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
     else:
         # Handle other specific exception types
         if isinstance(exc, ResourceLifecycleContractError):
-            summary = "🐍🏗️ ⚠️ Resource Lifecycle Contract Violation"
             detail = str(exc)
             if hasattr(exc, "detail") and exc.detail:
                 detail += f"\n\nDetails:\n{exc.detail}"
         elif isinstance(exc, FunctionError):
-            summary = "🐍🏗️ ❌ Function Execution Error"
             detail = str(exc)
         elif isinstance(exc, ResourceError | DataSourceError):
-            summary = "🐍🏗️ ❌ Provider Operation Error"
             detail = str(exc)
         elif isinstance(exc, PyviderError):
-            summary = "🐍🏗️ ❌ Provider Framework Error"
             detail = str(exc)
         else:
-            summary = f"🐍🏗️ 🐛 Internal Provider Error: {type(exc).__name__}"
             detail = (
                 "The provider encountered an unexpected error. This is likely a bug in the provider."
                 "\nPlease report this issue to the provider developers."
@@ -451,6 +444,5 @@ def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None)
         raise TypeError("Internal validation error: Passed object must be a class.")
 
     return BaseResource.from_cty(cty_val, attrs_cls)
-
 
 # 🐍🏗️🔚

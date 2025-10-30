@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -190,6 +190,5 @@ class TestDisplayBlockContent:
 
             # Should not crash, may or may not call pout
             assert mock_pout.call_count >= 0
-
 
 # 🐍🏗️🔚

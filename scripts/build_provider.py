@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+
+"""TODO: Add module docstring."""
+
 from pathlib import Path
 import platform
 
@@ -30,3 +36,5 @@ def setup_provider_directory() -> Path:
     )
     plugin_dir.mkdir(parents=True, exist_ok=True)
     return plugin_dir
+
+# 🐍🏗️🔚

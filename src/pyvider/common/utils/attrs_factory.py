@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -77,6 +77,5 @@ def create_attrs_class_from_schema(class_name: str, attributes: dict[str, PvsAtt
 
     # Use attrs.make_class to programmatically create the class
     return attrs.make_class(class_name, attrs_fields, frozen=True)
-
 
 # 🐍🏗️🔚

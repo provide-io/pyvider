@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -336,6 +336,5 @@ class TestCtyPathToProtoPath:
         """Test that empty path returns None."""
         assert cty_path_to_proto_path(None) is None
         assert cty_path_to_proto_path(CtyPath(steps=[])) is None
-
 
 # 🐍🏗️🔚

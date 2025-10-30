@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -396,6 +396,5 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
     @abstractmethod
     async def _delete_apply(self, ctx: ResourceContext) -> None: ...
-
 
 # 🐍🏗️🔚

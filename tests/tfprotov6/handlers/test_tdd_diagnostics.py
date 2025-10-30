@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -33,6 +33,5 @@ async def test_create_diagnostic_produces_correct_attribute_path() -> None:
     assert diag.attribute.steps[1].element_key_int == 2
     assert diag.attribute.steps[2].attribute_name == "address"
     assert diag.attribute.steps[3].element_key_string == "city"
-
 
 # 🐍🏗️🔚

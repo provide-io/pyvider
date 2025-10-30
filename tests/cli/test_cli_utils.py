@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -44,6 +44,5 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path) -> None:
     assert target_path.exists()
     assert f'INSTALL_DIR="{install_dir}"' in captured["content"]
     assert 'exec pyvider provide "$@"' in captured["content"]
-
 
 # 🐍🏗️🔚

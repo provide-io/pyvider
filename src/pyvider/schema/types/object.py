@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -61,6 +61,5 @@ class PvsObjectType(PvsType):
             attribute_types=attribute_types,
             optional_attributes=frozenset(optional_attributes),  # type: ignore[arg-type]
         )
-
 
 # 🐍🏗️🔚

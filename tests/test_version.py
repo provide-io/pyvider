@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,6 +42,5 @@ def test_get_version_fallback(mock_version, mock_find_root) -> None:
     assert get_version() == "0.0.0-dev"
     mock_find_root.assert_called_once()
     mock_version.assert_called_once_with("pyvider")
-
 
 # 🐍🏗️🔚

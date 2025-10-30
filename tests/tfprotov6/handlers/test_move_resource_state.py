@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -92,6 +92,5 @@ async def test_move_resource_state_records_errors_on_exception() -> None:
 
                 # Verify error metric was recorded
                 mock_errors.inc.assert_called_once_with(handler="MoveResourceState")
-
 
 # 🐍🏗️🔚

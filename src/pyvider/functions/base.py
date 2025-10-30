@@ -1,15 +1,13 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Base Functionality for Implementing Terraform Functions in Pyvider.
+"""Base Functionality for Implementing Terraform Functions in Pyvider.
 
 Defines core abstractions for creating, registering, and adapting custom functions
 callable from Terraform configurations via a Pyvider provider. This module focuses
-on protocol-agnostic definitions using Pyvider's CTY types.
-"""
+on protocol-agnostic definitions using Pyvider's CTY types."""
 
 from abc import ABC, abstractmethod
 import asyncio
@@ -153,7 +151,6 @@ class BaseFunction(ABC):
 
     async def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Allows BaseFunction instances to be called directly like functions."""
-        logger.debug(f"🧰📝🚀 Function '{self.name}' invoked via __call__")
         return await self.call(*args, **kwargs)
 
 
@@ -307,7 +304,6 @@ class FunctionAdapter:
 
             async def call(self, *args: Any, **kwargs: Any) -> Any:
                 func_name_call = self.name
-                logger.debug(f"🧰📝🚀 Calling adapted function '{func_name_call}'...")
                 try:
                     # THE FIX: Restore logic to handle both sync and async functions.
                     if asyncio.iscoroutinefunction(func):
@@ -315,24 +311,20 @@ class FunctionAdapter:
                     else:
                         result = func(*args, **kwargs)
 
-                    logger.debug(f"🧰📝✅ Adapted function '{func_name_call}' successful.")
                     return result
                 except FunctionError:
                     raise
                 except Exception as e:
                     logger.error(
-                        f"🧰📝❌ Error executing adapted function '{func_name_call}': {e}",
                         exc_info=True,
                     )
                     raise FunctionError(f"Function '{func_name_call}' execution failed: {e}") from e
 
-        logger.debug(f"🧰📝✅ Adaptation complete for '{func_display_name}'.")
         return AdaptedFunction(
             name=func_display_name,
             summary=final_summary,
             description=final_description,
             deprecation_message=deprecation_message,
         )
-
 
 # 🐍🏗️🔚

@@ -1,16 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Pyvider CLI Package
+"""Pyvider CLI Package
 ==================
-This module assembles the main CLI application.
-"""
+This module assembles the main CLI application."""
 
-# 1. Import the foundational 'cli' group object from main.
-# 2. Import the command objects (groups and commands) from their modules.
 from pyvider.cli.components_commands import components
 from pyvider.cli.config_commands import config
 from pyvider.cli.install_command import install_command

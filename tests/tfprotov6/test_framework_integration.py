@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -69,6 +69,5 @@ async def test_read_data_source_integration_avoids_recursion() -> None:
         assert not response.diagnostics
     finally:
         hub.unregister("data_source", "test_dynamic_ds")
-
 
 # 🐍🏗️🔚

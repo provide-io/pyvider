@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -60,8 +60,5 @@ async def _move_resource_state_impl(
         ),
     )
     return pb.MoveResourceState.Response(diagnostics=[diag])
-
-
-# 🐍🏗⛮️
 
 # 🐍🏗️🔚

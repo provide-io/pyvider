@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -41,6 +41,5 @@ def test_resource_operation_error() -> Never:
 def test_resource_state_error() -> Never:
     with pytest.raises(ResourceStateError):
         raise ResourceStateError("test state error")
-
 
 # 🐍🏗️🔚

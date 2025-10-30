@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Pyvider Component Hub
+"""Pyvider Component Hub
 =====================
 This package provides the central registry and discovery mechanisms for all
-provider components (resources, data sources, functions).
-"""
+provider components (resources, data sources, functions)."""
 
 from pyvider.data_sources.decorators import register_data_source
 from pyvider.functions.decorators import register_function

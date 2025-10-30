@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -42,6 +42,5 @@ class TestFoundationExceptions:
 
         err_custom = UnsupportedTypeError(type_name="MyType")
         assert str(err_custom) == "Unsupported type encountered: 'MyType'."
-
 
 # 🐍🏗️🔚

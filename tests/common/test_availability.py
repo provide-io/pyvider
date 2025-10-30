@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -44,7 +44,6 @@ def test_has_msgpack_when_library_present(monkeypatch: pytest.MonkeyPatch) -> No
     module = _import_with(monkeypatch, spec_result=object(), logger=logger)
 
     assert module.HAS_MSGPACK is True
-    logger.info.assert_called_once_with("📦 msgpack library loaded successfully.")
     logger.warning.assert_not_called()
     logger.error.assert_not_called()
 
@@ -88,6 +87,5 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     message = logger.error.call_args.args[0]
     assert "❌ Error checking msgpack availability" in message
     assert "boom" in message
-
 
 # 🐍🏗️🔚

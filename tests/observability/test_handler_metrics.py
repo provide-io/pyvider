@@ -1,14 +1,12 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""
-Integration tests for handler metrics collection.
+"""Integration tests for handler metrics collection.
 
 Tests that all 20 handlers properly collect metrics during execution.
-Achieves 100% test coverage of handler metrics instrumentation.
-"""
+Achieves 100% test coverage of handler metrics instrumentation."""
 
 import pytest
 
@@ -195,6 +193,5 @@ class TestMetricsModuleExports:
         assert hasattr(handler_duration, "observe")
         assert hasattr(handler_errors, "inc")
         assert hasattr(handler_requests, "inc")
-
 
 # 🐍🏗️🔚

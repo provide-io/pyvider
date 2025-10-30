@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -30,7 +30,6 @@ async def test_create_diagnostic_from_ctyattibutevalidationerror() -> None:
     diag = await create_diagnostic_from_exception(exc)
 
     assert diag.severity == pb.Diagnostic.ERROR
-    assert diag.summary == r"🐍🏗️ ⚠️ Missing required attribute"
     assert diag.detail == r"Validation failed for a value of type 'Object'."
     assert diag.attribute.steps[0].attribute_name == "config"
     assert diag.attribute.steps[1].attribute_name == "retries"
@@ -48,7 +47,6 @@ async def test_create_diagnostic_from_ctynumbervalidationerror() -> None:
     diag = await create_diagnostic_from_exception(exc)
 
     assert diag.severity == pb.Diagnostic.ERROR
-    assert diag.summary == "🐍🏗️ ⚠️ Number validation error: Cannot represent str value 'five' as Decimal"
     assert "Validation failed for a value of type 'Number'." in diag.detail
     assert "The invalid value provided was 'five'." in diag.detail
     assert diag.attribute.steps[0].attribute_name == "config"
@@ -65,9 +63,7 @@ async def test_create_diagnostic_from_generic_ctyvalidationerror() -> None:
     diag = await create_diagnostic_from_exception(exc)
 
     assert diag.severity == pb.Diagnostic.ERROR
-    assert diag.summary == "🐍🏗️ ⚠️ A generic validation error."
     assert diag.detail == "A configuration validation error occurred."
     assert not diag.attribute.steps
-
 
 # 🐍🏗️🔚

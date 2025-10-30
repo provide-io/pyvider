@@ -1,4 +1,4 @@
-#
+# 
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -356,6 +356,5 @@ class TestPlanResourceChangeImplementation:
             # Should return early, not call marshal
             assert len(response.diagnostics) == 1
             assert response.diagnostics[0].summary == "Test error"
-
 
 # 🐍🏗️🔚
