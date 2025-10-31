@@ -195,7 +195,6 @@ nav:
     - 'Hub': 'api/hub.md'
     - 'Providers':
       - 'Overview': 'api/providers/index.md'
-      - 'Capabilities': 'api/providers/capabilities.md'
     - 'Resources': 'api/resources.md'
     - 'Data Sources': 'api/data_sources.md'
     - 'Functions': 'api/functions.md'

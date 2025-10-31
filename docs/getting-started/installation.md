@@ -399,7 +399,7 @@ Now that you have Pyvider installed:
 
 1. **[Quick Start Guide](quick-start.md)** - Build your first provider in 5 minutes
 2. **[Pyvider Components Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-3. **[Architecture Overview](../core-concepts/architecture.md)** - Understand how Pyvider works
+3. **[Architecture Overview](../explanation/architecture.md)** - Understand how Pyvider works
 4. **[API Reference](../api/index.md)** - Explore the API documentation
 
 ## 💬 Getting Help

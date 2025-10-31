@@ -50,7 +50,7 @@ A registered Terraform provider element (provider, resource, data source, or fun
 ### Component Hub
 Pyvider's auto-discovery system that registers and manages all components via decorators.
 
-See: [Component Model](core-concepts/component-model.md)
+See: [Component Model](explanation/component-model.md)
 
 ### Computed Attribute
 An attribute whose value is determined by the provider, not the user. Marked with `computed=True`.
@@ -300,8 +300,8 @@ A Terraform workspace containing separate state. Providers may need to handle mu
 
 ## Related Documentation
 
-- [Core Concepts](core-concepts/architecture.md) - Architecture overview
-- [Component Model](core-concepts/component-model.md) - How components work
+- [Core Concepts](explanation/architecture.md) - Architecture overview
+- [Component Model](explanation/component-model.md) - How components work
 - [Schema System](schema/overview.md) - Schema definitions
 - [Quick Reference](quick-reference.md) - API quick lookup
 - [FAQ](faq.md) - Frequently asked questions

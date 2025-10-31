@@ -425,4 +425,4 @@ async def read(self, config: Config) -> Data:
 - [Create a Data Source](create-data-source.md) - Data source basics
 - [Building Your First Data Source](../../tutorials/building-your-first-data-source.md) - Tutorial
 - [Data Source API Reference](../../reference/data-source-api.md) - Complete API
-- [Testing Data Sources](../development/testing-providers.md) - Testing strategies
+- [Testing Data Sources](../../guides/development/testing-providers.md) - Testing strategies

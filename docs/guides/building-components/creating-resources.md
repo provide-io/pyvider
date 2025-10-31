@@ -1,25 +1,5 @@
 # Creating Resources
 
-!!! warning "Documentation Reorganized"
-    This guide has been split into multiple documents following the Diátaxis framework for better learning:
-
-    **New to resources? Start here:**
-    - **[Building Your First Resource](../../tutorials/building-your-first-resource.md)** - Step-by-step tutorial for beginners
-
-    **Need quick reference?**
-    - **[How to Create a Resource](../../how-to-guides/resources/create-resource.md)** - Quick task-oriented guide
-    - **[How to Add Validation](../../how-to-guides/resources/add-validation.md)** - Validation patterns
-
-    **Need complete API details?**
-    - **[Resource Lifecycle Reference](../../reference/resource-lifecycle.md)** - Complete API documentation
-
-    **Want to understand concepts?**
-    - **[Resources vs Data Sources](../../explanation/resources-vs-data-sources.md)** - Conceptual explanation
-
-    This page remains for compatibility but new users should use the links above.
-
----
-
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
     See [project status](../../index.md) for details.
@@ -375,7 +355,7 @@ class APIObject(BaseResource):
 
 ## See Also
 
-- [Schema System](../../core-concepts/schema-system.md) - Understanding schemas
+- [Schema System](../../explanation/schema-system.md) - Understanding schemas
 - [Resource Context](../../api/resources.md) - ResourceContext API reference
 - [Testing Resources](../development/testing-providers.md) - Testing strategies
 - [Best Practices](../production/best-practices.md) - Production patterns

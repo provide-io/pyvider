@@ -350,4 +350,4 @@ async def test_api_query_error_handling():
 - [Building Your First Data Source](../../tutorials/building-your-first-data-source.md) - Step-by-step tutorial
 - [Handle Pagination](handle-pagination.md) - For large result sets
 - [Data Source API Reference](../../reference/data-source-api.md) - Complete API
-- [Testing Data Sources](../development/testing-providers.md) - Testing strategies
+- [Testing Data Sources](../../guides/development/testing-providers.md) - Testing strategies

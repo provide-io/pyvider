@@ -275,7 +275,7 @@ async def test_token_lifecycle(api_token, mock_provider):
 
 ## Related Documentation
 
-- [Component Model](../core-concepts/component-model.md) - Understanding components
+- [Component Model](../explanation/component-model.md) - Understanding components
 - [Creating Resources](../guides/building-components/creating-resources.md) - Regular resources
 - [Error Handling](../guides/development/error-handling.md) - Error management
 

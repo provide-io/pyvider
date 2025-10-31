@@ -556,5 +556,5 @@ class ApiKey(BaseResource):
 - [Provider Lifecycle](../advanced/provider-lifecycle.md) - Detailed lifecycle documentation
 - [Testing Providers](../development/testing-providers.md) - Comprehensive testing guide
 - [Best Practices](../production/best-practices.md) - General best practices
-- [Schema System](../../core-concepts/schema-system.md) - Schema details
+- [Schema System](../../explanation/schema-system.md) - Schema details
 - [Error Handling](../development/error-handling.md) - Error management patterns

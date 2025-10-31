@@ -62,13 +62,13 @@ Pyvider acts as a bridge between Terraform and your Python code:
 3. Your Python code handles the business logic
 4. Pyvider translates responses back to Terraform
 
-See [Architecture](core-concepts/architecture.md) for details.
+See [Architecture](explanation/architecture.md) for details.
 
 ### What is the Component Hub?
 
 The Component Hub is Pyvider's auto-discovery system. When you use decorators like `@register_provider` or `@register_resource`, components automatically register themselves with the hub. Terraform can then discover and use them.
 
-See [Component Model](core-concepts/component-model.md).
+See [Component Model](explanation/component-model.md).
 
 ### Do I need to understand the Terraform Plugin Protocol?
 
@@ -111,7 +111,7 @@ class User(BaseDataSource):
         pass
 ```
 
-See [Core Concepts](core-concepts/component-model.md).
+See [Core Concepts](explanation/component-model.md).
 
 ### How do I handle secrets and credentials?
 

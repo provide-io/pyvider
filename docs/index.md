@@ -46,11 +46,11 @@ New to Pyvider? Start here!
 - [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
 
-### 🏛️ [Core Concepts](core-concepts/architecture.md)
+### 🏛️ [Core Concepts](explanation/architecture.md)
 Understand Pyvider's foundation
-- [Architecture](core-concepts/architecture.md) - System design and data flow
-- [Component Model](core-concepts/component-model.md) - Hub-based discovery system
-- [Schema System](core-concepts/schema-system.md) - Type-safe data modeling
+- [Architecture](explanation/architecture.md) - System design and data flow
+- [Component Model](explanation/component-model.md) - Hub-based discovery system
+- [Schema System](explanation/schema-system.md) - Type-safe data modeling
 
 ### 📖 [Developer Guides](guides/building-components/creating-providers.md)
 Deep dives into building providers
@@ -125,7 +125,7 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
     <ul>
       <li><a href="guides/building-components/creating-providers.md">Creating Providers</a></li>
       <li><a href="guides/advanced/provider-lifecycle.md">Provider Lifecycle</a></li>
-      <li><a href="core-concepts/component-model.md">Component Model</a></li>
+      <li><a href="explanation/component-model.md">Component Model</a></li>
     </ul>
   </div>
 

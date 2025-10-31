@@ -378,9 +378,9 @@ The `ResourceContext` provides:
 Now that you understand the basics, explore:
 
 ### Learn Core Concepts
-- **[Architecture Overview](../core-concepts/architecture.md)** - Understand how Pyvider works
-- **[Component Model](../core-concepts/component-model.md)** - Deep dive into components
-- **[Schema System](../core-concepts/schema-system.md)** - Master schema definition
+- **[Architecture Overview](../explanation/architecture.md)** - Understand how Pyvider works
+- **[Component Model](../explanation/component-model.md)** - Deep dive into components
+- **[Schema System](../explanation/schema-system.md)** - Master schema definition
 
 ### Build Real Providers
 - **[Creating Providers](../guides/building-components/creating-providers.md)** - Comprehensive provider guide

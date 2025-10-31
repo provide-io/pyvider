@@ -284,4 +284,4 @@ async def _create_apply(self, ctx: ResourceContext):
 - [Building Your First Resource](../../tutorials/building-your-first-resource.md) - Step-by-step tutorial
 - [Add Validation](add-validation.md) - Validation patterns
 - [Resource Lifecycle Reference](../../reference/resource-lifecycle.md) - Complete API docs
-- [Testing Resources](../development/testing-providers.md) - Testing strategies
+- [Testing Resources](../../guides/development/testing-providers.md) - Testing strategies

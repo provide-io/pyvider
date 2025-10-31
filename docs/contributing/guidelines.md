@@ -26,8 +26,8 @@ Welcome! Here's how to get started:
 
 1. **Look for "good first issue" labels** in the [issue tracker](https://github.com/provide-io/pyvider/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 2. **Read the architecture docs** to understand how Pyvider works:
-   - [Architecture Overview](../core-concepts/architecture.md)
-   - [Component Model](../core-concepts/component-model.md)
+   - [Architecture Overview](../explanation/architecture.md)
+   - [Component Model](../explanation/component-model.md)
 3. **Ask questions** in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ### Prerequisites
