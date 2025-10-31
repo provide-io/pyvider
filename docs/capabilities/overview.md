@@ -154,8 +154,15 @@ Perfect for:
 
 ## Experimental Capabilities
 
-!!! warning "Experimental - Not Recommended for Production"
-    The capabilities system is still in development. The features below are experimental and APIs may change.
+!!! warning "Experimental Feature"
+
+    This feature is experimental and may change significantly in future releases.
+    Use in production at your own risk.
+
+    **Stability:** ⚠️ Experimental
+    **Planned Stable:** v0.4.0 (Q2 2026)
+
+    Feedback welcome! [Report issues](https://github.com/provide-io/pyvider/issues)
 
 ### What are Capabilities?
 

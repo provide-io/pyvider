@@ -103,6 +103,18 @@ Join the Pyvider community
 Project roadmap and planned features
 - [Roadmap](development/roadmap.md) - Future features and CLI commands
 
+---
+
+## Part of the provide.io Ecosystem
+
+This project is part of a larger ecosystem of tools for Python and Terraform development.
+
+**[View Ecosystem Overview →](https://docs.provide.io/provide-foundation/ecosystem/)**
+
+Understand how provide-foundation, pyvider, flavorpack, and other projects work together.
+
+---
+
 ## 🎯 Quick Navigation
 
 ### By Component Type
