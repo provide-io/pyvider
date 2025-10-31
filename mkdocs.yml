@@ -39,6 +39,14 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+# Project-specific plugins (in addition to base plugins)
+plugins:
+  - gen-files:
+      scripts:
+        - ../provide-foundry/scripts/gen_ref_pages.py
+  - literate-nav:
+      nav_file: SUMMARY.md
+
 # Navigation Structure
 nav:
   - 'Home': 'index.md'
