@@ -1,5 +1,25 @@
 # Creating Data Sources
 
+!!! warning "Documentation Reorganized"
+    This guide has been split into multiple documents following the Diátaxis framework for better learning:
+
+    **New to data sources? Start here:**
+    - **[Building Your First Data Source](../../tutorials/building-your-first-data-source.md)** - Step-by-step tutorial for beginners
+
+    **Need quick reference?**
+    - **[How to Create a Data Source](../../how-to-guides/data-sources/create-data-source.md)** - Quick task-oriented guide
+    - **[How to Handle Pagination](../../how-to-guides/data-sources/handle-pagination.md)** - Pagination patterns
+
+    **Need complete API details?**
+    - **[Data Source API Reference](../../reference/data-source-api.md)** - Complete API documentation
+
+    **Want to understand concepts?**
+    - **[Resources vs Data Sources](../../explanation/resources-vs-data-sources.md)** - Conceptual explanation
+
+    This page remains for compatibility but new users should use the links above.
+
+---
+
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
     See [project status](../../index.md) for details.

@@ -125,16 +125,20 @@ nav:
     - 'Installation': 'getting-started/installation.md'
     - 'Quick Start': 'getting-started/quick-start.md'
 
-  - 'Core Concepts':
-    - 'Architecture': 'core-concepts/architecture.md'
-    - 'Component Model': 'core-concepts/component-model.md'
-    - 'Schema System': 'core-concepts/schema-system.md'
+  - 'Tutorials':
+    - 'Building Your First Resource': 'tutorials/building-your-first-resource.md'
+    - 'Building Your First Data Source': 'tutorials/building-your-first-data-source.md'
+    - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
 
-  - 'Guides':
+  - 'How-To Guides':
+    - 'Resources':
+      - 'Create a Resource': 'how-to-guides/resources/create-resource.md'
+      - 'Add Validation': 'how-to-guides/resources/add-validation.md'
+    - 'Data Sources':
+      - 'Create a Data Source': 'how-to-guides/data-sources/create-data-source.md'
+      - 'Handle Pagination': 'how-to-guides/data-sources/handle-pagination.md'
     - 'Building Components':
       - 'Creating Providers': 'guides/building-components/creating-providers.md'
-      - 'Creating Resources': 'guides/building-components/creating-resources.md'
-      - 'Creating Data Sources': 'guides/building-components/creating-data-sources.md'
       - 'Creating Functions': 'guides/building-components/creating-functions.md'
       - 'Using Decorators': 'guides/building-components/using-decorators.md'
     - 'Development':
@@ -156,8 +160,16 @@ nav:
       - 'Managing Resources': 'guides/usage/managing-resources.md'
       - 'Using Data Sources': 'guides/usage/using-data-sources.md'
       - 'Using Functions': 'guides/usage/using-functions.md'
-    - 'Tutorials':
-      - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
+
+  - 'Explanation':
+    - 'Architecture': 'explanation/architecture.md'
+    - 'Component Model': 'explanation/component-model.md'
+    - 'Schema System': 'explanation/schema-system.md'
+    - 'Resources vs Data Sources': 'explanation/resources-vs-data-sources.md'
+
+  - 'Reference':
+    - 'Resource Lifecycle': 'reference/resource-lifecycle.md'
+    - 'Data Source API': 'reference/data-source-api.md'
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
