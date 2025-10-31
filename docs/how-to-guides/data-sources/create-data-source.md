@@ -38,7 +38,7 @@ class FileInfoData:
 @register_data_source("file_info")
 class FileInfo(BaseDataSource):
     config_class = FileInfoConfig
-    data_class = FileInfoData
+    state_class = FileInfoData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -94,7 +94,7 @@ class APIQueryData:
 @register_data_source("api_query")
 class APIQuery(BaseDataSource):
     config_class = APIQueryConfig
-    data_class = APIQueryData
+    state_class = APIQueryData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:

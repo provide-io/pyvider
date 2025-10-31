@@ -18,7 +18,7 @@ from pyvider.data_sources import BaseDataSource
 | Attribute | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `config_class` | `Type[attrs.define]` | Yes | Configuration attrs class (inputs) |
-| `data_class` | `Type[attrs.define]` | Yes | Data attrs class (outputs) |
+| `state_class` | `Type[attrs.define]` | Yes | State attrs class (outputs) |
 
 ---
 
@@ -27,36 +27,43 @@ from pyvider.data_sources import BaseDataSource
 ### `read()`
 
 ```python
-async def read(self, config: ConfigType) -> DataType:
+async def read(self, ctx: ResourceContext) -> StateType | None:
     """Execute query and return data."""
 ```
 
 **Purpose:** Fetch data based on user configuration.
 
 **Parameters:**
-- `config`: Typed configuration object with user inputs
+- `ctx`: ResourceContext containing configuration and context
 
 **Returns:**
-- `DataType`: Query results
+- `StateType | None`: Query results, or `None` if config unavailable
 
 **When Called:** During every `terraform plan` and `terraform apply`
 
 **Example:**
 ```python
-async def read(self, config: ServerQueryConfig) -> ServerQueryData:
+async def read(self, ctx: ResourceContext) -> ServerQueryData | None:
+    if not ctx.config:
+        return None
+
     servers = await api.list_servers(
-        filter=config.filter,
-        limit=config.limit,
+        filter=ctx.config.filter,
+        limit=ctx.config.limit,
     )
 
     return ServerQueryData(
-        id=f"{config.filter}:{config.limit}",
+        id=f"{ctx.config.filter}:{ctx.config.limit}",
         servers=servers,
         count=len(servers),
     )
 ```
 
-**Important:** Unlike resources, data sources have NO state. They re-fetch data on every Terraform operation.
+**Important:**
+- Data sources use the same ResourceContext API as resources
+- Access configuration via `ctx.config`
+- Return `None` if config is unavailable
+- Unlike resources, data sources re-fetch data on every Terraform operation
 
 ---
 
@@ -472,6 +479,7 @@ async def test_server_query_error_handling():
 import attrs
 import httpx
 from pyvider.data_sources import register_data_source, BaseDataSource
+from pyvider.resources.context import ResourceContext
 from pyvider.schema import s_data_source, a_str, a_num, a_list, a_map, PvsSchema
 
 @attrs.define
@@ -488,7 +496,7 @@ class ServerQueryData:
 @register_data_source("servers")
 class ServerQuery(BaseDataSource):
     config_class = ServerQueryConfig
-    data_class = ServerQueryData
+    state_class = ServerQueryData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -507,16 +515,19 @@ class ServerQuery(BaseDataSource):
             "count": a_num(computed=True, description="Server count"),
         })
 
-    async def read(self, config: ServerQueryConfig) -> ServerQueryData:
+    async def read(self, ctx: ResourceContext) -> ServerQueryData | None:
+        if not ctx.config:
+            return None
+
         async with httpx.AsyncClient() as client:
             response = await client.get(
                 "https://api.example.com/servers",
-                params={"region": config.region, "limit": config.limit}
+                params={"region": ctx.config.region, "limit": ctx.config.limit}
             )
             servers = response.json()["servers"]
 
             return ServerQueryData(
-                id=f"{config.region}:{config.limit}",
+                id=f"{ctx.config.region}:{ctx.config.limit}",
                 servers=servers,
                 count=len(servers),
             )

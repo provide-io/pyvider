@@ -119,7 +119,7 @@ class FileInfo(BaseDataSource):
 
     # Link our runtime types
     config_class = FileInfoConfig
-    data_class = FileInfoData
+    state_class = FileInfoData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -146,14 +146,17 @@ class FileInfo(BaseDataSource):
 
 ## Step 4: Implement the Read Method
 
-Data sources have ONE method: `read()`. It takes config and returns data:
+Data sources have ONE method: `read()`. It takes a ResourceContext and returns data:
 
 ```python
-async def read(self, config: FileInfoConfig) -> FileInfoData:
+async def read(self, ctx: ResourceContext) -> FileInfoData | None:
     """Read file information."""
+    if not ctx.config:
+        return None
+
     from pathlib import Path
 
-    file_path = Path(config.path)
+    file_path = Path(ctx.config.path)
 
     # Check if file exists
     if file_path.exists():
@@ -181,6 +184,9 @@ async def read(self, config: FileInfoConfig) -> FileInfoData:
 
 **Key points:**
 
+- Takes `ctx: ResourceContext` parameter (same as resources)
+- Access configuration via `ctx.config`
+- Return `None` if config is unavailable
 - Always return data (even if file doesn't exist)
 - Generate a stable, deterministic ID
 - Handle missing data gracefully
@@ -194,6 +200,7 @@ Here's your complete `file_info.py`:
 ```python
 import attrs
 from pyvider.data_sources import register_data_source, BaseDataSource
+from pyvider.resources.context import ResourceContext
 from pyvider.schema import s_data_source, a_str, a_num, a_bool, PvsSchema
 from pathlib import Path
 
@@ -216,7 +223,7 @@ class FileInfo(BaseDataSource):
     """Reads information about a local file."""
 
     config_class = FileInfoConfig
-    data_class = FileInfoData
+    state_class = FileInfoData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -232,9 +239,12 @@ class FileInfo(BaseDataSource):
             "content": a_str(computed=True, description="File content"),
         })
 
-    async def read(self, config: FileInfoConfig) -> FileInfoData:
+    async def read(self, ctx: ResourceContext) -> FileInfoData | None:
         """Read file information."""
-        file_path = Path(config.path)
+        if not ctx.config:
+            return None
+
+        file_path = Path(ctx.config.path)
 
         if file_path.exists():
             content = file_path.read_text()
@@ -319,6 +329,7 @@ Here's a more realistic example that queries an API:
 ```python
 import attrs
 from pyvider.data_sources import register_data_source, BaseDataSource
+from pyvider.resources.context import ResourceContext
 from pyvider.schema import s_data_source, a_str, a_num, a_list, PvsSchema
 import httpx
 
@@ -339,7 +350,7 @@ class APIQuery(BaseDataSource):
     """Queries an external API."""
 
     config_class = APIQueryConfig
-    data_class = APIQueryData
+    state_class = APIQueryData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -354,19 +365,22 @@ class APIQuery(BaseDataSource):
             "count": a_num(computed=True, description="Result count"),
         })
 
-    async def read(self, config: APIQueryConfig) -> APIQueryData:
+    async def read(self, ctx: ResourceContext) -> APIQueryData | None:
         """Execute API query."""
+        if not ctx.config:
+            return None
+
         async with httpx.AsyncClient() as client:
             response = await client.get(
-                f"https://api.example.com{config.endpoint}",
-                params={"limit": config.limit}
+                f"https://api.example.com{ctx.config.endpoint}",
+                params={"limit": ctx.config.limit}
             )
             data = response.json()
             items = data.get("items", [])
 
             return APIQueryData(
-                id=f"{config.endpoint}:{config.limit}",
-                endpoint=config.endpoint,
+                id=f"{ctx.config.endpoint}:{ctx.config.limit}",
+                endpoint=ctx.config.endpoint,
                 results=items,
                 count=len(items),
             )

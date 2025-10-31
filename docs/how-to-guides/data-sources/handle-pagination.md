@@ -30,7 +30,7 @@ class PaginatedQueryData:
 @register_data_source("paginated_query")
 class PaginatedQuery(BaseDataSource):
     config_class = PaginatedQueryConfig
-    data_class = PaginatedQueryData
+    state_class = PaginatedQueryData
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
