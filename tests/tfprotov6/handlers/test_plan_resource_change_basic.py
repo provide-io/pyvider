@@ -7,7 +7,6 @@
 
 from provide.testkit.mocking import MagicMock, patch
 import pytest
-from typing import Optional
 
 from pyvider.cty import CtyObject, CtyString
 from pyvider.exceptions import ResourceError
@@ -20,7 +19,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.PlanResourceChange.Request:
     """Create a sample PlanResourceChange request."""
     request = pb.PlanResourceChange.Request()
     request.type_name = "test_resource"
@@ -32,7 +31,7 @@ def sample_request():
 
 
 @pytest.fixture
-def mock_resource_class():
+def mock_resource_class() -> MagicMock:
     """Create a mock resource class."""
     mock_class = MagicMock()
     mock_schema = MagicMock()
@@ -44,7 +43,7 @@ def mock_resource_class():
 
 
 @pytest.fixture
-def mock_provider():
+def mock_provider() -> MagicMock:
     """Create a mock provider instance."""
     return MagicMock()
 
@@ -126,7 +125,7 @@ class TestGetResourceAndProviderInstances:
         """Test that missing provider raises RuntimeError."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
 
-            def get_component(comp_type: str, name: str) -> Optional[MagicMock]:
+            def get_component(comp_type: str, name: str) -> MagicMock | None:
                 if comp_type == "resource":
                     return mock_resource_class
                 return None
@@ -167,16 +166,15 @@ class TestProcessPrivateState:
         mock_resource = MagicMock()
         mock_resource.private_state_class = mock_private_class
 
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.msgpack.unpackb"
-            ) as mock_unpack:
-                mock_decrypt.return_value = b"decrypted"
-                mock_unpack.return_value = {"key": "value"}
+        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt, patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.msgpack.unpackb"
+        ) as mock_unpack:
+            mock_decrypt.return_value = b"decrypted"
+            mock_unpack.return_value = {"key": "value"}
 
-                await _process_private_state(mock_resource, b"encrypted_data")
+            await _process_private_state(mock_resource, b"encrypted_data")
 
-                mock_private_class.assert_called_with(key="value")
+            mock_private_class.assert_called_with(key="value")
 
     @pytest.mark.asyncio
     async def test_handles_deserialization_error(self) -> None:
@@ -185,20 +183,21 @@ class TestProcessPrivateState:
         mock_resource.private_state_class = MagicMock
         mock_resource.__name__ = "TestResource"
 
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt:
-            with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.logger"):
-                mock_decrypt.side_effect = Exception("Decrypt failed")
+        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt, patch(
+            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.logger"
+        ):
+            mock_decrypt.side_effect = Exception("Decrypt failed")
 
-                result = await _process_private_state(mock_resource, b"bad_data")
+            result = await _process_private_state(mock_resource, b"bad_data")
 
-                assert result is None
+            assert result is None
 
 
 class TestPlanResourceChangeEdgeCases:
     """Edge case tests for PlanResourceChange handler."""
 
     @pytest.mark.asyncio
-    async def test_handles_missing_resource(self, sample_request) -> None:
+    async def test_handles_missing_resource(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test handling of missing resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -208,7 +207,9 @@ class TestPlanResourceChangeEdgeCases:
             assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
-    async def test_handles_validation_error(self, sample_request, mock_resource_class, mock_provider) -> None:
+    async def test_handles_validation_error(
+        self, sample_request: pb.PlanResourceChange.Request, mock_resource_class: MagicMock, mock_provider: MagicMock
+    ) -> None:
         """Test handling of validation errors."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -227,7 +228,7 @@ class TestPlanResourceChangeEdgeCases:
             assert len(response.diagnostics) >= 1
 
     @pytest.mark.asyncio
-    async def test_with_context_object(self, sample_request) -> None:
+    async def test_with_context_object(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test handler with non-None context."""
         context = MagicMock()
 
@@ -243,26 +244,29 @@ class TestPlanResourceChangeMetrics:
     """Tests for PlanResourceChange metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self, sample_request) -> None:
+    async def test_handler_records_error_metric_on_failure(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test that handler increments error counter on failure."""
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors"):
-            with patch("pyvider.hub.hub.get_component") as mock_get:
-                # Make the handler fail
-                mock_get.side_effect = RuntimeError("Catastrophic failure")
+        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors"), patch(
+            "pyvider.hub.hub.get_component"
+        ) as mock_get:
+            # Make the handler fail
+            mock_get.side_effect = RuntimeError("Catastrophic failure")
 
-                # The @resilient() decorator catches exceptions and returns diagnostics
-                response = await PlanResourceChangeHandler(sample_request, context=None)
+            # The @resilient() decorator catches exceptions and returns diagnostics
+            response = await PlanResourceChangeHandler(sample_request, context=None)
 
-                # Response should contain error diagnostics (resilient catches the exception)
-                assert len(response.diagnostics) > 0
-                assert any("Internal Provider Error" in d.summary for d in response.diagnostics)
+            # Response should contain error diagnostics (resilient catches the exception)
+            assert len(response.diagnostics) > 0
+            assert any("Internal Provider Error" in d.summary for d in response.diagnostics)
 
 
 class TestPlanResourceChangeLogging:
     """Tests for PlanResourceChange logging behavior."""
 
     @pytest.mark.asyncio
-    async def test_logs_debug_info(self, sample_request, mock_resource_class) -> None:
+    async def test_logs_debug_info(
+        self, sample_request: pb.PlanResourceChange.Request, mock_resource_class: MagicMock
+    ) -> None:
         """Test that debug information is logged during normal execution."""
         # Test without patching logger to see actual logging behavior
         with patch("pyvider.hub.hub.get_component") as mock_get:
