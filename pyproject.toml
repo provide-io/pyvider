@@ -33,18 +33,18 @@ dependencies = [
     "google>=3.0.0",
     "cryptography>=42.0.8",
     "tomli-w>=1.0.0",
-    "provide-foundation",
-    "pyvider-cty",
-    "pyvider-rpcplugin",
+    "provide-foundation>=0.0.1100",
+    "pyvider-cty>=0.0.1100",
+    "pyvider-rpcplugin>=0.0.1100",
 ]
 
 [dependency-groups]
 dev = [
-    "provide-testkit[pyvider-dev]",
+    "provide-testkit[pyvider-dev]>=0.0.1100",
     "hypothesis>=6.0.0",
 ]
 docs = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.0.1100",
 ]
 
 [project.scripts]
