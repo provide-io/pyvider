@@ -7,6 +7,7 @@
 
 from provide.testkit.mocking import MagicMock, patch
 import pytest
+from typing import Optional
 
 from pyvider.cty import CtyObject, CtyString
 from pyvider.exceptions import ResourceError
@@ -52,7 +53,7 @@ class TestPlanResourceChangeHandlerStructure:
     """Tests for PlanResourceChange handler response structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request) -> None:
+    async def test_handler_returns_response(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test that handler returns PlanResourceChange.Response."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -62,7 +63,7 @@ class TestPlanResourceChangeHandlerStructure:
             assert isinstance(response, pb.PlanResourceChange.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request) -> None:
+    async def test_handler_records_request_metric(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test that handler increments request counter."""
         with (
             patch(
@@ -77,7 +78,7 @@ class TestPlanResourceChangeHandlerStructure:
             mock_requests.inc.assert_called_with(handler="PlanResourceChange")
 
     @pytest.mark.asyncio
-    async def test_handler_records_duration_metric(self, sample_request) -> None:
+    async def test_handler_records_duration_metric(self, sample_request: pb.PlanResourceChange.Request) -> None:
         """Test that handler records duration metric."""
         with (
             patch(
@@ -96,7 +97,9 @@ class TestGetResourceAndProviderInstances:
     """Tests for _get_resource_and_provider_instances function."""
 
     @pytest.mark.asyncio
-    async def test_gets_both_instances_successfully(self, mock_resource_class, mock_provider) -> None:
+    async def test_gets_both_instances_successfully(
+        self, mock_resource_class: MagicMock, mock_provider: MagicMock
+    ) -> None:
         """Test successful retrieval of both instances."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.side_effect = lambda comp_type, name: {
@@ -119,11 +122,11 @@ class TestGetResourceAndProviderInstances:
                 await _get_resource_and_provider_instances("unknown_resource")
 
     @pytest.mark.asyncio
-    async def test_raises_runtime_error_for_missing_provider(self, mock_resource_class) -> None:
+    async def test_raises_runtime_error_for_missing_provider(self, mock_resource_class: MagicMock) -> None:
         """Test that missing provider raises RuntimeError."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
 
-            def get_component(comp_type, name):
+            def get_component(comp_type: str, name: str) -> Optional[MagicMock]:
                 if comp_type == "resource":
                     return mock_resource_class
                 return None

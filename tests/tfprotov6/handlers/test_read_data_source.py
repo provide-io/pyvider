@@ -87,15 +87,17 @@ class TestReadDataSourceImpl:
         mock_schema.block = mock_block
         mock_data_source_class.get_schema.return_value = mock_schema
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.attrs_to_dict_for_cty"
-        ) as mock_attrs_to_dict, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.marshal"
-        ) as mock_marshal:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.attrs_to_dict_for_cty"
+            ) as mock_attrs_to_dict,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.marshal") as mock_marshal,
+        ):
             mock_hub.get_component.return_value = mock_data_source_class
             mock_unmarshal.return_value = MagicMock()
             mock_cty_to_attrs.return_value = MagicMock()
@@ -119,9 +121,11 @@ class TestReadDataSourceImpl:
         # Prevent capability injection
         mock_data_source_class._parent_capability = None
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ), patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"):
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"),
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"),
+        ):
             mock_hub.get_component.return_value = mock_data_source_class
 
             response = await _read_data_source_impl(sample_request, context=None)
@@ -154,12 +158,13 @@ class TestReadDataSourceImpl:
         mock_instance.read.return_value = MagicMock()
         mock_data_source_class.return_value = mock_instance
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
-        ) as mock_create_diag, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.create_diagnostic_from_exception"
+            ) as mock_create_diag,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"),
         ):
             mock_hub.get_component.return_value = mock_data_source_class
             mock_unmarshal.side_effect = CtyValidationError("Invalid type")
@@ -177,9 +182,10 @@ class TestReadDataSourceMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self, sample_request: pb.ReadDataSource.Request) -> None:
         """Test that handler increments request counter."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.handler_requests"
-        ) as mock_requests, patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
+        ):
             mock_hub.get_component.return_value = None
 
             await ReadDataSourceHandler(sample_request, context=None)
@@ -187,13 +193,14 @@ class TestReadDataSourceMetrics:
             mock_requests.inc.assert_called_once_with(handler="ReadDataSource")
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self, sample_request: pb.ReadDataSource.Request) -> None:
+    async def test_handler_records_error_metric_on_failure(
+        self, sample_request: pb.ReadDataSource.Request
+    ) -> None:
         """Test that handler increments error counter on failure."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.handler_errors"
-        ) as mock_errors, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source._read_data_source_impl"
-        ) as mock_impl:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source._read_data_source_impl") as mock_impl,
+        ):
             mock_impl.side_effect = RuntimeError("Test error")
 
             with pytest.raises(RuntimeError):
@@ -236,11 +243,13 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_instance.read = mock_read
         mock_ds_class.return_value = mock_ds_instance
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("data_source", "test_data_source"): mock_ds_class,
                 ("capability", "test_capability"): mock_capability_class,
@@ -259,7 +268,9 @@ class TestReadDataSourceCapabilityInjection:
             assert read_called_with_kwargs["test_capability"] is not None
 
     @pytest.mark.asyncio
-    async def test_handles_capability_instance_directly(self, sample_request: pb.ReadDataSource.Request) -> None:
+    async def test_handles_capability_instance_directly(
+        self, sample_request: pb.ReadDataSource.Request
+    ) -> None:
         """Test that capability instance is used directly if not a class."""
         from pyvider.cty import CtyString, CtyValue
 
@@ -280,7 +291,7 @@ class TestReadDataSourceCapabilityInjection:
 
         read_called_with_kwargs = {}
 
-        async def mock_read(ctx, **kwargs) -> None:
+        async def mock_read(ctx: ResourceContext, **kwargs: Any) -> None:
             read_called_with_kwargs.update(kwargs)
             return None
 
@@ -288,11 +299,13 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_instance.read = mock_read
         mock_ds_class.return_value = mock_ds_instance
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("data_source", "test_data_source"): mock_ds_class,
                 ("capability", "test_capability"): mock_capability_instance,
@@ -324,7 +337,7 @@ class TestReadDataSourceCapabilityInjection:
 
         read_called_with_kwargs = {}
 
-        async def mock_read(ctx, **kwargs) -> None:
+        async def mock_read(ctx: ResourceContext, **kwargs: Any) -> None:
             read_called_with_kwargs.update(kwargs)
             return None
 
@@ -332,11 +345,13 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_instance.read = mock_read
         mock_ds_class.return_value = mock_ds_instance
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+        ):
             mock_get.side_effect = lambda comp_type, name: {
                 ("data_source", "test_data_source"): mock_ds_class,
                 ("capability", "missing_capability"): None,
@@ -380,7 +395,7 @@ class TestReadDataSourceContextDiagnostics:
         diag = pb.Diagnostic(severity=pb.Diagnostic.WARNING, summary="Context warning")
         resource_context_with_diags.diagnostics.append(diag)
 
-        async def mock_read(ctx) -> None:
+        async def mock_read(ctx: ResourceContext) -> None:
             # Store diagnostic in context
             ctx.diagnostics.append(diag)
             return None
@@ -389,11 +404,13 @@ class TestReadDataSourceContextDiagnostics:
         mock_ds_instance.read = mock_read
         mock_ds_class.return_value = mock_ds_instance
 
-        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
-        ) as mock_unmarshal, patch(
-            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs:
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+        ):
             mock_get.return_value = mock_ds_class
 
             from pyvider.cty import CtyString, CtyValue
