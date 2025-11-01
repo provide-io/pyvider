@@ -236,17 +236,11 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_instance.read = mock_read
         mock_ds_class.return_value = mock_ds_instance
 
-        with (
-            patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal") as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
-            ) as mock_cty_to_attrs,
-        ):
-            mock_get.side_effect = lambda comp_type, name: {
-                ("data_source", "test_data_source"): mock_ds_class,
-                ("capability", "test_capability"): mock_capability_class,
-            }.get((comp_type, name))
+        with patch("pyvider.hub.hub.get_component") as mock_get, patch(
+            "pyvider.protocols.tfprotov6.handlers.read_data_source.unmarshal"
+        ) as mock_unmarshal, patch(
+            "pyvider.protocols.tfprotov6.handlers.read_data_source.cty_to_attrs_instance"
+        ) as mock_cty_to_attrs:
 
             from pyvider.cty import CtyString, CtyValue
 
