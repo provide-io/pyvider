@@ -33,8 +33,8 @@ class TestPyviderProviderSetup:
     """Tests for PyviderProvider setup method."""
 
     @pytest.mark.asyncio
-    async def test_setup_creates_schema_with_provider_testmode(self) -> None:
-        """Test that setup creates schema with provider_testmode attribute."""
+    async def test_setup_creates_schema_with_pyvider_testmode(self) -> None:
+        """Test that setup creates schema with pyvider_testmode attribute."""
         with patch("pyvider.providers.provider.hub") as mock_hub:
             # Mock hub to return no capabilities and components
             mock_hub.get_components.side_effect = lambda comp_type: {}
@@ -44,7 +44,7 @@ class TestPyviderProviderSetup:
             await provider.setup()
 
             assert provider._final_schema is not None
-            assert "provider_testmode" in provider._final_schema.block.attributes
+            assert "pyvider_testmode" in provider._final_schema.block.attributes
             assert provider.config_class is not None
 
     @pytest.mark.asyncio
@@ -70,8 +70,8 @@ class TestPyviderProviderSetup:
             provider = PyviderProvider()
             await provider.setup()
 
-            # Should have both provider_testmode and custom_attr
-            assert "provider_testmode" in provider._final_schema.block.attributes
+            # Should have both pyvider_testmode and custom_attr
+            assert "pyvider_testmode" in provider._final_schema.block.attributes
             assert "custom_attr" in provider._final_schema.block.attributes
 
     @pytest.mark.asyncio
@@ -195,7 +195,7 @@ class TestPyviderProviderSchemaAccess:
             # Should not raise
             schema = provider.schema
             assert schema is not None
-            assert "provider_testmode" in schema.block.attributes
+            assert "pyvider_testmode" in schema.block.attributes
 
 
 # 🐍🏗️🔚

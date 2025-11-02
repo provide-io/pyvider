@@ -145,12 +145,12 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        test_mode_enabled = getattr(config_instance, "provider_testmode", False)
+        test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)
         logger.debug(
-            "Reading provider_testmode from config",
+            "Reading pyvider_testmode from config",
             config_instance_type=type(config_instance).__name__,
-            has_provider_testmode=hasattr(config_instance, "provider_testmode"),
-            provider_testmode_value=test_mode_enabled,
+            has_pyvider_testmode=hasattr(config_instance, "pyvider_testmode"),
+            pyvider_testmode_value=test_mode_enabled,
             config_instance_attrs=dir(config_instance)
             if hasattr(config_instance, "__dict__")
             else "no __dict__",

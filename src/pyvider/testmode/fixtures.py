@@ -59,7 +59,7 @@ def provider_with_test_mode(provider_in_hub: Any) -> Generator[None]:
 
     @define
     class TestConfig:
-        provider_testmode: bool = True
+        pyvider_testmode: bool = True
 
     # Create and register provider context with test mode enabled
     context = ProviderContext(config=TestConfig(), test_mode_enabled=True)

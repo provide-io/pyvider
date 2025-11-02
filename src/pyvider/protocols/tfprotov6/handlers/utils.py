@@ -159,7 +159,7 @@ def check_test_only_access(
         f"It cannot be used in production mode.\n\n"
         f"Suggestion: Enable test mode to use this component.\n\n"
         f"Troubleshooting:\n"
-        f"  1. Add 'provider_testmode = true' to your provider block to enable test mode\n"
+        f"  1. Add 'pyvider_testmode = true' to your provider block to enable test mode\n"
         f"  2. Remove test-only components from production configurations\n"
         f"  3. Review component documentation to find production alternatives\n"
         f"  4. Test mode should only be used in testing/development environments"
@@ -170,7 +170,7 @@ def check_test_only_access(
     err.add_context("terraform.summary", f"Test-only {component_type} requires test mode")
     err.add_context(
         "terraform.detail",
-        f"The {component_type} '{component_name}' is marked as test-only and cannot be used when provider_testmode is false or unset.",
+        f"The {component_type} '{component_name}' is marked as test-only and cannot be used when pyvider_testmode is false or unset.",
     )
     raise err
 

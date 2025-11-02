@@ -131,13 +131,13 @@ class TestValidateProviderConfigTestModeDetection:
             mock_provider = MagicMock()
             mock_schema = MagicMock()
 
-            mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
+            mock_schema.block = CtyObject(attribute_types={"pyvider_testmode": CtyBool()})
             mock_provider.schema = mock_schema
 
-            # Create a config class that will have provider_testmode = True
+            # Create a config class that will have pyvider_testmode = True
             mock_config_class = MagicMock()
             mock_config_instance = MagicMock()
-            mock_config_instance.provider_testmode = True
+            mock_config_instance.pyvider_testmode = True
             mock_config_class.return_value = mock_config_instance
             mock_provider.config_class = mock_config_class
 
@@ -174,12 +174,12 @@ class TestValidateProviderConfigTestModeDetection:
         ):
             mock_provider = MagicMock()
             mock_schema = MagicMock()
-            mock_schema.block = CtyObject(attribute_types={"provider_testmode": CtyBool()})
+            mock_schema.block = CtyObject(attribute_types={"pyvider_testmode": CtyBool()})
             mock_provider.schema = mock_schema
 
             mock_config_class = MagicMock()
             mock_config_instance = MagicMock()
-            mock_config_instance.provider_testmode = False
+            mock_config_instance.pyvider_testmode = False
             mock_config_class.return_value = mock_config_instance
             mock_provider.config_class = mock_config_class
 

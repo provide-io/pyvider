@@ -64,7 +64,7 @@ async def _validate_provider_config_impl(
                 if not config_cty.is_unknown:
                     config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)
                     if config_instance:
-                        test_mode_enabled = getattr(config_instance, "provider_testmode", False)
+                        test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)
 
                         if test_mode_enabled:
                             logger.warning(
