@@ -5,11 +5,11 @@
 
 """TODO: Add module docstring."""
 
-import os
 from typing import Any
 
 import click
 from provide.foundation.cli.decorators import flexible_options, output_options
+from provide.foundation.config import get_env
 from provide.foundation.console import perr
 
 from pyvider.cli.context import PyviderContext
@@ -39,7 +39,7 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
 
     if ctx.invoked_subcommand is None:
         # Check if we're being run by Terraform via the magic cookie
-        if os.getenv("TF_PLUGIN_MAGIC_COOKIE"):
+        if get_env("TF_PLUGIN_MAGIC_COOKIE"):
             # Terraform is launching us - go into provider mode
             provide_command = cli.get_command(ctx, "provide")
             if provide_command:
