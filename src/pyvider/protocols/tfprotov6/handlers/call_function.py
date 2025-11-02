@@ -91,8 +91,14 @@ def _process_function_arguments(
 
 def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> None:
     parent_capability = getattr(function_obj, "_parent_capability", None)
+    logger.debug(
+        f"FUNCTION_DISPATCH 🔍 Checking capability injection for '{function_obj.__name__}', parent_capability={parent_capability}"
+    )
     if parent_capability and parent_capability != "provider":
         capability_class = hub.get_component("capability", parent_capability)
+        logger.debug(
+            f"FUNCTION_DISPATCH 🔍 Retrieved capability class: {capability_class} (type={type(capability_class)})"
+        )
         if capability_class:
             if isinstance(capability_class, type):
                 capability_instance = capability_class()
@@ -100,7 +106,7 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
                 capability_instance = capability_class
             native_kwargs[parent_capability] = capability_instance
             logger.debug(
-                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{function_obj.__name__}'"
+                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{function_obj.__name__}', instance={capability_instance}"
             )
         else:
             logger.warning(
