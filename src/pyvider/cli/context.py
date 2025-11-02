@@ -15,6 +15,22 @@ from provide.foundation.platform import get_arch_name, get_os_name
 from pyvider.common.config import PyviderConfig
 
 
+def _read_version_from_file() -> str:
+    """
+    Read version from VERSION file in current directory.
+
+    Returns:
+        Version string from VERSION file, or "0.0.0" if not found
+    """
+    version_file = Path.cwd() / "VERSION"
+    if version_file.exists():
+        try:
+            return version_file.read_text().strip()
+        except Exception:
+            pass
+    return "0.0.0"
+
+
 # --- Pyvider Context Class ---
 class PyviderContext(CLIContext):
     """
@@ -30,7 +46,7 @@ class PyviderContext(CLIContext):
         self.local_bin_dir = self.home / ".local" / "bin"
         self.tf_os = get_os_name()
         self.tf_arch = get_arch_name()
-        self.pyvider_version = self.config.get("version", "0.1.0")
+        self.pyvider_version = _read_version_from_file()
         self.tf_plugin_dir = (
             self.home
             / ".terraform.d"
