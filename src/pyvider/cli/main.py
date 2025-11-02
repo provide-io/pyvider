@@ -39,7 +39,7 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
 
     if ctx.invoked_subcommand is None:
         # Check if we're being run by Terraform via the magic cookie
-        if os.getenv("PLUGIN_MAGIC_COOKIE"):
+        if os.getenv("TF_PLUGIN_MAGIC_COOKIE"):
             # Terraform is launching us - go into provider mode
             provide_command = cli.get_command(ctx, "provide")
             if provide_command:
