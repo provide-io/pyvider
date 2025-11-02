@@ -9,6 +9,7 @@ import time
 from typing import Any
 
 from provide.foundation import logger
+from provide.foundation.config import get_env, parse_bool_extended
 from provide.foundation.errors import resilient
 
 from pyvider.conversion import unmarshal
@@ -145,15 +146,31 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)
+        # Check PYVIDER_TESTMODE environment variable (highest priority)
+        env_testmode_str = get_env("PYVIDER_TESTMODE", default=None)
+        env_testmode = parse_bool_extended(env_testmode_str) if env_testmode_str else None
+
+        # Check HCL configuration (lower priority)
+        config_testmode = getattr(config_instance, "pyvider_testmode", None)
+
+        # Environment variable takes precedence over HCL config
+        if env_testmode is not None:
+            test_mode_enabled = env_testmode
+            test_mode_source = "PYVIDER_TESTMODE environment variable"
+        elif config_testmode is not None:
+            test_mode_enabled = config_testmode
+            test_mode_source = "provider configuration (HCL)"
+        else:
+            test_mode_enabled = False
+            test_mode_source = "default"
+
         logger.debug(
-            "Reading pyvider_testmode from config",
+            "Resolved pyvider_testmode",
             config_instance_type=type(config_instance).__name__,
-            has_pyvider_testmode=hasattr(config_instance, "pyvider_testmode"),
-            pyvider_testmode_value=test_mode_enabled,
-            config_instance_attrs=dir(config_instance)
-            if hasattr(config_instance, "__dict__")
-            else "no __dict__",
+            env_testmode=env_testmode,
+            config_testmode=config_testmode,
+            final_value=test_mode_enabled,
+            source=test_mode_source,
         )
         provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
         hub.register("singleton", "provider_context", provider_context)
@@ -163,6 +180,7 @@ async def _configure_provider_impl(
                 "⚠️  Provider test mode enabled - test-only components are now accessible",
                 operation="configure_provider",
                 provider_name=provider_instance.metadata.name,
+                source=test_mode_source,
             )
         else:
             logger.debug(
