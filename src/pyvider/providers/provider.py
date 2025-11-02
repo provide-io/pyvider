@@ -29,7 +29,7 @@ class PyviderProvider(BaseProvider):
 
     async def setup(self) -> None:
         final_attributes = {
-            "provider_testmode": a_bool(
+            "pyvider_testmode": a_bool(
                 description="If true, enables test-only resources and data sources for development purposes.",
                 optional=True,
             )
