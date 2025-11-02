@@ -91,6 +91,7 @@ def _process_function_arguments(
 
 def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> None:
     parent_capability = getattr(function_obj, "_parent_capability", None)
+    print(f"DEBUG_INJECT_CAP: function={function_obj.__name__}, parent_cap={parent_capability}", flush=True)
     logger.debug(
         f"FUNCTION_DISPATCH 🔍 Checking capability injection for '{function_obj.__name__}', parent_capability={parent_capability}"
     )
