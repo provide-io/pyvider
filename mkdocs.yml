@@ -2,7 +2,7 @@
 INHERIT: .provide/foundry/base-mkdocs.yml
 
 # Project-Specific Configuration
-site_name: Pyvider Documentation
+site_name: Pyvider
 site_description: 'Python framework for building Terraform providers'
 site_author: provide.io
 site_url: https://foundry.provide.io/pyvider/
