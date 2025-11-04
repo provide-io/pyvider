@@ -49,10 +49,11 @@ class SampleReadResource(BaseResource):
                 "name": a_str(required=True),
                 "count": a_num(optional=True),
             }
+        )
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx):
+    async def read(self, ctx: ResourceContext) -> SampleState | None:
         """Read returns updated state."""
         if ctx.state:
             # Simulate reading from backend and updating count
@@ -175,21 +176,10 @@ class TestReadResourceImpl:
     async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub) -> None:
         """Test implementation returns null state when resource deleted."""
 
-        class DeletedResource(BaseResource):
-            state_class = SampleState
-
-            @classmethod
-            def get_schema(cls):
-                return s_resource(attributes={"id": a_str(), "name": a_str()})
-
-            async def _validate_config(self, config) -> list[str]:
+            async def _validate_config(self, config: Any) -> list[str]:
                 return []
 
-            async def read(self, ctx) -> None:
-                # Simulate resource deleted
-                return None
-
-            async def _delete_apply(self, ctx) -> None:
+            async def _delete_apply(self, ctx: ResourceContext) -> None:
                 pass
 
         hub.register("resource", "test_resource", DeletedResource)
@@ -369,10 +359,10 @@ class TestReadResourceEdgeCases:
             def get_schema(cls):
                 return s_resource(attributes={"id": a_str(), "name": a_str(), "count": a_num()})
 
-            async def _validate_config(self, config) -> list[str]:
+            async def _validate_config(self, config: Any) -> list[str]:
                 return []
 
-            async def read(self, ctx: ResourceContext):
+            async def read(self, ctx: ResourceContext) -> SampleState:
                 # Add diagnostic to context
                 diagnostic = pb.Diagnostic(
                     severity=pb.Diagnostic.WARNING,
@@ -384,7 +374,7 @@ class TestReadResourceEdgeCases:
                 # Return updated state
                 return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
 
-            async def _delete_apply(self, ctx) -> None:
+            async def _delete_apply(self, ctx: ResourceContext) -> None:
                 pass
 
         hub.register("resource", "test_resource", ResourceWithContextDiagnostics)
