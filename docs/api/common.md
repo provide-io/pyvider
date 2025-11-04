@@ -12,13 +12,3 @@ The `pyvider.common` module provides shared utilities for:
 - Encryption utilities
 
 ## Module Reference
-
-::: pyvider.common
-    options:
-      show_source: true
-      show_root_heading: true
-      members_order: source
-      show_if_no_docstring: false
-      filters:
-        - "!^_"
-        - "^__init__$"

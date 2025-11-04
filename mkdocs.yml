@@ -119,7 +119,7 @@ nav:
   - '🔬 Capabilities (Experimental)':
     - 'Overview': 'capabilities/overview.md'
 
-  - 'API Reference':
+  - 'API Guide':
     - 'Overview': 'api/index.md'
     - 'CLI': 'api/cli.md'
     - 'Common': 'api/common.md'
@@ -137,6 +137,8 @@ nav:
       - 'Types': 'api/schema/types.md'
     - 'Conversion': 'api/conversion/index.md'
     - 'Protocols': 'api/protocols/index.md'
+
+  - 'Full API Reference': 'reference/'
 
   - '⚡ Quick Reference': 'quick-reference.md'
 

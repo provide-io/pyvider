@@ -296,16 +296,3 @@ Pyvider automatically handles common Python types like `datetime`, `Decimal`, `U
 - [Creating Resources](../../guides/building-components/creating-resources.md) - Practical examples without conversion code
 
 ## Module Reference
-
-::: pyvider.conversion
-    options:
-      show_source: false
-      members:
-        - cty_to_native
-        - infer_cty_type_from_raw
-        - marshal
-        - unmarshal
-        - marshal_value
-        - unmarshal_value
-        - pvs_schema_to_proto
-        - unify_and_validate_list_of_objects

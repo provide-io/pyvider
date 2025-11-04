@@ -328,33 +328,3 @@ export FOUNDATION_LOG_LEVEL=INFO
 ## Module Reference
 
 ### Exported Metrics
-
-::: pyvider.observability
-    options:
-      show_source: false
-      members:
-        - resource_operations
-        - resource_create_total
-        - resource_read_total
-        - resource_update_total
-        - resource_delete_total
-        - resource_errors
-        - handler_duration
-        - handler_requests
-        - handler_errors
-        - discovery_duration
-        - components_discovered
-        - discovery_errors
-        - schema_generation_duration
-        - schema_cache_hits
-        - datasource_read_total
-        - datasource_errors
-        - function_calls
-        - function_duration
-        - function_errors
-        - ephemeral_open_total
-        - ephemeral_renew_total
-        - ephemeral_close_total
-        - ephemeral_errors
-        - provider_configure_total
-        - provider_configure_errors

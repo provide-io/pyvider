@@ -280,12 +280,3 @@ async def test_token_lifecycle(api_token, mock_provider):
 - [Error Handling](../guides/development/error-handling.md) - Error management
 
 ## Auto-Generated API Documentation
-
-::: pyvider.ephemerals
-    options:
-      show_source: true
-      show_bases: true
-      members:
-        - register_ephemeral_resource
-        - BaseEphemeralResource
-        - EphemeralResourceContext

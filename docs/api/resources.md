@@ -325,13 +325,3 @@ async def test_server_lifecycle():
 - [Security Best Practices](../guides/production/security-best-practices.md) - Secure resources
 
 ## Module Reference
-
-::: pyvider.resources
-    options:
-      show_source: true
-      show_root_heading: true
-      members_order: source
-      show_if_no_docstring: false
-      filters:
-        - "!^_"
-        - "^__init__$"

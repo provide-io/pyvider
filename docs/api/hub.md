@@ -13,13 +13,3 @@ The hub is responsible for:
 All components (providers, resources, data sources, functions) self-register with the hub using decorators.
 
 ## Module Reference
-
-::: pyvider.hub
-    options:
-      show_source: true
-      show_root_heading: true
-      members_order: source
-      show_if_no_docstring: false
-      filters:
-        - "!^_"
-        - "^__init__$"

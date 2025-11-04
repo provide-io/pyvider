@@ -259,13 +259,3 @@ Found an error in the API documentation? See our [Contributing Guidelines](../co
 ## Module List
 
 Below is the complete auto-generated API documentation for the `pyvider` package:
-
-::: pyvider
-    options:
-      show_source: true
-      show_root_heading: true
-      members_order: source
-      show_if_no_docstring: false
-      filters:
-        - "!^_"
-        - "^__init__$"
