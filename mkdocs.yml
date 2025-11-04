@@ -43,7 +43,7 @@ theme:
 plugins:
   - gen-files:
       scripts:
-        - gen:provide.foundry.docs.gen_ref_pages
+        - .provide/foundry/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
 
