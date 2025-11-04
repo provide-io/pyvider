@@ -182,11 +182,7 @@ def install_command(  # noqa: C901
             click.echo("  Ensuring target binary is executable...")
             target_binary_path.chmod(target_binary_path.stat().st_mode | 0o111)
 
-            click.secho(
-                "\n✅ Success! Provider binary installed.",
-                fg="green",
-                bold=True,
-            )
+            pout("\n✅ Success! Provider binary installed.", fg="green", bold=True)
 
         except Exception as e:
             click.secho(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
