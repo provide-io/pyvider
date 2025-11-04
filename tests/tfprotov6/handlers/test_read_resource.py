@@ -50,6 +50,7 @@ class SampleReadResource(BaseResource):
                 "count": a_num(optional=True),
             }
         )
+
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
@@ -176,8 +177,19 @@ class TestReadResourceImpl:
     async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub) -> None:
         """Test implementation returns null state when resource deleted."""
 
+        class DeletedResource(BaseResource):
+            state_class = SampleState
+
+            @classmethod
+            def get_schema(cls):
+                return s_resource(attributes={"id": a_str(), "name": a_str()})
+
             async def _validate_config(self, config: Any) -> list[str]:
                 return []
+
+            async def read(self, ctx: ResourceContext) -> None:
+                # Simulate resource deleted
+                return None
 
             async def _delete_apply(self, ctx: ResourceContext) -> None:
                 pass
