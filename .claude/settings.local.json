@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(echo:*)",
-      "Bash(uv run python:*)"
+      "Bash(uv run python:*)",
+      "Bash(uv run pytest:*)"
     ],
     "deny": [],
     "ask": [],

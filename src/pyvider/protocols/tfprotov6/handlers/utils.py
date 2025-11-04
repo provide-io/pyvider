@@ -372,6 +372,8 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
     )
 
     if isinstance(exc, specific_validation_errors):
+        # Use the exception's message for the summary (it contains the prefixed error type)
+        summary = exc.message if hasattr(exc, "message") else str(exc)
         detail = f"Validation failed for a value of type '{exc.type_name}'."
         if hasattr(exc, "value") and exc.value is not None:
             value_repr = repr(exc.value)
@@ -380,6 +382,8 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
             detail += f" The invalid value provided was {value_repr}."
         attribute_path = exc.path
     elif isinstance(exc, CtyValidationError):
+        # Use the exception's message for the summary
+        summary = exc.message if hasattr(exc, "message") else str(exc)
         detail = "A configuration validation error occurred."
         attribute_path = exc.path
     # Check if this is a foundation error with context
