@@ -5,7 +5,7 @@
 
 """Tests for ReadResource handler."""
 
-from unittest.mock import patch
+from unittest.mock import Any, patch
 
 import attrs
 import msgpack
@@ -18,7 +18,7 @@ from pyvider.protocols.tfprotov6.handlers.read_resource import (
     _read_resource_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.resources.base import BaseResource
+from pyvider.resources.base import BaseResource, ResourceContext
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import a_num, a_str, s_resource
 
@@ -49,9 +49,7 @@ class SampleReadResource(BaseResource):
                 "name": a_str(required=True),
                 "count": a_num(optional=True),
             }
-        )
-
-    async def _validate_config(self, config) -> list[str]:
+    async def _validate_config(self, config: Any) -> list[str]:
         return []
 
     async def read(self, ctx):
@@ -61,7 +59,7 @@ class SampleReadResource(BaseResource):
             return SampleState(id=ctx.state.id, name=ctx.state.name, count=ctx.state.count + 1)
         return None
 
-    async def _delete_apply(self, ctx) -> None:
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
         pass
 
 
@@ -374,7 +372,7 @@ class TestReadResourceEdgeCases:
             async def _validate_config(self, config) -> list[str]:
                 return []
 
-            async def read(self, ctx):
+            async def read(self, ctx: ResourceContext):
                 # Add diagnostic to context
                 diagnostic = pb.Diagnostic(
                     severity=pb.Diagnostic.WARNING,
