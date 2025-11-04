@@ -20,7 +20,7 @@ from pyvider.protocols.tfprotov6.handlers.read_resource import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource, ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_num, a_str, s_resource
+from pyvider.schema import Schema, a_num, a_str, s_resource
 
 
 @attrs.define
@@ -42,7 +42,7 @@ class SampleReadResource(BaseResource):
     private_state_class = SamplePrivate
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> Schema:
         return s_resource(
             attributes={
                 "id": a_str(required=True),
@@ -69,7 +69,7 @@ class TestReadResourceHandler:
     """Tests for ReadResourceHandler function."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
+    async def test_handler_returns_response_object(self, provider_in_hub: Any) -> None:
         """Test that handler returns proper response object."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -94,7 +94,7 @@ class TestReadResourceHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_reads_and_updates_state(self, provider_in_hub) -> None:
+    async def test_handler_reads_and_updates_state(self, provider_in_hub: Any) -> None:
         """Test handler reads resource and updates state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -125,7 +125,9 @@ class TestReadResourceHandler:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_preserves_private_state(self, provider_in_hub, encryption_key_env) -> None:
+    async def test_handler_preserves_private_state(
+        self, provider_in_hub: Any, encryption_key_env: Any
+    ) -> None:
         """Test handler preserves private state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -174,14 +176,14 @@ class TestReadResourceImpl:
     """Tests for _read_resource_impl function."""
 
     @pytest.mark.asyncio
-    async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub) -> None:
+    async def test_impl_returns_null_when_resource_deleted(self, provider_in_hub: Any) -> None:
         """Test implementation returns null state when resource deleted."""
 
         class DeletedResource(BaseResource):
             state_class = SampleState
 
             @classmethod
-            def get_schema(cls):
+            def get_schema(cls) -> Schema:
                 return s_resource(attributes={"id": a_str(), "name": a_str()})
 
             async def _validate_config(self, config: Any) -> list[str]:
@@ -218,7 +220,7 @@ class TestReadResourceImpl:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_provider_in_hub(self, provider_in_hub) -> None:
+    async def test_impl_handles_missing_provider_in_hub(self, provider_in_hub: Any) -> None:
         """Test implementation handles missing provider gracefully."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -253,7 +255,7 @@ class TestReadResourceEdgeCases:
     """Edge case tests for ReadResource."""
 
     @pytest.mark.asyncio
-    async def test_handler_with_empty_state(self, provider_in_hub) -> None:
+    async def test_handler_with_empty_state(self, provider_in_hub: Any) -> None:
         """Test handler with empty current state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -271,7 +273,9 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_with_malformed_private_state(self, provider_in_hub, encryption_key_env) -> None:
+    async def test_handler_with_malformed_private_state(
+        self, provider_in_hub: Any, encryption_key_env: Any
+    ) -> None:
         """Test handler with malformed private state."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -299,7 +303,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_metrics_recorded(self, provider_in_hub) -> None:
+    async def test_handler_metrics_recorded(self, provider_in_hub: Any) -> None:
         """Test that handler records metrics."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -325,7 +329,7 @@ class TestReadResourceEdgeCases:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_records_errors_on_exception(self, provider_in_hub) -> None:
+    async def test_handler_records_errors_on_exception(self, provider_in_hub: Any) -> None:
         """Test that handler records error metrics when exception occurs."""
         hub.register("resource", "test_resource", SampleReadResource)
 
@@ -343,23 +347,23 @@ class TestReadResourceEdgeCases:
                 current_state=state_dv,
             )
 
-            with patch("pyvider.protocols.tfprotov6.handlers.read_resource.handler_errors") as mock_errors:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl"
-                ) as mock_impl:
-                    # Make implementation raise an exception
-                    mock_impl.side_effect = RuntimeError("Test error")
+            with (
+                patch("pyvider.protocols.tfprotov6.handlers.read_resource.handler_errors") as mock_errors,
+                patch("pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl") as mock_impl,
+            ):
+                # Make implementation raise an exception
+                mock_impl.side_effect = RuntimeError("Test error")
 
-                    with pytest.raises(RuntimeError, match="Test error"):
-                        await ReadResourceHandler(request, context=None)
+                with pytest.raises(RuntimeError, match="Test error"):
+                    await ReadResourceHandler(request, context=None)
 
-                    # Verify error metric was recorded
-                    mock_errors.inc.assert_called_once_with(handler="ReadResource")
+                # Verify error metric was recorded
+                mock_errors.inc.assert_called_once_with(handler="ReadResource")
         finally:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_handler_appends_context_diagnostics(self, provider_in_hub) -> None:
+    async def test_handler_appends_context_diagnostics(self, provider_in_hub: Any) -> None:
         """Test that handler appends diagnostics from resource context to response."""
 
         class ResourceWithContextDiagnostics(BaseResource):
@@ -368,7 +372,7 @@ class TestReadResourceEdgeCases:
             state_class = SampleState
 
             @classmethod
-            def get_schema(cls):
+            def get_schema(cls) -> Schema:
                 return s_resource(attributes={"id": a_str(), "name": a_str(), "count": a_num()})
 
             async def _validate_config(self, config: Any) -> list[str]:
