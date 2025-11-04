@@ -73,3 +73,6 @@ docs/.shared-theme/
 site
 site/
 bf-*.txt
+
+# Extracted provide.io tooling artifacts
+.provide/
