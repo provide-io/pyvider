@@ -424,6 +424,7 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
         ):
             detail = str(exc)
         else:
+            summary = "Internal Provider Error"
             detail = (
                 "The provider encountered an unexpected error. This is likely a bug in the provider."
                 "\nPlease report this issue to the provider developers."
