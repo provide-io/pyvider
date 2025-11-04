@@ -15,6 +15,37 @@ from provide.foundation.console import perr
 from pyvider.cli.context import PyviderContext
 
 
+def _show_interactive_mode(ctx: click.Context) -> None:
+    """Show interactive mode welcome message with launch context."""
+    from pyvider.common.launch_context import detect_launch_context
+
+    launch_context = detect_launch_context()
+
+    click.secho("\n╭─────────────────────────────────────────────────╮", fg="cyan")
+    click.secho("│           Interactive Mode                      │", fg="cyan", bold=True)
+    click.secho("╰─────────────────────────────────────────────────╯", fg="cyan")
+
+    click.echo("\nPyvider is running in interactive mode.")
+    click.echo("To start the provider server for testing, use:\n")
+
+    # Get the command name from the context
+    cmd_name = ctx.command_path or "pyvider"
+    click.secho(f"  {cmd_name} provide --force", fg="green", bold=True)
+
+    click.echo("\n" + "─" * 50)
+    click.secho("\nLaunch Context:", fg="cyan", bold=True)
+    click.secho(f"  Method: {launch_context.method.value}", fg="white")
+    click.secho(f"  Executable: {launch_context.executable_path}", fg="white")
+    click.secho(f"  Python: {launch_context.python_executable}", fg="white")
+    click.secho(f"  Working Directory: {launch_context.working_directory}", fg="white")
+
+    click.echo("\n" + "─" * 50)
+    click.echo("\nFor more information, use:")
+    click.secho(f"  {cmd_name} --help", fg="yellow")
+    click.secho(f"  {cmd_name} launch-context", fg="yellow")
+    click.echo()
+
+
 @click.group(invoke_without_command=True)
 @flexible_options  # Add logging and config options at root level
 @output_options  # Add output format options
@@ -49,8 +80,8 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
                 perr("Error: Default command 'provide' not found.")
                 click.echo(cli.get_help(ctx))
         else:
-            # Not being run by Terraform - show help
-            click.echo(cli.get_help(ctx))
+            # Not being run by Terraform - show interactive mode
+            _show_interactive_mode(ctx)
 
 
 # This decorator is for our custom context object, which is correct for subcommands.

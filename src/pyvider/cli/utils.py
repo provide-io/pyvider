@@ -140,11 +140,11 @@ def _place_terraform_provider_script(ctx: PyviderContext) -> None:
 
         # Determine execution method
         if has_pyvider_cmd:
-            exec_line = 'exec pyvider "$@"'
+            exec_line = 'exec pyvider provide "$@"'
             install_method = "installed (pyvider command)"
         else:
             # Use python -m for editable installs or when pyvider command doesn't exist
-            exec_line = 'exec python -m pyvider.cli "$@"'
+            exec_line = 'exec python -m pyvider.cli provide "$@"'
             install_method = "editable (python -m)"
 
         # Generate script with accurate, hardcoded paths
