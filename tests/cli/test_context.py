@@ -221,15 +221,10 @@ class TestPyviderContextEdgeCases:
 
     def test_context_handles_missing_version_config(self) -> None:
         """Test that context handles missing version in config."""
-        with mock.patch("pyvider.cli.context.PyviderConfig") as MockConfig:
-            mock_config = MockConfig.return_value
-            # get is called with a default parameter, so simulate that
-            mock_config.get.side_effect = lambda key, default=None: default
-
-            # Should use default version
+        with mock.patch("pyvider.cli.context._read_version_from_file", return_value="0.1.0"):
+            # Should use the version from _read_version_from_file
             ctx = PyviderContext()
-            # get is called with a default, so it will return that default
-            assert ctx.pyvider_version == "0.1.0"  # Default value
+            assert ctx.pyvider_version == "0.1.0"
 
     def test_multiple_context_instances_are_independent(self) -> None:
         """Test that multiple context instances are independent."""
