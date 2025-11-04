@@ -49,13 +49,7 @@ class TestOperationFieldPresence:
     """Test that all handlers include 'operation' field in logs."""
 
     @pytest.mark.asyncio
-    async def test_read_data_source_logs_with_operation(self) -> None:
-        """Test read_data_source includes operation field."""
-        request = pb.ReadDataSource.Request(type_name="test_ds")
-        request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
-
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -73,8 +67,7 @@ class TestOperationFieldPresence:
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -86,13 +79,7 @@ class TestOperationFieldPresence:
                 assert call_kwargs["operation"] == "validate_data_resource_config"
 
     @pytest.mark.asyncio
-    async def test_open_ephemeral_logs_with_operation(self) -> None:
-        """Test open_ephemeral_resource includes operation field."""
-        request = pb.OpenEphemeralResource.Request(type_name="test_eph")
-        request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
-
-        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -122,13 +109,7 @@ class TestErrorLogging:
     """Test that handlers log errors with proper structured data."""
 
     @pytest.mark.asyncio
-    async def test_read_data_source_logs_error_with_context(self) -> None:
-        """Test that read_data_source logs errors with error_type and error_message."""
-        request = pb.ReadDataSource.Request(type_name="test_ds")
-        request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
-
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -180,8 +161,7 @@ class TestSuccessLogging:
         mock_instance.close = AsyncMock()
         mock_class.return_value = mock_instance
 
-        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.hub") as mock_hub:
                 mock_hub.get_component.return_value = mock_class
 
                 await _close_ephemeral_resource_impl(request, context=None)
@@ -248,8 +228,7 @@ class TestLogLevelConsistency:
         request = pb.ValidateDataResourceConfig.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -276,15 +255,7 @@ class TestLogLevelConsistency:
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
-                mock_hub.get_component.return_value = None
-
-                with contextlib.suppress(Exception):
-                    await _read_data_source_impl(request, context=None)
-
-                # Failure should be logged with error
-                assert mock_logger.error.called
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
 
 
 class TestContextualInformation:
@@ -296,8 +267,7 @@ class TestContextualInformation:
         request = pb.ReadDataSource.Request(type_name="test_ds")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.read_data_source.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub:
                 mock_hub.get_component.return_value = None
 
                 with contextlib.suppress(Exception):
@@ -326,11 +296,9 @@ class TestContextualInformation:
         request = pb.OpenEphemeralResource.Request(type_name="test_eph")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
-                with patch(
-                    "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.create_diagnostic_from_exception"
-                ) as mock_diag:
+        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.logger") as mock_logger, patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub, patch(
+            "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.create_diagnostic_from_exception"
+        ) as mock_diag:
                     mock_hub.get_component.return_value = None
                     mock_hub.get_components.return_value = {"other_eph": MagicMock()}
                     mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")

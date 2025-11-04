@@ -5,7 +5,8 @@
 
 """Tests for ReadResource handler."""
 
-from unittest.mock import Any, patch
+from typing import Any
+from unittest.mock import patch
 
 import attrs
 import msgpack

@@ -92,55 +92,54 @@ class TestStopProviderMetrics:
         """Test that handler increments request counter."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_requests") as mock_requests:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server_class.get_instance.return_value = mock_server
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class,
+        ):
+            mock_server = AsyncMock()
+            mock_server_class.get_instance.return_value = mock_server
 
-                await StopProviderHandler(request, context=None)
+            await StopProviderHandler(request, context=None)
 
-                mock_requests.inc.assert_called_once_with(handler="StopProvider")
+            mock_requests.inc.assert_called_once_with(handler="StopProvider")
 
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self) -> None:
         """Test that handler records duration metric."""
         request = pb.StopProvider.Request()
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class,
+        ):
+            mock_server = AsyncMock()
+            mock_server_class.get_instance.return_value = mock_server
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server_class.get_instance.return_value = mock_server
+            await StopProviderHandler(request, context=None)
 
-                await StopProviderHandler(request, context=None)
-
-                # Duration should be recorded
-                assert mock_duration.observe.called
-                call_args = mock_duration.observe.call_args
-                assert call_args[1]["handler"] == "StopProvider"
-                # Duration should be a positive number
-                assert call_args[0][0] >= 0
+            # Duration should be recorded
+            assert mock_duration.observe.called
+            call_args = mock_duration.observe.call_args
+            assert call_args[1]["handler"] == "StopProvider"
+            # Duration should be a positive number
+            assert call_args[0][0] >= 0
 
     @pytest.mark.asyncio
     async def test_handler_records_error_metric_on_failure(self) -> None:
         """Test that handler increments error counter on failure."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server.stop.side_effect = RuntimeError("Stop failed")
-                mock_server_class.get_instance.return_value = mock_server
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class,
+        ):
+            mock_server = AsyncMock()
+            mock_server.stop.side_effect = RuntimeError("Stop failed")
+            mock_server_class.get_instance.return_value = mock_server
 
-                with pytest.raises(RuntimeError):
-                    await StopProviderHandler(request, context=None)
+            with pytest.raises(RuntimeError):
+                await StopProviderHandler(request, context=None)
 
-                mock_errors.inc.assert_called_once_with(handler="StopProvider")
+            mock_errors.inc.assert_called_once_with(handler="StopProvider")
 
 
 class TestStopProviderLogging:
@@ -252,19 +251,19 @@ class TestStopProviderEdgeCases:
         """Test that metrics are recorded even when handler errors."""
         request = pb.StopProvider.Request()
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer"
-            ) as mock_server_class:
-                mock_server = AsyncMock()
-                mock_server.stop.side_effect = RuntimeError("Error")
-                mock_server_class.get_instance.return_value = mock_server
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.RPCPluginServer") as mock_server_class,
+        ):
+            mock_server = AsyncMock()
+            mock_server.stop.side_effect = RuntimeError("Error")
+            mock_server_class.get_instance.return_value = mock_server
 
-                with pytest.raises(RuntimeError):
-                    await StopProviderHandler(request, context=None)
+            with pytest.raises(RuntimeError):
+                await StopProviderHandler(request, context=None)
 
-                # Duration should still be recorded
-                assert mock_duration.observe.called
+            # Duration should still be recorded
+            assert mock_duration.observe.called
 
 
 # 🐍🏗️🔚
