@@ -45,7 +45,7 @@ class TestGetMetadataHandlerStructure:
     """Tests for GetMetadata handler response structure."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request) -> None:
+    async def test_handler_returns_response(self, sample_request: pb.GetMetadata.Request) -> None:
         """Test that handler returns GetMetadata.Response."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.return_value = {}
@@ -55,7 +55,7 @@ class TestGetMetadataHandlerStructure:
             assert isinstance(response, pb.GetMetadata.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_calls_implementation(self, sample_request) -> None:
+    async def test_handler_calls_implementation(self, sample_request: pb.GetMetadata.Request) -> None:
         """Test that handler delegates to implementation."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl:
             mock_impl.return_value = pb.GetMetadata.Response()
@@ -69,7 +69,7 @@ class TestGetMetadataImpl:
     """Tests for GetMetadata implementation."""
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_resources(self, sample_request, mock_hub_with_components) -> None:
+    async def test_impl_discovers_resources(self, sample_request: pb.GetMetadata.Request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered resources."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -81,7 +81,7 @@ class TestGetMetadataImpl:
             assert "another_resource" in resource_names
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_data_sources(self, sample_request, mock_hub_with_components) -> None:
+    async def test_impl_discovers_data_sources(self, sample_request: pb.GetMetadata.Request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered data sources."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -90,7 +90,7 @@ class TestGetMetadataImpl:
             assert response.data_sources[0].type_name == "test_data_source"
 
     @pytest.mark.asyncio
-    async def test_impl_discovers_functions(self, sample_request, mock_hub_with_components) -> None:
+    async def test_impl_discovers_functions(self, sample_request: pb.GetMetadata.Request, mock_hub_with_components) -> None:
         """Test that implementation discovers registered functions."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_with_components):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -101,7 +101,7 @@ class TestGetMetadataImpl:
             assert "another_function" in function_names
 
     @pytest.mark.asyncio
-    async def test_impl_sets_server_capabilities(self, sample_request, mock_hub_empty) -> None:
+    async def test_impl_sets_server_capabilities(self, sample_request: pb.GetMetadata.Request, mock_hub_empty) -> None:
         """Test that implementation sets correct server capabilities."""
         with patch("pyvider.hub.hub", mock_hub_empty):
             response = await _get_metadata_impl(sample_request, context=None)
@@ -111,7 +111,7 @@ class TestGetMetadataImpl:
             assert response.server_capabilities.move_resource_state is True
 
     @pytest.mark.asyncio
-    async def test_impl_handles_empty_registry(self, sample_request, mock_hub_empty) -> None:
+    async def test_impl_handles_empty_registry(self, sample_request: pb.GetMetadata.Request, mock_hub_empty) -> None:
         """Test that implementation handles empty registry gracefully."""
         with patch("pyvider.protocols.tfprotov6.handlers.utils.hub", mock_hub_empty):
             response = await _get_metadata_impl(sample_request, context=None)

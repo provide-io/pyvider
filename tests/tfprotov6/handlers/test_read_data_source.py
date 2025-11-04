@@ -224,7 +224,7 @@ class TestReadDataSourceCapabilityInjection:
         mock_ds_class.get_schema.return_value = mock_schema
 
         # Create mock capability class (type, not instance)
-        mock_capability_class = MagicMock
+        mock_capability_class = type("MockCapability", (), {})
 
         # Track if read was called
         read_called_with_kwargs = {}
@@ -245,6 +245,15 @@ class TestReadDataSourceCapabilityInjection:
 
             from pyvider.cty import CtyString, CtyValue
 
+            # Configure mock_get to return appropriate values
+            def get_component_side_effect(component_type: str, name: str):
+                if component_type == "data_source" and name == "test_data_source":
+                    return mock_ds_class
+                elif component_type == "capability" and name == "test_capability":
+                    return mock_capability_class
+                return None
+
+            mock_get.side_effect = get_component_side_effect
             mock_unmarshal.return_value = CtyValue.null(CtyString())
             mock_cty_to_attrs.return_value = None
 
