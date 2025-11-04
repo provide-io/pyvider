@@ -43,7 +43,7 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path) -> None:
     assert captured["path"] == str(target_path)
     assert target_path.exists()
     assert f'INSTALL_DIR="{install_dir}"' in captured["content"]
-    assert 'exec pyvider provide "$@"' in captured["content"]
+    assert 'exec pyvider "$@"' in captured["content"]
 
 
 # 🐍🏗️🔚

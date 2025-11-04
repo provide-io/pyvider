@@ -183,6 +183,7 @@ def install_command(  # noqa: C901
             target_binary_path.chmod(target_binary_path.stat().st_mode | 0o111)
 
             click.secho(
+                "\n✅ Success! Provider binary installed.",
                 fg="green",
                 bold=True,
             )
