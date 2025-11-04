@@ -1,16 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(uv run python:*)"
     ],
+    "deny": [],
+    "ask": [],
     "additionalDirectories": [
       "/Users/tim/code/gh/provide-io",
       "/Users/tim/.cache",
       "/Users/tim/.terraform.d",
       "/Users/tim/Library/Caches/flavor/workenv/terraform-provider-pyvider/bin",
       "/Users/tim"
-    ],
-    "deny": [],
-    "ask": []
+    ]
   }
 }
