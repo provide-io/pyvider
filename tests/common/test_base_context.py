@@ -9,7 +9,7 @@ from pyvider.common.context import BaseContext
 from pyvider.protocols.tfprotov6 import protobuf as pb
 
 
-def _step_value(step: pb.AttributePath.Step):
+def _step_value(step: pb.AttributePath.Step) -> str | int | None:
     if step.attribute_name:
         return step.attribute_name
     if step.element_key_string:

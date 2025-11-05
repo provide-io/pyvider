@@ -19,7 +19,7 @@ except ImportError:
     import tempfile
 
     @pytest.fixture
-    def temp_file():
+    def temp_file() -> str:
         """Fallback temp_file fixture."""
         with tempfile.NamedTemporaryFile(delete=False) as f:
             yield f.name
@@ -48,7 +48,7 @@ class TestPyviderCLI:
         result = runner.invoke(cli, ["--log-format", "json", "--help"])
         assert result.exit_code == 0
 
-    def test_cli_accepts_log_file_option(self, temp_file) -> None:
+    def test_cli_accepts_log_file_option(self, temp_file: str) -> None:
         """Test that --log-file option is accepted."""
         log_file = str(temp_file) + ".log"
 

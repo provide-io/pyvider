@@ -6,6 +6,7 @@
 """Tests for launch_context_command module."""
 
 import json
+from unittest.mock import MagicMock
 
 from click.testing import CliRunner
 from provide.testkit import mocking as mock
@@ -157,7 +158,7 @@ class TestLaunchContextMethodSpecificHelp:
     """Tests for method-specific help messages."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_pspf_package_shows_specific_help(self, mock_detect) -> None:
+    def test_pspf_package_shows_specific_help(self, mock_detect: MagicMock) -> None:
         """Test that PSPF package detection shows specific help."""
         # Mock PSPF launch
         mock_context = LaunchContext(
@@ -177,7 +178,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "PSPF Package" in result.output or "pspf_package" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_script_module_shows_specific_help(self, mock_detect) -> None:
+    def test_script_module_shows_specific_help(self, mock_detect: MagicMock) -> None:
         """Test that script module detection shows specific help."""
         # Mock script module launch
         mock_context = LaunchContext(
@@ -197,7 +198,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "Module Launch" in result.output or "script_module" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_editable_install_shows_specific_help(self, mock_detect) -> None:
+    def test_editable_install_shows_specific_help(self, mock_detect: MagicMock) -> None:
         """Test that editable install detection shows specific help."""
         # Mock editable install
         mock_context = LaunchContext(
@@ -217,7 +218,7 @@ class TestLaunchContextMethodSpecificHelp:
         assert "Development Mode" in result.output or "editable_install" in result.output.lower()
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_unknown_method_shows_warning(self, mock_detect) -> None:
+    def test_unknown_method_shows_warning(self, mock_detect: MagicMock) -> None:
         """Test that unknown method shows a warning."""
         # Mock unknown launch
         mock_context = LaunchContext(
@@ -241,7 +242,7 @@ class TestLaunchContextDetailsFormatting:
     """Tests for details formatting in launch-context."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_details_shown_when_present(self, mock_detect) -> None:
+    def test_details_shown_when_present(self, mock_detect: MagicMock) -> None:
         """Test that method details are shown when present."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,
@@ -260,7 +261,7 @@ class TestLaunchContextDetailsFormatting:
         assert "Method Details:" in result.output
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_complex_values_formatted_correctly(self, mock_detect) -> None:
+    def test_complex_values_formatted_correctly(self, mock_detect: MagicMock) -> None:
         """Test that complex values (lists, dicts) are formatted correctly."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,
@@ -284,7 +285,7 @@ class TestLaunchContextEdgeCases:
     """Edge case tests for launch-context command."""
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_handles_very_long_paths(self, mock_detect) -> None:
+    def test_handles_very_long_paths(self, mock_detect: MagicMock) -> None:
         """Test that very long paths are handled correctly."""
         long_path = "/very/long/path/" + "subdir/" * 50 + "file.py"
         mock_context = LaunchContext(
@@ -303,7 +304,7 @@ class TestLaunchContextEdgeCases:
         assert result.exit_code == 0
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_handles_empty_details(self, mock_detect) -> None:
+    def test_handles_empty_details(self, mock_detect: MagicMock) -> None:
         """Test that empty details dict is handled correctly."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_DIRECT,
@@ -323,7 +324,7 @@ class TestLaunchContextEdgeCases:
         # or should handle it gracefully
 
     @mock.patch("pyvider.common.launch_context.detect_launch_context")
-    def test_json_output_is_pretty_printed(self, mock_detect) -> None:
+    def test_json_output_is_pretty_printed(self, mock_detect: MagicMock) -> None:
         """Test that JSON output is pretty-printed with indentation."""
         mock_context = LaunchContext(
             method=LaunchMethod.SCRIPT_MODULE,

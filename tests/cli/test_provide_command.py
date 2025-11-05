@@ -6,9 +6,10 @@
 """Comprehensive tests for the provide command."""
 
 import asyncio
+from collections.abc import Coroutine
 import os
-from unittest.mock import patch
 from typing import Any
+from unittest.mock import MagicMock, patch
 
 from click.testing import CliRunner
 import pytest
@@ -105,9 +106,8 @@ class TestProvideDetectionWarnings:
         ):
             # Mock the server run to avoid actually starting it
             import asyncio
-            from collections.abc import Coroutine
 
-            def consume_coroutine(coro: Coroutine[Any, Any, None]):
+            def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
                 if asyncio.iscoroutine(coro):
                     coro.close()
 
@@ -123,13 +123,12 @@ class TestProvideForceMode:
     """Test --force mode behavior."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_starts_server(self, mock_run: any) -> None:
+    def test_force_mode_starts_server(self, mock_run: MagicMock) -> None:
         """Test that --force mode starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
-        from collections.abc import Coroutine, Any
 
-        def consume_coroutine(coro: Coroutine[Any, Any, None]):
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
 
@@ -145,15 +144,14 @@ class TestProvideForceMode:
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_uses_dummy_cookie(self, mock_run: any) -> None:
+    def test_force_mode_uses_dummy_cookie(self, mock_run: MagicMock) -> None:
         """Test that --force mode uses a dummy cookie when none is set."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro) -> None:
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
-            return None
 
         mock_run.side_effect = consume_coroutine
 
@@ -167,14 +165,14 @@ class TestProvideForceMode:
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_keyboard_interrupt_handled_gracefully(self, mock_run) -> None:
+    def test_keyboard_interrupt_handled_gracefully(self, mock_run: MagicMock) -> None:
         """Test that KeyboardInterrupt is handled gracefully."""
         # Mock asyncio.run to consume coroutine then raise KeyboardInterrupt on second call
         import asyncio
 
         call_count = [0]
 
-        def consume_then_interrupt(coro: Coroutine[Any, Any, None]):
+        def consume_then_interrupt(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -196,15 +194,14 @@ class TestProvideServerMode:
     """Test actual server mode when magic cookie is present."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_valid_magic_cookie_starts_server(self, mock_run) -> None:
+    def test_valid_magic_cookie_starts_server(self, mock_run: MagicMock) -> None:
         """Test that valid magic cookie starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro) -> None:
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
-            return None
 
         mock_run.side_effect = consume_coroutine
 
@@ -221,15 +218,14 @@ class TestProvideServerMode:
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_magic_cookie_value_passed_to_server(self, mock_run) -> None:
+    def test_magic_cookie_value_passed_to_server(self, mock_run: MagicMock) -> None:
         """Test that the actual magic cookie value is passed to the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro) -> None:
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
-            return None
 
         mock_run.side_effect = consume_coroutine
 
@@ -258,7 +254,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro: Coroutine[Any, Any, None]):
+        def consume_then_error(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -284,7 +280,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro: Coroutine[Any, Any, None]):
+        def consume_then_error(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -307,7 +303,7 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro: Coroutine[Any, Any, None]):
+        def consume_then_error(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
@@ -326,15 +322,14 @@ class TestProvideComponentDiscovery:
     """Test component discovery integration."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_discovery_runs_before_server_start(self, mock_run) -> None:
+    def test_discovery_runs_before_server_start(self, mock_run: MagicMock) -> None:
         """Test that component discovery runs before starting the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
 
-        def consume_coroutine(coro) -> None:
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
-            return None
 
         mock_run.side_effect = consume_coroutine
 
@@ -376,12 +371,12 @@ class TestProvideCommandCoverage:
         assert "terraform-provider-test provide --force" in result.output
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_detection_error_shows_debug_info(self, mock_run: any) -> None:
+    def test_detection_error_shows_debug_info(self, mock_run: MagicMock) -> None:
         """Test that detection error includes debug information."""
+        # Mock asyncio.run to consume any coroutines (shouldn't be called but just in case)
         import asyncio
-        from collections.abc import Coroutine
 
-        def consume_coroutine(coro: Coroutine[Any, Any, None]):
+        def consume_coroutine(coro: Coroutine[Any, Any, None]) -> None:
             if asyncio.iscoroutine(coro):
                 coro.close()
 

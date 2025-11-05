@@ -9,6 +9,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from types import ModuleType
 from typing import Never
+from pathlib import Path
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -22,7 +23,7 @@ from pyvider.common.launch_context import (
 )
 
 
-def test_detect_launch_context_without_terraform_cookie(monkeypatch) -> None:
+def test_detect_launch_context_without_terraform_cookie(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delitem(lc.os.environ, "TF_PLUGIN_MAGIC_COOKIE", raising=False)
     monkeypatch.setattr(lc.sys, "argv", ["/bin/pyvider"])
     monkeypatch.setattr(lc.sys, "executable", "/usr/bin/python3")
