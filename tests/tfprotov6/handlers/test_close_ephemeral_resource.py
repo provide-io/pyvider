@@ -52,7 +52,9 @@ class TestCloseEphemeralResourceStructure:
             assert isinstance(response, pb.CloseEphemeralResource.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request: pb.CloseEphemeralResource.Request) -> None:
+    async def test_handler_records_request_metric(
+        self, sample_request: pb.CloseEphemeralResource.Request
+    ) -> None:
         """Test that handler increments request counter."""
         with (
             patch(
@@ -71,7 +73,9 @@ class TestCloseEphemeralResourceImpl:
     """Test implementation logic."""
 
     @pytest.mark.asyncio
-    async def test_impl_closes_ephemeral_successfully(self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock) -> None:
+    async def test_impl_closes_ephemeral_successfully(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test successful ephemeral resource close."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = mock_ephemeral_class

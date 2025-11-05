@@ -40,22 +40,20 @@ class TestProcessFunctionArguments:
 
         with (
             mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
-            mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native") as mock_to_native,
         ):
-                mock_unmarshal.side_effect = [
-                    CtyValue(vtype=CtyString(), value="test"),
-                    CtyValue(vtype=CtyNumber(), value=42),
-                ]
-                mock_to_native.side_effect = ["test", 42]
+            mock_unmarshal.side_effect = [
+                CtyValue(vtype=CtyString(), value="test"),
+                CtyValue(vtype=CtyNumber(), value=42),
+            ]
+            mock_to_native.side_effect = ["test", 42]
 
-                kwargs, has_unknown = _process_function_arguments(
-                    [arg1_proto, arg2_proto], params_meta, None, func_sig
-                )
+            kwargs, has_unknown = _process_function_arguments(
+                [arg1_proto, arg2_proto], params_meta, None, func_sig
+            )
 
-                assert kwargs == {"name": "test", "count": 42}
-                assert has_unknown is False
+            assert kwargs == {"name": "test", "count": 42}
+            assert has_unknown is False
 
     def test_detects_unknown_arguments(self) -> None:
         """Test that unknown arguments are detected."""
@@ -90,24 +88,22 @@ class TestProcessFunctionArguments:
 
         with (
             mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
-            mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native") as mock_to_native,
         ):
-                mock_unmarshal.side_effect = [
-                    CtyValue(vtype=CtyString(), value="test"),
-                    CtyValue(vtype=CtyDynamic(), value=1),
-                    CtyValue(vtype=CtyDynamic(), value=2),
-                ]
-                mock_to_native.side_effect = ["test", 1, 2]
+            mock_unmarshal.side_effect = [
+                CtyValue(vtype=CtyString(), value="test"),
+                CtyValue(vtype=CtyDynamic(), value=1),
+                CtyValue(vtype=CtyDynamic(), value=2),
+            ]
+            mock_to_native.side_effect = ["test", 1, 2]
 
-                kwargs, has_unknown = _process_function_arguments(
-                    [arg1_proto, arg2_proto, arg3_proto], params_meta, variadic_meta, func_sig
-                )
+            kwargs, has_unknown = _process_function_arguments(
+                [arg1_proto, arg2_proto, arg3_proto], params_meta, variadic_meta, func_sig
+            )
 
-                assert kwargs["name"] == "test"
-                assert kwargs["options"] == (1, 2)
-                assert has_unknown is False
+            assert kwargs["name"] == "test"
+            assert kwargs["options"] == (1, 2)
+            assert has_unknown is False
 
     def test_skips_none_values_with_defaults(self) -> None:
         """Test that None values are skipped when parameter has default."""
@@ -126,22 +122,20 @@ class TestProcessFunctionArguments:
 
         with (
             mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
-            mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native") as mock_to_native,
         ):
-                mock_unmarshal.side_effect = [
-                    CtyValue(vtype=CtyString(), value="test"),
-                    CtyValue(vtype=CtyNumber(), value=None, is_null=True),
-                ]
-                mock_to_native.side_effect = ["test", None]
+            mock_unmarshal.side_effect = [
+                CtyValue(vtype=CtyString(), value="test"),
+                CtyValue(vtype=CtyNumber(), value=None, is_null=True),
+            ]
+            mock_to_native.side_effect = ["test", None]
 
-                kwargs, _has_unknown = _process_function_arguments(
-                    [arg1_proto, arg2_proto], params_meta, None, func_sig
-                )
+            kwargs, _has_unknown = _process_function_arguments(
+                [arg1_proto, arg2_proto], params_meta, None, func_sig
+            )
 
-                assert kwargs == {"name": "test"}
-                assert "count" not in kwargs
+            assert kwargs == {"name": "test"}
+            assert "count" not in kwargs
 
     def test_detects_unknown_in_variadic_args(self) -> None:
         """Test that unknown values in variadic args are detected."""
@@ -269,10 +263,10 @@ class TestCallFunctionHandler:
                 "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
             ) as mock_process,
         ):
-                mock_get.return_value = func_obj
-                mock_process.return_value = ({"arg": 1}, True)  # has_unknown=True
+            mock_get.return_value = func_obj
+            mock_process.return_value = ({"arg": 1}, True)  # has_unknown=True
 
-                response = await CallFunctionHandler(request, context=None)
+            response = await CallFunctionHandler(request, context=None)
 
         assert isinstance(response, pb.CallFunction.Response)
         # Should return unknown result without calling function

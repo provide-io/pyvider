@@ -90,7 +90,9 @@ class ContextAwareResource(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_plan_handler_populates_full_resource_context(encryption_key_env: str, provider_in_hub: Any) -> None:
+async def test_plan_handler_populates_full_resource_context(
+    encryption_key_env: str, provider_in_hub: Any
+) -> None:
     resource_name = "context_aware_resource"
     hub.register("resource", resource_name, ContextAwareResource)
     try:

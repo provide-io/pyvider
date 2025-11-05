@@ -62,7 +62,9 @@ class ResourceWithPrivateStateInRead(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_read_handler_provides_private_state_to_context(encryption_key_env: str, provider_in_hub: Any) -> None:
+async def test_read_handler_provides_private_state_to_context(
+    encryption_key_env: str, provider_in_hub: Any
+) -> None:
     resource_name = "read_private_state_test_resource"
     hub.register("resource", resource_name, ResourceWithPrivateStateInRead)
     try:
