@@ -322,15 +322,15 @@ docker run -p 50051:50051 my-provider
 ERROR: pyvider requires Python 3.11 or higher
 ```
 
-**Solution**: Upgrade Python or use pyenv to manage versions:
+**Solution**: Upgrade Python or use uv to manage versions:
 
 ```bash
-# Install pyenv
-curl https://pyenv.run | bash
+# Install and pin Python 3.11 using uv
+uv python install 3.11
+uv python pin 3.11
 
-# Install Python 3.11
-pyenv install 3.11.7
-pyenv global 3.11.7
+# Verify version
+python --version
 ```
 
 ### Issue: Missing Build Tools
