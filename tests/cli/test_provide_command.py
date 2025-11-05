@@ -379,13 +379,12 @@ class TestProvideCommandCoverage:
     @patch("pyvider.cli.provide_command.asyncio.run")
     def test_detection_error_shows_debug_info(self, mock_run: any) -> None:
         """Test that detection error includes debug information."""
-        # Mock asyncio.run to consume any coroutines (shouldn't be called but just in case)
         import asyncio
+        from collections.abc import Coroutine
 
-        def consume_coroutine(coro) -> None:
+        def consume_coroutine(coro: Coroutine[Any, Any, None]):
             if asyncio.iscoroutine(coro):
                 coro.close()
-            return None
 
         mock_run.side_effect = consume_coroutine
 
