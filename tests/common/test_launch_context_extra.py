@@ -7,9 +7,11 @@
 
 from contextlib import redirect_stdout
 from io import StringIO
+from pathlib import Path
 from types import ModuleType
 from typing import Never
-from pathlib import Path
+
+import pytest
 
 import pyvider.common.launch_context as lc
 from pyvider.common.launch_context import (
@@ -39,7 +41,7 @@ def test_detect_launch_context_without_terraform_cookie(monkeypatch: pytest.Monk
     assert context.environment_info["terraform_cookie_present"] is False
 
 
-def test_get_editable_install_details_reports_development_mode(monkeypatch) -> None:
+def test_get_editable_install_details_reports_development_mode(monkeypatch: pytest.MonkeyPatch) -> None:
     dummy_module = ModuleType("pyvider")
     dummy_module.__file__ = "/repo/src/pyvider/__init__.py"
     dummy_module.__path__ = ["/repo/src/pyvider"]
@@ -51,19 +53,19 @@ def test_get_editable_install_details_reports_development_mode(monkeypatch) -> N
     assert details["is_development_mode"] is True
 
 
-def test_analyze_executable_reports_missing(tmp_path) -> None:
+def test_analyze_executable_reports_missing(tmp_path: Path) -> None:
     missing = tmp_path / "missing.py"
     info = _analyze_executable(str(missing))
     assert info["exists"] is False
     assert info["is_file"] is False
 
 
-def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch) -> None:
+def test_analyze_cache_structure_handles_errors(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     python_path = tmp_path / "venv" / "bin" / "python"
     python_path.parent.mkdir(parents=True)
     python_path.write_text("")
 
-    def failing_iterdir(self) -> Never:  # pragma: no cover - exercised when permissions fail
+    def failing_iterdir(self: Path) -> Never:  # pragma: no cover - exercised when permissions fail
         raise PermissionError("denied")
 
     monkeypatch.setattr(lc.Path, "iterdir", failing_iterdir)
@@ -72,7 +74,7 @@ def test_analyze_cache_structure_handles_errors(tmp_path, monkeypatch) -> None:
     assert structure["contents"] == ["<access_denied>"]
 
 
-def test_log_launch_context_default_logger(monkeypatch) -> None:
+def test_log_launch_context_default_logger(monkeypatch: pytest.MonkeyPatch) -> None:
     context = LaunchContext(
         method=LaunchMethod.UNKNOWN,
         executable_path="/bin/app",

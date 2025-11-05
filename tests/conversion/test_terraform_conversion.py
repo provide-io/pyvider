@@ -12,7 +12,7 @@ from pyvider.schema import PvsObjectType, PvsSchema
 
 
 @pytest.fixture
-def simple_schema():
+def simple_schema() -> PvsSchema:
     """Provides a simple schema for testing."""
     return PvsSchema(version=1, block=PvsObjectType(attribute_types={"name": CtyString()}))
 

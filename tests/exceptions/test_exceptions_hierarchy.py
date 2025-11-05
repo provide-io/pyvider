@@ -5,6 +5,8 @@
 
 """TODO: Add module docstring."""
 
+from typing import Any
+
 from hypothesis import HealthCheck, given, settings, strategies as st
 import pytest
 
@@ -46,7 +48,7 @@ if not ALL_PYVIDER_EXCEPTIONS:
 
 
 @pytest.mark.parametrize("exc_class", ALL_PYVIDER_EXCEPTIONS)
-def test_exception_instantiation_and_str(exc_class) -> None:
+def test_exception_instantiation_and_str(exc_class: type[Exception]) -> None:
     """Tests basic instantiation and string conversion of all exceptions."""
     try:
         exceptions_with_specific_constructors = [
@@ -93,7 +95,7 @@ def test_exception_instantiation_and_str(exc_class) -> None:
 
 
 @given(st.text(min_size=1, max_size=100))
-def test_pyvider_error_with_message(message) -> None:
+def test_pyvider_error_with_message(message: str) -> None:
     err = pyvider_exceptions_module.PyviderError(message)
     assert str(err) == message
 
@@ -104,7 +106,7 @@ def test_pyvider_error_with_message(message) -> None:
     source_val=st.one_of(st.integers(), st.text(), st.none()),
     target_type_val=st.one_of(st.just(int), st.just(str), st.none()),
 )
-def test_conversion_error(message, source_val, target_type_val) -> None:
+def test_conversion_error(message: str, source_val: Any, target_type_val: type[Any] | None) -> None:
     err = pyvider_exceptions_module.ConversionError(
         message, source_value=source_val, target_type=target_type_val
     )
@@ -121,25 +123,25 @@ def test_conversion_error(message, source_val, target_type_val) -> None:
 
 
 @given(st.text())
-def test_framework_configuration_error(message) -> None:
+def test_framework_configuration_error(message: str) -> None:
     err = pyvider_exceptions_module.FrameworkConfigurationError(message)
     assert str(err) == message
 
 
 @given(st.text())
-def test_plugin_error(message) -> None:
+def test_plugin_error(message: str) -> None:
     err = pyvider_exceptions_module.PluginError(message)
     assert str(err) == message
 
 
 @given(st.text())
-def test_pyvider_value_error(message) -> None:
+def test_pyvider_value_error(message: str) -> None:
     err = pyvider_exceptions_module.PyviderValueError(message)
     assert str(err) == message
 
 
 @given(expected=st.text(min_size=1), actual=st.text(min_size=1))
-def test_invalid_type_error(expected, actual) -> None:
+def test_invalid_type_error(expected: str, actual: str) -> None:
     err = pyvider_exceptions_module.InvalidTypeError(expected_type=expected, actual_type=actual)
     assert f"Invalid type: expected '{expected}', got '{actual}'." == str(err)
     err_override = pyvider_exceptions_module.InvalidTypeError(message_override="Custom message")
@@ -147,7 +149,7 @@ def test_invalid_type_error(expected, actual) -> None:
 
 
 @given(type_name=st.text(min_size=1))
-def test_unsupported_type_error(type_name) -> None:
+def test_unsupported_type_error(type_name: str) -> None:
     err = pyvider_exceptions_module.UnsupportedTypeError(type_name=type_name)
     assert f"Unsupported type encountered: '{type_name}'." == str(err)
     err_override = pyvider_exceptions_module.UnsupportedTypeError(message_override="Custom message")
@@ -155,7 +157,7 @@ def test_unsupported_type_error(type_name) -> None:
 
 
 @given(st.text())
-def test_component_configuration_error(message) -> None:
+def test_component_configuration_error(message: str) -> None:
     err = pyvider_exceptions_module.ComponentConfigurationError(message)
     assert str(err) == message
 
@@ -166,7 +168,7 @@ def test_component_configuration_error(message) -> None:
     func_name=st.one_of(st.none(), st.text(min_size=1)),
     arg_idx=st.one_of(st.none(), st.integers(min_value=0)),
 )
-def test_function_error(message, func_name, arg_idx) -> None:
+def test_function_error(message: str, func_name: str | None, arg_idx: int | None) -> None:
     err = pyvider_exceptions_module.FunctionError(message, function_name=func_name, argument_index=arg_idx)
     expected_prefix = f"Function '{func_name}'" if func_name else "Function"
     assert str(err) == f"{expected_prefix} error: {message}"
@@ -179,7 +181,7 @@ def test_function_error(message, func_name, arg_idx) -> None:
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), func_name=st.one_of(st.none(), st.text(min_size=1)))
-def test_function_registration_error(message, func_name) -> None:
+def test_function_registration_error(message: str, func_name: str | None) -> None:
     err = pyvider_exceptions_module.FunctionRegistrationError(message, function_name=func_name)
     expected_prefix = f"Function '{func_name}'" if func_name else "Function"
     assert str(err) == f"{expected_prefix} registration error: {message}"
@@ -192,7 +194,7 @@ def test_function_registration_error(message, func_name) -> None:
     arg_name=st.one_of(st.none(), st.text(min_size=1)),
     arg_idx=st.one_of(st.none(), st.integers(min_value=0)),
 )
-def test_function_validation_error(message, func_name, arg_name, arg_idx) -> None:
+def test_function_validation_error(message: str, func_name: str | None, arg_name: str | None, arg_idx: int | None) -> None:
     err = pyvider_exceptions_module.FunctionValidationError(
         message, function_name=func_name, argument_name=arg_name, argument_index=arg_idx
     )
@@ -210,7 +212,7 @@ def test_function_validation_error(message, func_name, arg_name, arg_idx) -> Non
 
 
 @given(st.text())
-def test_grpc_error(message) -> None:
+def test_grpc_error(message: str) -> None:
     assert str(pyvider_exceptions_module.GRPCError(message)) == message
     assert str(pyvider_exceptions_module.GRPCConnectionError(message)) == message
     assert str(pyvider_exceptions_module.NetworkError(message)) == message
@@ -218,20 +220,20 @@ def test_grpc_error(message) -> None:
 
 
 @given(st.text())
-def test_provider_error(message) -> None:
+def test_provider_error(message: str) -> None:
     assert str(pyvider_exceptions_module.ProviderError(message)) == message
     assert str(pyvider_exceptions_module.ProviderConfigurationError(message)) == message
     assert str(pyvider_exceptions_module.ProviderInitializationError(message)) == message
 
 
 @given(st.text())
-def test_registry_error(message) -> None:
+def test_registry_error(message: str) -> None:
     assert str(pyvider_exceptions_module.ComponentRegistryError(message)) == message
     assert str(pyvider_exceptions_module.ValidatorRegistrationError(message)) == message
 
 
 @given(st.text())
-def test_resource_error(message) -> None:
+def test_resource_error(message: str) -> None:
     assert str(pyvider_exceptions_module.ResourceError(message)) == message
     assert str(pyvider_exceptions_module.DataSourceError(message)) == message
     assert str(pyvider_exceptions_module.CapabilityError(message)) == message
@@ -242,7 +244,7 @@ def test_resource_error(message) -> None:
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
-def test_schema_error(message, schema_name) -> None:
+def test_schema_error(message: str, schema_name: str | None) -> None:
     err = pyvider_exceptions_module.SchemaError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} error: {message}"
@@ -254,7 +256,7 @@ def test_schema_error(message, schema_name) -> None:
     schema_name=st.one_of(st.none(), st.text(min_size=1)),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_schema_validation_error(message, schema_name, detail) -> None:
+def test_schema_validation_error(message: str, schema_name: str | None, detail: str | None) -> None:
     err = pyvider_exceptions_module.SchemaValidationError(message, schema_name=schema_name, detail=detail)
     # The constructor for SchemaValidationError in schema.py now builds the full message.
     assert message in str(err)
@@ -266,7 +268,7 @@ def test_schema_validation_error(message, schema_name, detail) -> None:
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
-def test_schema_registration_error(message, schema_name) -> None:
+def test_schema_registration_error(message: str, schema_name: str | None) -> None:
     err = pyvider_exceptions_module.SchemaRegistrationError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} registration error: {message}"
@@ -274,7 +276,7 @@ def test_schema_registration_error(message, schema_name) -> None:
 
 @settings(suppress_health_check=[HealthCheck.too_slow])
 @given(message=st.text(), schema_name=st.one_of(st.none(), st.text(min_size=1)))
-def test_schema_parse_error(message, schema_name) -> None:
+def test_schema_parse_error(message: str, schema_name: str | None) -> None:
     err = pyvider_exceptions_module.SchemaParseError(message, schema_name=schema_name)
     expected_prefix = f"Schema '{schema_name}'" if schema_name else "Schema"
     assert str(err) == f"{expected_prefix} parse error: {message}"
@@ -287,7 +289,7 @@ def test_schema_parse_error(message, schema_name) -> None:
     source_val=st.text(),
     target_type_val=st.just(int),
 )
-def test_schema_conversion_error(message, schema_name, source_val, target_type_val) -> None:
+def test_schema_conversion_error(message: str, schema_name: str | None, source_val: Any, target_type_val: type[Any]) -> None:
     err = pyvider_exceptions_module.SchemaConversionError(
         message, schema_name=schema_name, source_value=source_val, target_type=target_type_val
     )
@@ -307,7 +309,7 @@ def test_schema_conversion_error(message, schema_name, source_val, target_type_v
     source_val=st.one_of(st.none(), st.text(), st.integers()),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_serialization_error(message, type_name, source_val, detail) -> None:
+def test_serialization_error(message: str, type_name: str | None, source_val: Any, detail: str | None) -> None:
     err = pyvider_exceptions_module.SerializationError(
         message, type_name=type_name, source_value=source_val, detail=detail
     )
@@ -340,7 +342,7 @@ def test_serialization_error(message, type_name, source_val, detail) -> None:
     source_val=st.one_of(st.none(), st.text(), st.integers()),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_deserialization_error(message, type_name, source_val, detail) -> None:
+def test_deserialization_error(message: str, type_name: str | None, source_val: Any, detail: str | None) -> None:
     err = pyvider_exceptions_module.DeserializationError(
         message, type_name=type_name, source_value=source_val, detail=detail
     )
@@ -372,7 +374,7 @@ def test_deserialization_error(message, type_name, source_val, detail) -> None:
     context=st.one_of(st.none(), st.text(min_size=1)),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_validation_error(message, context, detail) -> None:
+def test_validation_error(message: str, context: str | None, detail: str | None) -> None:
     err = pyvider_exceptions_module.ValidationError(message, context=context, detail=detail)
     expected_context_str = f"Context: {context} - " if context else ""
     expected_detail_str = f" - Detail: {detail}" if detail else ""
@@ -386,7 +388,7 @@ def test_validation_error(message, context, detail) -> None:
     context=st.one_of(st.none(), st.text(min_size=1)),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_attribute_validation_error(message, attr_name, context, detail) -> None:
+def test_attribute_validation_error(message: str, attr_name: str | None, context: str | None, detail: str | None) -> None:
     err = pyvider_exceptions_module.AttributeValidationError(
         message, attribute_name=attr_name, context=context, detail=detail
     )

@@ -7,15 +7,17 @@
 
 import pytest
 
+from pyvider.common.context import BaseContext
 from pyvider.data_sources.base import BaseDataSource
-from pyvider.schema import a_num, a_str, s_data_source
+from pyvider.protocols.tfprotov6.protobuf import Diagnostic
+from pyvider.schema import PvsSchema, a_num, a_str, s_data_source
 
 
 class TestDataSource(BaseDataSource):
     """Concrete test data source for testing."""
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_data_source(
             attributes={
                 "name": a_str(required=True),
@@ -23,11 +25,11 @@ class TestDataSource(BaseDataSource):
             }
         )
 
-    async def _validate_config(self, config):
+    async def _validate_config(self, config: dict) -> list[Diagnostic]:
         """Validate configuration."""
         return []
 
-    async def read(self, ctx):
+    async def read(self, ctx: BaseContext) -> dict:
         """Simple read implementation."""
         return {"name": "test", "count": 42}
 
@@ -71,7 +73,7 @@ class TestDataSourceEdgeCases:
         # Incomplete data source missing required methods
         class IncompleteDataSource(BaseDataSource):
             @classmethod
-            def get_schema(cls):
+            def get_schema(cls) -> PvsSchema:
                 return s_data_source(attributes={"id": a_str()})
 
             # Missing read and _validate_config methods
@@ -92,7 +94,7 @@ class TestDataSourceEdgeCases:
         ds1 = TestDataSource()
         ds2 = TestDataSource()
         assert ds1 is not ds2
-        assert type(ds1) == type(ds2)
+        assert isinstance(ds1, type(ds2))
 
     @pytest.mark.asyncio
     async def test_validate_with_none_config(self) -> None:

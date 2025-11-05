@@ -6,16 +6,21 @@
 """TODO: Add module docstring."""
 
 import asyncio
+from collections.abc import AsyncGenerator, Generator
+import os
+from pathlib import Path
+import sys
 
 import pytest
 
 from pyvider.common.encryption import CONFIG_KEY_NAME
 from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
+from pyvider.providers import BaseProvider
 
 
 @pytest.fixture(scope="session")
-def event_loop():
+def event_loop() -> asyncio.BaseEventLoop:
     """Create an instance of the default event loop for the session."""
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -23,18 +28,16 @@ def event_loop():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def discovered_components_session(event_loop):
+def discovered_components_session(event_loop: asyncio.BaseEventLoop) -> Generator[None, None, None]:
     """
     A session-scoped fixture that runs component discovery once.
     This ensures the hub is populated for all tests that need it.
 
     Skip during mutmut runs to avoid stdio conflicts.
     """
-    import os
-    import sys
 
     # Skip discovery if running under mutmut (check for mutmut cache)
-    if os.environ.get("MUTANT_UNDER_TEST") or os.path.exists(".mutmut-cache") or "mutmut" in sys.argv[0]:
+    if os.environ.get("MUTANT_UNDER_TEST") or Path(".mutmut-cache").exists() or "mutmut" in sys.argv[0]:
         yield
         return
 
@@ -53,7 +56,7 @@ def discovered_components_session(event_loop):
 
 
 @pytest.fixture(scope="session", autouse=True)
-def suppress_logging_during_mutmut():
+def suppress_logging_during_mutmut() -> Generator[None, None, None]:
     """
     Automatically suppress all logging during mutmut runs to avoid I/O errors.
 
@@ -61,12 +64,10 @@ def suppress_logging_during_mutmut():
     'I/O operation on closed file' errors. We work around this by redirecting
     stdout/stderr to /dev/null.
     """
-    import os
-    import sys
 
     # Check if running under mutmut
     is_mutmut = (
-        os.environ.get("MUTANT_UNDER_TEST") or os.path.exists(".mutmut-cache") or "mutmut" in sys.argv[0]
+        os.environ.get("MUTANT_UNDER_TEST") or Path(".mutmut-cache").exists() or "mutmut" in sys.argv[0]
     )
 
     if is_mutmut:
@@ -75,22 +76,21 @@ def suppress_logging_during_mutmut():
         original_stderr = sys.stderr
 
         # Redirect to /dev/null
-        devnull = open(os.devnull, "w")
-        sys.stdout = devnull
-        sys.stderr = devnull
+        with Path(os.devnull).open("w") as devnull:
+            sys.stdout = devnull
+            sys.stderr = devnull
 
-        yield
+            yield
 
         # Restore original stdout/stderr
         sys.stdout = original_stdout
         sys.stderr = original_stderr
-        devnull.close()
     else:
         yield
 
 
 @pytest.fixture
-async def provider_in_hub(discovered_components_session):
+async def provider_in_hub(discovered_components_session: Generator[None, None, None]) -> AsyncGenerator[BaseProvider, None]:
     """
     A function-scoped fixture that instantiates, sets up, and registers a
     test provider instance in the hub. This is crucial for handlers that
@@ -119,7 +119,7 @@ async def provider_in_hub(discovered_components_session):
 
 
 @pytest.fixture
-def encryption_key_env(monkeypatch):
+def encryption_key_env(monkeypatch: pytest.MonkeyPatch) -> Generator[None, None, None]:
     """
     A shared fixture that sets the required encryption key environment variable
     for any test that needs to perform private state encryption.

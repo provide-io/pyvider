@@ -6,6 +6,7 @@
 """Tests for functions/base.py module."""
 
 import pytest
+import attrs
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyNumber, CtyString
 from pyvider.functions.base import FunctionParameter, FunctionReturnType
@@ -78,7 +79,7 @@ class TestFunctionParameter:
     def test_parameter_frozen(self) -> None:
         """Test that FunctionParameter is immutable."""
         param = FunctionParameter(name="test", type=CtyString())
-        with pytest.raises(Exception):  # attrs frozen raises FrozenInstanceError
+        with pytest.raises(attrs.exceptions.FrozenInstanceError):  # attrs frozen raises FrozenInstanceError
             param.name = "changed"  # type: ignore
 
 
