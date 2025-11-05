@@ -25,25 +25,25 @@ def _show_interactive_mode(ctx: click.Context) -> None:
     pout("│           Interactive Mode                      │", fg="cyan", bold=True)
     pout("╰─────────────────────────────────────────────────╯", fg="cyan")
 
-    click.echo("\nPyvider is running in interactive mode.")
-    click.echo("To start the provider server for testing, use:\n")
+    pout("\nPyvider is running in interactive mode.")
+    pout("To start the provider server for testing, use:\n")
 
     # Get the command name from the context
     cmd_name = ctx.command_path or "pyvider"
     pout(f"  {cmd_name} provide --force", fg="green", bold=True)
 
-    click.echo("\n" + "─" * 50)
+    pout("\n" + "─" * 50)
     pout("\nLaunch Context:", fg="cyan", bold=True)
     pout(f"  Method: {launch_context.method.value}", fg="white")
     pout(f"  Executable: {launch_context.executable_path}", fg="white")
     pout(f"  Python: {launch_context.python_executable}", fg="white")
     pout(f"  Working Directory: {launch_context.working_directory}", fg="white")
 
-    click.echo("\n" + "─" * 50)
-    click.echo("\nFor more information, use:")
+    pout("\n" + "─" * 50)
+    pout("\nFor more information, use:")
     pout(f"  {cmd_name} --help", fg="yellow")
     pout(f"  {cmd_name} launch-context", fg="yellow")
-    click.echo()
+    pout()
 
 
 @click.group(invoke_without_command=True)
@@ -78,7 +78,7 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
             else:
                 # This case should not happen if the CLI is assembled correctly.
                 perr("Error: Default command 'provide' not found.")
-                click.echo(cli.get_help(ctx))
+                pout(cli.get_help(ctx))
         else:
             # Not being run by Terraform - show interactive mode
             _show_interactive_mode(ctx)

@@ -163,11 +163,11 @@ def install_command(  # noqa: C901
             target_dir = pyvider_ctx.tf_plugin_dir
             target_binary_path = target_dir / source_binary_path.name
 
-            click.echo(f"  Source: {source_binary_path}")
-            click.echo(f"  Target Directory: {target_dir}")
+            pout(f"  Source: {source_binary_path}")
+            pout(f"  Target Directory: {target_dir}")
 
             if not target_dir.exists():
-                click.echo(f"  Creating plugin directory: {target_dir}")
+                pout(f"  Creating plugin directory: {target_dir}")
                 target_dir.mkdir(parents=True, exist_ok=True)
 
             if target_binary_path.exists():
@@ -176,10 +176,10 @@ def install_command(  # noqa: C901
                     fg="yellow",
                 )
 
-            click.echo(f"  Copying binary to {target_binary_path}...")
+            pout(f"  Copying binary to {target_binary_path}...")
             shutil.copy2(source_binary_path, target_binary_path)
 
-            click.echo("  Ensuring target binary is executable...")
+            pout("  Ensuring target binary is executable...")
             target_binary_path.chmod(target_binary_path.stat().st_mode | 0o111)
 
             pout("\n✅ Success! Provider binary installed.", fg="green", bold=True)
@@ -189,7 +189,7 @@ def install_command(  # noqa: C901
             raise click.Abort() from e
     else:
         pout("📝 Running in Development Mode.", fg="yellow")
-        click.echo("  Placing development wrapper script for Terraform...")
+        pout("  Placing development wrapper script for Terraform...")
         try:
             # Directly call the utility to place the provider script.
             _place_terraform_provider_script(pyvider_ctx)
