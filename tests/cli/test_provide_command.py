@@ -107,9 +107,10 @@ class TestProvideDetectionWarnings:
             import asyncio
             from collections.abc import Coroutine
 
-                    def consume_coroutine(coro: Coroutine[Any, Any, None]):
-                        if asyncio.iscoroutine(coro):
-                            coro.close()
+            def consume_coroutine(coro: Coroutine[Any, Any, None]):
+                if asyncio.iscoroutine(coro):
+                    coro.close()
+
             with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
                 mock_run.side_effect = consume_coroutine
                 result = runner.invoke(cli, ["provide", "--force"])
@@ -128,9 +129,10 @@ class TestProvideForceMode:
         import asyncio
         from collections.abc import Coroutine, Any
 
-                    def consume_coroutine(coro: Coroutine[Any, Any, None]):
-                        if asyncio.iscoroutine(coro):
-                            coro.close()
+        def consume_coroutine(coro: Coroutine[Any, Any, None]):
+            if asyncio.iscoroutine(coro):
+                coro.close()
+
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
