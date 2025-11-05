@@ -9,6 +9,8 @@ Tests the core encryption functionality independently of the Terraform protocol
 to ensure cryptographic security and proper error handling."""
 
 import os
+from pathlib import Path
+from typing import Generator
 
 from provide.foundation.errors import ConfigurationError
 from provide.testkit.mocking import patch
@@ -30,11 +32,11 @@ except ImportError:
     import tempfile
 
     @pytest.fixture
-    def temp_file():
+    def temp_file() -> Generator[str, None, None]:
         """Fallback temp_file fixture."""
         with tempfile.NamedTemporaryFile(delete=False) as f:
             yield f.name
-        os.unlink(f.name)
+        Path(f.name).unlink()
 
 
 class TestEncryptionCore:
@@ -269,7 +271,10 @@ class TestKeyDerivation:
 class TestEncryptionSecurity:
     """Test security properties of the encryption implementation"""
 
-    def test_encryption_key_not_leaked_in_exceptions(self, encryption_key_env) -> None:
+    def test_encryption_key_not_leaked_in_exceptions(
+        self,
+        encryption_key_env: pytest.MonkeyPatch,
+    ) -> None:
         """Test that encryption keys are not leaked in exception messages"""
         invalid_data = b"invalid encrypted data"
 
@@ -282,7 +287,7 @@ class TestEncryptionSecurity:
             # No long hex strings that could be key material
             assert len([word for word in error_message.split() if len(word) > 30]) == 0
 
-    def test_ciphertext_does_not_contain_plaintext(self, encryption_key_env) -> None:
+    def test_ciphertext_does_not_contain_plaintext(self, encryption_key_env: pytest.MonkeyPatch) -> None:
         """Test that ciphertext does not contain recognizable plaintext"""
         plaintext = b"this is very secret information that should not be visible"
         encrypted = encrypt(plaintext)
@@ -320,7 +325,7 @@ class TestEncryptionSecurity:
             original_urandom = os.urandom
             call_count = [0]
 
-            def controlled_urandom(n):
+            def controlled_urandom(n: int) -> bytes:
                 call_count[0] += 1
                 if call_count[0] == 1:  # First call is for salt
                     return test_salt
@@ -334,7 +339,9 @@ class TestEncryptionSecurity:
             assert extracted_salt == test_salt
 
     @pytest.mark.parametrize("data_size", [1, 16, 256, 1024, 4096])
-    def test_encryption_timing_independence(self, encryption_key_env, data_size) -> None:
+    def test_encryption_timing_independence(
+        self, encryption_key_env: pytest.MonkeyPatch, data_size: int
+    ) -> None:
         """Test that encryption time doesn't vary significantly with data content"""
         # This is a basic test - sophisticated timing analysis would require more complex testing
         data_zeros = b"\x00" * data_size

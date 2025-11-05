@@ -81,9 +81,7 @@ def test_analyze_executable_reports_files(tmp_path: Path) -> None:
     assert info["suffix"] == ".py"
 
 
-def test_analyze_cache_structure_lists_directories(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_analyze_cache_structure_lists_directories(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     bin_dir = tmp_path / "cache" / "bin"
     bin_dir.mkdir(parents=True)
     (tmp_path / "cache" / "metadata").mkdir(parents=True)
