@@ -79,7 +79,9 @@ class TestProvideInteractiveMode:
 class TestProvideDetectionWarnings:
     """Test provider binary name detection."""
 
-    def test_magic_cookie_with_wrong_binary_name_shows_error(self, monkeypatch) -> None:
+    def test_magic_cookie_with_wrong_binary_name_shows_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Test detection error when magic cookie is set but binary name is wrong."""
         runner = CliRunner()
 
@@ -97,8 +99,9 @@ class TestProvideDetectionWarnings:
         """Test that --force bypasses the binary name detection."""
         runner = CliRunner()
 
-        with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False):
-            with patch("sys.argv", ["wrong-name", "provide", "--force"]):
+        with patch.dict(
+            os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False
+        ), patch("sys.argv", ["wrong-name", "provide", "--force"]):
                 # Mock the server run to avoid actually starting it
                 import asyncio
 
@@ -372,7 +375,7 @@ class TestProvideCommandCoverage:
         assert "terraform-provider-test provide --force" in result.output
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_detection_error_shows_debug_info(self, mock_run) -> None:
+    def test_detection_error_shows_debug_info(self, mock_run: any) -> None:
         """Test that detection error includes debug information."""
         # Mock asyncio.run to consume any coroutines (shouldn't be called but just in case)
         import asyncio

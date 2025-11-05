@@ -8,9 +8,9 @@
 Tests the core encryption functionality independently of the Terraform protocol
 to ensure cryptographic security and proper error handling."""
 
+from collections.abc import Generator
 import os
 from pathlib import Path
-from typing import Generator
 
 from provide.foundation.errors import ConfigurationError
 from provide.testkit.mocking import patch
@@ -38,31 +38,26 @@ except ImportError:
             yield f.name
         Path(f.name).unlink()
 
-
-class TestEncryptionCore:
-    """Test core encryption/decryption functionality"""
-
-    @pytest.fixture(autouse=True)
-    def reset_encryption_manager_fixture(self):
+    def reset_encryption_manager_fixture(self: any) -> Generator[None, None, None]:
         """Reset the encryption manager before each test"""
         reset_encryption_manager()
         yield
         reset_encryption_manager()
 
     @pytest.fixture
-    def temp_config_file(self, temp_file):
+    def temp_config_file(self: any, temp_file: str) -> Generator[str, None, None]:
         """Create a temporary config file for testing"""
-        config_path = str(temp_file) + ".toml"
-        with open(config_path, "w") as f:
+        config_path = Path(temp_file + ".toml")
+        with config_path.open("w") as f:
             f.write('[pyvider]\nprivate_state_shared_secret = "config-file-secret"\n')
 
-        yield config_path
+        yield str(config_path)
 
         # Cleanup
-        if os.path.exists(config_path):
-            os.unlink(config_path)
+        if config_path.exists():
+            config_path.unlink()
 
-    def test_encrypt_decrypt_roundtrip(self, encryption_key_env) -> None:
+    def test_encrypt_decrypt_roundtrip(self: any, encryption_key_env: any) -> None:
         """Test that data can be encrypted and decrypted successfully"""
         test_data = b"sensitive information that needs protection"
 
@@ -72,7 +67,7 @@ class TestEncryptionCore:
         assert decrypted == test_data
         assert encrypted != test_data
 
-    def test_encryption_produces_different_output(self, encryption_key_env) -> None:
+    def test_encryption_produces_different_output(self: any, encryption_key_env: any) -> None:
         """Test that encryption produces different output each time (nonce randomization)"""
         test_data = b"same input data"
 
@@ -83,12 +78,12 @@ class TestEncryptionCore:
         assert decrypt(encrypted1) == test_data
         assert decrypt(encrypted2) == test_data
 
-    def test_encrypt_empty_data(self, encryption_key_env) -> None:
+    def test_encrypt_empty_data(self: any, encryption_key_env: any) -> None:
         """Test encryption of empty data"""
         assert encrypt(b"") == b""
         assert decrypt(b"") == b""
 
-    def test_encrypt_various_data_sizes(self, encryption_key_env) -> None:
+    def test_encrypt_various_data_sizes(self: any, encryption_key_env: any) -> None:
         """Test encryption of various data sizes"""
         test_cases = [
             b"a",  # Single byte
@@ -104,7 +99,7 @@ class TestEncryptionCore:
             decrypted = decrypt(encrypted)
             assert decrypted == test_data
 
-    def test_encryption_structure(self, encryption_key_env) -> None:
+    def test_encryption_structure(self: any, encryption_key_env: any) -> None:
         """Test that encrypted data has the expected structure (version + salt + nonce + ciphertext)"""
         test_data = b"test data for structure verification"
         encrypted = encrypt(test_data)
@@ -117,7 +112,7 @@ class TestEncryptionCore:
         # Check version byte
         assert encrypted[0] == 0x01  # VERSION_CURRENT
 
-    def test_decrypt_invalid_ciphertext_fails(self, encryption_key_env) -> None:
+    def test_decrypt_invalid_ciphertext_fails(self: any, encryption_key_env: any) -> None:
         """Test that decrypting invalid ciphertext fails with proper error"""
         invalid_data = b"this is not valid encrypted data"
 
@@ -125,14 +120,14 @@ class TestEncryptionCore:
         with pytest.raises(EncryptionError):
             decrypt(invalid_data)
 
-    def test_decrypt_too_short_data_fails(self, encryption_key_env) -> None:
+    def test_decrypt_too_short_data_fails(self: any, encryption_key_env: any) -> None:
         """Test that data too short to contain a nonce fails"""
         short_data = b"short"  # Less than 12 bytes
 
         with pytest.raises(EncryptionError, match="Ciphertext too short"):
             decrypt(short_data)
 
-    def test_decrypt_corrupted_nonce_fails(self, encryption_key_env) -> None:
+    def test_decrypt_corrupted_nonce_fails(self: any, encryption_key_env: any) -> None:
         """Test that corrupted nonce in ciphertext fails"""
         test_data = b"test data"
         encrypted = encrypt(test_data)
@@ -144,7 +139,7 @@ class TestEncryptionCore:
         with pytest.raises(EncryptionError, match="Decryption failed"):
             decrypt(corrupted)
 
-    def test_decrypt_corrupted_ciphertext_fails(self, encryption_key_env) -> None:
+    def test_decrypt_corrupted_ciphertext_fails(self: any, encryption_key_env: any) -> None:
         """Test that corrupted ciphertext fails"""
         test_data = b"test data"
         encrypted = encrypt(test_data)
@@ -162,8 +157,7 @@ class TestEncryptionCore:
 class TestKeyDerivation:
     """Test key derivation functionality"""
 
-    @pytest.fixture(autouse=True)
-    def reset_encryption_manager_fixture(self):
+    def reset_encryption_manager_fixture(self: any) -> Generator[None, None, None]:
         """Reset the encryption manager before each test"""
         reset_encryption_manager()
         yield

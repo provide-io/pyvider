@@ -5,6 +5,7 @@
 
 """Tests for msgpack availability detection utilities."""
 
+from collections.abc import Generator
 import importlib
 import sys
 from typing import Never
@@ -14,18 +15,18 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _reset_availability_module():
+def _reset_availability_module() -> Generator[None, None, None]:
     """Ensure a clean import of the availability module for each test."""
     sys.modules.pop("pyvider.common.utils.availability", None)
     yield
     sys.modules.pop("pyvider.common.utils.availability", None)
 
 
-def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result, logger):
+def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result: object | None, logger: any) -> any:
     """Import the availability module with patched dependencies."""
     original_find_spec = importlib.util.find_spec
 
-    def _find_spec(name: str, *args, **kwargs):
+    def _find_spec(name: str, *args: any, **kwargs: any) -> any:
         if name == "msgpack":
             return spec_result
         return original_find_spec(name, *args, **kwargs)
@@ -71,7 +72,7 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
 
     original_find_spec = importlib.util.find_spec
 
-    def _find_spec(name: str, *args, **kwargs):
+    def _find_spec(name: str, *args: any, **kwargs: any) -> any:
         if name == "msgpack":
             return _boom(name)
         return original_find_spec(name, *args, **kwargs)
