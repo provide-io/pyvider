@@ -172,14 +172,13 @@ class TestProvideForceMode:
 
         call_count = [0]
 
-        def consume_then_interrupt(coro) -> None:
+        def consume_then_interrupt(coro: Coroutine[Any, Any, None]):
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
             # Raise KeyboardInterrupt on second call (the _run_provider_server call)
             if call_count[0] >= 2:
                 raise KeyboardInterrupt()
-            return None
 
         mock_run.side_effect = consume_then_interrupt
         runner = CliRunner()
