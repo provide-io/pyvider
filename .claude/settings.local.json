@@ -4,7 +4,8 @@
       "Bash(echo:*)",
       "Bash(uv run python:*)",
       "Bash(uv run pytest:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(uv run ruff:*)"
     ],
     "deny": [],
     "ask": [],
