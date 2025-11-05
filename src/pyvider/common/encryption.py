@@ -16,7 +16,7 @@ using AES-256-GCM with HKDF key derivation. Features include:
 - Comprehensive logging
 
 Encryption format:
-    [1 byte: version][16 bytes: salt][12 bytes: nonce][N bytes: ciphertext+tag]
+    [1 byte: version][16 bytes: 'salt'][12 bytes: nonce][N bytes: 'ciphertext+tag']
 
 Version 0x01: HKDF-SHA256 + AES-256-GCM"""
 
@@ -166,7 +166,7 @@ class EncryptionManager:
             plaintext: Data to encrypt
 
         Returns:
-            Encrypted data with format: [version][salt][nonce][ciphertext+tag]
+            Encrypted data with format: [version]['salt'][nonce]['ciphertext+tag']
 
         Raises:
             ConfigurationError: If shared secret is not configured
@@ -221,7 +221,7 @@ class EncryptionManager:
         Decrypt ciphertext using AES-256-GCM.
 
         Args:
-            ciphertext: Encrypted data with format: [version][salt][nonce][ciphertext+tag]
+            ciphertext: Encrypted data with format: [version]['salt'][nonce]['ciphertext+tag']
 
         Returns:
             Decrypted plaintext
