@@ -81,7 +81,7 @@ def cli(ctx: click.Context, **kwargs: Any) -> None:
                 click.echo(cli.get_help(ctx))
         else:
             # Not being run by Terraform - show interactive mode
-            click.echo(cli.get_help(ctx))
+            _show_interactive_mode(ctx)
 
 
 # This decorator is for our custom context object, which is correct for subcommands.
