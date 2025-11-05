@@ -59,16 +59,16 @@ async def test_move_resource_state_records_metrics() -> None:
         target_type_name="target_resource",
     )
 
-    with patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests") as mock_requests:
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_duration"
-        ) as mock_duration:
-            response = await MoveResourceStateHandler(request, context=None)
+    with (
+        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests") as mock_requests,
+        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_duration") as mock_duration,
+    ):
+        response = await MoveResourceStateHandler(request, context=None)
 
-            # Verify metrics were recorded
-            mock_requests.inc.assert_called_once_with(handler="MoveResourceState")
-            mock_duration.observe.assert_called_once()
-            assert isinstance(response, pb.MoveResourceState.Response)
+        # Verify metrics were recorded
+        mock_requests.inc.assert_called_once_with(handler="MoveResourceState")
+        mock_duration.observe.assert_called_once()
+        assert isinstance(response, pb.MoveResourceState.Response)
 
 
 @pytest.mark.asyncio
@@ -79,19 +79,21 @@ async def test_move_resource_state_records_errors_on_exception() -> None:
         target_type_name="target_resource",
     )
 
-    with patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests"):
-        with patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_errors") as mock_errors:
-            with patch(
-                "pyvider.protocols.tfprotov6.handlers.move_resource_state._move_resource_state_impl"
-            ) as mock_impl:
-                # Make implementation raise an exception
-                mock_impl.side_effect = RuntimeError("Test error")
+    with (
+        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests"),
+        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_errors") as mock_errors,
+        patch(
+            "pyvider.protocols.tfprotov6.handlers.move_resource_state._move_resource_state_impl"
+        ) as mock_impl,
+    ):
+        # Make implementation raise an exception
+        mock_impl.side_effect = RuntimeError("Test error")
 
-                with pytest.raises(RuntimeError, match="Test error"):
-                    await MoveResourceStateHandler(request, context=None)
+        with pytest.raises(RuntimeError, match="Test error"):
+            await MoveResourceStateHandler(request, context=None)
 
-                # Verify error metric was recorded
-                mock_errors.inc.assert_called_once_with(handler="MoveResourceState")
+        # Verify error metric was recorded
+        mock_errors.inc.assert_called_once_with(handler="MoveResourceState")
 
 
 # 🐍🏗️🔚

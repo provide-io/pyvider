@@ -14,7 +14,7 @@ import pytest
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, s_resource
+from pyvider.schema import PvsSchema, a_str, s_resource
 
 
 # GIVEN a resource that uses a structured private state object
@@ -29,16 +29,18 @@ class ResourceWithPrivateState(BaseResource):
 
     # Other required abstract methods...
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource({"name": a_str()})
 
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx) -> None:
+    async def read(self, ctx: ResourceContext) -> None:
         pass
 
-    async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]):
+    async def _create(
+        self, ctx: ResourceContext, base_plan: dict[str, Any]
+    ) -> tuple[dict[str, Any], MyPrivateState]:
         # WHEN the plan operation returns a private state object
         private_state = MyPrivateState(internal_id="uuid-1234", version=1)
         return base_plan, private_state

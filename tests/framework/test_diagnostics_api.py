@@ -16,7 +16,7 @@ from pyvider.protocols.tfprotov6.handlers import PlanResourceChangeHandler
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import a_str, s_resource
+from pyvider.schema import PvsSchema, a_str, s_resource
 
 
 @attrs.define(frozen=True)
@@ -31,7 +31,7 @@ class WarningResource(BaseResource):
     config_class = WarningState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource(
             {
                 "name": a_str(optional=True),
@@ -53,7 +53,7 @@ class WarningResource(BaseResource):
         base_plan["name"] = config.name or config.old_name
         return base_plan, None
 
-    async def read(self, ctx) -> None:
+    async def read(self, ctx: ResourceContext) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -61,7 +61,7 @@ class WarningResource(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_plan_handler_collects_attribute_warnings(provider_in_hub) -> None:
+async def test_plan_handler_collects_attribute_warnings(provider_in_hub: Any) -> None:
     resource_name = "warning_test_resource"
     hub.register("resource", resource_name, WarningResource)
     try:

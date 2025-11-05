@@ -28,7 +28,7 @@ from pyvider.protocols.tfprotov6.handlers import (
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_str, s_resource
+from pyvider.schema import PvsSchema, a_str, s_resource
 
 # --- Test Resource Definitions ---
 
@@ -64,7 +64,7 @@ class MockConnectionResource(BaseEphemeralResource):
     private_state_class = MockConnectionPrivateState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource(
             {
                 "host": a_str(required=True),

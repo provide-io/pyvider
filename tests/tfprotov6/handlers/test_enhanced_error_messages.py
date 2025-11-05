@@ -116,23 +116,23 @@ class TestDataSourceErrorMessages:
         request = pb.ValidateDataResourceConfig.Request(type_name="test_data_source")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag.return_value = pb.Diagnostic(
-                    severity=pb.Diagnostic.ERROR, summary="Test", detail="Test"
-                )
+            ) as mock_diag,
+        ):
+            mock_hub.get_component.return_value = None
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test", detail="Test")
 
-                await _validate_data_resource_config_impl(request, context=None)
+            await _validate_data_resource_config_impl(request, context=None)
 
-                # Verify the exception that was passed to create_diagnostic
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "Troubleshooting:" in error_message
-                assert "1." in error_message  # Numbered steps
-                assert "2." in error_message
+            # Verify the exception that was passed to create_diagnostic
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "Troubleshooting:" in error_message
+            assert "1." in error_message  # Numbered steps
+            assert "2." in error_message
 
 
 class TestEphemeralResourceErrorMessages:
@@ -144,19 +144,21 @@ class TestEphemeralResourceErrorMessages:
         request = pb.OpenEphemeralResource.Request(type_name="test_ephemeral")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
+            ) as mock_diag,
+        ):
+            mock_hub.get_component.return_value = None
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
 
-                await _open_ephemeral_resource_impl(request, context=None)
+            await _open_ephemeral_resource_impl(request, context=None)
 
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "Suggestion:" in error_message
-                assert "@ephemeral decorator" in error_message
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "Suggestion:" in error_message
+            assert "@ephemeral decorator" in error_message
 
     @pytest.mark.asyncio
     async def test_renew_ephemeral_missing_private_state_class_has_documentation(self) -> None:
@@ -167,20 +169,22 @@ class TestEphemeralResourceErrorMessages:
         mock_class = MagicMock()
         mock_class.private_state_class = None
 
-        with patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = mock_class
-                mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
+            ) as mock_diag,
+        ):
+            mock_hub.get_component.return_value = mock_class
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
 
-                await _renew_ephemeral_resource_impl(request, context=None)
+            await _renew_ephemeral_resource_impl(request, context=None)
 
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "Suggestion:" in error_message
-                assert "private_state_class" in error_message
-                assert "Documentation:" in error_message
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "Suggestion:" in error_message
+            assert "private_state_class" in error_message
+            assert "Documentation:" in error_message
 
     @pytest.mark.asyncio
     async def test_close_ephemeral_error_has_troubleshooting_steps(self) -> None:
@@ -188,22 +192,22 @@ class TestEphemeralResourceErrorMessages:
         request = pb.CloseEphemeralResource.Request(type_name="test_ephemeral")
         request.private = msgpack.packb({"test": "data"})
 
-        with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
+            ) as mock_diag,
+        ):
+            mock_hub.get_component.return_value = None
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
 
-                await _close_ephemeral_resource_impl(request, context=None)
+            await _close_ephemeral_resource_impl(request, context=None)
 
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "Troubleshooting:" in error_message
-                steps = [
-                    line for line in error_message.split("\n") if line.strip().startswith(("1.", "2.", "3."))
-                ]
-                assert len(steps) >= 2  # At least 2 troubleshooting steps
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "Troubleshooting:" in error_message
+            steps = [line for line in error_message.split("\n") if line.strip().startswith(("1.", "2.", "3."))]
+            assert len(steps) >= 2  # At least 2 troubleshooting steps
 
     @pytest.mark.asyncio
     async def test_validate_ephemeral_config_has_decorator_guidance(self) -> None:
@@ -211,18 +215,20 @@ class TestEphemeralResourceErrorMessages:
         request = pb.ValidateEphemeralResourceConfig.Request(type_name="test_ephemeral")
         request.config.CopyFrom(pb.DynamicValue(msgpack=b"\x80"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub") as mock_hub:
-            with patch(
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.hub") as mock_hub,
+            patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.create_diagnostic_from_exception"
-            ) as mock_diag:
-                mock_hub.get_component.return_value = None
-                mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
+            ) as mock_diag,
+        ):
+            mock_hub.get_component.return_value = None
+            mock_diag.return_value = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test")
 
-                await _validate_ephemeral_resource_config_impl(request, context=None)
+            await _validate_ephemeral_resource_config_impl(request, context=None)
 
-                called_exception = mock_diag.call_args[0][0]
-                error_message = str(called_exception)
-                assert "@ephemeral decorator" in error_message
+            called_exception = mock_diag.call_args[0][0]
+            error_message = str(called_exception)
+            assert "@ephemeral decorator" in error_message
 
 
 class TestFunctionErrorMessages:

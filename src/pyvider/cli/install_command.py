@@ -147,13 +147,13 @@ def install_command(  # noqa: C901
 
     # Handle uninstall (after validation)
     if uninstall:
-        click.secho("🗑️  Uninstalling provider...", fg="yellow")
+        pout("🗑️  Uninstalling provider...", fg="yellow")
         _uninstall_provider(pyvider_ctx)
         return
 
     # Handle reinstall (uninstall + install)
     if reinstall:
-        click.secho("🔄 Reinstalling provider...", fg="yellow")
+        pout("🔄 Reinstalling provider...", fg="yellow")
         _uninstall_provider(pyvider_ctx, quiet=True)
         # Fall through to install logic below
 
@@ -171,7 +171,7 @@ def install_command(  # noqa: C901
                 target_dir.mkdir(parents=True, exist_ok=True)
 
             if target_binary_path.exists():
-                click.secho(
+                pout(
                     f"  ⚠️  Warning: Existing provider binary found at {target_binary_path}. It will be replaced.",
                     fg="yellow",
                 )
@@ -185,16 +185,16 @@ def install_command(  # noqa: C901
             pout("\n✅ Success! Provider binary installed.", fg="green", bold=True)
 
         except Exception as e:
-            click.secho(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
+            pout(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
             raise click.Abort() from e
     else:
-        click.secho("📝 Running in Development Mode.", fg="yellow")
+        pout("📝 Running in Development Mode.", fg="yellow")
         click.echo("  Placing development wrapper script for Terraform...")
         try:
             # Directly call the utility to place the provider script.
             _place_terraform_provider_script(pyvider_ctx)
         except Exception as e:
-            click.secho(
+            pout(
                 f"\n❌ Failed to place development wrapper script: {e}",
                 fg="red",
                 bold=True,

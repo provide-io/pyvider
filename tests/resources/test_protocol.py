@@ -5,6 +5,8 @@
 
 """Tests for pyvider/resources/protocol.py."""
 
+from typing import Any
+
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.protocol import ResourceProtocol
 
@@ -31,16 +33,16 @@ class TestResourceProtocol:
         """Test that a valid implementation is recognized as conforming to the protocol."""
 
         class ValidResource:
-            async def validate(self, config) -> None:
+            async def validate(self, config: dict[str, Any]) -> None:
                 pass
 
-            async def read(self, ctx: ResourceContext):
+            async def read(self, ctx: ResourceContext) -> dict[str, Any]:
                 return {}
 
-            async def plan(self, ctx: ResourceContext):
+            async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any], bytes]:
                 return {}, b""
 
-            async def apply(self, ctx: ResourceContext):
+            async def apply(self, ctx: ResourceContext) -> tuple[dict[str, Any], bytes]:
                 return {}, b""
 
             async def delete(self, ctx: ResourceContext) -> None:
@@ -54,7 +56,7 @@ class TestResourceProtocol:
         """Test that a partial implementation is not recognized as conforming."""
 
         class PartialResource:
-            async def validate(self, config) -> None:
+            async def validate(self, config: dict[str, Any]) -> None:
                 pass
 
             # Missing other methods

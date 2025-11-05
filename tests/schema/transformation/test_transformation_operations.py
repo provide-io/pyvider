@@ -26,14 +26,14 @@ def base_schema() -> PvsSchema:
 
 
 class TestSchemaTransforms:
-    def test_add_attribute(self, base_schema) -> None:
+    def test_add_attribute(self, base_schema: PvsSchema) -> None:
         transformer = PvsSchemaTransformer()
         new_attr = a_bool(name="enabled", description="Whether the resource is enabled")
         new_schema = transformer.add_attribute(base_schema, new_attr)
         assert "enabled" in new_schema.block.attributes
         assert isinstance(new_schema.block.attributes["enabled"], PvsAttribute)
 
-    def test_remove_attribute(self, base_schema) -> None:
+    def test_remove_attribute(self, base_schema: PvsSchema) -> None:
         transformer = PvsSchemaTransformer()
         new_schema = transformer.remove_attribute(base_schema, "description")
         attr_names = new_schema.block.attributes.keys()

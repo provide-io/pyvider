@@ -12,12 +12,12 @@ from pyvider.handler import ProviderHandler
 
 
 @pytest.fixture
-def mock_provider():
+def mock_provider() -> MagicMock:
     return MagicMock()
 
 
 @pytest.mark.asyncio
-async def test_validate_resource_config_delegates(mock_provider) -> None:
+async def test_validate_resource_config_delegates(mock_provider: MagicMock) -> None:
     """Test ValidateResourceConfig delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -34,7 +34,7 @@ async def test_validate_resource_config_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_read_resource_delegates(mock_provider) -> None:
+async def test_read_resource_delegates(mock_provider: MagicMock) -> None:
     """Test ReadResource delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -51,7 +51,7 @@ async def test_read_resource_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_plan_resource_change_delegates(mock_provider) -> None:
+async def test_plan_resource_change_delegates(mock_provider: MagicMock) -> None:
     """Test PlanResourceChange delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -68,7 +68,7 @@ async def test_plan_resource_change_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_apply_resource_change_delegates(mock_provider) -> None:
+async def test_apply_resource_change_delegates(mock_provider: MagicMock) -> None:
     """Test ApplyResourceChange delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -85,7 +85,7 @@ async def test_apply_resource_change_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_import_resource_state_delegates(mock_provider) -> None:
+async def test_import_resource_state_delegates(mock_provider: MagicMock) -> None:
     """Test ImportResourceState delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -102,7 +102,7 @@ async def test_import_resource_state_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_upgrade_resource_state_delegates(mock_provider) -> None:
+async def test_upgrade_resource_state_delegates(mock_provider: MagicMock) -> None:
     """Test UpgradeResourceState delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -119,7 +119,7 @@ async def test_upgrade_resource_state_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_move_resource_state_delegates(mock_provider) -> None:
+async def test_move_resource_state_delegates(mock_provider: MagicMock) -> None:
     """Test MoveResourceState delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -136,7 +136,7 @@ async def test_move_resource_state_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_validate_data_resource_config_delegates(mock_provider) -> None:
+async def test_validate_data_resource_config_delegates(mock_provider: MagicMock) -> None:
     """Test ValidateDataResourceConfig delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -153,7 +153,7 @@ async def test_validate_data_resource_config_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_read_data_source_delegates(mock_provider) -> None:
+async def test_read_data_source_delegates(mock_provider: MagicMock) -> None:
     """Test ReadDataSource delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -170,7 +170,7 @@ async def test_read_data_source_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_validate_ephemeral_resource_config_delegates(mock_provider) -> None:
+async def test_validate_ephemeral_resource_config_delegates(mock_provider: MagicMock) -> None:
     """Test ValidateEphemeralResourceConfig delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -187,7 +187,7 @@ async def test_validate_ephemeral_resource_config_delegates(mock_provider) -> No
 
 
 @pytest.mark.asyncio
-async def test_open_ephemeral_resource_delegates(mock_provider) -> None:
+async def test_open_ephemeral_resource_delegates(mock_provider: MagicMock) -> None:
     """Test OpenEphemeralResource delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -204,7 +204,7 @@ async def test_open_ephemeral_resource_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_renew_ephemeral_resource_delegates(mock_provider) -> None:
+async def test_renew_ephemeral_resource_delegates(mock_provider: MagicMock) -> None:
     """Test RenewEphemeralResource delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -221,7 +221,7 @@ async def test_renew_ephemeral_resource_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_close_ephemeral_resource_delegates(mock_provider) -> None:
+async def test_close_ephemeral_resource_delegates(mock_provider: MagicMock) -> None:
     """Test CloseEphemeralResource delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -238,7 +238,7 @@ async def test_close_ephemeral_resource_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_get_functions_delegates(mock_provider) -> None:
+async def test_get_functions_delegates(mock_provider: MagicMock) -> None:
     """Test GetFunctions delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 
@@ -255,7 +255,7 @@ async def test_get_functions_delegates(mock_provider) -> None:
 
 
 @pytest.mark.asyncio
-async def test_call_function_delegates(mock_provider) -> None:
+async def test_call_function_delegates(mock_provider: MagicMock) -> None:
     """Test CallFunction delegates to handler."""
     handler = ProviderHandler(provider=mock_provider)
 

@@ -20,7 +20,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_num, a_str, s_resource
+from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 
 
 @attrs.define(frozen=True)
@@ -41,7 +41,7 @@ class ResourceWithPrivateStateInRead(BaseResource):
     private_state_class = ReadPrivateState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource({"name": a_str(), "read_version": a_num(computed=True)})
 
     async def _validate_config(self, config: Any) -> list[str]:
@@ -54,7 +54,7 @@ class ResourceWithPrivateStateInRead(BaseResource):
             raise ResourceError("Private state has incorrect type.")
         return self.state_class(name=ctx.state.name, read_version=ctx.private_state.version)
 
-    async def _create(self, ctx, base_plan) -> None:
+    async def _create(self, ctx: ResourceContext, base_plan: dict) -> None:
         pass
 
     async def _delete_apply(self, ctx: ResourceContext) -> None:
@@ -62,7 +62,7 @@ class ResourceWithPrivateStateInRead(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_read_handler_provides_private_state_to_context(encryption_key_env, provider_in_hub) -> None:
+async def test_read_handler_provides_private_state_to_context(encryption_key_env: str, provider_in_hub: Any) -> None:
     resource_name = "read_private_state_test_resource"
     hub.register("resource", resource_name, ResourceWithPrivateStateInRead)
     try:

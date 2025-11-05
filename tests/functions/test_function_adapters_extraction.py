@@ -5,6 +5,9 @@
 
 """Tests for function adapters - Parameter and metadata extraction."""
 
+from typing import Any
+from unittest.mock import MagicMock
+
 from provide.testkit import mocking as mock
 
 from pyvider.cty import CtyDynamic, CtyNumber, CtyString
@@ -117,7 +120,7 @@ class TestExtractParametersMeta:
         assert result["parameters"][0]["name"] == "name"
 
     @mock.patch("pyvider.functions.adapters.logger")
-    def test_warns_on_multiple_defaults(self, mock_logger) -> None:
+    def test_warns_on_multiple_defaults(self, mock_logger: MagicMock) -> None:
         """Test warning on multiple default parameters."""
         import inspect
 
@@ -257,10 +260,10 @@ class TestFunctionToDict:
         assert result["variadic_parameter"]["name"] == "count"
 
     @mock.patch("pyvider.functions.adapters.logger")
-    def test_handles_type_hint_resolution_errors(self, mock_logger) -> None:
+    def test_handles_type_hint_resolution_errors(self, mock_logger: MagicMock) -> None:
         """Test handling type hint resolution errors."""
 
-        def test_func(name) -> None:  # No type hints
+        def test_func(name: Any) -> None:  # No type hints
             pass
 
         result = function_to_dict(test_func)

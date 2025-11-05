@@ -12,6 +12,7 @@ import sys
 from typing import Any
 
 import click
+from provide.foundation.console import pout
 
 from pyvider.cli.main import cli
 
@@ -197,41 +198,41 @@ async def _run_provider_server(magic_cookie: str) -> None:
         )
 
         # Enhanced error message for users
-        click.secho("\n" + "═" * 70, fg="red", err=True)
-        click.secho(" ❌  Provider Server Error", fg="red", bold=True, err=True)
-        click.secho("═" * 70, fg="red", err=True)
-        click.secho(
+        pout("\n" + "═" * 70, fg="red", err=True)
+        pout(" ❌  Provider Server Error", fg="red", bold=True, err=True)
+        pout("═" * 70, fg="red", err=True)
+        pout(
             "\nThe provider server failed to start or crashed unexpectedly.\n",
             fg="white",
             err=True,
         )
-        click.secho(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
-        click.secho(f"Error Message: {e!s}\n", fg="yellow", err=True)
+        pout(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
+        pout(f"Error Message: {e!s}\n", fg="yellow", err=True)
 
-        click.secho("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
-        click.secho("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
-        click.secho(
+        pout("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
+        pout("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
+        pout(
             "  2. Verify all dependencies are installed: 'uv sync' or 'pip install -e .'", fg="white", err=True
         )
-        click.secho("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
-        click.secho("  4. Review the full error trace above for specific details", fg="white", err=True)
-        click.secho("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
+        pout("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
+        pout("  4. Review the full error trace above for specific details", fg="white", err=True)
+        pout("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
 
-        click.secho("\nCommon Causes:", fg="cyan", bold=True, err=True)
-        click.secho("  • Missing or incompatible dependencies", fg="white", err=True)
-        click.secho("  • Invalid provider configuration", fg="white", err=True)
-        click.secho("  • Port already in use (if binding to specific port)", fg="white", err=True)
-        click.secho("  • Insufficient permissions", fg="white", err=True)
-        click.secho("  • Corrupted provider binary or package", fg="white", err=True)
+        pout("\nCommon Causes:", fg="cyan", bold=True, err=True)
+        pout("  • Missing or incompatible dependencies", fg="white", err=True)
+        pout("  • Invalid provider configuration", fg="white", err=True)
+        pout("  • Port already in use (if binding to specific port)", fg="white", err=True)
+        pout("  • Insufficient permissions", fg="white", err=True)
+        pout("  • Corrupted provider binary or package", fg="white", err=True)
 
-        click.secho("\nIf the issue persists:", fg="cyan", bold=True, err=True)
-        click.secho("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
-        click.secho(
+        pout("\nIf the issue persists:", fg="cyan", bold=True, err=True)
+        pout("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
+        pout(
             f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}",
             fg="white",
             err=True,
         )
-        click.secho("═" * 70, fg="red", err=True)
+        pout("═" * 70, fg="red", err=True)
 
         sys.exit(1)
 
@@ -269,44 +270,44 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
         and "terraform-provider" not in script_name.lower()
         and "terraform-provider" not in sys.argv[0].lower()
     ):
-        click.secho("\n" + "─" * 70, fg="red")
-        click.secho(" ❌  Provider Detection Error", fg="red", bold=True)
-        click.secho("─" * 70, fg="red")
-        click.secho(
+        pout("\n" + "─" * 70, fg="red")
+        pout(" ❌  Provider Detection Error", fg="red", bold=True)
+        pout("─" * 70, fg="red")
+        pout(
             "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
             f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
             fg="yellow",
         )
-        click.secho(
+        pout(
             "\nThis usually happens when:",
             fg="white",
         )
-        click.secho(
+        pout(
             "  1. The provider binary was renamed or symlinked incorrectly",
             fg="white",
         )
-        click.secho(
+        pout(
             "  2. The PSPF package was built with an incorrect command configuration",
             fg="white",
         )
-        click.secho("\nTo fix this:", fg="cyan", bold=True)
-        click.secho(
+        pout("\nTo fix this:", fg="cyan", bold=True)
+        pout(
             f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
             fg="cyan",
         )
-        click.secho(
+        pout(
             "  • Check the [tool.flavor] configuration in pyproject.toml",
             fg="cyan",
         )
-        click.secho(
+        pout(
             "  • Rebuild the package with the correct command path",
             fg="cyan",
         )
-        click.secho("─" * 70, fg="red")
-        click.secho("\nDebug Info:", fg="white", dim=True)
-        click.secho(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
-        click.secho(f"  script_name: {script_name}", fg="white", dim=True)
-        click.secho(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
+        pout("─" * 70, fg="red")
+        pout("\nDebug Info:", fg="white", dim=True)
+        pout(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
+        pout(f"  script_name: {script_name}", fg="white", dim=True)
+        pout(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
         sys.exit(1)
 
     if not magic_cookie and not force:
@@ -315,34 +316,34 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
 
         launch_context = detect_launch_context()
 
-        click.secho("\n" + "─" * 70, fg="cyan")
-        click.secho(" i  Interactive Mode", fg="cyan", bold=True)
-        click.secho("─" * 70, fg="cyan")
-        click.secho(
+        pout("\n" + "─" * 70, fg="cyan")
+        pout(" i  Interactive Mode", fg="cyan", bold=True)
+        pout("─" * 70, fg="cyan")
+        pout(
             "\nThis executable is a Pyvider-based Terraform provider. It was not started by\n"
             "Terraform, so it has entered interactive CLI mode.",
             fg="white",
         )
 
         # Display launch context
-        click.secho("\n🚀 Launch Context:", fg="green", bold=True)
-        click.secho(f"   Method: {launch_context.method.value}", fg="white")
-        click.secho(f"   Executable: {launch_context.executable_path}", fg="white")
-        click.secho(f"   Python: {launch_context.python_executable}", fg="white")
+        pout("\n🚀 Launch Context:", fg="green", bold=True)
+        pout(f"   Method: {launch_context.method.value}", fg="white")
+        pout(f"   Executable: {launch_context.executable_path}", fg="white")
+        pout(f"   Python: {launch_context.python_executable}", fg="white")
 
         if launch_context.details:
             for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
-                click.secho(f"   {key}: {value}", fg="white")
+                pout(f"   {key}: {value}", fg="white")
 
-        click.secho(
+        pout(
             "\nYou can use the commands below to inspect the provider's components.",
             fg="white",
         )
-        click.secho(
+        pout(
             f"\nTo run in server mode for testing, use: '{script_name} provide --force'",
             fg="yellow",
         )
-        click.secho("─" * 70, fg="cyan")
+        pout("─" * 70, fg="cyan")
 
         # Display the full help message for the main CLI group
         click.echo("\n" + ctx.parent.get_help())
@@ -350,9 +351,7 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
 
     # --- FIX: Run discovery and handle errors before starting the server ---
     pyvider_ctx = ctx.obj
-    asyncio.run(
-        pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, click.secho)
-    )
+    asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, pout))
     _handle_discovery_errors(pyvider_ctx)
 
     # If --force is used, provide a dummy cookie value.

@@ -5,6 +5,8 @@
 
 """TODO: Add module docstring."""
 
+from typing import Any
+
 import pytest
 
 from pyvider.cty.types import (
@@ -48,7 +50,7 @@ class TestAUnknownHelper:
         ],
         ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
-    def test_a_unknown_with_various_types(self, schema_builder, expected_type) -> None:
+    def test_a_unknown_with_various_types(self, schema_builder: Any, expected_type: Any) -> None:
         result = a_unknown(schema_builder)
         assert isinstance(result, CtyValue)
         assert result.is_unknown, "Value MUST be unknown"
@@ -70,8 +72,8 @@ class TestAUnknownHelper:
         assert isinstance(result.vtype, CtyObject)
 
     @pytest.mark.parametrize("invalid_input", ["not a schema builder", 12345, None])
-    def test_a_unknown_raises_type_error_for_invalid_input(self, invalid_input) -> None:
-        with pytest.raises(TypeError, match="a_unknown.. expects a schema builder instance"):
+    def test_a_unknown_raises_type_error_for_invalid_input(self, invalid_input: Any) -> None:
+        with pytest.raises(TypeError, match=r"a_unknown.. expects a schema builder instance"):
             a_unknown(invalid_input)
 
 
@@ -92,7 +94,7 @@ class TestANullHelper:
         ],
         ids=["string", "number", "bool", "list(string)", "set(number)", "map(bool)"],
     )
-    def test_a_null_with_various_types(self, schema_builder, expected_type) -> None:
+    def test_a_null_with_various_types(self, schema_builder: Any, expected_type: Any) -> None:
         result = a_null(schema_builder)
         assert isinstance(result, CtyValue)
         assert not result.is_unknown, "Null values are always considered known"
@@ -111,8 +113,8 @@ class TestANullHelper:
         assert isinstance(result.vtype, CtyObject)
 
     @pytest.mark.parametrize("invalid_input", ["not a schema builder", 12345, None])
-    def test_a_null_raises_type_error_for_invalid_input(self, invalid_input) -> None:
-        with pytest.raises(TypeError, match="a_null.. expects a schema builder instance"):
+    def test_a_null_raises_type_error_for_invalid_input(self, invalid_input: Any) -> None:
+        with pytest.raises(TypeError, match=r"a_null.. expects a schema builder instance"):
             a_null(invalid_input)
 
 

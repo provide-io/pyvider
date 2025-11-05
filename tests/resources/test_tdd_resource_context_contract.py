@@ -18,7 +18,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_bool, a_str, s_resource
+from pyvider.schema import PvsSchema, a_bool, a_str, s_resource
 
 
 @attrs.define(frozen=True)
@@ -48,7 +48,7 @@ class ContextAwareResource(BaseResource):
     private_state_class = ContextAwarePrivateState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource(
             {
                 "api_key": a_str(required=True, sensitive=True),
@@ -62,7 +62,9 @@ class ContextAwareResource(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def _create(self, ctx: ResourceContext, base_plan: dict[str, Any]):
+    async def _create(
+        self, ctx: ResourceContext, base_plan: dict[str, Any]
+    ) -> tuple[dict[str, Any], ContextAwarePrivateState]:
         config_cty: CtyValue | None = ctx.config_cty
         was_present = config_cty is not None
         api_key_marked = False
@@ -88,7 +90,7 @@ class ContextAwareResource(BaseResource):
 
 
 @pytest.mark.asyncio
-async def test_plan_handler_populates_full_resource_context(encryption_key_env, provider_in_hub) -> None:
+async def test_plan_handler_populates_full_resource_context(encryption_key_env: str, provider_in_hub: Any) -> None:
     resource_name = "context_aware_resource"
     hub.register("resource", resource_name, ContextAwareResource)
     try:

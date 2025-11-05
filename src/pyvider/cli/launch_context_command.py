@@ -8,6 +8,7 @@
 import json
 
 import click
+from provide.foundation.console import pout
 
 from pyvider.cli.main import cli
 from pyvider.common.launch_context import LaunchMethod
@@ -57,61 +58,61 @@ def launch_context_cmd(format: str, verbose: bool) -> None:  # noqa: C901
 
     else:
         # Human-readable format
-        click.secho("\n🚀 Pyvider Launch Context", fg="green", bold=True)
-        click.secho("─" * 50, fg="green")
+        pout("\n🚀 Pyvider Launch Context", fg="green", bold=True)
+        pout("─" * 50, fg="green")
 
-        click.secho("\nLaunch Method: ", fg="cyan", bold=True, nl=False)
-        click.secho(launch_context.method.value, fg="white")
+        pout("\nLaunch Method: ", fg="cyan", bold=True, nl=False)
+        pout(launch_context.method.value, fg="white")
 
-        click.secho("Executable Path: ", fg="cyan", bold=True, nl=False)
-        click.secho(launch_context.executable_path, fg="white")
+        pout("Executable Path: ", fg="cyan", bold=True, nl=False)
+        pout(launch_context.executable_path, fg="white")
 
-        click.secho("Python Executable: ", fg="cyan", bold=True, nl=False)
-        click.secho(launch_context.python_executable, fg="white")
+        pout("Python Executable: ", fg="cyan", bold=True, nl=False)
+        pout(launch_context.python_executable, fg="white")
 
-        click.secho("Working Directory: ", fg="cyan", bold=True, nl=False)
-        click.secho(launch_context.working_directory, fg="white")
+        pout("Working Directory: ", fg="cyan", bold=True, nl=False)
+        pout(launch_context.working_directory, fg="white")
 
-        click.secho("Terraform Invoked: ", fg="cyan", bold=True, nl=False)
+        pout("Terraform Invoked: ", fg="cyan", bold=True, nl=False)
         color = "green" if launch_context.is_terraform_invoked else "red"
-        click.secho(str(launch_context.is_terraform_invoked), fg=color)
+        pout(str(launch_context.is_terraform_invoked), fg=color)
 
         # Show method-specific details
         if launch_context.details:
-            click.secho("\nMethod Details:", fg="cyan", bold=True)
+            pout("\nMethod Details:", fg="cyan", bold=True)
             for key, value in launch_context.details.items():
-                click.secho(f"  {key}: ", fg="cyan", nl=False)
+                pout(f"  {key}: ", fg="cyan", nl=False)
 
                 # Format complex values
                 if isinstance(value, (list, dict)):
                     if len(str(value)) > 80:
-                        click.secho("<complex_value>", fg="yellow")
+                        pout("<complex_value>", fg="yellow")
                     else:
-                        click.secho(str(value), fg="white")
+                        pout(str(value), fg="white")
                 else:
-                    click.secho(str(value), fg="white")
+                    pout(str(value), fg="white")
 
         # Show environment info if verbose
         if verbose:
-            click.secho("\nEnvironment Information:", fg="cyan", bold=True)
+            pout("\nEnvironment Information:", fg="cyan", bold=True)
             env_info = launch_context.environment_info
 
             for key, value in env_info.items():
                 if key == "argv":
-                    click.secho(f"  {key}: ", fg="cyan", nl=False)
-                    click.secho(" ".join(value), fg="white")
+                    pout(f"  {key}: ", fg="cyan", nl=False)
+                    pout(" ".join(value), fg="white")
                 elif key == "pspf_env_vars" and value:
-                    click.secho("  PSPF Environment Variables:", fg="cyan")
+                    pout("  PSPF Environment Variables:", fg="cyan")
                     for env_key, env_value in value.items():
-                        click.secho(f"    {env_key}: {env_value}", fg="white")
+                        pout(f"    {env_key}: {env_value}", fg="white")
                 else:
-                    click.secho(f"  {key}: ", fg="cyan", nl=False)
+                    pout(f"  {key}: ", fg="cyan", nl=False)
                     if isinstance(value, str) and len(value) > 100:
-                        click.secho(f"{value[:100]}...", fg="white")
+                        pout(f"{value[:100]}...", fg="white")
                     else:
-                        click.secho(str(value), fg="white")
+                        pout(str(value), fg="white")
 
-        click.secho("\n" + "─" * 50, fg="green")
+        pout("\n" + "─" * 50, fg="green")
 
         # Add helpful information based on launch method
         _show_method_specific_help(launch_context.method)
@@ -120,26 +121,26 @@ def launch_context_cmd(format: str, verbose: bool) -> None:  # noqa: C901
 def _show_method_specific_help(method: LaunchMethod) -> None:
     """Show helpful information based on the detected launch method."""
     if method.value == "pspf_package":
-        click.secho("\n💡 PSPF Package Detected", fg="blue", bold=True)
+        pout("\n💡 PSPF Package Detected", fg="blue", bold=True)
         click.echo("  This provider is running from a PSPF (Progressive Secure Package Format)")
         click.echo("  self-contained package with embedded Python runtime.")
 
     elif method.value == "script_module":
-        click.secho("\n💡 Module Launch Detected", fg="blue", bold=True)
+        pout("\n💡 Module Launch Detected", fg="blue", bold=True)
         click.echo("  This provider was launched using 'python -m pyvider' or similar.")
         click.echo("  This is typically used during development or testing.")
 
     elif method.value == "editable_install":
-        click.secho("\n💡 Development Mode Detected", fg="blue", bold=True)
+        pout("\n💡 Development Mode Detected", fg="blue", bold=True)
         click.echo("  This provider is running from an editable install (pip install -e).")
         click.echo("  This is typically used during development.")
 
     elif method.value == "script_direct":
-        click.secho("\n💡 Direct Script Launch Detected", fg="blue", bold=True)
+        pout("\n💡 Direct Script Launch Detected", fg="blue", bold=True)
         click.echo("  This provider is running as a direct Python script.")
 
     elif method.value == "unknown":
-        click.secho("\n⚠️ Unknown Launch Method", fg="yellow", bold=True)
+        pout("\n⚠️ Unknown Launch Method", fg="yellow", bold=True)
         click.echo("  The launch method could not be determined.")
         click.echo("  Use --verbose flag for more debugging information.")
 

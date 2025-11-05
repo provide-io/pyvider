@@ -11,6 +11,7 @@ import attrs
 
 from pyvider.cty import CtyList, CtyObject, CtyString
 from pyvider.resources.base import BaseResource
+from pyvider.resources.context import ResourceContext
 
 
 @attrs.define(frozen=True)
@@ -35,16 +36,16 @@ class DummyResource(BaseResource):
     async def _validate_config(self, config: Any) -> list[str]:
         return []
 
-    async def read(self, ctx) -> None:
+    async def read(self, ctx: ResourceContext) -> None:
         pass
 
-    async def plan(self, ctx) -> None:
+    async def plan(self, ctx: ResourceContext) -> None:
         pass
 
-    async def apply(self, ctx) -> None:
+    async def apply(self, ctx: ResourceContext) -> None:
         pass
 
-    async def delete(self, ctx) -> None:
+    async def delete(self, ctx: ResourceContext) -> None:
         pass
 
 

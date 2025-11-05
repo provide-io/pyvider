@@ -385,7 +385,6 @@ Paste relevant logs here
 ```python
 # Minimal code that reproduces the issue
 ```
-```
 
 ## Requesting Features
 

@@ -16,13 +16,13 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.GetFunctions.Request:
     """Create sample GetFunctions request."""
     return pb.GetFunctions.Request()
 
 
 @pytest.fixture
-def sample_function_obj():
+def sample_function_obj() -> MagicMock:
     """Create a sample function object for testing."""
     func_obj = MagicMock()
     func_obj.__name__ = "test_function"
@@ -30,7 +30,7 @@ def sample_function_obj():
 
 
 @pytest.fixture
-def sample_function_dict():
+def sample_function_dict() -> dict:
     """Create a sample function dictionary."""
     return {
         "name": "test_function",
@@ -41,7 +41,7 @@ def sample_function_dict():
 
 
 @pytest.fixture
-def sample_proto_function():
+def sample_proto_function() -> pb.Function:
     """Create a sample protocol buffer function."""
     func = pb.Function()
     func.description = "Test function"
@@ -55,7 +55,7 @@ class TestGetFunctionsStructure:
     """Test handler structure and basic functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request) -> None:
+    async def test_handler_returns_response(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test handler returns correct response type."""
         with patch("pyvider.hub.hub") as mock_hub:
             # Clear cache before test
@@ -70,7 +70,9 @@ class TestGetFunctionsStructure:
             assert isinstance(response, pb.GetFunctions.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_has_empty_functions_when_none_registered(self, sample_request) -> None:
+    async def test_handler_has_empty_functions_when_none_registered(
+        self, sample_request: pb.GetFunctions.Request
+    ) -> None:
         """Test handler returns empty dict when no functions registered."""
         with patch("pyvider.hub.hub") as mock_hub:
             # Clear cache before test
@@ -86,7 +88,7 @@ class TestGetFunctionsStructure:
             assert len(response.functions) == 0
 
     @pytest.mark.asyncio
-    async def test_handler_returns_diagnostics_list(self, sample_request) -> None:
+    async def test_handler_returns_diagnostics_list(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test handler returns diagnostics list."""
         with patch("pyvider.hub.hub") as mock_hub:
             # Clear cache before test
@@ -108,7 +110,11 @@ class TestGetFunctionsImplementation:
 
     @pytest.mark.asyncio
     async def test_successful_function_retrieval(
-        self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
+        sample_proto_function: pb.Function,
     ) -> None:
         """Test successful retrieval of registered functions."""
         with (
@@ -134,7 +140,9 @@ class TestGetFunctionsImplementation:
             assert response.functions["test_func"] == sample_proto_function
 
     @pytest.mark.asyncio
-    async def test_handles_function_to_dict_exception(self, sample_request, sample_function_obj) -> None:
+    async def test_handles_function_to_dict_exception(
+        self, sample_request: pb.GetFunctions.Request, sample_function_obj: MagicMock
+    ) -> None:
         """Test handling of function_to_dict conversion errors."""
         with (
             patch("pyvider.hub.hub") as mock_hub,
@@ -156,7 +164,10 @@ class TestGetFunctionsImplementation:
 
     @pytest.mark.asyncio
     async def test_handles_dict_to_proto_exception(
-        self, sample_request, sample_function_obj, sample_function_dict
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
     ) -> None:
         """Test handling of dict_to_proto conversion errors."""
         with (
@@ -182,7 +193,9 @@ class TestGetFunctionsImplementation:
             assert "bad_func" not in response.functions
 
     @pytest.mark.asyncio
-    async def test_handles_none_function_dict(self, sample_request, sample_function_obj) -> None:
+    async def test_handles_none_function_dict(
+        self, sample_request: pb.GetFunctions.Request, sample_function_obj: MagicMock
+    ) -> None:
         """Test handling when function_to_dict returns None."""
         with (
             patch("pyvider.hub.hub") as mock_hub,
@@ -203,7 +216,10 @@ class TestGetFunctionsImplementation:
 
     @pytest.mark.asyncio
     async def test_handles_none_proto_function(
-        self, sample_request, sample_function_obj, sample_function_dict
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
     ) -> None:
         """Test handling when dict_to_proto_function returns None."""
         with (
@@ -228,7 +244,9 @@ class TestGetFunctionsImplementation:
             assert "null_func" not in response.functions
 
     @pytest.mark.asyncio
-    async def test_impl_returns_error_diagnostic_on_exception(self, sample_request) -> None:
+    async def test_impl_returns_error_diagnostic_on_exception(
+        self, sample_request: pb.GetFunctions.Request
+    ) -> None:
         """Test implementation returns error diagnostic on unhandled exception."""
         with patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_once") as mock_once:
             mock_once.side_effect = RuntimeError("Critical error")
@@ -247,7 +265,11 @@ class TestGetFunctionsCaching:
 
     @pytest.mark.asyncio
     async def test_caches_function_definitions(
-        self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
+        sample_proto_function: pb.Function,
     ) -> None:
         """Test that function definitions are cached after first call."""
         with (
@@ -276,7 +298,11 @@ class TestGetFunctionsCaching:
 
     @pytest.mark.asyncio
     async def test_returns_cached_result_on_subsequent_calls(
-        self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
+        sample_proto_function: pb.Function,
     ) -> None:
         """Test that cached results are returned on subsequent calls."""
         with (
@@ -307,41 +333,47 @@ class TestGetFunctionsMetrics:
     """Test metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_records_request_metric(self, sample_request) -> None:
+    async def test_records_request_metric(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test request counter incremented."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_requests") as mock_requests:
-            with patch("pyvider.hub.hub") as mock_hub:
-                mock_hub.get_components.return_value = {}
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_requests") as mock_requests,
+            patch("pyvider.hub.hub") as mock_hub,
+        ):
+            mock_hub.get_components.return_value = {}
 
-                await GetFunctionsHandler(sample_request, context=None)
+            await GetFunctionsHandler(sample_request, context=None)
 
-                mock_requests.inc.assert_called_once_with(handler="GetFunctions")
+            mock_requests.inc.assert_called_once_with(handler="GetFunctions")
 
     @pytest.mark.asyncio
-    async def test_records_duration_metric(self, sample_request) -> None:
+    async def test_records_duration_metric(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test duration observer called."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_duration") as mock_duration:
-            with patch("pyvider.hub.hub") as mock_hub:
-                mock_hub.get_components.return_value = {}
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_duration") as mock_duration,
+            patch("pyvider.hub.hub") as mock_hub,
+        ):
+            mock_hub.get_components.return_value = {}
 
-                await GetFunctionsHandler(sample_request, context=None)
+            await GetFunctionsHandler(sample_request, context=None)
 
-                assert mock_duration.observe.call_count == 1
-                call_args = mock_duration.observe.call_args
-                assert call_args[1]["handler"] == "GetFunctions"
-                assert isinstance(call_args[0][0], float)
+            assert mock_duration.observe.call_count == 1
+            call_args = mock_duration.observe.call_args
+            assert call_args[1]["handler"] == "GetFunctions"
+            assert isinstance(call_args[0][0], float)
 
     @pytest.mark.asyncio
-    async def test_records_error_metric_on_exception(self, sample_request) -> None:
+    async def test_records_error_metric_on_exception(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test error counter incremented on exception."""
-        with patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_errors") as mock_errors:
-            with patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_impl") as mock_impl:
-                mock_impl.side_effect = RuntimeError("Test error")
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_impl") as mock_impl,
+        ):
+            mock_impl.side_effect = RuntimeError("Test error")
 
-                with pytest.raises(RuntimeError):
-                    await GetFunctionsHandler(sample_request, context=None)
+            with pytest.raises(RuntimeError):
+                await GetFunctionsHandler(sample_request, context=None)
 
-                mock_errors.inc.assert_called_once_with(handler="GetFunctions")
+            mock_errors.inc.assert_called_once_with(handler="GetFunctions")
 
 
 # Pattern: Edge Cases
@@ -349,7 +381,7 @@ class TestGetFunctionsEdgeCases:
     """Test edge cases."""
 
     @pytest.mark.asyncio
-    async def test_with_none_context(self, sample_request) -> None:
+    async def test_with_none_context(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test with None context."""
         with patch("pyvider.hub.hub") as mock_hub:
             mock_hub.get_components.return_value = {}
@@ -360,7 +392,11 @@ class TestGetFunctionsEdgeCases:
 
     @pytest.mark.asyncio
     async def test_with_multiple_functions(
-        self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
+        sample_proto_function: pb.Function,
     ) -> None:
         """Test with multiple registered functions."""
         with (
@@ -392,7 +428,11 @@ class TestGetFunctionsEdgeCases:
 
     @pytest.mark.asyncio
     async def test_mixed_success_and_failure(
-        self, sample_request, sample_function_obj, sample_function_dict, sample_proto_function
+        self,
+        sample_request: pb.GetFunctions.Request,
+        sample_function_obj: MagicMock,
+        sample_function_dict: dict,
+        sample_proto_function: pb.Function,
     ) -> None:
         """Test with mix of successful and failed function conversions."""
         with (
@@ -412,7 +452,7 @@ class TestGetFunctionsEdgeCases:
                 "bad_func": sample_function_obj,
             }
 
-            def to_dict_side_effect(func_obj):
+            def to_dict_side_effect(func_obj: MagicMock) -> dict | None:
                 if func_obj == sample_function_obj:
                     # Alternate between success and failure
                     if not hasattr(to_dict_side_effect, "count"):

@@ -12,6 +12,8 @@ handle a "compute-once, await-many" scenario, which is more robust and
 idiomatic than using a simple lock for this purpose."""
 
 import asyncio
+from collections.abc import AsyncIterator
+from typing import Any
 
 from provide.testkit.mocking import AsyncMock
 import pytest
@@ -24,7 +26,7 @@ from pyvider.schema import s_provider
 
 
 @pytest.fixture
-async def mock_provider_in_hub(mocker: MockerFixture):
+async def mock_provider_in_hub(mocker: MockerFixture) -> AsyncIterator[None]:
     """
     A fixture to ensure a minimal, valid provider is registered in the hub
     so that the handler can find it.
@@ -42,7 +44,7 @@ async def mock_provider_in_hub(mocker: MockerFixture):
 
 @pytest.mark.asyncio
 async def test_get_provider_schema_handler_avoids_race_condition(
-    mocker: MockerFixture, mock_provider_in_hub
+    mocker: MockerFixture, mock_provider_in_hub: Any
 ) -> None:
     """
     TDD Contract: Verifies that even with many concurrent requests, the

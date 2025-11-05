@@ -181,7 +181,7 @@ class TestAttrsToDictCircularReferences:
 
         # Create a circular reference with a plain class (not attrs)
         class PlainNode:
-            def __init__(self, value) -> None:
+            def __init__(self, value: int) -> None:
                 self.value = value
                 self.next = None
 

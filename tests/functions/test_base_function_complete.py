@@ -5,6 +5,8 @@
 
 """Comprehensive tests for BaseFunction and FunctionAdapter classes."""
 
+from typing import Any
+
 import pytest
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyMap, CtyNumber, CtyString
@@ -24,13 +26,13 @@ class TestBaseFunction:
         """Test that concrete implementation of BaseFunction works."""
 
         class ConcreteFunction(BaseFunction):
-            def get_parameters(self):
+            def get_parameters(self) -> list[FunctionParameter]:
                 return [FunctionParameter(name="input", type=CtyString())]
 
-            def get_return_type(self):
+            def get_return_type(self) -> FunctionReturnType:
                 return FunctionReturnType(type=CtyString())
 
-            async def call(self, *args, **kwargs) -> str:
+            async def call(self, *args: Any, **kwargs: Any) -> str:
                 return "result"
 
         func = ConcreteFunction(name="test_func")
@@ -43,13 +45,13 @@ class TestBaseFunction:
         """Test that call method is async."""
 
         class AsyncFunction(BaseFunction):
-            def get_parameters(self):
+            def get_parameters(self) -> list[FunctionParameter]:
                 return []
 
-            def get_return_type(self):
+            def get_return_type(self) -> FunctionReturnType:
                 return FunctionReturnType(type=CtyString())
 
-            async def call(self, *args, **kwargs) -> str:
+            async def call(self, *args: Any, **kwargs: Any) -> str:
                 return "async_result"
 
         func = AsyncFunction(name="async_func")
@@ -61,13 +63,13 @@ class TestBaseFunction:
         """Test that __call__ delegates to call() method."""
 
         class CallableFunction(BaseFunction):
-            def get_parameters(self):
+            def get_parameters(self) -> list[FunctionParameter]:
                 return []
 
-            def get_return_type(self):
+            def get_return_type(self) -> FunctionReturnType:
                 return FunctionReturnType(type=CtyNumber())
 
-            async def call(self, *args, **kwargs) -> int:
+            async def call(self, *args: Any, **kwargs: Any) -> int:
                 return 42
 
         func = CallableFunction(name="callable_func")
@@ -78,13 +80,13 @@ class TestBaseFunction:
         """Test BaseFunction attributes."""
 
         class AttributeFunction(BaseFunction):
-            def get_parameters(self):
+            def get_parameters(self) -> list[FunctionParameter]:
                 return []
 
-            def get_return_type(self):
+            def get_return_type(self) -> FunctionReturnType:
                 return FunctionReturnType(type=CtyBool())
 
-            async def call(self, *args, **kwargs) -> bool:
+            async def call(self, *args: Any, **kwargs: Any) -> bool:
                 return True
 
         func = AttributeFunction(
@@ -360,7 +362,7 @@ class TestFunctionAdapterAdapt:
     def test_adapt_handles_missing_type_hints(self) -> None:
         """Test that adapt handles functions without type hints."""
 
-        def untyped_func(x, y):
+        def untyped_func(x: Any, y: Any) -> Any:
             return x + y
 
         adapted = FunctionAdapter.adapt(untyped_func)

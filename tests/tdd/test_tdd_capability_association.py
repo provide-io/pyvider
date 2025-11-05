@@ -29,7 +29,7 @@ class OrphanResource(BaseResource):
     async def read(self, ctx: Any) -> None:
         pass
 
-    async def _create(self, ctx: Any, base_plan: dict):
+    async def _create(self, ctx: Any, base_plan: dict) -> tuple[dict, None]:
         return base_plan, None
 
     async def _delete_apply(self, ctx: Any) -> None:
@@ -39,7 +39,7 @@ class OrphanResource(BaseResource):
 @pytest.mark.asyncio
 class TestTddCapabilityAssociation:
     @pytest.fixture(autouse=True)
-    def clean_hub(self):
+    def clean_hub(self) -> None:
         hub.registry = {}
         yield
         hub.registry = {}

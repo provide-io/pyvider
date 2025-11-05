@@ -10,7 +10,7 @@ from typing import Any
 import click
 from provide.foundation.cli.decorators import flexible_options, output_options
 from provide.foundation.config import get_env
-from provide.foundation.console import perr
+from provide.foundation.console import perr, pout
 
 from pyvider.cli.context import PyviderContext
 
@@ -21,28 +21,28 @@ def _show_interactive_mode(ctx: click.Context) -> None:
 
     launch_context = detect_launch_context()
 
-    click.secho("\n╭─────────────────────────────────────────────────╮", fg="cyan")
-    click.secho("│           Interactive Mode                      │", fg="cyan", bold=True)
-    click.secho("╰─────────────────────────────────────────────────╯", fg="cyan")
+    pout("\n╭─────────────────────────────────────────────────╮", fg="cyan")
+    pout("│           Interactive Mode                      │", fg="cyan", bold=True)
+    pout("╰─────────────────────────────────────────────────╯", fg="cyan")
 
     click.echo("\nPyvider is running in interactive mode.")
     click.echo("To start the provider server for testing, use:\n")
 
     # Get the command name from the context
     cmd_name = ctx.command_path or "pyvider"
-    click.secho(f"  {cmd_name} provide --force", fg="green", bold=True)
+    pout(f"  {cmd_name} provide --force", fg="green", bold=True)
 
     click.echo("\n" + "─" * 50)
-    click.secho("\nLaunch Context:", fg="cyan", bold=True)
-    click.secho(f"  Method: {launch_context.method.value}", fg="white")
-    click.secho(f"  Executable: {launch_context.executable_path}", fg="white")
-    click.secho(f"  Python: {launch_context.python_executable}", fg="white")
-    click.secho(f"  Working Directory: {launch_context.working_directory}", fg="white")
+    pout("\nLaunch Context:", fg="cyan", bold=True)
+    pout(f"  Method: {launch_context.method.value}", fg="white")
+    pout(f"  Executable: {launch_context.executable_path}", fg="white")
+    pout(f"  Python: {launch_context.python_executable}", fg="white")
+    pout(f"  Working Directory: {launch_context.working_directory}", fg="white")
 
     click.echo("\n" + "─" * 50)
     click.echo("\nFor more information, use:")
-    click.secho(f"  {cmd_name} --help", fg="yellow")
-    click.secho(f"  {cmd_name} launch-context", fg="yellow")
+    pout(f"  {cmd_name} --help", fg="yellow")
+    pout(f"  {cmd_name} launch-context", fg="yellow")
     click.echo()
 
 

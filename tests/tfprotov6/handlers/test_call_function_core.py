@@ -6,6 +6,7 @@
 """Tests for CallFunction handler - Core functionality."""
 
 import inspect
+from typing import Any
 
 from provide.testkit import mocking as mock
 import pytest
@@ -37,10 +38,12 @@ class TestProcessFunctionArguments:
         arg1_proto = pb.DynamicValue(msgpack=b"\xa4test")  # "test"
         arg2_proto = pb.DynamicValue(msgpack=b"\x2a")  # 42
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal:
-            with mock.patch(
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native:
+            ) as mock_to_native,
+        ):
                 mock_unmarshal.side_effect = [
                     CtyValue(vtype=CtyString(), value="test"),
                     CtyValue(vtype=CtyNumber(), value=42),
@@ -74,7 +77,7 @@ class TestProcessFunctionArguments:
     def test_processes_variadic_arguments(self) -> None:
         """Test processing variadic arguments."""
 
-        def test_func(name: str, *options) -> None:
+        def test_func(name: str, *options: Any) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -85,10 +88,12 @@ class TestProcessFunctionArguments:
         arg2_proto = pb.DynamicValue(msgpack=b"\x01")
         arg3_proto = pb.DynamicValue(msgpack=b"\x02")
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal:
-            with mock.patch(
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native:
+            ) as mock_to_native,
+        ):
                 mock_unmarshal.side_effect = [
                     CtyValue(vtype=CtyString(), value="test"),
                     CtyValue(vtype=CtyDynamic(), value=1),
@@ -119,10 +124,12 @@ class TestProcessFunctionArguments:
         arg1_proto = pb.DynamicValue(msgpack=b"\xa4test")
         arg2_proto = pb.DynamicValue(msgpack=b"\xc0")  # null
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal:
-            with mock.patch(
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.unmarshal") as mock_unmarshal,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.call_function.cty_to_native"
-            ) as mock_to_native:
+            ) as mock_to_native,
+        ):
                 mock_unmarshal.side_effect = [
                     CtyValue(vtype=CtyString(), value="test"),
                     CtyValue(vtype=CtyNumber(), value=None, is_null=True),
@@ -139,7 +146,7 @@ class TestProcessFunctionArguments:
     def test_detects_unknown_in_variadic_args(self) -> None:
         """Test that unknown values in variadic args are detected."""
 
-        def test_func(*args) -> None:
+        def test_func(*args: Any) -> None:
             pass
 
         func_sig = inspect.signature(test_func)
@@ -251,15 +258,17 @@ class TestCallFunctionHandler:
         func_obj.metadata.variadic_parameter = None
         func_obj.metadata.return_type = CtyString()
 
-        def test_func(arg) -> str:
+        def test_func(arg: Any) -> str:
             return "result"
 
         func_obj.func = test_func
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
-            ) as mock_process:
+            ) as mock_process,
+        ):
                 mock_get.return_value = func_obj
                 mock_process.return_value = ({"arg": 1}, True)  # has_unknown=True
 

@@ -13,7 +13,7 @@ import pytest
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_num, a_str, s_resource
+from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 
 
 # Test fixtures
@@ -43,7 +43,7 @@ class SampleResource(BaseResource[Any, SampleState, SampleConfig]):
     private_state_class = SamplePrivateState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource(
             attributes={
                 "id": a_str(computed=True),

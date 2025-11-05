@@ -18,7 +18,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.CloseEphemeralResource.Request:
     """Create a sample CloseEphemeralResource request."""
     private_data = {"token": "test_token", "resource_id": "res_123"}
     request = pb.CloseEphemeralResource.Request()
@@ -28,7 +28,7 @@ def sample_request():
 
 
 @pytest.fixture
-def mock_ephemeral_class():
+def mock_ephemeral_class() -> MagicMock:
     """Create a mock ephemeral resource class."""
     mock_class = MagicMock()
     mock_class.private_state_class = MagicMock
@@ -42,7 +42,7 @@ class TestCloseEphemeralResourceStructure:
     """Test handler structure and response types."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response(self, sample_request) -> None:
+    async def test_handler_returns_response(self, sample_request: pb.CloseEphemeralResource.Request) -> None:
         """Test that handler returns proper response object."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -52,7 +52,7 @@ class TestCloseEphemeralResourceStructure:
             assert isinstance(response, pb.CloseEphemeralResource.Response)
 
     @pytest.mark.asyncio
-    async def test_handler_records_request_metric(self, sample_request) -> None:
+    async def test_handler_records_request_metric(self, sample_request: pb.CloseEphemeralResource.Request) -> None:
         """Test that handler increments request counter."""
         with (
             patch(
@@ -71,7 +71,7 @@ class TestCloseEphemeralResourceImpl:
     """Test implementation logic."""
 
     @pytest.mark.asyncio
-    async def test_impl_closes_ephemeral_successfully(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_closes_ephemeral_successfully(self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock) -> None:
         """Test successful ephemeral resource close."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = mock_ephemeral_class
@@ -85,7 +85,9 @@ class TestCloseEphemeralResourceImpl:
             mock_instance.close.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_impl_handles_unknown_resource_type(self, sample_request) -> None:
+    async def test_impl_handles_unknown_resource_type(
+        self, sample_request: pb.CloseEphemeralResource.Request
+    ) -> None:
         """Test handling of unknown ephemeral resource type."""
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = None
@@ -100,7 +102,9 @@ class TestCloseEphemeralResourceImpl:
             )
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_private_state_class(self, sample_request) -> None:
+    async def test_impl_handles_missing_private_state_class(
+        self, sample_request: pb.CloseEphemeralResource.Request
+    ) -> None:
         """Test handling when resource doesn't define private_state_class."""
         mock_class = MagicMock()
         mock_class.private_state_class = None  # No private state class!
@@ -114,7 +118,9 @@ class TestCloseEphemeralResourceImpl:
             assert "private_state_class" in response.diagnostics[0].detail
 
     @pytest.mark.asyncio
-    async def test_impl_unpacks_private_data_correctly(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_unpacks_private_data_correctly(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test that private data is unpacked from msgpack."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -132,7 +138,9 @@ class TestCloseEphemeralResourceImpl:
             assert mock_unpack.call_args[0][0] == sample_request.private
 
     @pytest.mark.asyncio
-    async def test_impl_creates_ephemeral_context(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_creates_ephemeral_context(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test that EphemeralResourceContext is created."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
@@ -149,7 +157,9 @@ class TestCloseEphemeralResourceImpl:
             assert "private_state" in mock_ctx.call_args[1]
 
     @pytest.mark.asyncio
-    async def test_impl_handles_pyvider_errors(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_handles_pyvider_errors(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test that PyviderError exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.close.side_effect = ResourceError("Close failed")
@@ -163,7 +173,9 @@ class TestCloseEphemeralResourceImpl:
             assert "Close failed" in response.diagnostics[0].detail
 
     @pytest.mark.asyncio
-    async def test_impl_handles_generic_exceptions(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_handles_generic_exceptions(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test that generic exceptions are converted to diagnostics."""
         mock_instance = mock_ephemeral_class.return_value
         mock_instance.close.side_effect = RuntimeError("Unexpected error")
@@ -178,24 +190,28 @@ class TestCloseEphemeralResourceImpl:
             # Diagnostic should be created
 
     @pytest.mark.asyncio
-    async def test_impl_logs_debug_info(self, sample_request, mock_ephemeral_class) -> None:
+    async def test_impl_logs_debug_info(
+        self, sample_request: pb.CloseEphemeralResource.Request, mock_ephemeral_class: MagicMock
+    ) -> None:
         """Test that debug logging occurs."""
-        with patch("pyvider.hub.hub.get_component") as mock_get:
-            with patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger") as mock_logger:
-                mock_get.return_value = mock_ephemeral_class
+        with (
+            patch("pyvider.hub.hub.get_component") as mock_get,
+            patch("pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.logger") as mock_logger,
+        ):
+            mock_get.return_value = mock_ephemeral_class
 
-                await _close_ephemeral_resource_impl(sample_request, context=None)
+            await _close_ephemeral_resource_impl(sample_request, context=None)
 
-                # Should log at start with debug and completion with info
-                assert mock_logger.debug.call_count >= 1
-                assert mock_logger.info.call_count >= 1
+            # Should log at start with debug and completion with info
+            assert mock_logger.debug.call_count >= 1
+            assert mock_logger.info.call_count >= 1
 
 
 class TestCloseEphemeralResourceMetrics:
     """Test metrics recording."""
 
     @pytest.mark.asyncio
-    async def test_handler_records_duration(self, sample_request) -> None:
+    async def test_handler_records_duration(self, sample_request: pb.CloseEphemeralResource.Request) -> None:
         """Test that handler records duration metric."""
         with (
             patch(
@@ -212,7 +228,9 @@ class TestCloseEphemeralResourceMetrics:
             assert mock_duration.observe.call_args[1]["handler"] == "CloseEphemeralResource"
 
     @pytest.mark.asyncio
-    async def test_handler_records_error_on_exception(self, sample_request) -> None:
+    async def test_handler_records_error_on_exception(
+        self, sample_request: pb.CloseEphemeralResource.Request
+    ) -> None:
         """Test that handler increments error counter on exceptions."""
         with (
             patch(

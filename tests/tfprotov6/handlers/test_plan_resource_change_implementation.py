@@ -13,7 +13,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 
 @pytest.fixture
-def sample_request():
+def sample_request() -> pb.PlanResourceChange.Request:
     """Create a sample PlanResourceChange request."""
     request = pb.PlanResourceChange.Request()
     request.type_name = "test_resource"
@@ -25,7 +25,7 @@ def sample_request():
 
 
 @pytest.fixture
-def mock_resource_class():
+def mock_resource_class() -> MagicMock:
     """Create a mock resource class."""
     mock_class = MagicMock()
     mock_schema = MagicMock()
@@ -37,7 +37,7 @@ def mock_resource_class():
 
 
 @pytest.fixture
-def mock_provider():
+def mock_provider() -> MagicMock:
     """Create a mock provider instance."""
     return MagicMock()
 
@@ -218,7 +218,12 @@ class TestPlanResourceChangeImplementation:
     """Tests for _plan_resource_change_impl function."""
 
     @pytest.mark.asyncio
-    async def test_impl_with_successful_plan(self, sample_request, mock_resource_class, mock_provider) -> None:
+    async def test_impl_with_successful_plan(
+        self,
+        sample_request: pb.PlanResourceChange.Request,
+        mock_resource_class: MagicMock,
+        mock_provider: MagicMock,
+    ) -> None:
         """Test successful plan execution."""
         from pyvider.cty import CtyValue
         from pyvider.protocols.tfprotov6.handlers.plan_resource_change import _plan_resource_change_impl
@@ -253,7 +258,10 @@ class TestPlanResourceChangeImplementation:
 
     @pytest.mark.asyncio
     async def test_impl_with_planned_private_state(
-        self, sample_request, mock_resource_class, mock_provider
+        self,
+        sample_request: pb.PlanResourceChange.Request,
+        mock_resource_class: MagicMock,
+        mock_provider: MagicMock,
     ) -> None:
         """Test plan with planned private state returned."""
         import attrs
@@ -317,7 +325,10 @@ class TestPlanResourceChangeImplementation:
 
     @pytest.mark.asyncio
     async def test_impl_returns_early_on_error_diagnostics(
-        self, sample_request, mock_resource_class, mock_provider
+        self,
+        sample_request: pb.PlanResourceChange.Request,
+        mock_resource_class: MagicMock,
+        mock_provider: MagicMock,
     ) -> None:
         """Test that implementation returns early when error diagnostics are present."""
         from pyvider.cty import CtyValue

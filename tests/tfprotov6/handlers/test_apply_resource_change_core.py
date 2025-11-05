@@ -27,7 +27,7 @@ class TestGetResourceAndProviderInstances:
             await _get_resource_and_provider_instances("nonexistent_resource")
 
     @pytest.mark.asyncio
-    async def test_raises_error_when_provider_not_in_hub(self, provider_in_hub) -> None:
+    async def test_raises_error_when_provider_not_in_hub(self, provider_in_hub: mock.MagicMock) -> None:
         """Test that it raises RuntimeError when provider not in hub."""
         # Register a test resource first
         from pyvider.hub import hub
@@ -48,7 +48,9 @@ class TestGetResourceAndProviderInstances:
             hub.unregister("resource", "test_resource")
 
     @pytest.mark.asyncio
-    async def test_returns_resource_and_provider_when_both_exist(self, provider_in_hub) -> None:
+    async def test_returns_resource_and_provider_when_both_exist(
+        self, provider_in_hub: mock.MagicMock
+    ) -> None:
         """Test that it returns both resource class and provider instance."""
         # Register a test resource
         from pyvider.hub import hub
@@ -71,22 +73,21 @@ class TestApplyResourceChangeHandler:
     """Tests for ApplyResourceChangeHandler main functionality."""
 
     @pytest.mark.asyncio
-    async def test_handler_returns_response_object(self, provider_in_hub) -> None:
+    async def test_handler_returns_response_object(self, provider_in_hub: mock.MagicMock) -> None:
         """Test that handler returns proper response object."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
             planned_state=pb.DynamicValue(json=b'{"name": "test"}'),
         )
 
-        # Mock to avoid complex resource setup
         with (
             mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
             ),
             mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                response = await ApplyResourceChangeHandler(request, context=None)
+            response = await ApplyResourceChangeHandler(request, context=None)
 
         assert isinstance(response, pb.ApplyResourceChange.Response)
 
@@ -127,9 +128,9 @@ class TestApplyResourceChangeMetrics:
                 "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
             ),
             mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                response = await ApplyResourceChangeHandler(request, context=None)
+            response = await ApplyResourceChangeHandler(request, context=None)
 
         # Verify handler completed successfully
         assert isinstance(response, pb.ApplyResourceChange.Response)
@@ -173,7 +174,7 @@ class TestApplyResourceChangeEdgeCases:
     """Edge case tests for ApplyResourceChange."""
 
     @pytest.mark.asyncio
-    async def test_handler_with_null_planned_state(self, provider_in_hub) -> None:
+    async def test_handler_with_null_planned_state(self, provider_in_hub: mock.MagicMock) -> None:
         """Test handler behavior with null planned state."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
@@ -202,7 +203,7 @@ class TestApplyResourceChangeEdgeCases:
         assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_handler_with_malformed_json_state(self, provider_in_hub) -> None:
+    async def test_handler_with_malformed_json_state(self, provider_in_hub: mock.MagicMock) -> None:
         """Test handler behavior with malformed JSON state."""
         request = pb.ApplyResourceChange.Request(
             type_name="test_resource",
@@ -222,7 +223,7 @@ class TestApplyResourceChangeLogging:
     """Tests for logging in ApplyResourceChange (for mutation testing)."""
 
     @pytest.mark.asyncio
-    async def test_handler_logs_on_unknown_resource(self, caplog) -> None:
+    async def test_handler_logs_on_unknown_resource(self, caplog: pytest.LogCaptureFixture) -> None:
         """Test that handler logs when resource type is unknown."""
         import logging
 
@@ -239,7 +240,9 @@ class TestApplyResourceChangeLogging:
         # (Note: actual log level and content may vary)
 
     @pytest.mark.asyncio
-    async def test_handler_logs_metrics_info(self, caplog, provider_in_hub) -> None:
+    async def test_handler_logs_metrics_info(
+        self, caplog: pytest.LogCaptureFixture, provider_in_hub: mock.MagicMock
+    ) -> None:
         """Test that handler logs metrics information."""
         import logging
 
@@ -255,9 +258,9 @@ class TestApplyResourceChangeLogging:
                 "pyvider.protocols.tfprotov6.handlers.apply_resource_change._get_resource_and_provider_instances"
             ),
             mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.unmarshal"),
+            mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"),
         ):
-            with mock.patch("pyvider.protocols.tfprotov6.handlers.apply_resource_change.marshal"):
-                await ApplyResourceChangeHandler(request, context=None)
+            await ApplyResourceChangeHandler(request, context=None)
 
         # Handler should log some operational information
         # (Note: actual implementation may vary)

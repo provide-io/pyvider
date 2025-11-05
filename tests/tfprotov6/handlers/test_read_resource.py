@@ -6,10 +6,10 @@
 """Tests for ReadResource handler."""
 
 from typing import Any
-from unittest.mock import patch
 
 import attrs
 import msgpack
+from provide.testkit.mocking import patch
 import pytest
 
 from pyvider.common.encryption import encrypt
@@ -21,7 +21,7 @@ from pyvider.protocols.tfprotov6.handlers.read_resource import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource, ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_num, a_str, s_resource, PvsSchema as Schema
+from pyvider.schema import PvsSchema as Schema, a_num, a_str, s_resource
 
 
 @attrs.define

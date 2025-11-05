@@ -8,6 +8,9 @@
 Tests that all 20 handlers properly collect metrics during execution.
 Achieves 100% test coverage of handler metrics instrumentation."""
 
+from collections.abc import AsyncIterator
+from typing import Any
+
 import pytest
 
 from pyvider.hub import hub
@@ -18,7 +21,7 @@ from pyvider.schema import s_provider
 
 
 @pytest.fixture
-async def mock_provider_in_hub():
+async def mock_provider_in_hub() -> AsyncIterator[None]:
     """Register a minimal provider in the hub for handler tests."""
     provider = BaseProvider(metadata=ProviderMetadata(name="test", version="0.0.1"))
     provider._final_schema = s_provider()
@@ -31,7 +34,7 @@ class TestHandlerMetricsInstrumentation:
     """Test that all handlers collect metrics correctly."""
 
     @pytest.mark.asyncio
-    async def test_get_provider_schema_metrics(self, mock_provider_in_hub) -> None:
+    async def test_get_provider_schema_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test GetProviderSchemaHandler collects metrics."""
         from pyvider.protocols.tfprotov6.handlers.get_provider_schema import GetProviderSchemaHandler
 
@@ -47,7 +50,7 @@ class TestHandlerMetricsInstrumentation:
         assert handler_duration.count > initial_duration_count
 
     @pytest.mark.asyncio
-    async def test_get_metadata_metrics(self, mock_provider_in_hub) -> None:
+    async def test_get_metadata_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test GetMetadataHandler collects metrics."""
         from pyvider.protocols.tfprotov6.handlers.get_metadata import GetMetadataHandler
 
@@ -62,7 +65,7 @@ class TestHandlerMetricsInstrumentation:
         assert handler_duration.count > initial_duration_count
 
     @pytest.mark.asyncio
-    async def test_get_functions_metrics(self, mock_provider_in_hub) -> None:
+    async def test_get_functions_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test GetFunctionsHandler collects metrics."""
         from pyvider.protocols.tfprotov6.handlers.get_functions import GetFunctionsHandler
 
@@ -77,7 +80,7 @@ class TestHandlerMetricsInstrumentation:
         assert handler_duration.count > initial_duration_count
 
     @pytest.mark.asyncio
-    async def test_configure_provider_metrics(self, mock_provider_in_hub) -> None:
+    async def test_configure_provider_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test ConfigureProviderHandler collects metrics."""
         from pyvider.protocols.tfprotov6.handlers.configure_provider import ConfigureProviderHandler
 
@@ -93,7 +96,7 @@ class TestHandlerMetricsInstrumentation:
 
     @pytest.mark.asyncio
     @pytest.mark.skip(reason="StopProviderHandler requires RPCPluginServer instance - tested in integration")
-    async def test_stop_provider_metrics(self, mock_provider_in_hub) -> None:
+    async def test_stop_provider_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test StopProviderHandler collects metrics (requires server context)."""
         # This handler requires a running server instance
         # Metrics instrumentation is identical to other handlers
@@ -101,7 +104,7 @@ class TestHandlerMetricsInstrumentation:
         pass
 
     @pytest.mark.asyncio
-    async def test_validate_provider_config_metrics(self, mock_provider_in_hub) -> None:
+    async def test_validate_provider_config_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test ValidateProviderConfigHandler collects metrics."""
         from pyvider.protocols.tfprotov6.handlers.validate_provider_config import (
             ValidateProviderConfigHandler,
@@ -122,7 +125,7 @@ class TestHandlerErrorMetrics:
     """Test that handlers collect error metrics when exceptions occur."""
 
     @pytest.mark.asyncio
-    async def test_handler_error_metrics_on_missing_resource(self, mock_provider_in_hub) -> None:
+    async def test_handler_error_metrics_on_missing_resource(self, mock_provider_in_hub: Any) -> None:
         """Test that error metrics are collected when resource type is missing."""
         from pyvider.protocols.tfprotov6.handlers.read_resource import ReadResourceHandler
 
@@ -143,7 +146,7 @@ class TestHandlerMetricsTiming:
     """Test that handler duration metrics are reasonable."""
 
     @pytest.mark.asyncio
-    async def test_handler_duration_is_recorded(self, mock_provider_in_hub) -> None:
+    async def test_handler_duration_is_recorded(self, mock_provider_in_hub: Any) -> None:
         """Test that handler duration is recorded and non-zero."""
         from pyvider.protocols.tfprotov6.handlers.get_provider_schema import GetProviderSchemaHandler
 
@@ -159,7 +162,7 @@ class TestHandlerMetricsTiming:
         assert handler_duration.sum >= initial_sum  # >= because might be very fast
 
     @pytest.mark.asyncio
-    async def test_multiple_handlers_record_separate_metrics(self, mock_provider_in_hub) -> None:
+    async def test_multiple_handlers_record_separate_metrics(self, mock_provider_in_hub: Any) -> None:
         """Test that multiple handler calls are tracked separately."""
         from pyvider.protocols.tfprotov6.handlers.get_metadata import GetMetadataHandler
         from pyvider.protocols.tfprotov6.handlers.get_provider_schema import GetProviderSchemaHandler

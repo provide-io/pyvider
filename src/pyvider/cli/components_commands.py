@@ -94,7 +94,7 @@ def _display_block_content(block: PvsObjectType, indent_level: int) -> None:
 def components(ctx: PyviderContext, **kwargs: Any) -> None:
     """Manage, inspect, and diagnose Pyvider components."""
     # THE FIX: Run discovery and error handling for the entire command group.
-    asyncio.run(ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, click.secho))
+    asyncio.run(ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, pout))
     _handle_discovery_errors(ctx)
 
 
@@ -105,13 +105,13 @@ def list_components(ctx: PyviderContext) -> None:
     """Lists all available Pyvider components."""
     all_comps = registry.list_components()
     if not any(all_comps.values()):
-        click.secho("No components found.", fg="yellow")
+        pout("No components found.", fg="yellow")
         return
     for comp_type, comps_dict in sorted(all_comps.items()):
         if comps_dict:
-            click.secho(f"\n{comp_type.capitalize()}:", fg="bright_cyan", bold=True)
+            pout(f"\n{comp_type.capitalize()}:", fg="bright_cyan", bold=True)
             for name in sorted(comps_dict.keys()):
-                click.secho(f"  - {name}")
+                pout(f"  - {name}")
 
 
 @components.command(name="show")

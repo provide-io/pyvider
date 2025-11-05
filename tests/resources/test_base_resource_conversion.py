@@ -9,6 +9,7 @@ from typing import Any
 
 import attrs
 import pytest
+from pytest import LogCaptureFixture
 
 from pyvider.cty import (
     CtyBool,
@@ -20,7 +21,7 @@ from pyvider.cty import (
 from pyvider.resources.base import _UNREFINED_UNKNOWN_SENTINEL, BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import a_num, a_str, s_resource
+from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 
 
 # Test fixtures
@@ -50,7 +51,7 @@ class SampleResource(BaseResource[Any, SampleState, SampleConfig]):
     private_state_class = SamplePrivateState
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         return s_resource(
             attributes={
                 "id": a_str(computed=True),
@@ -193,9 +194,8 @@ class TestFromCtyConversion:
 
     def test_cty_to_attrs_recursive_with_union_type(self) -> None:
         """Test _cty_to_attrs_recursive handles Union types."""
-        from typing import Union
 
-        result = SampleResource._cty_to_attrs_recursive("test", Union[str, None])
+        result = SampleResource._cty_to_attrs_recursive("test", str | None)
         assert result == "test"
 
     def test_cty_to_attrs_recursive_with_list(self) -> None:
@@ -227,7 +227,7 @@ class TestFromCtyConversion:
 class TestCtyToDictPreservingUnknown:
     """Tests for _cty_to_dict_preserving_unknown helper."""
 
-    def test_preserves_unknown_values(self, caplog) -> None:
+    def test_preserves_unknown_values(self, caplog: LogCaptureFixture) -> None:
         """Test that unknown CtyValues are preserved."""
         import logging
 
@@ -266,7 +266,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == {}
 
-    def test_returns_empty_dict_for_none(self, caplog) -> None:
+    def test_returns_empty_dict_for_none(self, caplog: LogCaptureFixture) -> None:
         """Test returns empty dict for None."""
         import logging
 
@@ -276,7 +276,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == {}
 
-    def test_handles_non_object_types(self, caplog) -> None:
+    def test_handles_non_object_types(self, caplog: LogCaptureFixture) -> None:
         """Test handles non-CtyObject types."""
         import logging
 
@@ -288,7 +288,7 @@ class TestCtyToDictPreservingUnknown:
 
         assert result == "test"
 
-    def test_handles_non_cty_values_in_dict(self, caplog) -> None:
+    def test_handles_non_cty_values_in_dict(self, caplog: LogCaptureFixture) -> None:
         """Test handles non-CtyValue items in dictionary."""
         import logging
 

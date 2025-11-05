@@ -5,24 +5,27 @@
 
 """Tests for resource protocol and type aliases."""
 
+from typing import Any
+
+from pyvider.resources.base import ResourceContext
 from pyvider.resources.protocol import ResourceProtocol
 from pyvider.resources.types import ResourceId, ResourceName, ResourceType
 
 
 class _DummyResource:
-    async def validate(self, config) -> None:
+    async def validate(self, config: dict[str, Any]) -> None:
         return None
 
-    async def read(self, ctx):
+    async def read(self, ctx: ResourceContext) -> dict[str, Any]:
         return {"state": "ok"}
 
-    async def plan(self, ctx):
+    async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any], bytes]:
         return {"state": "planned"}, b"plan"
 
-    async def apply(self, ctx):
+    async def apply(self, ctx: ResourceContext) -> tuple[dict[str, Any], bytes]:
         return {"state": "applied"}, b"apply"
 
-    async def delete(self, ctx) -> None:
+    async def delete(self, ctx: ResourceContext) -> None:
         return None
 
 

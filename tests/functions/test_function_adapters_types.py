@@ -7,6 +7,7 @@
 
 from decimal import Decimal
 from typing import Any
+from unittest.mock import MagicMock
 
 from provide.testkit import mocking as mock
 
@@ -157,9 +158,8 @@ class TestIsUnionType:
 
     def test_detects_typing_union(self) -> None:
         """Test that it detects typing.Union."""
-        from typing import Union
 
-        assert _is_union_type(Union[str, int]) is True
+        assert _is_union_type(str | int) is True
 
     def test_non_union_returns_false(self) -> None:
         """Test that non-union types return False."""
@@ -248,7 +248,7 @@ class TestPythonTypeToCtyType:
         assert isinstance(result, CtyString)
 
     @mock.patch("pyvider.functions.adapters.logger")
-    def test_unknown_type_logs_warning(self, mock_logger) -> None:
+    def test_unknown_type_logs_warning(self, mock_logger: MagicMock) -> None:
         """Test that unknown types log a warning."""
 
         class CustomType:

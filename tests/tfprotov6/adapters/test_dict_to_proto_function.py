@@ -221,20 +221,22 @@ class TestDictToProtoFunctionErrorHandling:
             "return": {"cty_type": CtyString()},
         }
 
-        with patch("pyvider.protocols.tfprotov6.adapters.function_adapter.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.adapters.function_adapter.json.dumps") as mock_dumps:
-                # Make json.dumps raise an exception during type encoding
-                mock_dumps.side_effect = RuntimeError("JSON encoding failed")
+        with (
+            patch("pyvider.protocols.tfprotov6.adapters.function_adapter.logger") as mock_logger,
+            patch("pyvider.protocols.tfprotov6.adapters.function_adapter.json.dumps") as mock_dumps,
+        ):
+            # Make json.dumps raise an exception during type encoding
+            mock_dumps.side_effect = RuntimeError("JSON encoding failed")
 
-                result = dict_to_proto_function(func_dict)
+            result = dict_to_proto_function(func_dict)
 
-                # Should return None on error
-                assert result is None
+            # Should return None on error
+            assert result is None
 
-                # Should log error
-                mock_logger.error.assert_called_once()
-                assert "error_func" in str(mock_logger.error.call_args)
-                assert "JSON encoding failed" in str(mock_logger.error.call_args)
+            # Should log error
+            mock_logger.error.assert_called_once()
+            assert "error_func" in str(mock_logger.error.call_args)
+            assert "JSON encoding failed" in str(mock_logger.error.call_args)
 
     def test_returns_none_on_construction_error(self) -> None:
         """Test that None is returned when protobuf construction fails."""
@@ -245,14 +247,16 @@ class TestDictToProtoFunctionErrorHandling:
             "return": {"cty_type": CtyString()},
         }
 
-        with patch("pyvider.protocols.tfprotov6.adapters.function_adapter.logger") as mock_logger:
-            with patch("pyvider.protocols.tfprotov6.adapters.function_adapter.pb.Function") as mock_pb:
-                mock_pb.side_effect = RuntimeError("Construction failed")
+        with (
+            patch("pyvider.protocols.tfprotov6.adapters.function_adapter.logger") as mock_logger,
+            patch("pyvider.protocols.tfprotov6.adapters.function_adapter.pb.Function") as mock_pb,
+        ):
+            mock_pb.side_effect = RuntimeError("Construction failed")
 
-                result = dict_to_proto_function(func_dict)
+            result = dict_to_proto_function(func_dict)
 
-                assert result is None
-                mock_logger.error.assert_called_once()
+            assert result is None
+            mock_logger.error.assert_called_once()
 
 
 class TestDictToProtoFunctionComplexTypes:

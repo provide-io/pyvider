@@ -44,7 +44,7 @@ TYPE_HINT_TEST_CASES = [
 
 
 @pytest.mark.parametrize("py_type, expected_cty_class", TYPE_HINT_TEST_CASES)
-def test_function_adapter_type_inference(py_type, expected_cty_class) -> None:
+def test_function_adapter_type_inference(py_type: Any, expected_cty_class: type) -> None:
     """
     Verifies that the function adapter correctly infers the CtyType
     from a wide range of Python type hints.

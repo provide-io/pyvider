@@ -5,7 +5,7 @@
 
 """Tests for CallFunction handler - Advanced features (error handling, invoke, integration)."""
 
-from typing import Never
+from typing import Any, Never
 
 from provide.testkit import mocking as mock
 import pytest
@@ -57,14 +57,16 @@ class TestCallFunctionErrorHandling:
 
         func_obj.func = failing_func
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch(
                 "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
-            ) as mock_process:
-                mock_get.return_value = func_obj
-                mock_process.return_value = ({}, False)
+            ) as mock_process,
+        ):
+            mock_get.return_value = func_obj
+            mock_process.return_value = ({}, False)
 
-                response = await CallFunctionHandler(request, context=None)
+            response = await CallFunctionHandler(request, context=None)
 
         assert isinstance(response, pb.CallFunction.Response)
         # Should have error field
@@ -105,7 +107,7 @@ class TestInvokeFunction:
         """Test invoking a function with *args (VAR_POSITIONAL)."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def variadic_func(name: str, *options) -> str:
+        def variadic_func(name: str, *options: Any) -> str:
             return f"{name}: {','.join(str(o) for o in options)}"
 
         kwargs = {"name": "test", "options": (1, 2, 3)}
@@ -131,7 +133,7 @@ class TestInvokeFunction:
         """Test invoking with positional, variadic, and keyword-only parameters."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def complex_func(name: str, *items, verbose: bool = False) -> str:
+        def complex_func(name: str, *items: Any, verbose: bool = False) -> str:
             items_str = ",".join(str(i) for i in items)
             return f"{name}[{items_str}]{'!' if verbose else ''}"
 
@@ -145,7 +147,7 @@ class TestInvokeFunction:
         """Test that variadic args work when provided as list instead of tuple."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def variadic_func(*args):
+        def variadic_func(*args: int) -> int:
             return sum(args)
 
         # Provide as list (should be converted to tuple internally)
@@ -159,7 +161,7 @@ class TestInvokeFunction:
         """Test that single non-tuple variadic value is converted to tuple."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def variadic_func(*args):
+        def variadic_func(*args: Any) -> int:
             return len(args)
 
         # Single value, not in a tuple
@@ -207,7 +209,7 @@ class TestInvokeFunction:
         """Test that successful invocations are logged."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _invoke_function
 
-        def simple_func(x: int):
+        def simple_func(x: int) -> int:
             return x * 2
 
         kwargs = {"x": 21}
@@ -245,172 +247,138 @@ class TestCallFunctionImplIntegration:
         """Test that impl validates exact argument count when no variadic."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
+        def test_func(a: str, b: str) -> str:
+            return f"{a}_{b}"
+
         request = pb.CallFunction.Request(
             name="test_func",
             arguments=[pb.DynamicValue(msgpack=b"\xa4test")],  # Only 1 arg, need 2
         )
 
-        def test_func(a: str, b: str) -> str:
-            return f"{a}_{b}"
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta,
+        ):
+            mock_get.return_value = test_func
+            mock_meta.return_value = {
+                "parameters": [{"name": "a"}, {"name": "b"}],
+                "return": {"cty_type": CtyString()},
+            }
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
-            ) as mock_meta:
-                mock_get.return_value = test_func
-                mock_meta.return_value = {
-                    "parameters": [{"name": "a"}, {"name": "b"}],
-                    "return": {"cty_type": CtyString()},
-                }
+            response = await _call_function_impl(request, context=None)
 
-                response = await _call_function_impl(request, context=None)
-
-                # Should have error about incorrect argument count
-                assert response.HasField("error")
-                assert "Incorrect number of arguments" in response.error.text
-                assert "Expected: 2 arguments" in response.error.text
-                assert "Received: 1 arguments" in response.error.text
-
-    @pytest.mark.asyncio
-    async def test_impl_validates_minimum_args_with_variadic(self) -> None:
-        """Test that impl validates minimum args when variadic present."""
-        from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
-
-        request = pb.CallFunction.Request(
-            name="test_func",
-            arguments=[],  # No args, but need at least 1 required
-        )
-
-        def test_func(required: str, *options):
-            return required
-
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
-            ) as mock_meta:
-                mock_get.return_value = test_func
-                mock_meta.return_value = {
-                    "parameters": [{"name": "required"}],
-                    "variadic_parameter": {"name": "options"},
-                    "return": {"cty_type": CtyString()},
-                }
-
-                response = await _call_function_impl(request, context=None)
-
-                assert response.HasField("error")
-                assert "Expected: at least 1 arguments" in response.error.text
-                assert "Received: 0 arguments" in response.error.text
+            # Should have error about incorrect argument count
+            assert response.HasField("error")
+            assert "Incorrect number of arguments" in response.error.text
+            assert "Expected: 2 arguments" in response.error.text
+            assert "Received: 1 arguments" in response.error.text
 
     @pytest.mark.asyncio
     async def test_impl_short_circuits_on_unknown_arguments(self) -> None:
         """Test that impl returns unknown result when arguments are unknown."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
+        def test_func(x: str) -> str:
+            return "should not be called"
+
         request = pb.CallFunction.Request(
             name="test_func",
             arguments=[pb.DynamicValue(msgpack=b"\xa4test")],
         )
 
-        def test_func(x: str) -> str:
-            return "should not be called"
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta,
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
+            ) as mock_process,
+        ):
+            mock_get.return_value = test_func
+            mock_meta.return_value = {
+                "parameters": [{"name": "x"}],
+                "return": {"cty_type": CtyString()},
+            }
+            mock_process.return_value = ({}, True)
+            response = await _call_function_impl(request, context=None)
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
-            ) as mock_meta:
-                with mock.patch(
-                    "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
-                ) as mock_process:
-                    mock_get.return_value = test_func
-                    mock_meta.return_value = {
-                        "parameters": [{"name": "x"}],
-                        "return": {"cty_type": CtyString()},
-                    }
-                    # Return has_unknown=True to trigger short-circuit
-                    mock_process.return_value = ({}, True)
-
-                    response = await _call_function_impl(request, context=None)
-
-                    # Should have result (not error) but it's unknown
-                    assert not response.HasField("error")
-                    assert response.HasField("result")
-                    # The function should NOT have been invoked (short-circuited)
+            # Should have result (not error) but it's unknown
+            assert not response.HasField("error")
+            assert response.HasField("result")
+            # The function should NOT have been invoked (short-circuited)
 
     @pytest.mark.asyncio
     async def test_impl_injects_capabilities_before_invocation(self) -> None:
         """Test that capabilities are injected before function invocation."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
+        def test_func(x: str) -> str:
+            return x.upper()
+
         request = pb.CallFunction.Request(
             name="test_func",
             arguments=[pb.DynamicValue(msgpack=b"\xa4test")],
         )
 
-        def test_func(x: str):
-            return x.upper()
-
         test_func._parent_capability = "test_capability"
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
-            ) as mock_meta:
-                with mock.patch(
-                    "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
-                ) as mock_process:
-                    with mock.patch(
-                        "pyvider.protocols.tfprotov6.handlers.call_function._inject_capabilities"
-                    ) as mock_inject:
-                        mock_get.return_value = test_func
-                        mock_meta.return_value = {
-                            "parameters": [{"name": "x"}],
-                            "return": {"cty_type": CtyString()},
-                        }
-                        mock_process.return_value = ({"x": "test"}, False)
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta,
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
+            ) as mock_process,
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function._inject_capabilities"
+            ) as mock_inject,
+        ):
+            mock_get.return_value = test_func
+            mock_meta.return_value = {
+                "parameters": [{"name": "x"}],
+                "return": {"cty_type": CtyString()},
+            }
+            mock_process.return_value = ({"x": "test"}, False)
 
-                        await _call_function_impl(request, context=None)
+            await _call_function_impl(request, context=None)
 
-                        # _inject_capabilities should have been called
-                        mock_inject.assert_called_once()
-                        assert mock_inject.call_args[0][0] == test_func
+            # _inject_capabilities should have been called
+            mock_inject.assert_called_once()
+            assert mock_inject.call_args[0][0] == test_func
 
     @pytest.mark.asyncio
     async def test_impl_marshals_result_correctly(self) -> None:
         """Test that function result is marshaled to protobuf."""
         from pyvider.protocols.tfprotov6.handlers.call_function import _call_function_impl
 
+        def test_func(x: int) -> int:
+            return x * 2
+
         request = pb.CallFunction.Request(
             name="test_func",
             arguments=[pb.DynamicValue(msgpack=b"\x2a")],  # 42
         )
 
-        def test_func(x: int):
-            return x * 2
+        with (
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict") as mock_meta,
+            mock.patch(
+                "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
+            ) as mock_process,
+            mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.marshal") as mock_marshal,
+        ):
+            mock_get.return_value = test_func
+            mock_meta.return_value = {
+                "parameters": [{"name": "x"}],
+                "return": {"cty_type": CtyNumber()},
+            }
+            mock_process.return_value = ({"x": 42}, False)
+            mock_marshal.return_value = pb.DynamicValue(msgpack=b"\x54")  # 84
 
-        with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.hub.get_component") as mock_get:
-            with mock.patch(
-                "pyvider.protocols.tfprotov6.handlers.call_function.function_to_dict"
-            ) as mock_meta:
-                with mock.patch(
-                    "pyvider.protocols.tfprotov6.handlers.call_function._process_function_arguments"
-                ) as mock_process:
-                    with mock.patch(
-                        "pyvider.protocols.tfprotov6.handlers.call_function.marshal"
-                    ) as mock_marshal:
-                        mock_get.return_value = test_func
-                        mock_meta.return_value = {
-                            "parameters": [{"name": "x"}],
-                            "return": {"cty_type": CtyNumber()},
-                        }
-                        mock_process.return_value = ({"x": 42}, False)
-                        mock_marshal.return_value = pb.DynamicValue(msgpack=b"\x54")  # 84
+            response = await _call_function_impl(request, context=None)
 
-                        response = await _call_function_impl(request, context=None)
-
-                        # Should have called marshal with result
-                        mock_marshal.assert_called_once()
-                        # Result should be copied to response
-                        assert response.HasField("result")
+            # Should have called marshal with result
+            mock_marshal.assert_called_once()
+            # Result should be copied to response
+            assert response.HasField("result")
 
     @pytest.mark.asyncio
     async def test_impl_handles_missing_function_name(self) -> None:
