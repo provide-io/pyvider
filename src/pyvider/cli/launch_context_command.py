@@ -54,7 +54,7 @@ def launch_context_cmd(format: str, verbose: bool) -> None:  # noqa: C901
         if verbose:
             data["environment_info"] = launch_context.environment_info
 
-        click.echo(json.dumps(data, indent=2))
+        pout(json.dumps(data, indent=2))
 
     else:
         # Human-readable format
@@ -122,27 +122,27 @@ def _show_method_specific_help(method: LaunchMethod) -> None:
     """Show helpful information based on the detected launch method."""
     if method.value == "pspf_package":
         pout("\n💡 PSPF Package Detected", fg="blue", bold=True)
-        click.echo("  This provider is running from a PSPF (Progressive Secure Package Format)")
-        click.echo("  self-contained package with embedded Python runtime.")
+        pout("  This provider is running from a PSPF (Progressive Secure Package Format)")
+        pout("  self-contained package with embedded Python runtime.")
 
     elif method.value == "script_module":
         pout("\n💡 Module Launch Detected", fg="blue", bold=True)
-        click.echo("  This provider was launched using 'python -m pyvider' or similar.")
-        click.echo("  This is typically used during development or testing.")
+        pout("  This provider was launched using 'python -m pyvider' or similar.")
+        pout("  This is typically used during development or testing.")
 
     elif method.value == "editable_install":
         pout("\n💡 Development Mode Detected", fg="blue", bold=True)
-        click.echo("  This provider is running from an editable install (pip install -e).")
-        click.echo("  This is typically used during development.")
+        pout("  This provider is running from an editable install (pip install -e).")
+        pout("  This is typically used during development.")
 
     elif method.value == "script_direct":
         pout("\n💡 Direct Script Launch Detected", fg="blue", bold=True)
-        click.echo("  This provider is running as a direct Python script.")
+        pout("  This provider is running as a direct Python script.")
 
     elif method.value == "unknown":
         pout("\n⚠️ Unknown Launch Method", fg="yellow", bold=True)
-        click.echo("  The launch method could not be determined.")
-        click.echo("  Use --verbose flag for more debugging information.")
+        pout("  The launch method could not be determined.")
+        pout("  Use --verbose flag for more debugging information.")
 
 
 # 🐍🏗️🔚

@@ -94,7 +94,7 @@ def _display_block_content(block: PvsObjectType, indent_level: int) -> None:
 def components(ctx: PyviderContext, **kwargs: Any) -> None:
     """Manage, inspect, and diagnose Pyvider components."""
     # THE FIX: Run discovery and error handling for the entire command group.
-    asyncio.run(ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, pout))
+    asyncio.run(ctx._ensure_components_discovered(registry, ComponentDiscovery, pout, pout))
     _handle_discovery_errors(ctx)
 
 

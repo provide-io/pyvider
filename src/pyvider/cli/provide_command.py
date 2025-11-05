@@ -346,12 +346,12 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
         pout("─" * 70, fg="cyan")
 
         # Display the full help message for the main CLI group
-        click.echo("\n" + ctx.parent.get_help())
+        pout("\n" + ctx.parent.get_help())
         sys.exit(0)
 
     # --- FIX: Run discovery and handle errors before starting the server ---
     pyvider_ctx = ctx.obj
-    asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, click.echo, pout))
+    asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, pout, pout))
     _handle_discovery_errors(pyvider_ctx)
 
     # If --force is used, provide a dummy cookie value.
@@ -360,7 +360,7 @@ def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
     try:
         asyncio.run(_run_provider_server(cookie_to_use))
     except KeyboardInterrupt:
-        click.echo("\n🚦 Provider service interrupted by user.")
+        pout("\n🚦 Provider service interrupted by user.")
         sys.exit(0)
 
 
