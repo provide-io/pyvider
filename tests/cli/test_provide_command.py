@@ -84,10 +84,11 @@ class TestProvideDetectionWarnings:
         runner = CliRunner()
 
         # Set magic cookie and wrong binary name
-        with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False):
-            # Mock sys.argv to simulate wrong binary name
-            with patch("sys.argv", ["wrong-name", "provide"]):
-                result = runner.invoke(cli, ["provide"])
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False),
+            patch("sys.argv", ["wrong-name", "provide"]),
+        ):
+            result = runner.invoke(cli, ["provide"])
 
         assert result.exit_code == 1
         assert "Provider Detection Error" in result.output
@@ -103,8 +104,9 @@ class TestProvideDetectionWarnings:
         ):
             # Mock the server run to avoid actually starting it
             import asyncio
+            from collections.abc import Coroutine
 
-            def consume_coroutine(coro) -> None:
+            def consume_coroutine(coro: Coroutine[any, any, None]) -> None:
                 if asyncio.iscoroutine(coro):
                     coro.close()
                 return None
@@ -121,7 +123,7 @@ class TestProvideForceMode:
     """Test --force mode behavior."""
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_starts_server(self, mock_run) -> None:
+    def test_force_mode_starts_server(self, mock_run: any) -> None:
         """Test that --force mode starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
@@ -210,9 +212,11 @@ class TestProvideServerMode:
         runner = CliRunner()
 
         # Set magic cookie and terraform-provider binary name
-        with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": TERRAFORM_PLUGIN_MAGIC_COOKIE}, clear=False):
-            with patch("sys.argv", ["terraform-provider-pyvider", "provide"]):
-                runner.invoke(cli, ["provide"])
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": TERRAFORM_PLUGIN_MAGIC_COOKIE}, clear=False),
+            patch("sys.argv", ["terraform-provider-pyvider", "provide"]),
+        ):
+            runner.invoke(cli, ["provide"])
 
         # Should call the server (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
@@ -233,9 +237,11 @@ class TestProvideServerMode:
         runner = CliRunner()
 
         cookie_value = "test-magic-cookie-123"
-        with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie_value}, clear=False):
-            with patch("sys.argv", ["terraform-provider-pyvider", "provide"]):
-                runner.invoke(cli, ["provide"])
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie_value}, clear=False),
+            patch("sys.argv", ["terraform-provider-pyvider", "provide"]),
+        ):
+            runner.invoke(cli, ["provide"])
 
         # Should call the server (twice: once for discovery, once for server)
         assert mock_run.call_count >= 2
@@ -389,9 +395,11 @@ class TestProvideCommandCoverage:
         runner = CliRunner()
 
         cookie = "test-cookie-value"
-        with patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie}, clear=False):
-            with patch("sys.argv", ["wrong-binary-name", "provide"]):
-                result = runner.invoke(cli, ["provide"])
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie}, clear=False),
+            patch("sys.argv", ["wrong-binary-name", "provide"]),
+        ):
+            result = runner.invoke(cli, ["provide"])
 
         assert result.exit_code == 1
         assert "Debug Info:" in result.output
