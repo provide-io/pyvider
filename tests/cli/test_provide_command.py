@@ -256,14 +256,13 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro) -> None:
+        def consume_then_error(coro: Coroutine[Any, Any, None]):
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
             # Raise error on second call (the _run_provider_server call)
             if call_count[0] >= 2:
                 raise RuntimeError("Test server error")
-            return None
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
             mock_run.side_effect = consume_then_error
@@ -283,14 +282,13 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro) -> None:
+        def consume_then_error(coro: Coroutine[Any, Any, None]):
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
             # Raise error on second call (the _run_provider_server call)
             if call_count[0] >= 2:
                 raise ValueError("Invalid configuration")
-            return None
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
             mock_run.side_effect = consume_then_error
@@ -307,14 +305,13 @@ class TestProvideServerErrorHandling:
 
         call_count = [0]
 
-        def consume_then_error(coro) -> None:
+        def consume_then_error(coro: Coroutine[Any, Any, None]):
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
             # Raise error on second call (the _run_provider_server call)
             if call_count[0] >= 2:
                 raise Exception("Unexpected error")
-            return None
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
             mock_run.side_effect = consume_then_error
