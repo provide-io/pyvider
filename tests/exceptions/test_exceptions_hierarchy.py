@@ -194,7 +194,9 @@ def test_function_registration_error(message: str, func_name: str | None) -> Non
     arg_name=st.one_of(st.none(), st.text(min_size=1)),
     arg_idx=st.one_of(st.none(), st.integers(min_value=0)),
 )
-def test_function_validation_error(message: str, func_name: str | None, arg_name: str | None, arg_idx: int | None) -> None:
+def test_function_validation_error(
+    message: str, func_name: str | None, arg_name: str | None, arg_idx: int | None
+) -> None:
     err = pyvider_exceptions_module.FunctionValidationError(
         message, function_name=func_name, argument_name=arg_name, argument_index=arg_idx
     )
@@ -289,7 +291,9 @@ def test_schema_parse_error(message: str, schema_name: str | None) -> None:
     source_val=st.text(),
     target_type_val=st.just(int),
 )
-def test_schema_conversion_error(message: str, schema_name: str | None, source_val: Any, target_type_val: type[Any]) -> None:
+def test_schema_conversion_error(
+    message: str, schema_name: str | None, source_val: Any, target_type_val: type[Any]
+) -> None:
     err = pyvider_exceptions_module.SchemaConversionError(
         message, schema_name=schema_name, source_value=source_val, target_type=target_type_val
     )
@@ -342,7 +346,9 @@ def test_serialization_error(message: str, type_name: str | None, source_val: An
     source_val=st.one_of(st.none(), st.text(), st.integers()),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_deserialization_error(message: str, type_name: str | None, source_val: Any, detail: str | None) -> None:
+def test_deserialization_error(
+    message: str, type_name: str | None, source_val: Any, detail: str | None
+) -> None:
     err = pyvider_exceptions_module.DeserializationError(
         message, type_name=type_name, source_value=source_val, detail=detail
     )
@@ -388,7 +394,9 @@ def test_validation_error(message: str, context: str | None, detail: str | None)
     context=st.one_of(st.none(), st.text(min_size=1)),
     detail=st.one_of(st.none(), st.text()),
 )
-def test_attribute_validation_error(message: str, attr_name: str | None, context: str | None, detail: str | None) -> None:
+def test_attribute_validation_error(
+    message: str, attr_name: str | None, context: str | None, detail: str | None
+) -> None:
     err = pyvider_exceptions_module.AttributeValidationError(
         message, attribute_name=attr_name, context=context, detail=detail
     )

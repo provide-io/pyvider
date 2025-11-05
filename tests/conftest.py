@@ -90,7 +90,9 @@ def suppress_logging_during_mutmut() -> Generator[None, None, None]:
 
 
 @pytest.fixture
-async def provider_in_hub(discovered_components_session: Generator[None, None, None]) -> AsyncGenerator[BaseProvider, None]:
+async def provider_in_hub(
+    discovered_components_session: Generator[None, None, None],
+) -> AsyncGenerator[BaseProvider, None]:
     """
     A function-scoped fixture that instantiates, sets up, and registers a
     test provider instance in the hub. This is crucial for handlers that
