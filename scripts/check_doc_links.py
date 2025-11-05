@@ -93,6 +93,11 @@ def resolve_link_path(source_file: Path, link_url: str) -> Path:
     return resolved
 
 
+def _is_external_or_special_link(link_url: str) -> bool:
+    """Check if a link is external or special."""
+    return link_url.startswith(("http://", "https://", "mailto:", ":::"))
+
+
 def check_file_links(file_path: Path) -> list[str]:
     """
     Check all links in a file for broken references.
@@ -106,12 +111,8 @@ def check_file_links(file_path: Path) -> list[str]:
     file_headings = extract_headings(file_path)
 
     for _link_text, link_url, line_num in links:
-        # Skip external links (http/https)
-        if link_url.startswith(("http://", "https://", "mailto:")):
-            continue
-
-        # Skip special links (like `:::`)
-        if link_url.startswith(":::"):
+        if _is_external_or_special_link(link_url):
+            continue:
             continue
 
         # Parse link and anchor
