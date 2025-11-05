@@ -8,6 +8,7 @@
 import asyncio
 import os
 from unittest.mock import patch
+from typing import Any
 
 from click.testing import CliRunner
 import pytest
@@ -106,11 +107,9 @@ class TestProvideDetectionWarnings:
             import asyncio
             from collections.abc import Coroutine
 
-            def consume_coroutine(coro: Coroutine[any, any, None]) -> None:
-                if asyncio.iscoroutine(coro):
-                    coro.close()
-                return None
-
+                    def consume_coroutine(coro: Coroutine[Any, Any, None]):
+                        if asyncio.iscoroutine(coro):
+                            coro.close()
             with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
                 mock_run.side_effect = consume_coroutine
                 result = runner.invoke(cli, ["provide", "--force"])
@@ -127,12 +126,11 @@ class TestProvideForceMode:
         """Test that --force mode starts the server."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
+        from collections.abc import Coroutine, Any
 
-        def consume_coroutine(coro) -> None:
-            if asyncio.iscoroutine(coro):
-                coro.close()
-            return None
-
+                    def consume_coroutine(coro: Coroutine[Any, Any, None]):
+                        if asyncio.iscoroutine(coro):
+                            coro.close()
         mock_run.side_effect = consume_coroutine
 
         runner = CliRunner()
@@ -145,7 +143,7 @@ class TestProvideForceMode:
         assert mock_run.call_count >= 2
 
     @patch("pyvider.cli.provide_command.asyncio.run")
-    def test_force_mode_uses_dummy_cookie(self, mock_run) -> None:
+    def test_force_mode_uses_dummy_cookie(self, mock_run: any) -> None:
         """Test that --force mode uses a dummy cookie when none is set."""
         # Mock asyncio.run to consume the coroutine
         import asyncio
