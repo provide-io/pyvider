@@ -79,9 +79,7 @@ class TestProvideInteractiveMode:
 class TestProvideDetectionWarnings:
     """Test provider binary name detection."""
 
-    def test_magic_cookie_with_wrong_binary_name_shows_error(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_magic_cookie_with_wrong_binary_name_shows_error(self, monkeypatch: pytest.MonkeyPatch) -> None:
         """Test detection error when magic cookie is set but binary name is wrong."""
         runner = CliRunner()
 
@@ -99,20 +97,21 @@ class TestProvideDetectionWarnings:
         """Test that --force bypasses the binary name detection."""
         runner = CliRunner()
 
-        with patch.dict(
-            os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False
-        ), patch("sys.argv", ["wrong-name", "provide", "--force"]):
-                # Mock the server run to avoid actually starting it
-                import asyncio
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "test-cookie"}, clear=False),
+            patch("sys.argv", ["wrong-name", "provide", "--force"]),
+        ):
+            # Mock the server run to avoid actually starting it
+            import asyncio
 
-                def consume_coroutine(coro) -> None:
-                    if asyncio.iscoroutine(coro):
-                        coro.close()
-                    return None
+            def consume_coroutine(coro) -> None:
+                if asyncio.iscoroutine(coro):
+                    coro.close()
+                return None
 
-                with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
-                    mock_run.side_effect = consume_coroutine
-                    result = runner.invoke(cli, ["provide", "--force"])
+            with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
+                mock_run.side_effect = consume_coroutine
+                result = runner.invoke(cli, ["provide", "--force"])
 
         # Should not show detection error
         assert "Provider Detection Error" not in result.output
