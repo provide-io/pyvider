@@ -28,16 +28,6 @@ def is_running_as_binary() -> bool:
     return getattr(sys, "frozen", False)
 
 
-def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
-    """
-    Uninstall the Terraform provider.
-
-    Removes the provider script from the plugin directory and the symlink from venv.
-
-    Args:
-        ctx: The Pyvider context
-        quiet: If True, suppress output for non-error messages
-    """
 def _remove_provider_script(ctx: PyviderContext, quiet: bool) -> None:
     target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
     if target_provider_path.exists():
@@ -48,29 +38,6 @@ def _remove_provider_script(ctx: PyviderContext, quiet: bool) -> None:
         if not quiet:
             pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
 
-def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
-    """
-    Uninstall the Terraform provider.
-
-    Removes the provider script from the plugin directory and the symlink from venv.
-
-    Args:
-        ctx: The Pyvider context
-        quiet: If True, suppress output for non-error messages
-    """
-    try:
-        _remove_provider_script(ctx, quiet)
-
-        # Try to remove the symlink from venv
-        # Find venv in current directory
-        install_dir = Path.cwd()
-        venv_dir = _find_actual_venv(install_dir)
-
-        if venv_dir:
-            _remove_venv_symlink(venv_dir)
-        else:
-            if not quiet:
-                pout("  Virtual environment not found, skipping symlink removal", style="yellow")
 
 def _remove_empty_parent_dirs(ctx: PyviderContext, quiet: bool) -> None:
     try:
@@ -82,6 +49,7 @@ def _remove_empty_parent_dirs(ctx: PyviderContext, quiet: bool) -> None:
     except OSError:
         # Silently ignore if we can't remove directory (e.g., it's not empty)
         pass
+
 
 def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
     """
@@ -114,6 +82,68 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
 
     except Exception as e:
         pout(f"❌ Failed to uninstall provider: {e}", fg="red", bold=True)
+        raise click.Abort() from e
+
+
+def _is_pyvider_project() -> bool:
+    pyproject_path = Path.cwd() / "pyproject.toml"
+    pyvider_toml_path = Path.cwd() / "pyvider.toml"
+    if pyvider_toml_path.exists():
+        return True
+    elif pyproject_path.exists():
+        try:
+            content = safe_read_text(pyproject_path)
+            if "[tool.pyvider]" in content:
+                return True
+        except Exception:
+            pass  # File doesn't exist or can't be read
+    return False
+
+
+def _install_binary_provider(pyvider_ctx: PyviderContext) -> None:
+    try:
+        source_binary_path = Path(sys.executable).resolve()
+        target_dir = pyvider_ctx.tf_plugin_dir
+        target_binary_path = target_dir / source_binary_path.name
+
+        pout(f"  Source: {source_binary_path}")
+        pout(f"  Target Directory: {target_dir}")
+
+        if not target_dir.exists():
+            pout(f"  Creating plugin directory: {target_dir}")
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+        if target_binary_path.exists():
+            pout(
+                f"  ⚠️  Warning: Existing provider binary found at {target_binary_path}. It will be replaced.",
+                fg="yellow",
+            )
+
+        pout(f"  Copying binary to {target_binary_path}...")
+        shutil.copy2(source_binary_path, target_binary_path)
+
+        pout("  Ensuring target binary is executable...")
+        target_binary_path.chmod(target_binary_path.stat().st_mode | 0o111)
+
+        pout("\n✅ Success! Provider binary installed.", fg="green", bold=True)
+
+    except Exception as e:
+        pout(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
+        raise click.Abort() from e
+
+
+def _install_dev_provider(pyvider_ctx: PyviderContext) -> None:
+    pout("📝 Running in Development Mode.", fg="yellow")
+    pout("  Placing development wrapper script for Terraform...")
+    try:
+        # Directly call the utility to place the provider script.
+        _place_terraform_provider_script(pyvider_ctx)
+    except Exception as e:
+        pout(
+            f"\n❌ Failed to place development wrapper script: {e}",
+            fg="red",
+            bold=True,
+        )
         raise click.Abort() from e
 
 
@@ -154,20 +184,7 @@ def install_command(
         raise click.Abort()
 
     # Guard: Check for pyvider.toml or pyproject.toml with [tool.pyvider]
-    pyproject_path = Path.cwd() / "pyproject.toml"
-    pyvider_toml_path = Path.cwd() / "pyvider.toml"
-    is_pyvider_project = False
-    if pyvider_toml_path.exists():
-        is_pyvider_project = True
-    elif pyproject_path.exists():
-        try:
-            content = safe_read_text(pyproject_path)
-            if "[tool.pyvider]" in content:
-                is_pyvider_project = True
-        except Exception:
-            pass  # File doesn't exist or can't be read
-
-    if not is_pyvider_project:
+    if not _is_pyvider_project():
         perr(
             "Error: This command must be run from a directory containing a pyvider.toml file or a pyproject.toml file with a [tool.pyvider] section.",
             fg="red",
@@ -188,48 +205,9 @@ def install_command(
         # Fall through to install logic below
 
     if is_running_as_binary():
-        try:
-            source_binary_path = Path(sys.executable).resolve()
-            target_dir = pyvider_ctx.tf_plugin_dir
-            target_binary_path = target_dir / source_binary_path.name
-
-            pout(f"  Source: {source_binary_path}")
-            pout(f"  Target Directory: {target_dir}")
-
-            if not target_dir.exists():
-                pout(f"  Creating plugin directory: {target_dir}")
-                target_dir.mkdir(parents=True, exist_ok=True)
-
-            if target_binary_path.exists():
-                pout(
-                    f"  ⚠️  Warning: Existing provider binary found at {target_binary_path}. It will be replaced.",
-                    fg="yellow",
-                )
-
-            pout(f"  Copying binary to {target_binary_path}...")
-            shutil.copy2(source_binary_path, target_binary_path)
-
-            pout("  Ensuring target binary is executable...")
-            target_binary_path.chmod(target_binary_path.stat().st_mode | 0o111)
-
-            pout("\n✅ Success! Provider binary installed.", fg="green", bold=True)
-
-        except Exception as e:
-            pout(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
-            raise click.Abort() from e
+        _install_binary_provider(pyvider_ctx)
     else:
-        pout("📝 Running in Development Mode.", fg="yellow")
-        pout("  Placing development wrapper script for Terraform...")
-        try:
-            # Directly call the utility to place the provider script.
-            _place_terraform_provider_script(pyvider_ctx)
-        except Exception as e:
-            pout(
-                f"\n❌ Failed to place development wrapper script: {e}",
-                fg="red",
-                bold=True,
-            )
-            raise click.Abort() from e
+        _install_dev_provider(pyvider_ctx)
 
 
 # 🐍🏗️🔚

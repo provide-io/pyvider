@@ -21,6 +21,70 @@ from pyvider.cli.main import cli
 TERRAFORM_PLUGIN_MAGIC_COOKIE = "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2"
 
 
+def _configure_telemetry(config: Any) -> None:
+    # Deferred Imports for Provider Mode
+    from provide.foundation import logger
+
+    log_level = config.get("logging.level", "INFO")
+    log_format = config.get("logging.format", "key_value")
+    os.environ["PYVIDER_LOG_LEVEL"] = log_level
+    os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
+    # Note: Foundation automatically sets up logging on import, no explicit setup needed
+    logger.info("Telemetry configured for provider server mode.", domain="system")
+
+
+async def _discover_components_once() -> None:
+    # Deferred Imports for Provider Mode
+    from pyvider.hub import hub
+    from pyvider.hub.discovery import ComponentDiscovery
+
+    if hasattr(_discover_components_once, "done"):
+        return
+
+    discovery = ComponentDiscovery(hub)
+    await discovery.discover_all()
+    _discover_components_once.done = True
+
+
+async def _instantiate_providers(logger: Any, hub: Any) -> dict:
+    provider_classes = hub.get_components("provider")
+
+    if not provider_classes:
+        logger.error(
+            "No providers discovered",
+            operation="provider_discovery",
+            domain="system",
+        )
+        raise RuntimeError(
+            "No providers found. Install a provider package (e.g., pyvider-components) "
+            "that registers a provider using @register_provider('name')."
+        )
+
+    logger.info(
+        "Discovered providers",
+        operation="provider_discovery",
+        providers=list(provider_classes.keys()),
+    )
+
+    provider_instances = {}
+    for provider_name, provider_class in provider_classes.items():
+        logger.debug(
+            "Creating provider instance",
+            operation="provider_create",
+            provider=provider_name,
+        )
+        provider_instance = provider_class()
+        await provider_instance.setup()
+        provider_instances[provider_name] = provider_instance
+
+        logger.debug(
+            "Provider setup completed",
+            operation="provider_setup",
+            provider=provider_name,
+        )
+    return provider_instances
+
+
 async def _run_provider_server(magic_cookie: str) -> None:
     """
     Initializes and runs the provider in server mode. This function contains
@@ -36,14 +100,6 @@ async def _run_provider_server(magic_cookie: str) -> None:
     from pyvider.hub import hub
     import pyvider.protocols.tfprotov6.protobuf as pb
     from pyvider.rpcplugin import RPCPluginProtocol, RPCPluginServer
-
-    def _configure_telemetry(config: PyviderConfig) -> None:
-        log_level = config.get("logging.level", "INFO")
-        log_format = config.get("logging.format", "key_value")
-        os.environ["PYVIDER_LOG_LEVEL"] = log_level
-        os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
-        # Note: Foundation automatically sets up logging on import, no explicit setup needed
-        logger.info("Telemetry configured for provider server mode.", domain="system")
 
     @define
     class PyviderProtocol(RPCPluginProtocol):
@@ -65,15 +121,6 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         async def add_to_server(self, handler: Any, server: Any) -> None:
             pb.add_ProviderServicer_to_server(handler, server)
-
-    async def _discover_components_once() -> None:
-        if hasattr(_discover_components_once, "done"):
-            return
-        from pyvider.hub.discovery import ComponentDiscovery
-
-        discovery = ComponentDiscovery(hub)
-        await discovery.discover_all()
-        _discover_components_once.done = True
 
     try:
         logger.info(
@@ -108,43 +155,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
             operation="component_discovery",
         )
 
-        # Discover and instantiate all registered providers
-        provider_classes = hub.get_components("provider")
-
-        if not provider_classes:
-            logger.error(
-                "No providers discovered",
-                operation="provider_discovery",
-                domain="system",
-            )
-            raise RuntimeError(
-                "No providers found. Install a provider package (e.g., pyvider-components) "
-                "that registers a provider using @register_provider('name')."
-            )
-
-        logger.info(
-            "Discovered providers",
-            operation="provider_discovery",
-            providers=list(provider_classes.keys()),
-        )
-
-        # Instantiate and setup all providers
-        provider_instances = {}
-        for provider_name, provider_class in provider_classes.items():
-            logger.debug(
-                "Creating provider instance",
-                operation="provider_create",
-                provider=provider_name,
-            )
-            provider_instance = provider_class()
-            await provider_instance.setup()
-            provider_instances[provider_name] = provider_instance
-
-            logger.debug(
-                "Provider setup completed",
-                operation="provider_setup",
-                provider=provider_name,
-            )
+        provider_instances = await _instantiate_providers(logger, hub)
 
         # Register the first provider as the singleton "provider" for backwards compatibility
         # TODO: In the future, handlers should route to the correct provider based on resource type
@@ -153,7 +164,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
         logger.debug(
             "Primary provider registered in hub",
             operation="hub_register",
-            provider=next(iter(provider_classes.keys())),
+            provider=next(iter(provider_instances.keys())),
         )
 
         protocol = PyviderProtocol()
@@ -244,8 +255,14 @@ async def _run_provider_server(magic_cookie: str) -> None:
     default=False,
     help="Force the provider to start in server mode, ignoring the magic cookie check.",
 )
+@click.option(
+    "--log-level",
+    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False),
+    default="INFO",
+    help="Set the logging level for the provider server.",
+)
 @click.pass_context
-def provide_cmd(ctx: click.Context, force: bool, **kwargs: Any) -> None:
+def provide_cmd(ctx: click.Context, force: bool, log_level: str, **kwargs: Any) -> None:
     """
     Starts the provider in gRPC server mode for Terraform. (This is the default
     action when run by Terraform or when the binary is run with no arguments).
