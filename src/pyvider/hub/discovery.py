@@ -53,7 +53,7 @@ class ComponentDiscovery:
             )
             await self._discover_package(entry_point.value, strict=strict)
 
-        component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
+        {k: len(v) for k, v in self.hub.list_components().items()}
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
         """Recursively discover all modules within a given package name."""

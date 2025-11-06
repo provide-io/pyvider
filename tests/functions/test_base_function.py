@@ -5,8 +5,8 @@
 
 """Tests for functions/base.py module."""
 
-import pytest
 import attrs
+import pytest
 
 from pyvider.cty import CtyBool, CtyDynamic, CtyList, CtyNumber, CtyString
 from pyvider.functions.base import FunctionParameter, FunctionReturnType
@@ -116,7 +116,7 @@ class TestFunctionReturnType:
     def test_return_type_frozen(self) -> None:
         """Test that FunctionReturnType is immutable."""
         ret_type = FunctionReturnType(type=CtyString())
-        with pytest.raises(Exception):  # attrs frozen raises FrozenInstanceError
+        with pytest.raises(attrs.exceptions.FrozenInstanceError):  # attrs frozen raises FrozenInstanceError
             ret_type.type = CtyNumber()  # type: ignore
 
 

@@ -417,11 +417,7 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # 
             detail = str(exc)
             if hasattr(exc, "detail") and exc.detail:
                 detail += f"\n\nDetails:\n{exc.detail}"
-        elif (
-            isinstance(exc, FunctionError)
-            or isinstance(exc, ResourceError | DataSourceError)
-            or isinstance(exc, PyviderError)
-        ):
+        elif isinstance(exc, (FunctionError, ResourceError | DataSourceError, PyviderError)):
             detail = str(exc)
         else:
             summary = "Internal Provider Error"

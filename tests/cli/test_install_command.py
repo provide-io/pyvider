@@ -58,12 +58,13 @@ class TestInstallCommandValidation:
             # Create a pyvider.toml file
             Path("pyvider.toml").write_text('[pyvider]\nname = "test"\n')
 
-            # Mock the prep_provider to avoid actual installation
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command.click.Context.invoke"):
-                    result = runner.invoke(cli, ["install"])
-                    # Should not fail validation
-                    assert "must be run from a directory" not in result.output
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch("pyvider.cli.install_command.click.Context.invoke"),
+            ):
+                result = runner.invoke(cli, ["install"])
+                # Should not fail validation
+                assert "must be run from a directory" not in result.output
 
     def test_install_accepts_pyproject_with_tool_pyvider(self, tmp_path) -> None:
         """Test that install command accepts pyproject.toml with [tool.pyvider]."""
@@ -73,11 +74,13 @@ class TestInstallCommandValidation:
             Path("pyproject.toml").write_text('[tool.pyvider]\nname = "test"\n')
 
             # Mock to avoid actual installation
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command.click.Context.invoke"):
-                    result = runner.invoke(cli, ["install"])
-                    # Should not fail validation
-                    assert "must be run from a directory" not in result.output
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch("pyvider.cli.install_command.click.Context.invoke"),
+            ):
+                result = runner.invoke(cli, ["install"])
+                # Should not fail validation
+                assert "must be run from a directory" not in result.output
 
     def test_install_rejects_pyproject_without_tool_pyvider(self, tmp_path) -> None:
         """Test that install command rejects pyproject.toml without [tool.pyvider]."""
@@ -102,23 +105,22 @@ class TestInstallCommandBinaryMode:
             Path("pyvider.toml").write_text("[pyvider]\n")
             fake_binary = tmp_path / "fake_provider"
             fake_binary.write_text("#!/usr/bin/env python\n")
-            fake_binary.chmod(0o755)
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True),
+                mock.patch("sys.executable", str(fake_binary)),
+                mock.patch("pyvider.cli.install_command.PyviderContext") as MockContext,
+            ):
+                # Setup mock context
+                mock_ctx_instance = MockContext.return_value
+                mock_tf_plugin_dir = tmp_path / "plugins"
+                mock_tf_plugin_dir.mkdir(parents=True)
+                mock_ctx_instance.tf_plugin_dir = mock_tf_plugin_dir
 
-            # Mock binary mode
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True):
-                with mock.patch("sys.executable", str(fake_binary)):
-                    with mock.patch("pyvider.cli.install_command.PyviderContext") as MockContext:
-                        # Setup mock context
-                        mock_ctx_instance = MockContext.return_value
-                        mock_tf_plugin_dir = tmp_path / "plugins"
-                        mock_tf_plugin_dir.mkdir(parents=True)
-                        mock_ctx_instance.tf_plugin_dir = mock_tf_plugin_dir
+                result = runner.invoke(cli, ["install"])
 
-                        result = runner.invoke(cli, ["install"])
-
-                        # Verify success message
-                        if result.exit_code == 0:
-                            assert "Success" in result.output or "installed" in result.output.lower()
+                # Verify success message
+                if result.exit_code == 0:
+                    assert "Success" in result.output or "installed" in result.output.lower()
 
     def test_binary_mode_handles_copy_error(self, tmp_path) -> None:
         """Test that binary mode handles copy errors gracefully."""
@@ -128,15 +130,17 @@ class TestInstallCommandBinaryMode:
             Path("pyvider.toml").write_text("[pyvider]\n")
 
             # Mock binary mode and make copy fail
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True):
-                with mock.patch(
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True),
+                mock.patch(
                     "pyvider.cli.install_command.shutil.copy2", side_effect=PermissionError("Access denied")
-                ):
-                    with mock.patch("pyvider.cli.install_command.PyviderContext"):
-                        result = runner.invoke(cli, ["install"])
+                ),
+                mock.patch("pyvider.cli.install_command.PyviderContext"),
+            ):
+                result = runner.invoke(cli, ["install"])
 
-                        # Should handle error
-                        assert result.exit_code != 0
+                # Should handle error
+                assert result.exit_code != 0
 
 
 class TestInstallCommandDevelopmentMode:
@@ -150,13 +154,15 @@ class TestInstallCommandDevelopmentMode:
             Path("pyvider.toml").write_text("[pyvider]\n")
 
             # Mock development mode
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command.click.Context.invoke") as mock_invoke:
-                    result = runner.invoke(cli, ["install"])
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch("pyvider.cli.install_command.click.Context.invoke") as mock_invoke,
+            ):
+                result = runner.invoke(cli, ["install"])
 
-                    # Verify prep_provider was invoked
-                    if result.exit_code == 0 or "Development Mode" in result.output:
-                        assert mock_invoke.called or "Development Mode" in result.output
+                # Verify prep_provider was invoked
+                if result.exit_code == 0 or "Development Mode" in result.output:
+                    assert mock_invoke.called or "Development Mode" in result.output
 
     def test_development_mode_handles_prep_provider_error(self, tmp_path) -> None:
         """Test that development mode handles prep_provider errors."""
@@ -166,14 +172,16 @@ class TestInstallCommandDevelopmentMode:
             Path("pyvider.toml").write_text("[pyvider]\n")
 
             # Mock development mode and make prep_provider fail
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch(
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch(
                     "pyvider.cli.install_command.click.Context.invoke", side_effect=RuntimeError("Prep failed")
-                ):
-                    result = runner.invoke(cli, ["install"])
+                ),
+            ):
+                result = runner.invoke(cli, ["install"])
 
-                    # Should handle error
-                    assert result.exit_code != 0
+                # Should handle error
+                assert result.exit_code != 0
 
 
 class TestInstallCommandEdgeCases:
@@ -190,13 +198,14 @@ class TestInstallCommandEdgeCases:
             fake_binary.chmod(0o755)
 
             # Mock binary mode
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True):
-                with mock.patch("sys.executable", str(fake_binary)):
-                    result = runner.invoke(cli, ["install"])
-
-                    # Verify it succeeds - directory creation is handled internally
-                    # The main point is that it doesn't fail when directory doesn't exist
-                    assert result.exit_code == 0 or "Success" in result.output
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True),
+                mock.patch("sys.executable", str(fake_binary)),
+            ):
+                result = runner.invoke(cli, ["install"])
+                # Verify it succeeds - directory creation is handled internally
+                # The main point is that it doesn't fail when directory doesn't exist
+                assert result.exit_code == 0 or "Success" in result.output
 
     def test_install_warns_when_replacing_existing_binary(self, tmp_path) -> None:
         """Test that install warns when replacing an existing binary."""
@@ -215,17 +224,19 @@ class TestInstallCommandEdgeCases:
             existing_binary.write_text("old version")
 
             # Mock binary mode
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True):
-                with mock.patch("sys.executable", str(fake_binary)):
-                    with mock.patch("pyvider.cli.install_command.PyviderContext") as MockContext:
-                        mock_ctx_instance = MockContext.return_value
-                        mock_ctx_instance.tf_plugin_dir = target_dir
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=True),
+                mock.patch("sys.executable", str(fake_binary)),
+                mock.patch("pyvider.cli.install_command.PyviderContext") as MockContext,
+            ):
+                mock_ctx_instance = MockContext.return_value
+                mock_ctx_instance.tf_plugin_dir = target_dir
 
-                        result = runner.invoke(cli, ["install"])
+                result = runner.invoke(cli, ["install"])
 
-                        # Verify warning message
-                        if result.exit_code == 0:
-                            assert "Warning" in result.output or "replaced" in result.output.lower()
+                # Verify warning message
+                if result.exit_code == 0:
+                    assert "Warning" in result.output or "replaced" in result.output.lower()
 
     def test_install_handles_unreadable_pyproject(self, tmp_path) -> None:
         """Test that install handles unreadable pyproject.toml gracefully."""
@@ -326,15 +337,17 @@ class TestReinstallCommand:
             # Setup
             Path("pyvider.toml").write_text("[pyvider]\n")
 
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=None):
-                    with mock.patch("pyvider.cli.install_command._place_terraform_provider_script"):
-                        result = runner.invoke(cli, ["install", "--reinstall"])
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=None),
+                mock.patch("pyvider.cli.install_command._place_terraform_provider_script"),
+            ):
+                result = runner.invoke(cli, ["install", "--reinstall"])
 
-                        # Should succeed
-                        assert result.exit_code == 0
-                        # Should indicate reinstall in output
-                        assert "Reinstalling" in result.output or "reinstall" in result.output.lower()
+                # Should succeed
+                assert result.exit_code == 0
+                # Should indicate reinstall in output
+                assert "Reinstalling" in result.output or "reinstall" in result.output.lower()
 
 
 class TestMutuallyExclusiveFlags:
@@ -371,16 +384,16 @@ class TestInstallCommandSymlinkCreation:
             (venv_bin / "pyvider").touch()
             (venv_bin / "activate").touch()
 
-            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
-                with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir):
-                    with mock.patch(
-                        "pyvider.cli.install_command._place_terraform_provider_script"
-                    ) as mock_place:
-                        result = runner.invoke(cli, ["install"])
+            with (
+                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
+                mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir),
+                mock.patch("pyvider.cli.install_command._place_terraform_provider_script") as mock_place,
+            ):
+                result = runner.invoke(cli, ["install"])
 
-                        # Verify _place_terraform_provider_script was called
-                        assert mock_place.called
-                        assert result.exit_code == 0
+                # Verify _place_terraform_provider_script was called
+                assert mock_place.called
+                assert result.exit_code == 0
 
 
 # 🐍🏗️🔚
