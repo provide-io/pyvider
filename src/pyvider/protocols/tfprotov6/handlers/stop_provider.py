@@ -46,7 +46,13 @@ async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) ->
         logger.info("StopProvider RPC received, initiating graceful shutdown", operation="stop_provider")
 
         server_factory = hub.get_component("singleton", "rpc_plugin_server")
-        server_instance = cast(RPCPluginServer, server_factory()) if server_factory else None
+        if server_factory:
+            # Handle both factory functions and direct instances
+            server_instance = cast(
+                RPCPluginServer, server_factory() if callable(server_factory) else server_factory
+            )
+        else:
+            server_instance = None
 
         if server_instance:
             logger.debug("Calling server stop for graceful shutdown", operation="stop_provider")

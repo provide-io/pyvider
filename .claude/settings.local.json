@@ -5,7 +5,14 @@
       "Bash(uv run python:*)",
       "Bash(uv run pytest:*)",
       "Bash(cat:*)",
-      "Bash(uv run ruff:*)"
+      "Bash(uv run ruff:*)",
+      "Bash(git restore:*)",
+      "Bash(uv run mypy:*)",
+      "Bash(find:*)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/pyvider status --short)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry status --short)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry diff --stat)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/flavorpack status --short)"
     ],
     "deny": [],
     "ask": [],

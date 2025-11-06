@@ -84,7 +84,14 @@ class BaseProvider:
         capability_classes = hub.get_components("capability")
 
         provider_ctx_factory = hub.get_component("singleton", "provider_context")
-        provider_ctx = cast(PyviderContext, provider_ctx_factory()) if provider_ctx_factory else None
+        if provider_ctx_factory:
+            # Handle both factory functions and direct instances
+            provider_ctx = cast(
+                PyviderContext,
+                provider_ctx_factory() if callable(provider_ctx_factory) else provider_ctx_factory,
+            )
+        else:
+            provider_ctx = None
         provider_config = provider_ctx.config if provider_ctx else None
 
         for name, cap_class in capability_classes.items():

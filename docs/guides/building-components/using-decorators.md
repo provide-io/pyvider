@@ -13,7 +13,7 @@ All Pyvider components use decorators for registration:
 - `@register_resource` - Register resources
 - `@register_data_source` - Register data sources
 - `@register_function` - Register functions
-- `@register_ephemeral` - Register ephemeral resources
+- `@register_ephemeral_resource` - Register ephemeral resources
 - `@register_capability` - Register capabilities
 
 ## Provider Decorator
@@ -390,7 +390,7 @@ locals {
 
 ## Ephemeral Resource Decorator
 
-### `@register_ephemeral(name: str)`
+### `@register_ephemeral_resource(name: str)`
 
 Registers an ephemeral resource class with the Pyvider hub.
 
@@ -400,7 +400,7 @@ Registers an ephemeral resource class with the Pyvider hub.
 **Complete Example:**
 
 ```python
-from pyvider.ephemerals import register_ephemeral, BaseEphemeral
+from pyvider.ephemerals import register_ephemeral_resource, BaseEphemeral
 from pyvider.schema import s_ephemeral, a_str, a_num, PvsSchema
 import attrs
 
@@ -416,7 +416,7 @@ class TokenData:
     token: str
     expires_at: str
 
-@register_ephemeral("token")
+@register_ephemeral_resource("token")
 class Token(BaseEphemeral):
     """Generates temporary access tokens."""
 

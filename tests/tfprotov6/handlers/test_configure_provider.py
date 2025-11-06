@@ -121,8 +121,12 @@ class TestConfigureProviderHandler:
         await _configure_provider_impl(request, context=None)
 
         # Provider context should be created
-        provider_context = hub.get_component("singleton", "provider_context")
-        assert provider_context is not None
+        provider_context_factory = hub.get_component("singleton", "provider_context")
+        assert provider_context_factory is not None
+        # Call the factory to get the actual context instance
+        provider_context = (
+            provider_context_factory() if callable(provider_context_factory) else provider_context_factory
+        )
         assert provider_context.config is not None
 
     @pytest.mark.asyncio

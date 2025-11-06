@@ -109,7 +109,8 @@ class TestPyviderProviderSetup:
 
             def get_component_side_effect(comp_type: str, name: str | None = None) -> MagicMock | None:
                 if comp_type == "singleton" and name == "provider_context":
-                    return mock_provider_ctx
+                    # Return a factory function that returns the mock provider context
+                    return lambda: mock_provider_ctx
                 return None
 
             mock_hub.get_component.side_effect = get_component_side_effect

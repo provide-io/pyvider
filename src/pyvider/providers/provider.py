@@ -5,11 +5,10 @@
 
 """TODO: Add module docstring."""
 
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from provide.foundation import logger
 
-from pyvider.capabilities import BaseCapability
 from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
 from pyvider.exceptions import FrameworkConfigurationError
 from pyvider.hub import hub
@@ -20,7 +19,7 @@ from pyvider.schema import a_bool, s_provider
 
 @register_provider("pyvider")
 class PyviderProvider(BaseProvider):
-    capabilities: ClassVar[dict[str, BaseCapability]] = {}
+    capabilities: ClassVar[dict[str, Any]] = {}
 
     def __init__(self) -> None:
         provider_metadata = ProviderMetadata(name="pyvider", version="0.1.0")
@@ -36,7 +35,19 @@ class PyviderProvider(BaseProvider):
         }
         capability_classes = hub.get_components("capability")
 
-        provider_ctx = hub.get_component("singleton", "provider_context")
+        provider_ctx_factory = hub.get_component("singleton", "provider_context")
+        if provider_ctx_factory:
+            # Handle both factory functions and direct instances
+            from typing import cast
+
+            from pyvider.cli.context import PyviderContext
+
+            provider_ctx = cast(
+                PyviderContext,
+                provider_ctx_factory() if callable(provider_ctx_factory) else provider_ctx_factory,
+            )
+        else:
+            provider_ctx = None
         provider_config = provider_ctx.config if provider_ctx else None
 
         for name, cap_class in capability_classes.items():
