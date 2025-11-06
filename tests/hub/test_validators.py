@@ -14,7 +14,7 @@ from pyvider.hub.validators import Validators
 
 
 @pytest.fixture(autouse=True)
-def reset_validators():
+def reset_validators() -> None:
     """Reset the validator registry before each test."""
     Validators._registry.clear()
     yield

@@ -115,7 +115,7 @@ def test_attribute_required_optional_flags(required: bool, optional: bool) -> No
 @given(
     default_value=st.one_of(st.none(), st.text(min_size=0, max_size=50)),
 )
-def test_optional_attribute_with_default(default_value) -> None:
+def test_optional_attribute_with_default(default_value: str | None) -> None:
     """
     Property: Creating an optional attribute with a default value should succeed.
     """

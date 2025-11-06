@@ -17,6 +17,7 @@ from pyvider.observability import (
     handler_requests,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.hub import hub
 from pyvider.rpcplugin.server import RPCPluginServer
 
 
@@ -44,7 +45,8 @@ async def _stop_provider_impl(request: pb.StopProvider.Request, context: Any) ->
     try:
         logger.info("StopProvider RPC received, initiating graceful shutdown", operation="stop_provider")
 
-        server_instance = RPCPluginServer.get_instance()
+        server_factory = hub.get_component("singleton", "rpc_plugin_server")
+        server_instance: RPCPluginServer = server_factory() if server_factory else None
 
         if server_instance:
             logger.debug("Calling server stop for graceful shutdown", operation="stop_provider")

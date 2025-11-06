@@ -5,12 +5,15 @@
 
 """Tests for CLI utility helpers."""
 
+from pathlib import Path
 from types import SimpleNamespace
+
+import pytest
 
 from pyvider.cli.utils import _place_terraform_provider_script
 
 
-def test_place_terraform_provider_script(monkeypatch, tmp_path) -> None:
+def test_place_terraform_provider_script(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     plugin_dir = tmp_path / "plugins"
     ctx = SimpleNamespace(tf_plugin_dir=plugin_dir)
     install_dir = tmp_path / "project"
@@ -28,7 +31,7 @@ def test_place_terraform_provider_script(monkeypatch, tmp_path) -> None:
 
     captured: dict[str, str] = {}
 
-    def fake_atomic(path, content) -> None:
+    def fake_atomic(path: Path, content: str) -> None:
         captured["path"] = str(path)
         captured["content"] = content
         path.parent.mkdir(parents=True, exist_ok=True)

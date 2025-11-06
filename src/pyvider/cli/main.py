@@ -43,7 +43,7 @@ def _show_interactive_mode(ctx: click.Context) -> None:
     pout("\nFor more information, use:")
     pout(f"  {cmd_name} --help", fg="yellow")
     pout(f"  {cmd_name} launch-context", fg="yellow")
-    pout()
+    pout("")
 
 
 @click.group(invoke_without_command=True)

@@ -185,6 +185,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
         )
 
         server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
+        hub.register("singleton", "rpc_plugin_server", lambda: server)
         await server.serve()
 
         logger.info(

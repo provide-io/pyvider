@@ -28,7 +28,7 @@ def greet_func(name: str, suffix: str = "!") -> str:
 
 
 @pytest.fixture(autouse=True)
-def register_test_functions():
+def register_test_functions() -> None:
     """Ensures test functions are registered for each test run."""
     hub.register("function", "add_numbers", add_numbers_func)
     hub.register("function", "greet", greet_func)

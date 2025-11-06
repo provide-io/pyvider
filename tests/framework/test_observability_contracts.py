@@ -7,12 +7,13 @@
 
 from provide.foundation import logger
 import pytest
+from pytest import LogCaptureFixture
 
 from pyvider.cty import CtyMark, CtyString
 
 
 @pytest.mark.xfail(reason="Requires structlog integration with a CtyValue redacting processor.")
-def test_sensitive_cty_value_is_redacted_in_logs(caplog) -> None:
+def test_sensitive_cty_value_is_redacted_in_logs(caplog: LogCaptureFixture) -> None:
     """
     TDD Contract: Verifies that a CtyValue marked as sensitive
     is automatically redacted when passed to a structured logger.
