@@ -15,7 +15,7 @@ from pyvider.exceptions import ResourceError
 from pyvider.hub import hub
 
 
-def _restore_component(component_type: str, name: str, original) -> None:
+def _restore_component(component_type: str, name: str, original: object | None) -> None:
     if original is not None:
         hub.register(component_type, name, original)
     else:
@@ -41,7 +41,7 @@ def test_requires_capability_injects_parent_for_sync_methods() -> None:
     hub.register("singleton", "provider", provider_stub)
     hub.register("capability", "dummy_parent", capability_stub)
 
-    def method(self, *, dummy_parent=None):
+    def method(self: object, *, dummy_parent: object | None = None) -> object | None:
         return dummy_parent
 
     method._parent_capability = "dummy_parent"  # type: ignore[attr-defined]
@@ -65,7 +65,7 @@ def test_requires_capability_async_raises_when_provider_missing() -> None:
         hub.unregister("singleton", "provider")
 
     @requires_capability
-    async def async_method(self) -> str:
+    async def async_method(self: object) -> str:
         return "unreachable"
 
     class Component:
@@ -92,7 +92,7 @@ def test_requires_capability_async_injects_parent() -> None:
         _parent_capability = "async_parent"
 
         @requires_capability
-        async def do_work(self, *, async_parent=None):
+        async def do_work(self: object, *, async_parent: object | None = None) -> object | None:
             return async_parent
 
     component = Component()

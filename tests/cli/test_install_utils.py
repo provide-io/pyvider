@@ -120,9 +120,7 @@ class TestScriptGeneration:
             ctx = PyviderContext()
 
             # Try to generate script without venv
-            import os
-
-            original_cwd = os.getcwd()
+            original_cwd = Path.cwd()
             try:
                 os.chdir(tmpdir_path)
                 with pytest.raises(ConfigurationError, match="No virtual environment found"):
@@ -148,9 +146,7 @@ class TestScriptGeneration:
 
             ctx = PyviderContext()
 
-            import os
-
-            original_cwd = os.getcwd()
+            original_cwd = Path.cwd()
             try:
                 os.chdir(tmpdir_path)
                 with pytest.raises(ConfigurationError, match="Python executable not found"):

@@ -6,13 +6,13 @@
 """Mutation tests for upgrade_resource_state handler."""
 
 import json
-import os
+from pathlib import Path
 import sys
 
 import pytest
 
 # Add src to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src"))
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     UpgradeResourceStateHandler,
