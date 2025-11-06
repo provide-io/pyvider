@@ -64,6 +64,9 @@ class BaseProvider:
 
         Override this method for custom provider initialization.
         """
+        from typing import cast
+
+        from pyvider.cli.context import PyviderContext
         from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
         from pyvider.hub import hub
         from pyvider.schema import s_provider
@@ -80,7 +83,8 @@ class BaseProvider:
         final_attributes = {}
         capability_classes = hub.get_components("capability")
 
-        provider_ctx = hub.get_component("singleton", "provider_context")
+        provider_ctx_factory = hub.get_component("singleton", "provider_context")
+        provider_ctx = cast(PyviderContext, provider_ctx_factory()) if provider_ctx_factory else None
         provider_config = provider_ctx.config if provider_ctx else None
 
         for name, cap_class in capability_classes.items():

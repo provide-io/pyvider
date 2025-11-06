@@ -11,6 +11,7 @@ from typing import Any, cast
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
+from pyvider.hub import hub
 from pyvider.observability import (
     handler_duration,
     handler_errors,
@@ -18,7 +19,6 @@ from pyvider.observability import (
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.rpcplugin.server import RPCPluginServer
-from pyvider.hub import hub
 
 
 @resilient()

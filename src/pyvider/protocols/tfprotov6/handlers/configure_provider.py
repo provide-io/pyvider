@@ -173,7 +173,7 @@ async def _configure_provider_impl(
             source=test_mode_source,
         )
         provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
-        hub.register("singleton", "provider_context", provider_context)
+        hub.register("singleton", "provider_context", lambda: provider_context)
 
         if test_mode_enabled:
             logger.warning(

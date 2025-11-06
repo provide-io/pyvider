@@ -5,7 +5,7 @@
 
 """TODO: Add module docstring."""
 
-from typing import Any
+from typing import Any, cast
 
 import attrs
 
@@ -26,9 +26,15 @@ def _process_single_item(
     children_to_process = []
     if isinstance(schema, PvsObjectType) and isinstance(val.type, CtyObject) and val.value:
         processing.add(id(val))
-        for attr_name, attr_value in val.value.items():
-            if attr_name in schema.attributes:
-                children_to_process.append((attr_value, schema.attributes[attr_name]))
+        if isinstance(val.value, dict):
+            for attr_name, attr_value in val.value.items():
+                if attr_name in schema.attributes:
+                    children_to_process.append(
+                        (
+                            cast(CtyValue, attr_value),
+                            cast(PvsType | CtyType[Any], schema.attributes[attr_name]),
+                        )
+                    )
     return marked_value, children_to_process
 
 
@@ -63,13 +69,13 @@ def _apply_schema_marks_iterative(root_value: CtyValue, root_schema: PvsType | C
             container_id = id(container_val)
             processing.remove(container_id)
 
-            new_inner_value = {}
+            new_inner_value: dict[str, CtyValue] = {}
             made_change = False
 
             if isinstance(container_val.value, dict):
                 for key, child_val in container_val.value.items():
                     processed_child = results.get(id(child_val), child_val)
-                    new_inner_value[key] = processed_child
+                    new_inner_value[cast(str, key)] = cast(CtyValue, processed_child)
 
                     if processed_child is not child_val or processed_child.marks:
                         made_change = True
@@ -96,7 +102,9 @@ def _apply_schema_marks_iterative(root_value: CtyValue, root_schema: PvsType | C
 
 
 def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicValue:
-    """Marshals a Python or CtyValue into a protobuf DynamicValue."""
+    """
+    Marshals a Python or CtyValue into a protobuf DynamicValue.
+    """
     if not isinstance(schema, CtyType | PvsType):
         raise TypeError(f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}")
 
@@ -115,7 +123,9 @@ def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicVa
 
 
 def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType) -> CtyValue:
-    """Unmarshals a DynamicValue from the wire protocol into a CtyValue."""
+    """
+    Unmarshals a DynamicValue from the wire protocol into a CtyValue.
+    """
     if not isinstance(schema, CtyType | PvsType):
         raise TypeError(f"Schema must be a CtyType or PvsType, but got {type(schema).__name__}")
 
