@@ -98,6 +98,56 @@ def _is_external_or_special_link(link_url: str) -> bool:
     return link_url.startswith(("http://", "https://", "mailto:", ":::"))
 
 
+def _check_internal_link(
+    file_path: Path,
+    link_url: str,
+    line_num: int,
+    file_headings: set[str],
+    DOCS_DIR: Path,
+    resolve_link_path: callable,
+    extract_headings: callable,
+) -> list[str]:
+    """Check an internal link for broken references."""
+    errors = []
+
+    # Parse link and anchor
+    if "#" in link_url:
+        link_path_str, anchor = link_url.split("#", 1)
+    else:
+        link_path_str = link_url
+        anchor = None
+
+    # Check file exists (if not just an anchor)
+    if link_path_str:
+        try:
+            target_path = resolve_link_path(file_path, link_url)
+
+            if not target_path.exists():
+                rel_source = file_path.relative_to(DOCS_DIR)
+                errors.append(
+                    f"{rel_source}:{line_num}: Broken link to '{link_url}' "
+                    f"(resolved to {target_path}, which does not exist)"
+                )
+            else:
+                # If there's an anchor, check it exists in target file
+                if anchor:
+                    target_headings = extract_headings(target_path)
+                    if anchor not in target_headings:
+                        rel_source = file_path.relative_to(DOCS_DIR)
+                        errors.append(
+                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in '{link_path_str}'"
+                        )
+        except Exception as e:
+            rel_source = file_path.relative_to(DOCS_DIR)
+            errors.append(f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}")
+    else:
+        # Just an anchor link (same file)
+        if anchor and anchor not in file_headings:
+            rel_source = file_path.relative_to(DOCS_DIR)
+            errors.append(f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in same file")
+    return errors
+
+
 def check_file_links(file_path: Path) -> list[str]:
     """
     Check all links in a file for broken references.
@@ -112,45 +162,13 @@ def check_file_links(file_path: Path) -> list[str]:
 
     for _link_text, link_url, line_num in links:
         if _is_external_or_special_link(link_url):
-            continue:
             continue
 
-        # Parse link and anchor
-        if "#" in link_url:
-            link_path_str, anchor = link_url.split("#", 1)
-        else:
-            link_path_str = link_url
-            anchor = None
-
-        # Check file exists (if not just an anchor)
-        if link_path_str:
-            try:
-                target_path = resolve_link_path(file_path, link_url)
-
-                if not target_path.exists():
-                    rel_source = file_path.relative_to(DOCS_DIR)
-                    errors.append(
-                        f"{rel_source}:{line_num}: Broken link to '{link_url}' "
-                        f"(resolved to {target_path}, which does not exist)"
-                    )
-                    continue
-
-                # If there's an anchor, check it exists in target file
-                if anchor:
-                    target_headings = extract_headings(target_path)
-                    if anchor not in target_headings:
-                        rel_source = file_path.relative_to(DOCS_DIR)
-                        errors.append(
-                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in '{link_path_str}'"
-                        )
-            except Exception as e:
-                rel_source = file_path.relative_to(DOCS_DIR)
-                errors.append(f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}")
-        else:
-            # Just an anchor link (same file)
-            if anchor and anchor not in file_headings:
-                rel_source = file_path.relative_to(DOCS_DIR)
-                errors.append(f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in same file")
+        errors.extend(
+            _check_internal_link(
+                file_path, link_url, line_num, file_headings, DOCS_DIR, resolve_link_path, extract_headings
+            )
+        )
 
     return errors
 

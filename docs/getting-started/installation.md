@@ -74,18 +74,12 @@ uv run pytest
 
 Always use a virtual environment to avoid dependency conflicts:
 
+--8<-- ".provide/foundry/docs/_partials/virtual-env-setup.md"
+
+After activation, install Pyvider:
+
 ```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate it
-# On Linux/macOS:
-source .venv/bin/activate
-# On Windows:
-.venv\Scripts\activate
-
-# Install Pyvider
-pip install pyvider
+uv add pyvider  # or: pip install pyvider
 ```
 
 ### 2. Development Environment Setup
