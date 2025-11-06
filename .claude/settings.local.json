@@ -14,7 +14,10 @@
       "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry diff --stat)",
       "Bash(git -C /Users/tim/code/gh/provide-io/flavorpack status --short)",
       "WebSearch",
-      "WebFetch(domain:squidfunk.github.io)"
+      "WebFetch(domain:squidfunk.github.io)",
+      "Bash(python:*)",
+      "WebFetch(domain:backstage.github.io)",
+      "Bash(mkdocs build:*)"
     ],
     "deny": [],
     "ask": [],
