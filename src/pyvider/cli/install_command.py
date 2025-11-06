@@ -38,17 +38,28 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
         ctx: The Pyvider context
         quiet: If True, suppress output for non-error messages
     """
-    try:
-        # Try to remove the provider script from plugin directory
-        target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
+def _remove_provider_script(ctx: PyviderContext, quiet: bool) -> None:
+    target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
+    if target_provider_path.exists():
+        target_provider_path.unlink()
+        if not quiet:
+            pout(f"  Provider script removed: {target_provider_path}", style="cyan")
+    else:
+        if not quiet:
+            pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
 
-        if target_provider_path.exists():
-            target_provider_path.unlink()
-            if not quiet:
-                pout(f"  Provider script removed: {target_provider_path}", style="cyan")
-        else:
-            if not quiet:
-                pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
+def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
+    """
+    Uninstall the Terraform provider.
+
+    Removes the provider script from the plugin directory and the symlink from venv.
+
+    Args:
+        ctx: The Pyvider context
+        quiet: If True, suppress output for non-error messages
+    """
+    try:
+        _remove_provider_script(ctx, quiet)
 
         # Try to remove the symlink from venv
         # Find venv in current directory
@@ -61,16 +72,42 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
             if not quiet:
                 pout("  Virtual environment not found, skipping symlink removal", style="yellow")
 
-        # Try to clean up empty parent directories
-        try:
-            parent = ctx.tf_plugin_dir.parent
-            if parent.exists() and not any(parent.iterdir()):
-                parent.rmdir()
-                if not quiet:
-                    pout(f"  Cleaned up empty directory: {parent}", style="cyan")
-        except OSError:
-            # Silently ignore if we can't remove directory (e.g., it's not empty)
-            pass
+def _remove_empty_parent_dirs(ctx: PyviderContext, quiet: bool) -> None:
+    try:
+        parent = ctx.tf_plugin_dir.parent
+        if parent.exists() and not any(parent.iterdir()):
+            parent.rmdir()
+            if not quiet:
+                pout(f"  Cleaned up empty directory: {parent}", style="cyan")
+    except OSError:
+        # Silently ignore if we can't remove directory (e.g., it's not empty)
+        pass
+
+def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
+    """
+    Uninstall the Terraform provider.
+
+    Removes the provider script from the plugin directory and the symlink from venv.
+
+    Args:
+        ctx: The Pyvider context
+        quiet: If True, suppress output for non-error messages
+    """
+    try:
+        _remove_provider_script(ctx, quiet)
+
+        # Try to remove the symlink from venv
+        # Find venv in current directory
+        install_dir = Path.cwd()
+        venv_dir = _find_actual_venv(install_dir)
+
+        if venv_dir:
+            _remove_venv_symlink(venv_dir)
+        else:
+            if not quiet:
+                pout("  Virtual environment not found, skipping symlink removal", style="yellow")
+
+        _remove_empty_parent_dirs(ctx, quiet)
 
         if not quiet:
             pout("✅ Provider uninstalled successfully", fg="green", bold=True)
@@ -92,7 +129,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
     help="Uninstall and then install the provider.",
 )
 @click.pass_context
-def install_command(  # noqa: C901
+def install_command(
     ctx: click.Context,
     uninstall: bool,
     reinstall: bool,

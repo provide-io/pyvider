@@ -12,6 +12,8 @@ import tempfile
 
 import pytest
 
+import os
+
 from pyvider.cli.utils import _create_venv_symlink, _find_actual_venv, _remove_venv_symlink
 
 
