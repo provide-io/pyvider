@@ -17,7 +17,8 @@
       "WebFetch(domain:squidfunk.github.io)",
       "Bash(python:*)",
       "WebFetch(domain:backstage.github.io)",
-      "Bash(mkdocs build:*)"
+      "Bash(mkdocs build:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": [],
