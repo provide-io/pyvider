@@ -10,7 +10,7 @@
 
     For production use, test thoroughly and be prepared for potential breaking changes in future releases.
 
-**Pyvider** is a revolutionary Python framework that enables you to build production-ready Terraform providers using pure Python. By combining Python's elegance with Terraform's infrastructure management capabilities, Pyvider opens up provider development to the vast Python ecosystem while maintaining full compatibility with Terraform's Plugin Protocol v6.
+**Pyvider** is a Python framework that enables you to build Terraform providers using pure Python. By combining Python's expressiveness with Terraform's infrastructure management capabilities, Pyvider makes provider development accessible to the Python ecosystem while maintaining full compatibility with Terraform's Plugin Protocol v6.
 
 ## Quick Start
 
