@@ -1,22 +1,10 @@
 # 🐍 Pyvider: Build Terraform Providers in Pure Python
 
-<p align="center">
-    <a href="https://pypi.org/project/pyvider/">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/pyvider.svg">
-    </a>
-    <a href="https://github.com/provide-io/pyvider/actions/workflows/ci.yml">
-        <img alt="CI Status" src="https://github.com/provide-io/pyvider/actions/workflows/ci.yml/badge.svg">
-    </a>
-    <a href="https://codecov.io/gh/provide-io/pyvider">
-        <img src="https://codecov.io/gh/provide-io/pyvider/branch/main/graph/badge.svg"/>
-    </a>
-    <a href="https://github.com/provide-io/pyvider/blob/main/LICENSE">
-        <img alt="License" src="https://img.shields.io/github/license/provide-io/pyvider.svg">
-    </a>
-    <a href="https://www.python.org/downloads/">
-        <img alt="Python Version" src="https://img.shields.io/badge/python-3.11%2B-blue">
-    </a>
-</p>
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI](https://github.com/provide-io/pyvider/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/pyvider/actions)
 
 **Pyvider** is a Python framework for building Terraform providers. Write infrastructure providers using Python's elegance, type safety, and rich ecosystem while maintaining full compatibility with Terraform Plugin Protocol v6.
 
