@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This comprehensive guide walks you through creating production-ready Terraform providers using Pyvider, from basic setup to advanced features.
 
@@ -505,7 +505,7 @@ class ValidateServerName(BaseFunction):
 
 ## Next Steps
 
-You now have a complete, basic provider! For advanced features like error handling, retry logic, rate limiting, caching, and comprehensive testing, see the [Advanced Provider Features](../advanced/advanced-provider-features.md) guide.
+You now have a complete, basic provider! For advanced features like error handling, retry logic, rate limiting, caching, and comprehensive testing, see the [Advanced Provider Features](../advanced/advanced-provider-features/) guide.
 
 ## Complete Example
 
@@ -514,8 +514,8 @@ See the full example provider at:
 
 ## See Also
 
-- [Advanced Provider Features](../advanced/advanced-provider-features.md) - Error handling, retry logic, caching, and testing
-- [Creating Resources](../building-components/creating-resources.md) - Resource implementation
-- [Creating Data Sources](../building-components/creating-data-sources.md) - Data source implementation
-- [Creating Functions](../building-components/creating-functions.md) - Function implementation
-- [Best Practices](../production/best-practices.md) - Production patterns
+- [Advanced Provider Features](../advanced/advanced-provider-features/) - Error handling, retry logic, caching, and testing
+- [Creating Resources](../building-components/creating-resources/) - Resource implementation
+- [Creating Data Sources](../building-components/creating-data-sources/) - Data source implementation
+- [Creating Functions](../building-components/creating-functions/) - Function implementation
+- [Best Practices](../production/best-practices/) - Production patterns

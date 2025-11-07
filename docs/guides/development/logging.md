@@ -383,7 +383,7 @@ for i, item in enumerate(items, 1):
 
 ## See Also
 
-- [Debugging](../development/debugging.md) - Debugging techniques
-- [Error Handling](../development/error-handling.md) - Error management patterns
-- [Best Practices](../production/best-practices.md) - Provider development patterns
-- [Observability API](../../api/observability.md) - Observability integration
+- [Debugging](../development/debugging/) - Debugging techniques
+- [Error Handling](../development/error-handling/) - Error management patterns
+- [Best Practices](../production/best-practices/) - Provider development patterns
+- [Observability API](../../api/observability/) - Observability integration

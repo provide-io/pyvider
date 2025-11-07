@@ -460,8 +460,8 @@ resource "mycloud_server" "web" {
 
 ## See Also
 
-- [Schema Overview](overview.md) - Complete schema system guide
-- [Blocks](blocks.md) - Nested block structures
-- [Types](types.md) - Detailed type reference
-- [Validators](validators.md) - Validation patterns
-- [Best Practices](best-practices.md) - Schema design recommendations
+- [Schema Overview](overview/) - Complete schema system guide
+- [Blocks](blocks/) - Nested block structures
+- [Types](types/) - Detailed type reference
+- [Validators](validators/) - Validation patterns
+- [Best Practices](best-practices/) - Schema design recommendations

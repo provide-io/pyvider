@@ -405,7 +405,7 @@ async def _create_apply(self, ctx):
 
 ## See Also
 
-- [Schema Overview](overview.md) - Complete schema system guide
-- [Attributes](attributes.md) - All attribute types
-- [Best Practices](best-practices.md) - Schema design guidelines
-- [Creating Resources](../guides/building-components/creating-resources.md) - Resource implementation
+- [Schema Overview](overview/) - Complete schema system guide
+- [Attributes](attributes/) - All attribute types
+- [Best Practices](best-practices/) - Schema design guidelines
+- [Creating Resources](../guides/building-components/creating-resources/) - Resource implementation

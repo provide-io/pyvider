@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This guide shows you how to create data sources for your Pyvider provider. Data sources are read-only queries that fetch information from external systems.
 
@@ -328,7 +328,7 @@ async def read(self, config: QueryConfig) -> QueryData:
 
 ## See Also
 
-- [Schema System](../../explanation/schema-system.md) - Understanding schemas
-- [Data Source API](../../api/data_sources.md) - BaseDataSource reference
-- [Creating Resources](../building-components/creating-resources.md) - For comparison
-- [Best Practices](../production/best-practices.md) - Production patterns
+- [Schema System](../../explanation/schema-system/) - Understanding schemas
+- [Data Source API](../../api/data_sources/) - BaseDataSource reference
+- [Creating Resources](../building-components/creating-resources/) - For comparison
+- [Best Practices](../production/best-practices/) - Production patterns

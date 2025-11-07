@@ -231,7 +231,7 @@ class MyCloudProvider(BaseProvider):
 
 ## Future Plans
 
-See the [Roadmap](../development/roadmap.md) for details on:
+See the [Roadmap](../development/roadmap/) for details on:
 - Capability marketplace timeline
 - Advanced composition features
 - Built-in capability library
@@ -240,17 +240,17 @@ See the [Roadmap](../development/roadmap.md) for details on:
 ## Related Documentation
 
 - [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
-- [Best Practices](../guides/production/best-practices.md) - Code reuse patterns
-- [Roadmap](../development/roadmap.md) - Feature timeline
-- [Advanced Patterns](../guides/advanced/advanced-patterns.md) - Advanced implementation techniques
+- [Best Practices](../guides/production/best-practices/) - Code reuse patterns
+- [Roadmap](../development/roadmap/) - Feature timeline
+- [Advanced Patterns](../guides/advanced/advanced-patterns/) - Advanced implementation techniques
 
 ## Contributing
 
 Interested in contributing to the capabilities system?
 
 - Join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
-- Review the [Contributing Guidelines](../contributing/guidelines.md)
-- Check the [Roadmap](../development/roadmap.md) for upcoming features
+- Review the [Contributing Guidelines](../contributing/guidelines/)
+- Check the [Roadmap](../development/roadmap/) for upcoming features
 
 ---
 

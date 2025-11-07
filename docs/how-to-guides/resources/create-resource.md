@@ -3,7 +3,7 @@
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
 
-Quick reference for creating Terraform resources with pyvider. For a step-by-step learning tutorial, see [Building Your First Resource](../../tutorials/building-your-first-resource.md).
+Quick reference for creating Terraform resources with pyvider. For a step-by-step learning tutorial, see [Building Your First Resource](../../tutorials/building-your-first-resource/).
 
 ---
 
@@ -281,7 +281,7 @@ async def _create_apply(self, ctx: ResourceContext):
 
 ## See Also
 
-- [Building Your First Resource](../../tutorials/building-your-first-resource.md) - Step-by-step tutorial
-- [Add Validation](add-validation.md) - Validation patterns
-- [Resource Lifecycle Reference](../../reference/resource-lifecycle.md) - Complete API docs
-- [Testing Resources](../../guides/development/testing-providers.md) - Testing strategies
+- [Building Your First Resource](../../tutorials/building-your-first-resource/) - Step-by-step tutorial
+- [Add Validation](add-validation/) - Validation patterns
+- [Resource Lifecycle Reference](../../reference/resource-lifecycle/) - Complete API docs
+- [Testing Resources](../../guides/development/testing-providers/) - Testing strategies

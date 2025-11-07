@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 Pyvider uses decorators to register components with the hub-based discovery system. This guide shows how to use each decorator type correctly.
 
@@ -731,8 +731,8 @@ class Instance2(BaseResource):
 
 ## See Also
 
-- [Creating Providers](../building-components/creating-providers.md) - Provider implementation guide
-- [Creating Resources](../building-components/creating-resources.md) - Resource implementation guide
-- [Creating Data Sources](../building-components/creating-data-sources.md) - Data source implementation guide
-- [Creating Functions](../building-components/creating-functions.md) - Function implementation guide
-- [Capabilities Overview](../../capabilities/overview.md) - Capabilities system
+- [Creating Providers](../building-components/creating-providers/) - Provider implementation guide
+- [Creating Resources](../building-components/creating-resources/) - Resource implementation guide
+- [Creating Data Sources](../building-components/creating-data-sources/) - Data source implementation guide
+- [Creating Functions](../building-components/creating-functions/) - Function implementation guide
+- [Capabilities Overview](../../capabilities/overview/) - Capabilities system

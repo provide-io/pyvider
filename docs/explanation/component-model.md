@@ -41,7 +41,7 @@ graph TB
 
 **Registration**: `@register_provider("name")`
 
-**See**: [Creating Providers Guide](../guides/building-components/creating-providers.md) for complete examples
+**See**: [Creating Providers Guide](../guides/building-components/creating-providers/) for complete examples
 
 ---
 
@@ -63,7 +63,7 @@ graph TB
 
 **Registration**: `@register_resource("name")`
 
-**See**: [Creating Resources Guide](../guides/building-components/creating-resources.md) for complete examples
+**See**: [Creating Resources Guide](../guides/building-components/creating-resources/) for complete examples
 
 ---
 
@@ -82,7 +82,7 @@ graph TB
 
 **Registration**: `@register_data_source("name")`
 
-**See**: [Creating Data Sources Guide](../guides/building-components/creating-data-sources.md) for complete examples
+**See**: [Creating Data Sources Guide](../guides/building-components/creating-data-sources/) for complete examples
 
 ---
 
@@ -101,7 +101,7 @@ graph TB
 
 **Registration**: `@register_function(name="name")`
 
-**See**: [Creating Functions Guide](../guides/building-components/creating-functions.md) for complete examples
+**See**: [Creating Functions Guide](../guides/building-components/creating-functions/) for complete examples
 
 ---
 
@@ -122,7 +122,7 @@ graph TB
 
 **Registration**: `@register_ephemeral_resource("name")`
 
-**See**: [Ephemeral Resources API](../api/ephemerals.md) for complete examples
+**See**: [Ephemeral Resources API](../api/ephemerals/) for complete examples
 
 ---
 
@@ -216,7 +216,7 @@ class Server(BaseResource):
         token = await ctx.capabilities.auth.get_token()
 ```
 
-**See**: [Capabilities Overview](../capabilities/overview.md)
+**See**: [Capabilities Overview](../capabilities/overview/)
 
 ## 📋 Schema Generation
 
@@ -248,7 +248,7 @@ def get_schema(cls) -> PvsSchema:
     })
 ```
 
-**See**: [Schema System](schema-system.md) and [Schema Documentation](../schema/overview.md)
+**See**: [Schema System](schema-system/) and [Schema Documentation](../schema/overview/)
 
 ## 🔄 Component Lifecycle
 
@@ -369,17 +369,17 @@ class Server(BaseCloudResource):
     pass
 ```
 
-**See**: [Advanced Patterns Guide](../guides/advanced/advanced-patterns.md)
+**See**: [Advanced Patterns Guide](../guides/advanced/advanced-patterns/)
 
 ## 🔗 Related Documentation
 
-- **[Architecture Overview](architecture.md)** - System architecture and data flow
-- **[Schema System](schema-system.md)** - Type-safe data modeling
-- **[Creating Providers](../guides/building-components/creating-providers.md)** - Step-by-step provider guide
-- **[Creating Resources](../guides/building-components/creating-resources.md)** - Resource implementation guide
-- **[Creating Data Sources](../guides/building-components/creating-data-sources.md)** - Data source patterns
-- **[Creating Functions](../guides/building-components/creating-functions.md)** - Function development
-- **[Best Practices](../guides/production/best-practices.md)** - Production-ready patterns
+- **[Architecture Overview](architecture/)** - System architecture and data flow
+- **[Schema System](schema-system/)** - Type-safe data modeling
+- **[Creating Providers](../guides/building-components/creating-providers/)** - Step-by-step provider guide
+- **[Creating Resources](../guides/building-components/creating-resources/)** - Resource implementation guide
+- **[Creating Data Sources](../guides/building-components/creating-data-sources/)** - Data source patterns
+- **[Creating Functions](../guides/building-components/creating-functions/)** - Function development
+- **[Best Practices](../guides/production/best-practices/)** - Production-ready patterns
 
 ---
 

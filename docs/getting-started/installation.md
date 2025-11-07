@@ -391,16 +391,16 @@ python -c "import pyvider; print(pyvider.__version__)"
 
 Now that you have Pyvider installed:
 
-1. **[Quick Start Guide](quick-start.md)** - Build your first provider in 5 minutes
+1. **[Quick Start Guide](quick-start/)** - Build your first provider in 5 minutes
 2. **[Pyvider Components Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-3. **[Architecture Overview](../explanation/architecture.md)** - Understand how Pyvider works
-4. **[API Reference](../api/index.md)** - Explore the API documentation
+3. **[Architecture Overview](../explanation/architecture/)** - Understand how Pyvider works
+4. **[API Reference](../api/index/)** - Explore the API documentation
 
 ## 💬 Getting Help
 
 If you encounter issues during installation:
 
-- Check the [Troubleshooting Guide](../troubleshooting.md)
+- Check the [Troubleshooting Guide](../troubleshooting/)
 - Search [GitHub Issues](https://github.com/provide-io/pyvider/issues)
 - Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 

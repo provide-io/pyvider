@@ -479,7 +479,7 @@ async def _update_apply(self, ctx: ResourceContext):
 
 ## See Also
 
-- [Create a Resource](../how-to-guides/resources/create-resource.md) - How-to guide
-- [Building Your First Resource](../tutorials/building-your-first-resource.md) - Tutorial
-- [Add Validation](../how-to-guides/resources/add-validation.md) - Validation patterns
-- [API Reference](../api/resources.md) - Auto-generated API docs
+- [Create a Resource](../how-to-guides/resources/create-resource/) - How-to guide
+- [Building Your First Resource](../tutorials/building-your-first-resource/) - Tutorial
+- [Add Validation](../how-to-guides/resources/add-validation/) - Validation patterns
+- [API Reference](../api/resources/) - Auto-generated API docs

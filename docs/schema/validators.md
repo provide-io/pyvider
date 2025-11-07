@@ -338,10 +338,10 @@ def test_port_validator():
 
 ## Related Documentation
 
-- [Overview](overview.md) - Schema system introduction
-- [Types](types.md) - Available attribute types
-- [Attributes](attributes.md) - Attribute options
-- [Best Practices](best-practices.md) - Schema design guidelines
+- [Overview](overview/) - Schema system introduction
+- [Types](types/) - Available attribute types
+- [Attributes](attributes/) - Attribute options
+- [Best Practices](best-practices/) - Schema design guidelines
 
 ---
 

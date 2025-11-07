@@ -424,7 +424,7 @@ data "mycloud_dns_record" "www" {
 
 ## See Also
 
-- [Building Your First Resource](../tutorials/building-your-first-resource.md) - Resource tutorial
-- [Building Your First Data Source](../tutorials/building-your-first-data-source.md) - Data source tutorial
-- [Resource Lifecycle Reference](../reference/resource-lifecycle.md) - Resource API
-- [Data Source API Reference](../reference/data-source-api.md) - Data source API
+- [Building Your First Resource](../tutorials/building-your-first-resource/) - Resource tutorial
+- [Building Your First Data Source](../tutorials/building-your-first-data-source/) - Data source tutorial
+- [Resource Lifecycle Reference](../reference/resource-lifecycle/) - Resource API
+- [Data Source API Reference](../reference/data-source-api/) - Data source API

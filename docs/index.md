@@ -6,7 +6,7 @@
     - **APIs may change** before the 1.0 release
     - **Some documented features** may not be fully implemented yet
     - **Best suited** for internal tooling, experimentation, and early adopters
-    - See [Roadmap](development/roadmap.md) for feature status and future plans
+    - See [Roadmap](development/roadmap/) for feature status and future plans
 
     For production use, test thoroughly and be prepared for potential breaking changes in future releases.
 
@@ -40,68 +40,68 @@ To democratize Terraform provider development by making it accessible to Python 
 
 Our documentation is organized to help you quickly find what you need:
 
-### 🚀 [Getting Started](getting-started/installation.md)
+### 🚀 [Getting Started](getting-started/installation/)
 New to Pyvider? Start here!
-- [Installation](getting-started/installation.md) - Set up Pyvider in your environment
-- [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
+- [Installation](getting-started/installation/) - Set up Pyvider in your environment
+- [Quick Start](getting-started/quick-start/) - Build your first provider in 5 minutes
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
 
-### 🏛️ [Core Concepts](explanation/architecture.md)
+### 🏛️ [Core Concepts](explanation/architecture/)
 Understand Pyvider's foundation
-- [Architecture](explanation/architecture.md) - System design and data flow
-- [Component Model](explanation/component-model.md) - Hub-based discovery system
-- [Schema System](explanation/schema-system.md) - Type-safe data modeling
+- [Architecture](explanation/architecture/) - System design and data flow
+- [Component Model](explanation/component-model/) - Hub-based discovery system
+- [Schema System](explanation/schema-system/) - Type-safe data modeling
 
-### 📖 [Developer Guides](guides/building-components/creating-providers.md)
+### 📖 [Developer Guides](guides/building-components/creating-providers/)
 Deep dives into building providers
-- [Creating Providers](guides/building-components/creating-providers.md) - Provider configuration and lifecycle
-- [Creating Resources](guides/building-components/creating-resources.md) - CRUD operations and state management
-- [Creating Data Sources](guides/building-components/creating-data-sources.md) - Read-only data fetching
-- [Creating Functions](guides/building-components/creating-functions.md) - Callable transformations
-- [Testing Providers](guides/development/testing-providers.md) - Testing strategies and best practices
-- [Best Practices](guides/production/best-practices.md) - Production-ready patterns
-- [Error Handling](guides/development/error-handling.md) - Robust error management
-- [Logging](guides/development/logging.md) - Structured logging with foundation
-- [Debugging](guides/development/debugging.md) - Troubleshooting providers
-- [Security Best Practices](guides/production/security-best-practices.md) - Secure provider development
-- [Performance Optimization](guides/production/performance-optimization.md) - Building fast providers
+- [Creating Providers](guides/building-components/creating-providers/) - Provider configuration and lifecycle
+- [Creating Resources](guides/building-components/creating-resources/) - CRUD operations and state management
+- [Creating Data Sources](guides/building-components/creating-data-sources/) - Read-only data fetching
+- [Creating Functions](guides/building-components/creating-functions/) - Callable transformations
+- [Testing Providers](guides/development/testing-providers/) - Testing strategies and best practices
+- [Best Practices](guides/production/best-practices/) - Production-ready patterns
+- [Error Handling](guides/development/error-handling/) - Robust error management
+- [Logging](guides/development/logging/) - Structured logging with foundation
+- [Debugging](guides/development/debugging/) - Troubleshooting providers
+- [Security Best Practices](guides/production/security-best-practices/) - Secure provider development
+- [Performance Optimization](guides/production/performance-optimization/) - Building fast providers
 
-### 🎓 [Examples & Tutorials](getting-started/quick-start.md)
+### 🎓 [Examples & Tutorials](getting-started/quick-start/)
 Learn by building real providers
-- [Quick Start Guide](getting-started/quick-start.md) - Build your first provider in 5 minutes
-- [Building an HTTP API Provider](tutorials/intermediate-provider.md) - Intermediate tutorial
+- [Quick Start Guide](getting-started/quick-start/) - Build your first provider in 5 minutes
+- [Building an HTTP API Provider](tutorials/intermediate-provider/) - Intermediate tutorial
 - [Pyvider Components Examples](https://github.com/provide-io/pyvider-components/tree/main/examples) - 100+ working examples
   - Resources: file_content, local_directory, timed_token
   - Data Sources: env_variables, http_api, lens_jq
   - Functions: String, numeric, and JQ operations
 
-### 📘 [API Reference](api/index.md)
+### 📘 [API Reference](api/index/)
 Complete API documentation
-- [Schema API](api/schema/index.md) - Attributes, blocks, and validation
-- [CLI Commands](api/cli.md) - Command-line interface reference
-- [Common Types](api/common.md) - Type system reference
+- [Schema API](api/schema/index/) - Attributes, blocks, and validation
+- [CLI Commands](api/cli/) - Command-line interface reference
+- [Common Types](api/common/) - Type system reference
 
-### 📦 [Schema System](schema/overview.md)
+### 📦 [Schema System](schema/overview/)
 Type-safe data modeling
-- [Overview](schema/overview.md) - Schema system introduction
-- [Types](schema/types.md) - Available schema types
-- [Attributes](schema/attributes.md) - Attribute definitions
-- [Blocks](schema/blocks.md) - Nested blocks
-- [Validators](schema/validators.md) - Input validation
+- [Overview](schema/overview/) - Schema system introduction
+- [Types](schema/types/) - Available schema types
+- [Attributes](schema/attributes/) - Attribute definitions
+- [Blocks](schema/blocks/) - Nested blocks
+- [Validators](schema/validators/) - Input validation
 
-### 🔌 [Capabilities (Experimental)](capabilities/overview.md)
+### 🔌 [Capabilities (Experimental)](capabilities/overview/)
 Planned composition mechanism for code reuse
-- [Overview](capabilities/overview.md) - Experimental capabilities system (not fully implemented)
-- For working code reuse patterns, see [Best Practices](guides/production/best-practices.md)
+- [Overview](capabilities/overview/) - Experimental capabilities system (not fully implemented)
+- For working code reuse patterns, see [Best Practices](guides/production/best-practices/)
 
-### 🤝 [Contributing](contributing/guidelines.md)
+### 🤝 [Contributing](contributing/guidelines/)
 Join the Pyvider community
-- [Contribution Guidelines](contributing/guidelines.md) - How to contribute
-- [Code of Conduct](contributing/code-of-conduct.md) - Community standards
+- [Contribution Guidelines](contributing/guidelines/) - How to contribute
+- [Code of Conduct](contributing/code-of-conduct/) - Community standards
 
-### 🔮 [Development](development/roadmap.md)
+### 🔮 [Development](development/roadmap/)
 Project roadmap and planned features
-- [Roadmap](development/roadmap.md) - Future features and CLI commands
+- [Roadmap](development/roadmap/) - Future features and CLI commands
 
 ---
 
@@ -159,12 +159,12 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 
 ### By Task
 
-- **"I want to build my first provider"** → [Quick Start](getting-started/quick-start.md)
+- **"I want to build my first provider"** → [Quick Start](getting-started/quick-start/)
 - **"I need to integrate with a REST API"** → [HTTP API Examples](https://github.com/provide-io/pyvider-components/tree/main/examples/data_source/http_api)
-- **"How do I test my provider?"** → [Testing Providers](guides/development/testing-providers.md)
-- **"I need to debug an issue"** → [Debugging Guide](guides/development/debugging.md)
-- **"How do I handle errors properly?"** → [Error Handling](guides/development/error-handling.md)
-- **"I want to contribute"** → [Contributing Guidelines](contributing/guidelines.md)
+- **"How do I test my provider?"** → [Testing Providers](guides/development/testing-providers/)
+- **"I need to debug an issue"** → [Debugging Guide](guides/development/debugging/)
+- **"How do I handle errors properly?"** → [Error Handling](guides/development/error-handling/)
+- **"I want to contribute"** → [Contributing Guidelines](contributing/guidelines/)
 
 ## 📦 Ready-to-Use Components
 
@@ -256,7 +256,7 @@ Pyvider is currently in alpha and being used by early adopters for:
 - **License**: Apache 2.0
 - **Status**: Alpha - Under Active Development
 - **Stability**: API may change before 1.0 release
-- **Documentation**: Some features documented may not be fully implemented - check [Roadmap](development/roadmap.md)
+- **Documentation**: Some features documented may not be fully implemented - check [Roadmap](development/roadmap/)
 
 ---
 

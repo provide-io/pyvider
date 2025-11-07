@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This guide shows you how to create provider functions in Pyvider. Functions are callable operations that transform or validate data in Terraform configurations.
 
@@ -371,7 +371,7 @@ async def test_divide_function():
 
 ## See Also
 
-- [Schema System](../../explanation/schema-system.md) - Understanding schemas
-- [Function API](../../api/functions.md) - BaseFunction reference
-- [Best Practices](../production/best-practices.md) - Production patterns
-- [Testing Functions](../development/testing-providers.md) - Testing strategies
+- [Schema System](../../explanation/schema-system/) - Understanding schemas
+- [Function API](../../api/functions/) - BaseFunction reference
+- [Best Practices](../production/best-practices/) - Production patterns
+- [Testing Functions](../development/testing-providers/) - Testing strategies

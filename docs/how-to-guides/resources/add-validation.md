@@ -392,7 +392,7 @@ async def test_port_validation():
 
 ## See Also
 
-- [Create a Resource](create-resource.md) - Resource basics
-- [Building Your First Resource](../../tutorials/building-your-first-resource.md) - Step-by-step tutorial
-- [Resource Lifecycle Reference](../../reference/resource-lifecycle.md) - Complete API
-- [Testing Resources](../../guides/development/testing-providers.md) - Testing validation
+- [Create a Resource](create-resource/) - Resource basics
+- [Building Your First Resource](../../tutorials/building-your-first-resource/) - Step-by-step tutorial
+- [Resource Lifecycle Reference](../../reference/resource-lifecycle/) - Complete API
+- [Testing Resources](../../guides/development/testing-providers/) - Testing validation

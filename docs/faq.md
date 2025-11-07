@@ -32,7 +32,7 @@ Pyvider is currently in **alpha** (v0.0.x). While it implements the full Terrafo
 - Learning and experimentation
 - Custom providers for specific needs
 
-See the [Roadmap](development/roadmap.md) for the path to 1.0.
+See the [Roadmap](development/roadmap/) for the path to 1.0.
 
 ### What Python version is required?
 
@@ -62,13 +62,13 @@ Pyvider acts as a bridge between Terraform and your Python code:
 3. Your Python code handles the business logic
 4. Pyvider translates responses back to Terraform
 
-See [Architecture](explanation/architecture.md) for details.
+See [Architecture](explanation/architecture/) for details.
 
 ### What is the Component Hub?
 
 The Component Hub is Pyvider's auto-discovery system. When you use decorators like `@register_provider` or `@register_resource`, components automatically register themselves with the hub. Terraform can then discover and use them.
 
-See [Component Model](explanation/component-model.md).
+See [Component Model](explanation/component-model/).
 
 ### Do I need to understand the Terraform Plugin Protocol?
 
@@ -86,10 +86,10 @@ Pyvider handles all the gRPC, message serialization, and protocol compliance.
 
 Follow these steps:
 
-1. **Read the [Quick Start](getting-started/quick-start.md)** - Build your first provider in 5 minutes
-2. **Try the [Tutorial](tutorials/intermediate-provider.md)** - Build a real HTTP API provider
+1. **Read the [Quick Start](getting-started/quick-start/)** - Build your first provider in 5 minutes
+2. **Try the [Tutorial](tutorials/intermediate-provider/)** - Build a real HTTP API provider
 3. **Study [Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-4. **Read the Guides** - [Creating Providers](guides/building-components/creating-providers.md), [Creating Resources](guides/building-components/creating-resources.md)
+4. **Read the Guides** - [Creating Providers](guides/building-components/creating-providers/), [Creating Resources](guides/building-components/creating-resources/)
 
 ### What's the difference between a resource and a data source?
 
@@ -111,7 +111,7 @@ class User(BaseDataSource):
         pass
 ```
 
-See [Core Concepts](explanation/component-model.md).
+See [Core Concepts](explanation/component-model/).
 
 ### How do I handle secrets and credentials?
 
@@ -129,7 +129,7 @@ See [Core Concepts](explanation/component-model.md).
 
 4. **Never log** sensitive data
 
-See [Security Best Practices](guides/production/security-best-practices.md).
+See [Security Best Practices](guides/production/security-best-practices/).
 
 ### How do I test my provider?
 
@@ -146,7 +146,7 @@ async def test_resource_create():
     assert state.id
 ```
 
-See [Testing Providers](guides/development/testing-providers.md).
+See [Testing Providers](guides/development/testing-providers/).
 
 ### How do I debug my provider?
 
@@ -165,7 +165,7 @@ import pdb; pdb.set_trace()
 # Or use breakpoint()
 ```
 
-See [Debugging Guide](guides/development/debugging.md).
+See [Debugging Guide](guides/development/debugging/).
 
 ## Schema Questions
 
@@ -178,7 +178,7 @@ Pyvider provides comprehensive type support:
 - **Complex**: `a_obj()`, `a_tuple()`
 - **Special**: `a_dyn()` (any type)
 
-See [Schema Types](schema/types.md).
+See [Schema Types](schema/types/).
 
 ### How do I make an attribute required?
 
@@ -210,7 +210,7 @@ Use validators:
 )
 ```
 
-See [Schema Validators](schema/validators.md).
+See [Schema Validators](schema/validators/).
 
 ### Can I have nested blocks?
 
@@ -224,7 +224,7 @@ schema = s_resource({
 })
 ```
 
-See [Schema Blocks](schema/blocks.md).
+See [Schema Blocks](schema/blocks/).
 
 ## Performance Questions
 
@@ -238,7 +238,7 @@ Yes, for most use cases. Terraform providers are typically I/O bound (API calls,
 - Cache expensive lookups
 - Batch API calls
 
-See [Performance Optimization](guides/production/performance-optimization.md).
+See [Performance Optimization](guides/production/performance-optimization/).
 
 ### How do I make my provider faster?
 
@@ -248,7 +248,7 @@ See [Performance Optimization](guides/production/performance-optimization.md).
 4. **Connection pooling** - Reuse HTTP connections
 5. **Profile** - Use py-spy to find bottlenecks
 
-See [Performance Optimization](guides/production/performance-optimization.md).
+See [Performance Optimization](guides/production/performance-optimization/).
 
 ### Should I use caching?
 
@@ -272,7 +272,7 @@ Options:
 2. **Internal** - Package with Flavor and distribute binary
 3. **Public** - Publish to Terraform Registry (after 1.0)
 
-See [Installation Guide](getting-started/installation.md).
+See [Installation Guide](getting-started/installation/).
 
 ### Does my provider need to be compiled?
 
@@ -350,7 +350,7 @@ Capabilities are experimental. For production, use:
 - Composition (helper classes)
 - Utility modules
 
-See [Capabilities Overview](capabilities/overview.md).
+See [Capabilities Overview](capabilities/overview/).
 
 ### How do I handle provider-specific state?
 
@@ -457,17 +457,17 @@ See [Contributing Guidelines](contributing/guidelines.md#reporting-bugs).
 
 We welcome contributions!
 
-1. Read [Contributing Guidelines](contributing/guidelines.md)
+1. Read [Contributing Guidelines](contributing/guidelines/)
 2. Find a [good first issue](https://github.com/provide-io/pyvider/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 3. Submit a pull request
 
 ## Additional Resources
 
-- [Quick Start Guide](getting-started/quick-start.md)
-- [Tutorial: HTTP API Provider](tutorials/intermediate-provider.md)
-- [Best Practices](guides/production/best-practices.md)
-- [Troubleshooting Guide](troubleshooting.md)
-- [API Reference](api/index.md)
+- [Quick Start Guide](getting-started/quick-start/)
+- [Tutorial: HTTP API Provider](tutorials/intermediate-provider/)
+- [Best Practices](guides/production/best-practices/)
+- [Troubleshooting Guide](troubleshooting/)
+- [API Reference](api/index/)
 
 ---
 

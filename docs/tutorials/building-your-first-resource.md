@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This tutorial covers **stable** functionality.
-    See [project status](../index.md) for details.
+    See [project status](../index/) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform resource using pyvider. By the end, you'll have a working file resource that creates, reads, updates, and deletes local files through Terraform.
 
@@ -19,7 +19,7 @@ Welcome! In this tutorial, you'll build your first Terraform resource using pyvi
 **Prerequisites:**
 
 - Python 3.11+ installed
-- pyvider installed ([installation guide](../getting-started/installation.md))
+- pyvider installed ([installation guide](../getting-started/installation/))
 - Basic Python knowledge
 - Basic Terraform knowledge
 
@@ -463,11 +463,11 @@ Congratulations! You've built your first pyvider resource. You now understand:
 
 Now that you understand the basics, explore:
 
-- **[Building Your First Data Source](building-your-first-data-source.md)** - Read-only queries
-- **[How to Create a Resource](../how-to-guides/resources/create-resource.md)** - Quick reference
-- **[Add Validation](../how-to-guides/resources/add-validation.md)** - Advanced validation patterns
-- **[Resource Lifecycle Reference](../reference/resource-lifecycle.md)** - Complete API documentation
-- **[Intermediate Provider Tutorial](intermediate-provider.md)** - Build a more complex HTTP API provider
+- **[Building Your First Data Source](building-your-first-data-source/)** - Read-only queries
+- **[How to Create a Resource](../how-to-guides/resources/create-resource/)** - Quick reference
+- **[Add Validation](../how-to-guides/resources/add-validation/)** - Advanced validation patterns
+- **[Resource Lifecycle Reference](../reference/resource-lifecycle/)** - Complete API documentation
+- **[Intermediate Provider Tutorial](intermediate-provider/)** - Build a more complex HTTP API provider
 
 ---
 
@@ -485,4 +485,4 @@ Check that `_validate_config()` is async and returns a list of strings.
 
 Ensure you're returning `FileState` objects from `_create_apply()` and `_update_apply()`.
 
-For more help, see [Troubleshooting Guide](../troubleshooting.md).
+For more help, see [Troubleshooting Guide](../troubleshooting/).

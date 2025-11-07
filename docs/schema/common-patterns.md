@@ -380,10 +380,10 @@ class ApiGatewayResource(BaseResource):
 
 ## Related Documentation
 
-- [Overview](overview.md) - Schema system introduction
-- [Types](types.md) - Available types
-- [Validators](validators.md) - Custom validation
-- [Best Practices](best-practices.md) - Schema design guidelines
+- [Overview](overview/) - Schema system introduction
+- [Types](types/) - Available types
+- [Validators](validators/) - Custom validation
+- [Best Practices](best-practices/) - Schema design guidelines
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Real examples
 
 ---

@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This guide shows you how to create resources for your Pyvider provider. Resources represent infrastructure components with full CRUD lifecycle management.
 
@@ -355,7 +355,7 @@ class APIObject(BaseResource):
 
 ## See Also
 
-- [Schema System](../../explanation/schema-system.md) - Understanding schemas
-- [Resource Context](../../api/resources.md) - ResourceContext API reference
-- [Testing Resources](../development/testing-providers.md) - Testing strategies
-- [Best Practices](../production/best-practices.md) - Production patterns
+- [Schema System](../../explanation/schema-system/) - Understanding schemas
+- [Resource Context](../../api/resources/) - ResourceContext API reference
+- [Testing Resources](../development/testing-providers/) - Testing strategies
+- [Best Practices](../production/best-practices/) - Production patterns

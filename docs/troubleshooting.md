@@ -821,25 +821,25 @@ Visit [https://github.com/provide-io/pyvider/issues](https://github.com/provide-
 Before creating a new issue:
 - Search [existing issues](https://github.com/provide-io/pyvider/issues)
 - Check [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
-- Review the [Debugging Guide](guides/development/debugging.md)
-- Check [Best Practices](guides/production/best-practices.md) for common patterns
+- Review the [Debugging Guide](guides/development/debugging/)
+- Check [Best Practices](guides/production/best-practices/) for common patterns
 - Look at [Pyvider Components](https://github.com/provide-io/pyvider-components) for working examples
 
 ## Related Documentation
 
-- [Debugging Guide](guides/development/debugging.md) - Interactive debugging techniques
-- [Best Practices](guides/production/best-practices.md) - Patterns that prevent issues
-- [Error Handling](guides/development/error-handling.md) - Exception handling
-- [Security Best Practices](guides/production/security-best-practices.md) - Security troubleshooting
-- [Performance Optimization](guides/production/performance-optimization.md) - Performance troubleshooting
-- [Logging](guides/development/logging.md) - Structured logging
-- [Testing Providers](guides/development/testing-providers.md) - Testing strategies
+- [Debugging Guide](guides/development/debugging/) - Interactive debugging techniques
+- [Best Practices](guides/production/best-practices/) - Patterns that prevent issues
+- [Error Handling](guides/development/error-handling/) - Exception handling
+- [Security Best Practices](guides/production/security-best-practices/) - Security troubleshooting
+- [Performance Optimization](guides/production/performance-optimization/) - Performance troubleshooting
+- [Logging](guides/development/logging/) - Structured logging
+- [Testing Providers](guides/development/testing-providers/) - Testing strategies
 
 ---
 
 **Remember**: Most issues can be quickly diagnosed with debug logging enabled. Start with `TF_LOG=DEBUG` and `PYVIDER_LOG_LEVEL=DEBUG` to see what's actually happening.
 
 **See Also**:
-- For security-related issues, consult the [Security Best Practices Guide](guides/production/security-best-practices.md)
-- For performance problems, see the [Performance Optimization Guide](guides/production/performance-optimization.md)
-- For general provider patterns, check [Best Practices](guides/production/best-practices.md)
+- For security-related issues, consult the [Security Best Practices Guide](guides/production/security-best-practices/)
+- For performance problems, see the [Performance Optimization Guide](guides/production/performance-optimization/)
+- For general provider patterns, check [Best Practices](guides/production/best-practices/)

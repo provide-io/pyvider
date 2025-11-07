@@ -3,7 +3,7 @@
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
 
-Quick reference for creating Terraform data sources with pyvider. For a step-by-step tutorial, see [Building Your First Data Source](../../tutorials/building-your-first-data-source.md).
+Quick reference for creating Terraform data sources with pyvider. For a step-by-step tutorial, see [Building Your First Data Source](../../tutorials/building-your-first-data-source/).
 
 ---
 
@@ -347,7 +347,7 @@ async def test_api_query_error_handling():
 
 ## See Also
 
-- [Building Your First Data Source](../../tutorials/building-your-first-data-source.md) - Step-by-step tutorial
-- [Handle Pagination](handle-pagination.md) - For large result sets
-- [Data Source API Reference](../../reference/data-source-api.md) - Complete API
-- [Testing Data Sources](../../guides/development/testing-providers.md) - Testing strategies
+- [Building Your First Data Source](../../tutorials/building-your-first-data-source/) - Step-by-step tutorial
+- [Handle Pagination](handle-pagination/) - For large result sets
+- [Data Source API Reference](../../reference/data-source-api/) - Complete API
+- [Testing Data Sources](../../guides/development/testing-providers/) - Testing strategies

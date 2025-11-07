@@ -2,11 +2,11 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This guide covers operational concerns for building production-ready Pyvider providers, including error handling, logging, performance optimization, testing, and security.
 
-For foundational design patterns and code organization, see [Best Practices](../production/best-practices.md).
+For foundational design patterns and code organization, see [Best Practices](../production/best-practices/).
 
 ## Table of Contents
 
@@ -299,7 +299,7 @@ async def test_invalid_filename(self):
     assert any(".." in error for error in errors)
 ```
 
-For comprehensive testing guidance, see [Testing Providers](../development/testing-providers.md).
+For comprehensive testing guidance, see [Testing Providers](../development/testing-providers/).
 
 ## Security Practices
 
@@ -397,16 +397,16 @@ with open(path, 'w') as f:
     f.write(content)  # Not atomic, can fail mid-write
 ```
 
-For comprehensive security guidance, see [Security Best Practices](../production/security-best-practices.md).
+For comprehensive security guidance, see [Security Best Practices](../production/security-best-practices/).
 
 ## Related Documentation
 
-- [Best Practices](../production/best-practices.md) - Foundational design patterns
-- [Testing Providers](../development/testing-providers.md) - Comprehensive testing strategies
-- [Security Best Practices](../production/security-best-practices.md) - Detailed security guidance
-- [Performance Optimization](../production/performance-optimization.md) - In-depth performance tuning
-- [Error Handling](../development/error-handling.md) - Error handling patterns
-- [Logging](../development/logging.md) - Structured logging guide
+- [Best Practices](../production/best-practices/) - Foundational design patterns
+- [Testing Providers](../development/testing-providers/) - Comprehensive testing strategies
+- [Security Best Practices](../production/security-best-practices/) - Detailed security guidance
+- [Performance Optimization](../production/performance-optimization/) - In-depth performance tuning
+- [Error Handling](../development/error-handling/) - Error handling patterns
+- [Logging](../development/logging/) - Structured logging guide
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
 
 ## Learn by Example

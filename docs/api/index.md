@@ -15,7 +15,7 @@ This section provides detailed API documentation for Pyvider's modules, classes,
     **Important Notes:**
     - Some documented APIs may not be fully implemented yet
     - Test thoroughly before using in production environments
-    - See [Roadmap](../development/roadmap.md) for feature status
+    - See [Roadmap](../development/roadmap/) for feature status
 
     **Public API Stability:**
     - ✅ **Stable**: Decorator API (`@register_resource`, `@register_provider`, etc.)
@@ -27,7 +27,7 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 ## When to Use This Reference
 
 ### For Building Providers
-Most provider developers should start with the **[Guides](../guides/building-components/creating-providers.md)** section, which provides task-oriented tutorials. Use the API reference when you need:
+Most provider developers should start with the **[Guides](../guides/building-components/creating-providers/)** section, which provides task-oriented tutorials. Use the API reference when you need:
 
 - Detailed parameter information for specific functions
 - Complete list of available schema types and validators
@@ -41,63 +41,63 @@ If you're contributing to Pyvider or building advanced integrations, the API ref
 
 ### Core Components
 
-#### [CLI](cli.md)
+#### [CLI](cli/)
 Command-line interface for the `pyvider` command. Includes commands for component management, configuration, installation, and provider service launching.
 
 **Key commands:** `provide`, `components list`, `config show`, `install`, `launch-context`
 
-#### [Common](common.md)
+#### [Common](common/)
 Shared utilities, configuration management, encryption, and context handling used across all modules.
 
 **Key exports:** `PyviderConfig`, `OperationContext`, `LaunchContext`, encryption utilities
 
-#### [Hub](hub.md)
+#### [Hub](hub/)
 Component registry and discovery system. Manages registration and lifecycle of all provider components.
 
 **Key exports:** `ComponentRegistry`, `ComponentDiscovery`, validators
 
 ### Component Types
 
-#### [Providers](providers/index.md)
+#### [Providers](providers/index/)
 Provider implementation, configuration, and capabilities.
 
 **Key exports:** `BaseProvider`, `ProviderMetadata`, `@register_provider`, `ProviderContext`
 
-#### [Resources](resources.md)
+#### [Resources](resources/)
 Resource components with full CRUD lifecycle management.
 
 **Key exports:** `BaseResource`, `ResourceContext`, `@register_resource`, `PrivateState`
 
-#### [Data Sources](data_sources.md)
+#### [Data Sources](data_sources/)
 Read-only data source components for querying existing infrastructure.
 
 **Key exports:** `BaseDataSource`, `@register_data_source`
 
-#### [Functions](functions.md)
+#### [Functions](functions/)
 Provider functions for data transformation and computation.
 
 **Key exports:** `BaseFunction`, `@register_function`, function adapters
 
-#### [Ephemeral Resources](ephemerals.md)
+#### [Ephemeral Resources](ephemerals/)
 Short-lived resources with open/renew/close lifecycle (e.g., temporary credentials, connections).
 
 **Key exports:** `BaseEphemeralResource`, `@register_ephemeral_resource`, `EphemeralResourceContext`
 
 ### Type System & Validation
 
-#### [Schema](schema/index.md)
+#### [Schema](schema/index/)
 Type-safe schema definition system with factory functions for attributes, blocks, and validators.
 
 **Key exports:** `s_resource()`, `s_data_source()`, `s_provider()`, `a_str()`, `a_num()`, `b_list()`, etc.
 
-#### [Exceptions](exceptions.md)
+#### [Exceptions](exceptions/)
 Comprehensive exception hierarchy for error handling and diagnostics.
 
 **Key exports:** `PyviderError`, `ResourceError`, `ProviderError`, `ValidationError`, `SchemaError`
 
 ### Data Handling
 
-#### [Conversion](conversion/index.md) ⚠️ Advanced
+#### [Conversion](conversion/index/) ⚠️ Advanced
 Bidirectional type conversion between Python and Terraform's CTY type system.
 
 **Key exports:** `cty_to_native`, `marshal`, `unmarshal`, `pvs_schema_to_proto`
@@ -105,14 +105,14 @@ Bidirectional type conversion between Python and Terraform's CTY type system.
 !!! note "Advanced API"
     Most users don't need to use conversion functions directly - Pyvider handles conversions automatically.
 
-#### [Protocols](protocols/index.md) 🔒 Internal
+#### [Protocols](protocols/index/) 🔒 Internal
 Terraform Plugin Protocol v6 implementation and gRPC handlers.
 
 **Note:** This is an internal module. Provider developers should use high-level component APIs instead.
 
 ### Observability
 
-#### [Observability](observability.md)
+#### [Observability](observability/)
 Built-in metrics for monitoring provider operations, resource lifecycle, and performance.
 
 **Key exports:** `resource_create_total`, `handler_duration`, `function_calls`, etc. (33+ metrics)
@@ -245,14 +245,14 @@ class Server(BaseResource):
 
 ## Getting Help
 
-- **Guides**: Start with [developer guides](../guides/building-components/creating-providers.md) for task-oriented tutorials
+- **Guides**: Start with [developer guides](../guides/building-components/creating-providers/) for task-oriented tutorials
 - **Examples**: See [pyvider-components](https://github.com/provide-io/pyvider-components) for 100+ working examples
 - **Issues**: Report bugs at [GitHub Issues](https://github.com/provide-io/pyvider/issues)
 - **Discussions**: Ask questions at [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ## Contributing
 
-Found an error in the API documentation? See our [Contributing Guidelines](../contributing/guidelines.md) for how to submit improvements.
+Found an error in the API documentation? See our [Contributing Guidelines](../contributing/guidelines/) for how to submit improvements.
 
 ---
 

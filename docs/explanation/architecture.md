@@ -549,9 +549,9 @@ Report architectural issues or suggestions in [GitHub Discussions](https://githu
 
 ## 📚 Further Reading
 
-- [Component Model](component-model.md) - Deep dive into component system
-- [Schema System](schema-system.md) - Advanced schema features
-- [Schema System](../schema/overview.md) - Schema documentation
+- [Component Model](component-model/) - Deep dive into component system
+- [Schema System](schema-system/) - Advanced schema features
+- [Schema System](../schema/overview/) - Schema documentation
 
 ---
 

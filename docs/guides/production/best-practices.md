@@ -2,11 +2,11 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index.md) for details.
+    See [project status](../../index/) for details.
 
 This guide provides foundational best practices for developing Pyvider providers, focusing on design patterns, code organization, and development standards. These patterns are derived from real-world usage and the battle-tested [pyvider-components](https://github.com/provide-io/pyvider-components) repository.
 
-For operational concerns like error handling, logging, performance, testing, and security, see the [Production Readiness Guide](../production/production-readiness.md).
+For operational concerns like error handling, logging, performance, testing, and security, see the [Production Readiness Guide](../production/production-readiness/).
 
 ## Table of Contents
 
@@ -537,9 +537,9 @@ async def _create(self, ctx: ResourceContext, base_plan: dict) -> tuple[dict | N
 
 ## Related Documentation
 
-- [Production Readiness Guide](../production/production-readiness.md) - Error handling, logging, performance, testing, and security
-- [Creating Resources](../building-components/creating-resources.md) - Resource implementation guide
-- [Schema Best Practices](../../schema/best-practices.md) - Schema-specific guidance
+- [Production Readiness Guide](../production/production-readiness/) - Error handling, logging, performance, testing, and security
+- [Creating Resources](../building-components/creating-resources/) - Resource implementation guide
+- [Schema Best Practices](../../schema/best-practices/) - Schema-specific guidance
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
 
 ## Learn by Example
