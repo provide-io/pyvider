@@ -125,19 +125,42 @@ class TestPyviderContextProviderName:
         assert "custom" in str(ctx.tf_plugin_dir)
         assert "pyvider" not in str(ctx.tf_plugin_dir).split("/providers/")[1]
 
-    def test_pyvider_toml_takes_precedence_over_soup_toml(self, tmp_path: Path, monkeypatch: Any) -> None:
+    def test_pyvider_toml_takes_precedence_over_soup_toml(self, tmp_path: Path) -> None:
         """Test that pyvider.toml takes precedence when both exist."""
+        import os
+        import importlib
+        import sys
+
         # Create both config files in tmp_path
         pyvider_config = tmp_path / "pyvider.toml"
         pyvider_config.write_text('[pyvider]\nname = "from_pyvider"\n')
         soup_config = tmp_path / "soup.toml"
         soup_config.write_text('[pyvider]\nname = "from_soup"\n')
 
-        # Change to tmp_path directory so both files are found
-        monkeypatch.chdir(tmp_path)
-        ctx = PyviderContext()
-        # Should use pyvider.toml (precedence test relies on file discovery order)
-        assert ctx.provider_name == "from_pyvider"
+        # Save current directory and change to tmp_path
+        orig_cwd = os.getcwd()
+        try:
+            os.chdir(tmp_path)
+
+            # Reload the config module to pick up new cwd
+            if 'pyvider.common.config' in sys.modules:
+                importlib.reload(sys.modules['pyvider.common.config'])
+            if 'pyvider.cli.context' in sys.modules:
+                importlib.reload(sys.modules['pyvider.cli.context'])
+
+            # Import after changing directory
+            from pyvider.cli.context import PyviderContext as FreshContext
+            ctx = FreshContext()
+
+            # Should use pyvider.toml (precedence test relies on file discovery order)
+            assert ctx.provider_name == "from_pyvider"
+        finally:
+            os.chdir(orig_cwd)
+            # Reload modules back to original state
+            if 'pyvider.common.config' in sys.modules:
+                importlib.reload(sys.modules['pyvider.common.config'])
+            if 'pyvider.cli.context' in sys.modules:
+                importlib.reload(sys.modules['pyvider.cli.context'])
 
 
 class TestPyviderContextPluginPath:
