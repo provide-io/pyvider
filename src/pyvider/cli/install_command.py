@@ -29,7 +29,7 @@ def is_running_as_binary() -> bool:
 
 
 def _remove_provider_script(ctx: PyviderContext, quiet: bool) -> None:
-    target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
+    target_provider_path = ctx.tf_plugin_dir / f"terraform-provider-{ctx.provider_name}"
     if target_provider_path.exists():
         target_provider_path.unlink()
         if not quiet:
@@ -70,7 +70,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
         venv_dir = _find_actual_venv(install_dir)
 
         if venv_dir:
-            _remove_venv_symlink(venv_dir)
+            _remove_venv_symlink(venv_dir, ctx.provider_name)
         else:
             if not quiet:
                 pout("  Virtual environment not found, skipping symlink removal", style="yellow")
@@ -88,12 +88,15 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
 def _is_pyvider_project() -> bool:
     pyproject_path = Path.cwd() / "pyproject.toml"
     pyvider_toml_path = Path.cwd() / "pyvider.toml"
+    soup_toml_path = Path.cwd() / "soup.toml"
     if pyvider_toml_path.exists():
+        return True
+    elif soup_toml_path.exists():
         return True
     elif pyproject_path.exists():
         try:
             content = safe_read_text(pyproject_path)
-            if "[tool.pyvider]" in content:
+            if "[tool.pyvider]" in content or "[pyvider]" in content:
                 return True
         except Exception:
             pass  # File doesn't exist or can't be read

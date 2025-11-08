@@ -23,6 +23,7 @@ from provide.foundation.file import read_toml
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
+_SOUP_CONFIG_FILE = Path.cwd() / "soup.toml"
 
 
 @define(frozen=True)
@@ -71,9 +72,14 @@ class PyviderConfig(BaseConfig):
         )
 
         config_path_override_str = os.environ.get("PYVIDER_CONFIG_FILE")
-        config_path = (
-            Path(config_path_override_str).resolve() if config_path_override_str else _DEFAULT_CONFIG_FILE
-        )
+        if config_path_override_str:
+            config_path = Path(config_path_override_str).resolve()
+        elif _DEFAULT_CONFIG_FILE.exists():
+            config_path = _DEFAULT_CONFIG_FILE
+        elif _SOUP_CONFIG_FILE.exists():
+            config_path = _SOUP_CONFIG_FILE
+        else:
+            config_path = _DEFAULT_CONFIG_FILE  # Use default for error message
 
         logger.debug(
             "Attempting to load configuration file",

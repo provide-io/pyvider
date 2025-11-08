@@ -48,9 +48,9 @@ def _find_actual_venv(base_dir: Path) -> Path | None:
     return None
 
 
-def _create_venv_symlink(venv_dir: Path) -> None:
+def _create_venv_symlink(venv_dir: Path, provider_name: str) -> None:
     """
-    Create a symlink for terraform-provider-pyvider in the venv bin directory.
+    Create a symlink for terraform-provider-{name} in the venv bin directory.
 
     This symlink allows the provider to be invoked with the correct binary name
     for Terraform's binary name detection, which is required for proper
@@ -58,13 +58,14 @@ def _create_venv_symlink(venv_dir: Path) -> None:
 
     Args:
         venv_dir: Path to the virtual environment directory
+        provider_name: Name of the provider (e.g., "pyvider", "tofusoup")
 
     Raises:
         ConfigurationError: If symlink creation fails
     """
     try:
         venv_bin = venv_dir / "bin"
-        symlink_path = venv_bin / "terraform-provider-pyvider"
+        symlink_path = venv_bin / f"terraform-provider-{provider_name}"
         target = Path("pyvider")  # Relative symlink to pyvider in same directory
 
         # Remove existing symlink if it exists
@@ -80,18 +81,19 @@ def _create_venv_symlink(venv_dir: Path) -> None:
         raise ConfigurationError(f"Failed to create venv symlink: {e}") from e
 
 
-def _remove_venv_symlink(venv_dir: Path) -> None:
+def _remove_venv_symlink(venv_dir: Path, provider_name: str) -> None:
     """
-    Remove the terraform-provider-pyvider symlink from the venv bin directory.
+    Remove the terraform-provider-{name} symlink from the venv bin directory.
 
     Args:
         venv_dir: Path to the virtual environment directory
+        provider_name: Name of the provider (e.g., "pyvider", "tofusoup")
 
     Returns:
         None (silently succeeds even if symlink doesn't exist)
     """
     try:
-        symlink_path = venv_dir / "bin" / "terraform-provider-pyvider"
+        symlink_path = venv_dir / "bin" / f"terraform-provider-{provider_name}"
         if symlink_path.exists() or symlink_path.is_symlink():
             symlink_path.unlink()
             pout(f"  Symlink removed: {symlink_path}", style="cyan")
@@ -110,7 +112,7 @@ def _place_terraform_provider_script(ctx: PyviderContext) -> None:
         if not ctx.tf_plugin_dir.exists():
             ctx.tf_plugin_dir.mkdir(parents=True, exist_ok=True)
 
-        target_provider_path = ctx.tf_plugin_dir / "terraform-provider-pyvider"
+        target_provider_path = ctx.tf_plugin_dir / f"terraform-provider-{ctx.provider_name}"
         install_dir = Path.cwd()
 
         # Detect actual virtual environment
@@ -190,7 +192,7 @@ export PLUGIN_MAGIC_COOKIE_VALUE="$TF_PLUGIN_MAGIC_COOKIE"
         pout(f"  Script location: {target_provider_path}", style="cyan")
 
         # Create symlink in venv for proper binary name detection
-        _create_venv_symlink(venv_dir)
+        _create_venv_symlink(venv_dir, ctx.provider_name)
 
     except Exception as e:
         pout(

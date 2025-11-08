@@ -47,13 +47,15 @@ class PyviderContext(CLIContext):
         self.tf_os = get_os_name()
         self.tf_arch = get_arch_name()
         self.pyvider_version = _read_version_from_file()
+        # Read provider name from config, default to "pyvider" for backwards compatibility
+        self.provider_name = self.config.get("pyvider.name", "pyvider")
         self.tf_plugin_dir = (
             self.home
             / ".terraform.d"
             / "plugins"
             / "local"
             / "providers"
-            / "pyvider"
+            / self.provider_name
             / self.pyvider_version
             / f"{self.tf_os}_{self.tf_arch}"
         )
