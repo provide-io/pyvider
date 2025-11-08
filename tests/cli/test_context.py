@@ -97,8 +97,8 @@ class TestPyviderContextProviderName:
         config_file = tmp_path / "pyvider.toml"
         config_file.write_text('[pyvider]\nname = "tofusoup"\n')
 
-        # Change to tmp_path directory so PyviderConfig finds our file
-        monkeypatch.chdir(tmp_path)
+        # Set environment variable to use our config file
+        monkeypatch.setenv("PYVIDER_CONFIG_FILE", str(config_file))
         ctx = PyviderContext()
         assert ctx.provider_name == "tofusoup"
 
@@ -108,8 +108,8 @@ class TestPyviderContextProviderName:
         config_file = tmp_path / "soup.toml"
         config_file.write_text('[pyvider]\nname = "tofusoup"\n')
 
-        # Change to tmp_path directory so PyviderConfig finds our file
-        monkeypatch.chdir(tmp_path)
+        # Set environment variable to use our config file
+        monkeypatch.setenv("PYVIDER_CONFIG_FILE", str(config_file))
         ctx = PyviderContext()
         assert ctx.provider_name == "tofusoup"
 
@@ -119,24 +119,24 @@ class TestPyviderContextProviderName:
         config_file = tmp_path / "pyvider.toml"
         config_file.write_text('[pyvider]\nname = "custom"\n')
 
-        # Change to tmp_path directory so PyviderConfig finds our file
-        monkeypatch.chdir(tmp_path)
+        # Set environment variable to use our config file
+        monkeypatch.setenv("PYVIDER_CONFIG_FILE", str(config_file))
         ctx = PyviderContext()
         assert "custom" in str(ctx.tf_plugin_dir)
         assert "pyvider" not in str(ctx.tf_plugin_dir).split("/providers/")[1]
 
     def test_pyvider_toml_takes_precedence_over_soup_toml(self, tmp_path: Path, monkeypatch: Any) -> None:
         """Test that pyvider.toml takes precedence when both exist."""
-        # Create both config files
+        # Create both config files in tmp_path
         pyvider_config = tmp_path / "pyvider.toml"
         pyvider_config.write_text('[pyvider]\nname = "from_pyvider"\n')
         soup_config = tmp_path / "soup.toml"
         soup_config.write_text('[pyvider]\nname = "from_soup"\n')
 
-        # Change to tmp_path directory so PyviderConfig finds our files
+        # Change to tmp_path directory so both files are found
         monkeypatch.chdir(tmp_path)
         ctx = PyviderContext()
-        # Should use pyvider.toml
+        # Should use pyvider.toml (precedence test relies on file discovery order)
         assert ctx.provider_name == "from_pyvider"
 
 
