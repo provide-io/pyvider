@@ -200,7 +200,7 @@ class TestSymlinkCreation:
         (venv_bin / "activate").touch()
 
         # Create the symlink
-        _create_venv_symlink(venv_dir)
+        _create_venv_symlink(venv_dir, "pyvider")
 
         # Verify symlink exists and points to pyvider
         symlink_path = venv_bin / "terraform-provider-pyvider"
@@ -222,7 +222,7 @@ class TestSymlinkCreation:
         symlink_path.symlink_to(other_target)
 
         # Replace with new symlink
-        _create_venv_symlink(venv_dir)
+        _create_venv_symlink(venv_dir, "pyvider")
 
         # Verify new symlink points to pyvider
         assert symlink_path.is_symlink()
@@ -237,7 +237,7 @@ class TestSymlinkCreation:
         # Don't create bin directory
 
         with pytest.raises(ConfigurationError, match="Failed to create venv symlink"):
-            _create_venv_symlink(venv_dir)
+            _create_venv_symlink(venv_dir, "pyvider")
 
     def test_remove_venv_symlink(self, tmp_path: Path) -> None:
         """Test removing the terraform-provider-pyvider symlink."""
@@ -251,7 +251,7 @@ class TestSymlinkCreation:
         symlink_path.symlink_to(Path("pyvider"))
 
         # Remove symlink
-        _remove_venv_symlink(venv_dir)
+        _remove_venv_symlink(venv_dir, "pyvider")
 
         # Verify symlink is gone
         assert not symlink_path.exists() and not symlink_path.is_symlink()
@@ -263,7 +263,7 @@ class TestSymlinkCreation:
         venv_bin.mkdir(parents=True)
 
         # Should not raise any error
-        _remove_venv_symlink(venv_dir)
+        _remove_venv_symlink(venv_dir, "pyvider")
 
     def test_remove_venv_symlink_with_missing_bin(self, tmp_path: Path) -> None:
         """Test that removing symlink gracefully handles missing bin directory."""
@@ -272,7 +272,7 @@ class TestSymlinkCreation:
         # Don't create bin directory
 
         # Should not raise any error
-        _remove_venv_symlink(venv_dir)
+        _remove_venv_symlink(venv_dir, "pyvider")
 
 
 # 🐍🏗️🔚
