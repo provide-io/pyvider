@@ -41,7 +41,6 @@ dependencies = [
 [dependency-groups]
 dev = [
     "provide-testkit[pyvider-dev]",
-    "hypothesis>=6.0.0",
 ]
 docs = [
     "provide-testkit[docs]",
