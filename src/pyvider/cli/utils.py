@@ -191,9 +191,6 @@ export PLUGIN_MAGIC_COOKIE_VALUE="$TF_PLUGIN_MAGIC_COOKIE"
         pout(f"  Execution method: {install_method}", style="cyan")
         pout(f"  Script location: {target_provider_path}", style="cyan")
 
-        # Create symlink in venv for proper binary name detection
-        _create_venv_symlink(venv_dir, ctx.provider_name)
-
     except Exception as e:
         pout(
             f"An unexpected error occurred placing provider script: {e}",

@@ -14,11 +14,7 @@ from provide.foundation.console import perr, pout
 from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
-from pyvider.cli.utils import (
-    _find_actual_venv,
-    _place_terraform_provider_script,
-    _remove_venv_symlink,
-)
+from pyvider.cli.utils import _place_terraform_provider_script
 
 
 def is_running_as_binary() -> bool:
@@ -63,18 +59,6 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
     """
     try:
         _remove_provider_script(ctx, quiet)
-
-        # Try to remove the symlink from venv
-        # Find venv in current directory
-        install_dir = Path.cwd()
-        venv_dir = _find_actual_venv(install_dir)
-
-        if venv_dir:
-            _remove_venv_symlink(venv_dir, ctx.provider_name)
-        else:
-            if not quiet:
-                pout("  Virtual environment not found, skipping symlink removal", style="yellow")
-
         _remove_empty_parent_dirs(ctx, quiet)
 
         if not quiet:
