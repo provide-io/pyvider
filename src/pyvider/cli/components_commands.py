@@ -7,13 +7,13 @@
 
 import asyncio
 import sys
+import time
 from typing import Any
 
 import click
 from provide.foundation.cli.decorators import flexible_options
 from provide.foundation.console import perr, pout
 from provide.foundation.formatting import format_table
-from provide.foundation.utils import timed_block
 
 from pyvider.cli.main import PyviderContext, cli, pass_ctx
 from pyvider.hub.components import get_hub_diagnostics, registry
@@ -153,13 +153,14 @@ def show_diagnostics(ctx: PyviderContext) -> None:
     pout("=" * 30)
 
     try:
-        with timed_block() as timer:
-            diagnostics = get_hub_diagnostics()
+        start_time = time.perf_counter()
+        diagnostics = get_hub_diagnostics()
+        elapsed = time.perf_counter() - start_time
 
         # Summary stats
         pout(f"🔢 Total component types: {diagnostics['total_component_types']}")
         pout(f"🔢 Total components: {diagnostics['total_components']}")
-        pout(f"⏱️  Discovery time: {timer.elapsed:.3f}s")
+        pout(f"⏱️  Discovery time: {elapsed:.3f}s")
 
         # Component breakdown table
         pout("\n📋 Component Breakdown:")

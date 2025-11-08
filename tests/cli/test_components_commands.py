@@ -5,6 +5,7 @@
 
 """Tests for CLI components commands."""
 
+from click.testing import CliRunner
 from provide.testkit import mocking as mock
 import pytest
 
@@ -13,6 +14,7 @@ from pyvider.cli.components_commands import (
     _display_block_content,
     _display_block_type,
     _handle_discovery_errors,
+    show_diagnostics,
 )
 from pyvider.cty import CtyBool, CtyNumber, CtyString
 from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType
@@ -190,6 +192,186 @@ class TestDisplayBlockContent:
 
             # Should not crash, may or may not call pout
             assert mock_pout.call_count >= 0
+
+
+class TestShowDiagnosticsCommand:
+    """Comprehensive tests for show_diagnostics command."""
+
+    def test_shows_diagnostics_successfully(self) -> None:
+        """Test that diagnostics displays successfully with valid data."""
+        mock_diagnostics = {
+            "total_component_types": 3,
+            "total_components": 10,
+            "component_breakdown": {
+                "provider": 1,
+                "data_source": 5,
+                "resource": 4,
+            },
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout") as mock_pout,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            # Verify pout was called with diagnostics info
+            assert mock_pout.call_count > 0
+
+    def test_shows_diagnostics_with_timing(self) -> None:
+        """Test that diagnostics includes timing information."""
+        mock_diagnostics = {
+            "total_component_types": 2,
+            "total_components": 5,
+            "component_breakdown": {
+                "provider": 1,
+                "data_source": 4,
+            },
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout") as mock_pout,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            # Check that timing was displayed
+            timing_calls = [call for call in mock_pout.call_args_list if "Discovery time" in str(call)]
+            assert len(timing_calls) > 0
+
+    def test_shows_diagnostics_with_empty_components(self) -> None:
+        """Test diagnostics display when no components are found."""
+        mock_diagnostics = {
+            "total_component_types": 0,
+            "total_components": 0,
+            "component_breakdown": {},
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout") as mock_pout,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            assert mock_pout.call_count > 0
+
+    def test_shows_diagnostics_handles_exceptions(self) -> None:
+        """Test that diagnostics command handles exceptions gracefully."""
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch(
+                "pyvider.cli.components_commands.get_hub_diagnostics",
+                side_effect=RuntimeError("Test error"),
+            ),
+            mock.patch("pyvider.cli.components_commands.perr") as mock_perr,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            # Should not crash, should display error
+            assert result.exit_code == 0
+            error_calls = [
+                call for call in mock_perr.call_args_list if "Failed to get diagnostics" in str(call)
+            ]
+            assert len(error_calls) > 0
+
+    def test_shows_diagnostics_displays_all_component_types(self) -> None:
+        """Test that all component types in breakdown are displayed."""
+        mock_diagnostics = {
+            "total_component_types": 4,
+            "total_components": 15,
+            "component_breakdown": {
+                "provider": 1,
+                "data_source": 8,
+                "resource": 5,
+                "function": 1,
+            },
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout"),
+            mock.patch("pyvider.cli.components_commands.format_table") as mock_format_table,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            # Verify format_table was called
+            assert mock_format_table.call_count > 0
+
+    def test_timing_uses_perf_counter(self) -> None:
+        """Test that timing uses time.perf_counter() instead of timed_block()."""
+        mock_diagnostics = {
+            "total_component_types": 1,
+            "total_components": 1,
+            "component_breakdown": {"provider": 1},
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout"),
+            mock.patch("pyvider.cli.components_commands.time") as mock_time,
+        ):
+            mock_time.perf_counter.side_effect = [0.0, 0.123]  # start, end
+
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            # Verify perf_counter was called twice (start and end)
+            assert mock_time.perf_counter.call_count == 2
+
+    def test_diagnostics_displays_correct_summary_stats(self) -> None:
+        """Test that summary statistics are correctly displayed."""
+        mock_diagnostics = {
+            "total_component_types": 3,
+            "total_components": 12,
+            "component_breakdown": {
+                "provider": 2,
+                "data_source": 7,
+                "resource": 3,
+            },
+        }
+
+        ctx = mock.MagicMock()
+        ctx.discovery_errors = []
+
+        with (
+            mock.patch("pyvider.cli.components_commands.get_hub_diagnostics", return_value=mock_diagnostics),
+            mock.patch("pyvider.cli.components_commands.pout") as mock_pout,
+        ):
+            runner = CliRunner()
+            result = runner.invoke(show_diagnostics, obj=ctx, catch_exceptions=False)
+
+            assert result.exit_code == 0
+            # Check that total_component_types and total_components were displayed
+            all_calls = "".join(str(call) for call in mock_pout.call_args_list)
+            assert "3" in all_calls  # total_component_types
+            assert "12" in all_calls  # total_components
 
 
 # 🐍🏗️🔚
