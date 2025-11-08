@@ -174,26 +174,27 @@ def _is_module_launch() -> bool:
 
 
 def _is_editable_install(executable_path: str) -> bool:
-    """Check if we're running from an editable install."""
+    """Check if we're running from an editable install.
+
+    An editable install requires BOTH:
+    1. Executable is in a venv/conda environment
+    2. Pyvider package has src/ directory structure (development mode)
+    """
     exe_path = Path(executable_path)
 
-    # Look for .egg-link files or site-packages with -e installs
+    # First check: Must be in a venv/conda environment
+    is_in_venv = any(env_dir in str(exe_path) for env_dir in [".venv", "venv", "conda", "anaconda"])
+
+    if not is_in_venv:
+        return False
+
+    # Second check: Must have editable install structure (src/ directory)
     try:
-        # Check if the executable is in a venv/conda env
-        if any(env_dir in str(exe_path) for env_dir in [".venv", "venv", "conda", "anaconda"]):
-            return True
-
-        # Check if we can find pyvider in development mode
         import pyvider
-
         pyvider_path = Path(pyvider.__file__).parent.parent.parent
-        if pyvider_path.name == "src":  # typical editable install structure
-            return True
-
+        return pyvider_path.name == "src"  # Typical editable: src/pyvider/__init__.py
     except (ImportError, AttributeError):
-        pass
-
-    return False
+        return False
 
 
 def _is_direct_script_launch(executable_path: str) -> bool:
