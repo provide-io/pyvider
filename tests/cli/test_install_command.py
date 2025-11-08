@@ -416,7 +416,6 @@ class TestInstallCommandSymlinkCreation:
 
             with (
                 mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
-                mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir),
                 mock.patch("pyvider.cli.install_command._place_terraform_provider_script") as mock_place,
             ):
                 result = runner.invoke(cli, ["install"])
@@ -445,10 +444,7 @@ class TestCustomProviderNames:
             (venv_bin / "python").touch()
             (venv_bin / "activate").touch()
 
-            with (
-                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
-                mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir),
-            ):
+            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
                 result = runner.invoke(cli, ["install"])
 
                 # Check that the install completed
@@ -474,10 +470,7 @@ class TestCustomProviderNames:
             (venv_bin / "python").touch()
             (venv_bin / "activate").touch()
 
-            with (
-                mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False),
-                mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir),
-            ):
+            with mock.patch("pyvider.cli.install_command.is_running_as_binary", return_value=False):
                 result = runner.invoke(cli, ["install"])
 
                 # Check that the install completed
