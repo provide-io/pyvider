@@ -6,6 +6,7 @@
 """Tests for CLI context module."""
 
 from pathlib import Path
+from typing import Any
 
 from provide.testkit import mocking as mock
 import pytest
@@ -76,6 +77,69 @@ class TestPyviderContextInitialization:
         assert ".terraform.d" in str(ctx.tf_plugin_dir)
 
 
+class TestPyviderContextProviderName:
+    """Tests for provider name reading from config."""
+
+    def test_context_has_provider_name_attribute(self) -> None:
+        """Test that context has provider_name attribute."""
+        ctx = PyviderContext()
+        assert hasattr(ctx, "provider_name")
+        assert isinstance(ctx.provider_name, str)
+
+    def test_provider_name_defaults_to_pyvider(self) -> None:
+        """Test that provider_name defaults to 'pyvider' when no config exists."""
+        ctx = PyviderContext()
+        assert ctx.provider_name == "pyvider"
+
+    def test_provider_name_from_pyvider_toml(self, tmp_path: Path, monkeypatch: Any) -> None:
+        """Test reading provider name from pyvider.toml config file."""
+        # Create a temporary pyvider.toml config file
+        config_file = tmp_path / "pyvider.toml"
+        config_file.write_text('[pyvider]\nname = "tofusoup"\n')
+
+        # Change to tmp_path directory so PyviderConfig finds our file
+        monkeypatch.chdir(tmp_path)
+        ctx = PyviderContext()
+        assert ctx.provider_name == "tofusoup"
+
+    def test_provider_name_from_soup_toml(self, tmp_path: Path, monkeypatch: Any) -> None:
+        """Test reading provider name from soup.toml config file."""
+        # Create a temporary soup.toml config file
+        config_file = tmp_path / "soup.toml"
+        config_file.write_text('[pyvider]\nname = "tofusoup"\n')
+
+        # Change to tmp_path directory so PyviderConfig finds our file
+        monkeypatch.chdir(tmp_path)
+        ctx = PyviderContext()
+        assert ctx.provider_name == "tofusoup"
+
+    def test_provider_name_affects_plugin_path(self, tmp_path: Path, monkeypatch: Any) -> None:
+        """Test that provider name is used in plugin directory path."""
+        # Create config with custom provider name
+        config_file = tmp_path / "pyvider.toml"
+        config_file.write_text('[pyvider]\nname = "custom"\n')
+
+        # Change to tmp_path directory so PyviderConfig finds our file
+        monkeypatch.chdir(tmp_path)
+        ctx = PyviderContext()
+        assert "custom" in str(ctx.tf_plugin_dir)
+        assert "pyvider" not in str(ctx.tf_plugin_dir).split("/providers/")[1]
+
+    def test_pyvider_toml_takes_precedence_over_soup_toml(self, tmp_path: Path, monkeypatch: Any) -> None:
+        """Test that pyvider.toml takes precedence when both exist."""
+        # Create both config files
+        pyvider_config = tmp_path / "pyvider.toml"
+        pyvider_config.write_text('[pyvider]\nname = "from_pyvider"\n')
+        soup_config = tmp_path / "soup.toml"
+        soup_config.write_text('[pyvider]\nname = "from_soup"\n')
+
+        # Change to tmp_path directory so PyviderConfig finds our files
+        monkeypatch.chdir(tmp_path)
+        ctx = PyviderContext()
+        # Should use pyvider.toml
+        assert ctx.provider_name == "from_pyvider"
+
+
 class TestPyviderContextPluginPath:
     """Tests for plugin path construction."""
 
@@ -84,13 +148,14 @@ class TestPyviderContextPluginPath:
         ctx = PyviderContext()
         plugin_dir = ctx.tf_plugin_dir
 
-        # Path should follow: ~/.terraform.d/plugins/local/providers/pyvider/{version}/{os}_{arch}
+        # Path should follow: ~/.terraform.d/plugins/local/providers/{name}/{version}/{os}_{arch}
         parts = plugin_dir.parts
         assert ".terraform.d" in parts
         assert "plugins" in parts
         assert "local" in parts
         assert "providers" in parts
-        assert "pyvider" in parts
+        # Provider name should be in path (defaults to "pyvider" without config)
+        assert ctx.provider_name in parts
 
     def test_plugin_path_contains_version(self) -> None:
         """Test that plugin path contains version."""
