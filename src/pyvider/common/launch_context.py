@@ -139,23 +139,15 @@ def _detect_launch_method(executable_path: str, python_executable: str) -> tuple
 
 
 def _is_pspf_launch(executable_path: str, python_executable: str) -> bool:
-    """Check if we're running from a PSPF package."""
-    # PSPF packages typically have a cache directory structure
-    cache_indicators = ["/.cache/pspf/", "/cache/bin/python", "/pspf_", "terraform-provider-"]
+    """Check if we're running from a PSPF package.
 
-    # Check if Python is running from a cache-like directory
-    for indicator in cache_indicators:
-        if indicator in python_executable.lower():
-            return True
+    Per PSPF/2025 specification, FlavorPack launchers ALWAYS set
+    FLAVOR_WORKENV when executing packaged applications. This is
+    the canonical and definitive way to detect PSPF execution.
 
-    # Check if executable path suggests PSPF
-    if any(indicator in executable_path.lower() for indicator in ["terraform-provider-", "pspf"]):
-        # Additional check: see if we're in a temporary/cache directory structure
-        python_path = Path(python_executable)
-        if any(part in str(python_path) for part in [".cache", "cache", "temp"]):
-            return True
-
-    return False
+    See: FlavorPack docs/guide/usage/environment.md
+    """
+    return "FLAVOR_WORKENV" in os.environ
 
 
 def _is_module_launch() -> bool:
@@ -210,25 +202,34 @@ def _is_direct_script_launch(executable_path: str) -> bool:
 
 
 def _get_pspf_details() -> dict[str, Any]:
-    """Get details specific to PSPF launches."""
+    """Get details specific to PSPF launches.
+
+    Per PSPF/2025 specification, FlavorPack launchers set several FLAVOR_*
+    environment variables that provide package and runtime information.
+    """
     details: dict[str, Any] = {}
 
-    # Try to find PSPF cache information
+    # Extract FlavorPack environment variables set by the launcher
+    flavor_env = {
+        "workenv": os.environ.get("FLAVOR_WORKENV"),
+        "command_name": os.environ.get("FLAVOR_COMMAND_NAME"),
+        "original_command": os.environ.get("FLAVOR_ORIGINAL_COMMAND"),
+        "package": os.environ.get("FLAVOR_PACKAGE"),
+        "version": os.environ.get("FLAVOR_VERSION"),
+        "os": os.environ.get("FLAVOR_OS"),
+        "arch": os.environ.get("FLAVOR_ARCH"),
+        "platform": os.environ.get("FLAVOR_PLATFORM"),
+        "os_version": os.environ.get("FLAVOR_OS_VERSION"),
+        "cpu_type": os.environ.get("FLAVOR_CPU_TYPE"),
+    }
+
+    # Filter out None values
+    details["flavor_env"] = {k: v for k, v in flavor_env.items() if v is not None}
+
+    # Keep cache path info for backwards compatibility
     python_path = Path(sys.executable)
     details["python_cache_path"] = str(python_path.parent.parent)
     details["cache_structure"] = _analyze_cache_structure(python_path)
-
-    # Look for PSPF metadata
-    cache_dir = python_path.parent.parent
-    metadata_paths = [
-        cache_dir / "metadata",
-        cache_dir / "cache" / "metadata",
-    ]
-
-    for metadata_path in metadata_paths:
-        if metadata_path.exists():
-            details["metadata_path"] = str(metadata_path)
-            break
 
     return details
 
