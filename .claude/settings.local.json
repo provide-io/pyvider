@@ -18,7 +18,8 @@
       "Bash(python:*)",
       "WebFetch(domain:backstage.github.io)",
       "Bash(mkdocs build:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(~/.terraform.d/plugins/local/providers/tofusoup/0.0.1108/darwin_arm64/terraform-provider-tofusoup:*)"
     ],
     "deny": [],
     "ask": [],
