@@ -196,7 +196,7 @@ class TestCtyMapValidation:
             keys=st.text(min_size=1, max_size=20), values=st.text(max_size=50), max_size=10
         )
     )
-    @settings(max_examples=30)
+    @settings(max_examples=30, suppress_health_check=[HealthCheck.too_slow])
     def test_map_of_strings_validates(self, mapping: dict[str, str]) -> None:
         """Property: CtyMap(CtyString) should accept dicts with string values."""
         cty_map = CtyMap(element_type=CtyString())

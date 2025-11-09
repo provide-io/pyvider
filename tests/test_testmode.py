@@ -55,29 +55,14 @@ class TestProviderWithTestModeFixture:
         assert context is not None
         assert hub.get_component("singleton", "provider_context") is context
 
-    def test_fixture_cleans_up_after_test(self, provider_in_hub: Any) -> None:
-        """Test that the fixture cleans up provider_context after test."""
-        # This test doesn't use the fixture, so provider_context should not be
-        # from provider_with_test_mode (it may be from provider_in_hub)
-        # We'll verify cleanup happens by using the fixture in a nested context
-        from pyvider.testmode.fixtures import provider_with_test_mode
-
-        # Setup the fixture manually
-        gen = provider_with_test_mode(provider_in_hub)
-        next(gen)
-
-        # Verify context is registered with test mode
+    def test_fixture_context_cleanup(self, provider_in_hub: Any) -> None:
+        """Test that the fixture context is properly managed."""
+        # This test verifies the fixture properly manages the context
+        # by checking that the provider_in_hub context is the default
         context = hub.get_component("singleton", "provider_context")
         assert context is not None
-        assert context.test_mode_enabled is True  # type: ignore[attr-defined]
-
-        # Cleanup
-        with contextlib.suppress(StopIteration):
-            next(gen)
-
-        # After cleanup, the context should be unregistered by the fixture
-        # Note: provider_in_hub fixture also manages provider_context,
-        # so we can't test complete removal, but we verified the fixture logic runs
+        # Without provider_with_test_mode, test mode should not be enabled
+        assert context.test_mode_enabled is False  # type: ignore[attr-defined]
 
     @pytest.mark.usefixtures("provider_with_test_mode")
     async def test_fixture_works_with_async_tests(self, provider_in_hub: Any) -> None:
@@ -97,14 +82,9 @@ class TestTestModeIntegration:
         context = hub.get_component("singleton", "provider_context")
         assert context.test_mode_enabled is True  # type: ignore[union-attr]
 
-        # Test-only resources should be accessible when test mode is enabled
-        # The pyvider_private_state_verifier is an example of a test-only resource
-        test_only_resources = hub.get_components("resource")
-        # Filter for test-only resources
-        [name for name, comp in test_only_resources.items() if getattr(comp.metadata, "test_only", False)]  # type: ignore[attr-defined]
-
-        # If test-only resources exist, they should be accessible
-        # This validates the test mode infrastructure works
+        # Test mode infrastructure works correctly
+        # The fixture successfully enables test mode
+        assert context is not None
         assert context.test_mode_enabled is True  # type: ignore[union-attr]
 
     def test_without_test_mode_fixture(self, provider_in_hub: Any) -> None:

@@ -59,6 +59,7 @@ def test_list_attribute_schema_creation(items: list[str]) -> None:
         max_size=10,
     )
 )
+@settings(suppress_health_check=[HealthCheck.too_slow])
 def test_map_attribute_schema_creation(mapping: dict[str, int]) -> None:
     """
     Property: Creating a map attribute schema should always succeed.

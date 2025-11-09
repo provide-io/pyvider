@@ -18,6 +18,9 @@ from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.providers import BaseProvider
 
+# Import test mode fixtures to make them available to all tests
+pytest_plugins = ["pyvider.testmode.fixtures"]
+
 
 @pytest.fixture(scope="session")
 def event_loop() -> asyncio.BaseEventLoop:
