@@ -127,11 +127,9 @@ def _extract_parameters_meta(
         # Handle *args (VAR_POSITIONAL) - this is a true variadic parameter
         if param.kind == inspect.Parameter.VAR_POSITIONAL:
             param_hint = type_hints.get(name, Any)
-            # Extract element type from *args annotation if available
-            if hasattr(param_hint, "__args__") and param_hint.__args__:
-                element_type = param_hint.__args__[0]
-            else:
-                element_type = Any
+            # For variadic parameters, use the full type hint (which may be a Union)
+            # This allows *args: int | str to accept both types
+            element_type = param_hint if param_hint != Any else Any
 
             variadic_param = {
                 "name": name,
