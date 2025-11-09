@@ -63,8 +63,7 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
 
     # Try to get provider context to check test mode, but don't fail if it doesn't exist
     try:
-        provider_context_factory = hub.get_component("singleton", "provider_context")
-        provider_context = provider_context_factory() if callable(provider_context_factory) else provider_context_factory
+        provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
     except (KeyError, AttributeError):
         # If provider_context doesn't exist (e.g., in unit tests), assume not in test mode
@@ -120,8 +119,7 @@ def check_test_only_access(
 
     # Get test mode status
     try:
-        provider_context_factory = hub.get_component("singleton", "provider_context")
-        provider_context = provider_context_factory() if callable(provider_context_factory) else provider_context_factory
+        provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
     except (KeyError, AttributeError):
         test_mode_enabled = False

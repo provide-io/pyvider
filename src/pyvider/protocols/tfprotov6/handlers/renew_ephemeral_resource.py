@@ -89,8 +89,7 @@ async def _renew_ephemeral_resource_impl(
         private_data = msgpack.unpackb(request.private, raw=False)
         private_state_instance = resource_class.private_state_class(**private_data)
 
-        provider_context_factory = hub.get_component("singleton", "provider_context")
-        provider_context = provider_context_factory() if callable(provider_context_factory) else provider_context_factory
+        provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
 
         ctx = EphemeralResourceContext(
