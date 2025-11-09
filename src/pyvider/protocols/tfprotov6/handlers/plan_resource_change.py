@@ -149,7 +149,8 @@ def _create_resource_context(
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
     proposed_new_state_instance = cty_to_attrs_instance(proposed_new_state_cty, resource_class.state_class)
 
-    provider_context = hub.get_component("singleton", "provider_context")
+    provider_context_factory = hub.get_component("singleton", "provider_context")
+    provider_context = provider_context_factory() if callable(provider_context_factory) else provider_context_factory
     test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
 
     return ResourceContext(
