@@ -60,11 +60,13 @@ def test_is_module_launch_with_main(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_is_editable_install_detects_src(monkeypatch: pytest.MonkeyPatch) -> None:
+    import sys
+
     dummy_pyvider = types.SimpleNamespace(
         __file__="/repo/src/pyvider/__init__.py",
         __path__=["/repo/src/pyvider"],
     )
-    monkeypatch.setattr(lc, "pyvider", dummy_pyvider, raising=False)
+    monkeypatch.setitem(sys.modules, "pyvider", dummy_pyvider)
     assert _is_editable_install("/repo/.venv/bin/pyvider") is True
 
 
