@@ -119,7 +119,8 @@ def check_test_only_access(
 
     # Get test mode status
     try:
-        provider_context = hub.get_component("singleton", "provider_context")
+        provider_context_factory = hub.get_component("singleton", "provider_context")
+        provider_context = provider_context_factory() if callable(provider_context_factory) else provider_context_factory
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
     except (KeyError, AttributeError):
         test_mode_enabled = False
