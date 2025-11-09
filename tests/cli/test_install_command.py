@@ -481,7 +481,6 @@ class TestCustomProviderNames:
 
     def test_uninstall_removes_custom_provider_script(self, tmp_path: Path) -> None:
         """Test that uninstall removes the provider script with custom name."""
-        from pyvider.cli.context import PyviderContext
 
         runner = CliRunner()
         with runner.isolated_filesystem(temp_dir=tmp_path):

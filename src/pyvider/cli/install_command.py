@@ -47,6 +47,18 @@ def _remove_empty_parent_dirs(ctx: PyviderContext, quiet: bool) -> None:
         pass
 
 
+def _remove_venv_symlink(ctx: PyviderContext, quiet: bool) -> None:
+    """Remove the provider symlink from venv bin directory if it exists."""
+    venv_dir = _find_actual_venv(Path.cwd())
+    if venv_dir:
+        venv_bin = venv_dir / "bin"
+        symlink_path = venv_bin / f"terraform-provider-{ctx.provider_name}"
+        if symlink_path.exists() or symlink_path.is_symlink():
+            symlink_path.unlink()
+            if not quiet:
+                pout(f"  Removed venv symlink: {symlink_path}", style="cyan")
+
+
 def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
     """
     Uninstall the Terraform provider.
@@ -59,6 +71,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
     """
     try:
         _remove_provider_script(ctx, quiet)
+        _remove_venv_symlink(ctx, quiet)
         _remove_empty_parent_dirs(ctx, quiet)
 
         if not quiet:
@@ -73,9 +86,7 @@ def _is_pyvider_project() -> bool:
     pyproject_path = Path.cwd() / "pyproject.toml"
     pyvider_toml_path = Path.cwd() / "pyvider.toml"
     soup_toml_path = Path.cwd() / "soup.toml"
-    if pyvider_toml_path.exists():
-        return True
-    elif soup_toml_path.exists():
+    if pyvider_toml_path.exists() or soup_toml_path.exists():
         return True
     elif pyproject_path.exists():
         try:

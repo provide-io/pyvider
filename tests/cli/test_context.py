@@ -127,8 +127,8 @@ class TestPyviderContextProviderName:
 
     def test_pyvider_toml_takes_precedence_over_soup_toml(self, tmp_path: Path) -> None:
         """Test that pyvider.toml takes precedence when both exist."""
-        import os
         import importlib
+        import os
         import sys
 
         # Create both config files in tmp_path
