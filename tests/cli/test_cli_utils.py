@@ -15,7 +15,7 @@ from pyvider.cli.utils import _place_terraform_provider_script
 
 def test_place_terraform_provider_script(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     plugin_dir = tmp_path / "plugins"
-    ctx = SimpleNamespace(tf_plugin_dir=plugin_dir)
+    ctx = SimpleNamespace(tf_plugin_dir=plugin_dir, provider_name="pyvider")
     install_dir = tmp_path / "project"
     install_dir.mkdir()
 

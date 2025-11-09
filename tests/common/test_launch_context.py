@@ -49,7 +49,8 @@ def test_detect_launch_context_collects_environment(monkeypatch: pytest.MonkeyPa
     assert context.working_directory == "/workspace"
 
 
-def test_is_pspf_launch_detects_cache_path() -> None:
+def test_is_pspf_launch_detects_cache_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(lc.os.environ, "FLAVOR_WORKENV", "/tmp/.cache/pspf")
     assert _is_pspf_launch("terraform-provider-pyvider", "/tmp/.cache/pspf/python") is True
 
 
@@ -91,7 +92,8 @@ def test_analyze_cache_structure_lists_directories(tmp_path: Path, monkeypatch: 
     monkeypatch.setattr(lc.sys, "executable", str(python_path))
 
     details = _get_pspf_details()
-    assert "metadata_path" in details
+    # Verify we get cache details (metadata_path no longer returned)
+    assert "cache_structure" in details
 
     structure = _analyze_cache_structure(python_path)
     assert structure["python_bin_dir"].endswith("bin")

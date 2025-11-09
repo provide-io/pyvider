@@ -14,7 +14,7 @@ from provide.foundation.console import perr, pout
 from provide.foundation.file import safe_read_text
 
 from pyvider.cli.context import PyviderContext
-from pyvider.cli.utils import _place_terraform_provider_script
+from pyvider.cli.utils import _find_actual_venv, _place_terraform_provider_script
 
 
 def is_running_as_binary() -> bool:
