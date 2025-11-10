@@ -7,16 +7,35 @@
 
 import asyncio
 
-from provide.foundation import logger, shutdown_foundation
+from attrs import evolve
+from provide.foundation import TelemetryConfig, get_hub, logger, shutdown_foundation
 
 from pyvider.cli import cli
+from pyvider.common.config import PyviderConfig
 
 
 def main() -> None:
     """Main entry point for the Pyvider CLI application."""
-    # Initialize Foundation logging for CLI mode
-    # (Provider mode initializes logging separately in provide_command.py)
-    # Note: logger module auto-initializes on first import, so just importing it is sufficient
+    # Initialize Foundation with Pyvider-specific configuration
+    pyvider_config = PyviderConfig()  # Loads from environment
+
+    # Get base telemetry config from environment
+    base_telemetry = TelemetryConfig.from_env()
+
+    # Merge with Pyvider-specific settings
+    telemetry_config = evolve(
+        base_telemetry,
+        service_name="pyvider",
+        logging=evolve(
+            base_telemetry.logging,
+            default_level=pyvider_config.log_level,  # Uses PYVIDER_LOG_LEVEL
+        ),
+    )
+
+    # Initialize Foundation with merged config
+    hub = get_hub()
+    hub.initialize_foundation(telemetry_config)
+
     logger.debug("Pyvider CLI starting")
 
     try:
