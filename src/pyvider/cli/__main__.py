@@ -16,12 +16,6 @@ from pyvider.common.config import PyviderConfig
 
 def main() -> None:
     """Main entry point for the Pyvider CLI application."""
-    import os
-
-    # Bridge PYVIDER_LOG_LEVEL to Foundation setup logs if not already set
-    if os.environ.get("PYVIDER_LOG_LEVEL") and not os.environ.get("FOUNDATION_SETUP_LOG_LEVEL"):
-        os.environ["FOUNDATION_SETUP_LOG_LEVEL"] = os.environ["PYVIDER_LOG_LEVEL"]
-
     # Initialize Foundation with Pyvider-specific configuration
     pyvider_config = PyviderConfig()  # Loads from environment
 

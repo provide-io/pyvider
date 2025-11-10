@@ -38,7 +38,7 @@ class PyviderConfig(BaseConfig):
     # Core configuration fields with validation
     log_level: str = field(
         default="INFO",
-        validator=validate_choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
+        validator=validate_choice(["TRACE", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]),
         description="Logging level for the application",
         env_var="PYVIDER_LOG_LEVEL",
     )
