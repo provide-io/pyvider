@@ -5,7 +5,6 @@
 
 """Tests for pyvider testmode module and fixtures."""
 
-import contextlib
 from typing import Any
 
 import pytest

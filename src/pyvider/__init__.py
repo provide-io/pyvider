@@ -5,9 +5,11 @@
 
 """TODO: Add module docstring."""
 
-from pyvider._version import __version__
+from provide.foundation.utils.versioning import get_version
 
 __path__ = __import__("pkgutil").extend_path(__path__, __name__)
+
+__version__ = get_version("pyvider", caller_file=__file__)
 
 __all__ = [
     "__version__",
