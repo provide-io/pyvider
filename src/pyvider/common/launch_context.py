@@ -191,6 +191,7 @@ def _is_editable_install(executable_path: str) -> bool:
     # Second check: Must have editable install structure (src/ directory)
     try:
         import pyvider
+
         # pyvider.__file__ is typically: /path/to/project/src/pyvider/__init__.py
         # So .parent is /path/to/project/src/pyvider
         # And .parent.parent is /path/to/project/src

@@ -143,13 +143,14 @@ class TestPyviderContextProviderName:
             os.chdir(tmp_path)
 
             # Reload the config module to pick up new cwd
-            if 'pyvider.common.config' in sys.modules:
-                importlib.reload(sys.modules['pyvider.common.config'])
-            if 'pyvider.cli.context' in sys.modules:
-                importlib.reload(sys.modules['pyvider.cli.context'])
+            if "pyvider.common.config" in sys.modules:
+                importlib.reload(sys.modules["pyvider.common.config"])
+            if "pyvider.cli.context" in sys.modules:
+                importlib.reload(sys.modules["pyvider.cli.context"])
 
             # Import after changing directory
             from pyvider.cli.context import PyviderContext as FreshContext
+
             ctx = FreshContext()
 
             # Should use pyvider.toml (precedence test relies on file discovery order)
@@ -157,10 +158,10 @@ class TestPyviderContextProviderName:
         finally:
             os.chdir(orig_cwd)
             # Reload modules back to original state
-            if 'pyvider.common.config' in sys.modules:
-                importlib.reload(sys.modules['pyvider.common.config'])
-            if 'pyvider.cli.context' in sys.modules:
-                importlib.reload(sys.modules['pyvider.cli.context'])
+            if "pyvider.common.config" in sys.modules:
+                importlib.reload(sys.modules["pyvider.common.config"])
+            if "pyvider.cli.context" in sys.modules:
+                importlib.reload(sys.modules["pyvider.cli.context"])
 
 
 class TestPyviderContextPluginPath:
