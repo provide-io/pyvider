@@ -8,7 +8,7 @@
 from pathlib import Path
 from typing import Any
 
-from provide.testkit import mocking as mock
+from provide.testkit import mocking as mock  # type: ignore[import-untyped]
 import pytest
 
 from pyvider.cli.context import PyviderContext
