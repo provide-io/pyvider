@@ -9,7 +9,7 @@ site_url: https://foundry.provide.io/pyvider/
 repo_url: https://github.com/provide-io/pyvider
 repo_name: provide-io/pyvider
 edit_uri: edit/main/docs/
-copyright: 'Copyright &copy; 2017 - 2025 Provide'
+copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
 
 # Development server configuration
 dev_addr: '127.0.0.1:11003'
