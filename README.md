@@ -81,16 +81,39 @@ class Server(BaseResource):
 
 ⚠️ **Alpha Software** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning. See the [Roadmap](https://foundry.provide.io/pyvider/development/roadmap/) for details.
 
-## 🤝 Contributing
+## 🛠️ Development
 
-Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md).
+### Quick Start
 
 ```bash
-# Development setup
+# Set up environment
 uv sync
-uv run pytest
-uv run ruff check
+
+# Run common tasks
+we test           # Run tests
+we lint           # Check code
+we format         # Format code
+we tasks          # See all available commands
 ```
+
+### Available Commands
+
+This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
+
+**Common tasks:**
+- `we test` - Run all tests
+- `we test coverage` - Run tests with coverage
+- `we test parallel` - Run tests in parallel
+- `we lint` - Check code quality
+- `we lint fix` - Auto-fix linting issues
+- `we format` - Format code
+- `we typecheck` - Run type checker
+
+See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+
+## 🤝 Contributing
+
+Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) and the [Development](#-development) section above for setup instructions.
 
 ## 📄 License
 
