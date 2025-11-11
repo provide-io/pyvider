@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This tutorial covers **stable** functionality.
-    See [project status](../index/) for details.
+    See [project status](../#project-status) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform data source using pyvider. Data sources are read-only queries that fetch information without creating infrastructure.
 

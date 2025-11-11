@@ -2,7 +2,7 @@
 
 !!! info "Alpha Status"
     pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../index/) for details.
+    See [project status](../../#project-status) for details.
 
 This guide shows you how to create data sources for your Pyvider provider. Data sources are read-only queries that fetch information from external systems.
 
