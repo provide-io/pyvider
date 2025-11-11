@@ -2,6 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Task Runner
+
+This project uses `wrknv` for task automation. Commands are defined in `wrknv.toml`.
+
+### Quick Reference
+```bash
+we tasks          # List all available tasks
+we test           # Run tests
+we lint           # Check code quality
+we format         # Format code
+we typecheck      # Type checking
+we build          # Build package
+```
+
+All tasks can be run with `we <task>`. Nested tasks use spaces (e.g., `we test coverage`).
+
+### Task Discovery
+
+Run `we tasks` to see the complete task tree for this project. Common task hierarchies:
+
+```bash
+we test                # Run all tests
+we test coverage       # Run tests with coverage
+we test parallel       # Run tests in parallel
+```
+
 ## Development Commands
 
 ### Environment Setup
@@ -10,44 +36,43 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 uv sync
 ```
 
-### Testing
+### Primary Workflow (using we)
 ```bash
-# Run all tests
-uv run pytest
+# Testing
+we test                    # Run all tests
+we test coverage           # Run with coverage report
+we test parallel           # Run tests in parallel
 
-# Run specific test file
-uv run pytest tests/path/to/test_file.py
+# Code quality
+we lint                    # Check code quality
+we lint fix                # Auto-fix linting issues
+we format                  # Format code
+we format check            # Check formatting without changes
+we typecheck               # Run type checker
 
-# Run with coverage
-uv run pytest --cov=pyvider
-
-# Run tests in parallel
-uv run pytest -n auto
-
-# Run specific test by name
-uv run pytest -k "test_name"
-
-# Run with verbose output
-uv run pytest -v
+# Building
+we build                   # Build distribution
 ```
 
-### Code Quality
+### Alternative (Direct Commands)
 ```bash
-# Format code
-uv run ruff format
+# Testing
+uv run pytest                      # Direct test execution
+uv run pytest tests/path/to/test_file.py  # Run specific test file
+uv run pytest --cov=pyvider        # Run with coverage
+uv run pytest -n auto              # Run tests in parallel
+uv run pytest -k "test_name"       # Run specific test by name
+uv run pytest -v                   # Run with verbose output
 
-# Lint code
-uv run ruff check
-
-# Auto-fix linting issues
-uv run ruff check --fix
-
-# Type checking with mypy
-uv run mypy src/pyvider
-
-# Type checking with pyright
-uv run pyright
+# Code quality
+uv run ruff format                 # Format code
+uv run ruff check                  # Lint code
+uv run ruff check --fix            # Auto-fix linting issues
+uv run mypy src/pyvider            # Type checking with mypy
+uv run pyright                     # Type checking with pyright
 ```
+
+For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
 
 ### Building & Packaging
 ```bash
