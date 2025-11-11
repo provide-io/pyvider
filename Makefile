@@ -6,7 +6,7 @@
 # Do not edit directly in library projects - changes will be overwritten
 # To update: run `make update-makefile` or extract from provide-foundry
 
-.PHONY: help setup test test-parallel test-verbose test-unit test-integration coverage lint lint-fix format format-check typecheck quality quality-all build clean install uninstall lock version dev-setup dev-test dev-check ci-test ci-quality ci-all docs-setup docs-build docs-serve docs-clean
+.PHONY: help setup test test-parallel test-verbose test-unit test-integration coverage coverage-xml mutation-run mutation-results mutation-browse mutation-clean lint lint-fix format format-check typecheck quality quality-all build clean install uninstall lock version dev-setup dev-test dev-check ci-test ci-quality ci-all docs-setup docs-build docs-serve docs-clean
 
 # Default target
 .DEFAULT_GOAL := help
@@ -66,8 +66,34 @@ test-integration: ## Run only integration tests
 
 coverage: ## Run tests with coverage report
 	@echo '$(BLUE)Running tests with coverage...$(NC)'
-	uv run pytest --cov=src --cov-report=html --cov-report=term
+	uv run pytest --cov=src --cov-report=html --cov-report=term-missing
 	@echo '$(GREEN)✓ Coverage report generated in htmlcov/$(NC)'
+
+coverage-xml: ## Run tests with XML coverage for CI
+	@echo '$(BLUE)Running tests with XML coverage for CI...$(NC)'
+	uv run pytest --cov=src --cov-report=xml --cov-report=term
+	@echo '$(GREEN)✓ XML coverage report generated$(NC)'
+
+# ==============================================================================
+# 🧬 Mutation Testing
+# ==============================================================================
+
+mutation-run: ## Run mutation testing with mutmut
+	@echo '$(BLUE)🧬 Running mutation testing...$(NC)'
+	@uv run mutmut run
+
+mutation-results: ## Show mutation testing results
+	@echo '$(BLUE)📊 Mutation testing results:$(NC)'
+	@uv run mutmut results
+
+mutation-browse: ## Open interactive mutation browser
+	@echo '$(BLUE)🔍 Opening mutation browser...$(NC)'
+	@uv run mutmut browse
+
+mutation-clean: ## Clean mutation testing artifacts
+	@echo '$(BLUE)Cleaning mutation testing artifacts...$(NC)'
+	@rm -rf .mutmut-cache html/
+	@echo '$(GREEN)✓ Mutation testing artifacts cleaned$(NC)'
 
 # ==============================================================================
 # 🔍 Code Quality
@@ -128,6 +154,7 @@ clean: ## Clean build artifacts and caches
 	rm -rf .hypothesis
 	rm -rf htmlcov/
 	rm -rf .coverage
+	rm -rf .mutmut-cache
 	rm -rf site/
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
