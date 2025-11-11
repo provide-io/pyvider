@@ -138,7 +138,7 @@ class TestPyviderContextProviderName:
         soup_config.write_text('[pyvider]\nname = "from_soup"\n')
 
         # Save current directory and change to tmp_path
-        orig_cwd = os.getcwd()
+        orig_cwd = Path.cwd()
         try:
             os.chdir(tmp_path)
 
