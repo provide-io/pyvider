@@ -785,7 +785,7 @@ Provider process exits unexpectedly
 
 **Solutions:**
 
-See [Debugging Guide - Provider Crashes](guides/development/debugging.md#scenario-3-provider-crashes-on-apply) for detailed workflow.
+See [Debugging Guide - Provider Crashes](guides/development/debugging/#scenario-3-provider-crashes-on-apply) for detailed workflow.
 
 ## Getting Help
 

@@ -295,7 +295,7 @@ Check:
 3. Provider name matches in Terraform config
 4. Provider is in the correct directory
 
-See [Troubleshooting](troubleshooting.md#provider-not-found-error).
+See [Troubleshooting](troubleshooting/#provider-not-found-error).
 
 ### Why isn't my resource updating?
 
@@ -308,7 +308,7 @@ async def _update_apply(self, ctx):
     return updated_state, None
 ```
 
-See [Troubleshooting](troubleshooting.md#resource-update-not-applied).
+See [Troubleshooting](troubleshooting/#resource-update-not-applied).
 
 ### Why isn't drift being detected?
 
@@ -321,7 +321,7 @@ async def read(self, ctx):
     return State(**current)  # Return current, not ctx.state!
 ```
 
-See [Troubleshooting](troubleshooting.md#state-drift-not-detected).
+See [Troubleshooting](troubleshooting/#state-drift-not-detected).
 
 ### Why is my provider crashing?
 
@@ -339,7 +339,7 @@ export PYVIDER_LOG_LEVEL=DEBUG
 terraform apply 2>&1 | tee debug.log
 ```
 
-See [Troubleshooting](troubleshooting.md#provider-crashes-on-apply).
+See [Troubleshooting](troubleshooting/#provider-crashes-on-apply).
 
 ## Advanced Questions
 
@@ -451,7 +451,7 @@ async def _create_apply(self, ctx):
 - Environment details (Pyvider version, Python version, OS)
 - Relevant logs
 
-See [Contributing Guidelines](contributing/guidelines.md#reporting-bugs).
+See [Contributing Guidelines](contributing/guidelines/#reporting-bugs).
 
 ### How can I contribute?
 
