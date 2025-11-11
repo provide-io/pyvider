@@ -287,7 +287,7 @@ pytest --cov=pyvider --cov-report=term-missing
 # Build docs locally
 mkdocs serve
 
-# View at http://localhost:8000
+# View at http://localhost:11003
 ```
 
 ### 5. Commit Changes
