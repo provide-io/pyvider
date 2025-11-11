@@ -12,7 +12,7 @@ edit_uri: edit/main/docs/
 copyright: 'Copyright &copy; 2017 - 2025 Provide'
 
 # Development server configuration
-dev_addr: '127.0.0.1:8003'
+dev_addr: '127.0.0.1:11003'
 
 # Standalone mode settings
 docs_dir: docs
