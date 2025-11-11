@@ -1,0 +1,118 @@
+# Python Library wrknv.toml Template
+# Canonical task configuration for Python library projects in the provide.io ecosystem
+# This file is maintained in provide-foundry and can be extracted to library projects
+#
+# Source: provide-foundry/src/provide/foundry/config/wrknv.python.tmpl
+# To update: run extraction function from provide-foundry
+#
+# Usage:
+#   we tasks              # List all available tasks
+#   we <task>             # Run a task (e.g., we test, we lint)
+#   we run <task>         # Explicit run command
+#   we run <task> --info  # Show task details
+
+# ==============================================================================
+# 🧪 Testing
+# ==============================================================================
+
+[tasks.test]
+_default = "uv run pytest"
+parallel = "uv run pytest -n auto"
+verbose = "uv run pytest -vvv"
+unit = "uv run pytest -m unit"
+integration = "uv run pytest -m integration"
+
+[tasks.test.coverage]
+_default = "uv run pytest --cov=src --cov-report=html --cov-report=term-missing"
+xml = "uv run pytest --cov=src --cov-report=xml --cov-report=term"
+
+# ==============================================================================
+# 🧬 Mutation Testing
+# ==============================================================================
+
+[tasks.mutation]
+_default = "uv run mutmut run"
+results = "uv run mutmut results"
+browse = "uv run mutmut browse"
+clean = "rm -rf .mutmut-cache html/"
+
+# ==============================================================================
+# 🔍 Code Quality
+# ==============================================================================
+
+[tasks.lint]
+_default = "uv run ruff check ."
+fix = "uv run ruff check . --fix"
+
+[tasks.format]
+_default = "uv run ruff format ."
+check = "uv run ruff format . --check"
+
+[tasks.quality]
+_default = ["lint", "typecheck"]
+all = ["format.check", "lint", "typecheck", "test"]
+
+# ==============================================================================
+# 🏗️ Build & Package
+# ==============================================================================
+
+[tasks.pkg]
+install = "uv pip install -e ."
+uninstall = "uv pip uninstall -y $(grep '^name = ' pyproject.toml | cut -d'\"' -f2)"
+lock = "uv lock"
+
+# ==============================================================================
+# 🧹 Clean
+# ==============================================================================
+
+[tasks.clean]
+run = """
+rm -rf build/ dist/ *.egg-info .pytest_cache .mypy_cache .ruff_cache .hypothesis htmlcov/ .coverage .mutmut-cache site/
+find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+find . -type f -name '*.pyc' -delete 2>/dev/null || true
+find . -type f -name '*.pyo' -delete 2>/dev/null || true
+"""
+
+# ==============================================================================
+# 📚 Documentation
+# ==============================================================================
+
+[tasks.docs]
+_default = "uv run mkdocs serve"
+setup = "python -c \"from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))\""
+build = "uv run mkdocs build"
+serve = "uv run mkdocs serve"
+clean = "rm -rf site .provide"
+
+[tasks.docs.links]
+_default = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+check = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+local = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+external = "lychee --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md'"
+
+# ==============================================================================
+# 🚀 Development Workflow Shortcuts
+# ==============================================================================
+
+[tasks.dev]
+setup = "uv sync"
+test = "uv run pytest -n auto"
+check = "uv run ruff format . && uv run ruff check . && uv run mypy src/"
+
+# ==============================================================================
+# 🤖 CI/CD Pipelines
+# ==============================================================================
+
+[tasks.ci]
+_default = ["quality", "test", "build"]
+test = ["test.parallel", "test.coverage"]
+quality = ["format.check", "lint", "typecheck"]
+
+# ==============================================================================
+# Simple Top-Level Tasks
+# ==============================================================================
+
+[tasks]
+typecheck = "uv run mypy src/"
+build = "uv build"
+setup = "uv sync"
