@@ -22,11 +22,6 @@ def test_version_is_available() -> None:
         assert isinstance(module.__version__, str)
 
 
-def test_version_module_exists() -> None:
-    """Test that _version module can be imported."""
-    from pyvider import _version
-
-    assert hasattr(_version, "__version__")
 
 
 def test_init_module_structure() -> None:

@@ -16,24 +16,24 @@
 # ==============================================================================
 
 [tasks.test]
-_default = "uv run pytest"
-parallel = "uv run pytest -n auto"
-verbose = "uv run pytest -vvv"
-unit = "uv run pytest -m unit"
-integration = "uv run pytest -m integration"
+_default = "pytest"
+parallel = "pytest -n auto"
+verbose = "pytest -vvv"
+unit = "pytest -m unit"
+integration = "pytest -m integration"
 
 [tasks.test.coverage]
-_default = "uv run pytest --cov=src --cov-report=html --cov-report=term-missing"
-xml = "uv run pytest --cov=src --cov-report=xml --cov-report=term"
+_default = "pytest --cov=src --cov-report=html --cov-report=term-missing"
+xml = "pytest --cov=src --cov-report=xml --cov-report=term"
 
 # ==============================================================================
 # 🧬 Mutation Testing
 # ==============================================================================
 
 [tasks.mutation]
-_default = "uv run mutmut run"
-results = "uv run mutmut results"
-browse = "uv run mutmut browse"
+_default = "mutmut run"
+results = "mutmut results"
+browse = "mutmut browse"
 clean = "rm -rf .mutmut-cache html/"
 
 # ==============================================================================
@@ -41,12 +41,12 @@ clean = "rm -rf .mutmut-cache html/"
 # ==============================================================================
 
 [tasks.lint]
-_default = "uv run ruff check ."
-fix = "uv run ruff check . --fix"
+_default = "ruff check ."
+fix = "ruff check . --fix"
 
 [tasks.format]
-_default = "uv run ruff format ."
-check = "uv run ruff format . --check"
+_default = "ruff format ."
+check = "ruff format . --check"
 
 [tasks.quality]
 _default = ["lint", "typecheck"]
@@ -79,10 +79,10 @@ find . -type f -name '*.pyo' -delete 2>/dev/null || true
 # ==============================================================================
 
 [tasks.docs]
-_default = "uv run mkdocs serve"
+_default = "mkdocs serve"
 setup = "python -c \"from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))\""
-build = "uv run mkdocs build"
-serve = "uv run mkdocs serve"
+build = "mkdocs build"
+serve = "mkdocs serve"
 clean = "rm -rf site .provide"
 
 [tasks.docs.links]
@@ -97,8 +97,8 @@ external = "lychee --verbose --no-progress './docs/**/*.md' './src/**/*.md' './R
 
 [tasks.dev]
 setup = "uv sync"
-test = "uv run pytest -n auto"
-check = "uv run ruff format . && uv run ruff check . && uv run mypy src/"
+test = "pytest -n auto"
+check = "ruff format . && ruff check . && mypy src/"
 
 # ==============================================================================
 # 🤖 CI/CD Pipelines
@@ -114,7 +114,7 @@ quality = ["format.check", "lint", "typecheck"]
 # ==============================================================================
 
 [tasks]
-typecheck = "uv run mypy src/"
+typecheck = "mypy src/"
 build = "uv build"
 
 [tasks.setup]
