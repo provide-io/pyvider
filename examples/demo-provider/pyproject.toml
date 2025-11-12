@@ -1,0 +1,18 @@
+[project]
+name = "terraform-provider-demo"
+version = "1.0.0"
+description = "Demo Terraform Provider built with Pyvider"
+requires-python = ">=3.11"
+dependencies = [
+    "pyvider>=0.0.1102",
+]
+
+[project.scripts]
+terraform-provider-demo = "provider:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.pyvider]
+provider_name = "demo"
