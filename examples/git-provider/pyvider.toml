@@ -1,0 +1,15 @@
+# Pyvider Configuration for Git Provider
+
+# Private state encryption secret (REQUIRED)
+# In production, use environment variable: PYVIDER_PRIVATE_STATE_SHARED_SECRET
+private_state_shared_secret = "git-provider-secret-change-in-production"
+
+[logging]
+level = "INFO"
+format = "emoji"  # Options: emoji, key_value, json
+omit_timestamp = false
+
+[server]
+timeout_graceful_shutdown = 5
+max_message_size = 4194304  # 4 MiB
+keepalive_time = 60
