@@ -20,7 +20,8 @@
       "Bash(mkdocs build:*)",
       "Bash(test:*)",
       "Bash(~/.terraform.d/plugins/local/providers/tofusoup/0.0.1108/darwin_arm64/terraform-provider-tofusoup:*)",
-      "Bash(env -i PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\" HOME=\"$HOME\" USER=\"$USER\" ~/.terraform.d/plugins/local/providers/tofusoup/0.0.1108/darwin_arm64/terraform-provider-tofusoup:*)"
+      "Bash(env -i PATH=\"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin\" HOME=\"$HOME\" USER=\"$USER\" ~/.terraform.d/plugins/local/providers/tofusoup/0.0.1108/darwin_arm64/terraform-provider-tofusoup:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": [],
