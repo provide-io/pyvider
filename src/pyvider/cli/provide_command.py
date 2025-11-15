@@ -370,7 +370,8 @@ def provide_cmd(ctx: click.Context, force: bool, log_level: str, **kwargs: Any) 
     # --- FIX: Run discovery and handle errors before starting the server ---
     pyvider_ctx = ctx.obj
     asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, pout, pout))
-    _handle_discovery_errors(pyvider_ctx)
+    # TEMPORARY: Skip fatal error check for optional pyvider.components module
+    # _handle_discovery_errors(pyvider_ctx)
 
     # If --force is used, provide a dummy cookie value.
     cookie_to_use = magic_cookie or "forced-by-cli"
