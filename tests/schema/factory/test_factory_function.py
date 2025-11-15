@@ -20,7 +20,7 @@ from pyvider.schema.factory import (
     a_str,
     s_function,
 )
-from pyvider.schema.types import PvsAttribute, PvsSchema
+from pyvider.schema.types import PvsSchema
 
 
 class TestSFunctionBasic:
@@ -105,9 +105,7 @@ class TestSFunctionParameterTypes:
         ],
         ids=["string", "number", "boolean", "dynamic"],
     )
-    def test_s_function_with_primitive_types(
-        self, param_factory: Any, expected_type: type
-    ) -> None:
+    def test_s_function_with_primitive_types(self, param_factory: Any, expected_type: type) -> None:
         """Test s_function with different primitive parameter types."""
         schema = s_function(
             parameters=[param_factory(description="Test parameter")],
@@ -186,9 +184,7 @@ class TestSFunctionReturnTypes:
         ],
         ids=["string", "number", "boolean", "dynamic"],
     )
-    def test_s_function_with_primitive_return_types(
-        self, return_factory: Any, expected_type: type
-    ) -> None:
+    def test_s_function_with_primitive_return_types(self, return_factory: Any, expected_type: type) -> None:
         """Test s_function with different primitive return types."""
         schema = s_function(
             parameters=[a_str()],
