@@ -23,7 +23,12 @@ from pyvider.schema import PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchem
 
 def _handle_discovery_errors(ctx: PyviderContext) -> None:
     """Checks for and reports critical discovery errors, then exits."""
-    if ctx.discovery_errors:
+    # Filter out optional pyvider.components import errors
+    critical_errors = [
+        (mod, err) for mod, err in ctx.discovery_errors
+        if not (mod == "pyvider.components" and "No module named 'pyvider.components'" in str(err))
+    ]
+    if critical_errors:
         perr("\n" + "─" * 70)
         perr(" ❌ Critical Error: Component Discovery Failed", style="bold")
         perr("─" * 70)
@@ -32,7 +37,7 @@ def _handle_discovery_errors(ctx: PyviderContext) -> None:
             "a missing dependency or a packaging problem."
         )
         perr("\nFailed Modules:")
-        for module_name, error in ctx.discovery_errors:
+        for module_name, error in critical_errors:
             perr(f"  - Module: {module_name}", style="yellow")
             perr(f"    Error: {error}")
 
