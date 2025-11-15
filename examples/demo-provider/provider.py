@@ -9,32 +9,34 @@ This is a complete example provider demonstrating all major features:
 - State management with private state
 """
 
-from pyvider.providers import BaseProvider, ProviderMetadata, register_provider
-from pyvider.resources import BaseResource, ResourceContext, register_resource
+import json
+import time
+from typing import Any
+
+from attrs import define, field
+
+from pyvider.cty import CtyBool, CtyNumber, CtyString
 from pyvider.data_sources import register_data_source
 from pyvider.data_sources.base import BaseDataSource
 from pyvider.functions import BaseFunction, FunctionParameter, FunctionReturnType, register_function
+from pyvider.providers import BaseProvider, ProviderMetadata, register_provider
+from pyvider.resources import BaseResource, ResourceContext, register_resource
 from pyvider.schema import (
-    s_provider,
-    s_resource,
-    s_data_source,
-    s_function,
-    a_str,
-    a_num,
     a_bool,
     a_list,
     a_map,
+    a_num,
+    a_str,
+    s_data_source,
+    s_function,
+    s_provider,
+    s_resource,
 )
-from pyvider.cty import CtyString, CtyNumber, CtyBool, CtyList
-from attrs import define, field
-from typing import Any
-import json
-import time
-
 
 # ============================================================================
 # Provider Definition
 # ============================================================================
+
 
 @register_provider("demo")
 class DemoProvider(BaseProvider):
@@ -60,30 +62,33 @@ class DemoProvider(BaseProvider):
     @classmethod
     def get_schema(cls):
         """Define provider configuration schema"""
-        return s_provider({
-            "api_url": a_str(
-                required=False,
-                description="API endpoint URL for the demo service",
-            ),
-            "api_token": a_str(
-                required=False,
-                sensitive=True,
-                description="API authentication token",
-            ),
-            "timeout": a_num(
-                required=False,
-                description="Request timeout in seconds",
-            ),
-            "debug": a_bool(
-                required=False,
-                description="Enable debug logging",
-            ),
-        })
+        return s_provider(
+            {
+                "api_url": a_str(
+                    required=False,
+                    description="API endpoint URL for the demo service",
+                ),
+                "api_token": a_str(
+                    required=False,
+                    sensitive=True,
+                    description="API authentication token",
+                ),
+                "timeout": a_num(
+                    required=False,
+                    description="Request timeout in seconds",
+                ),
+                "debug": a_bool(
+                    required=False,
+                    description="Enable debug logging",
+                ),
+            }
+        )
 
 
 # ============================================================================
 # Resource: demo_server
 # ============================================================================
+
 
 @register_resource("server")
 class DemoServer(BaseResource):
@@ -105,6 +110,7 @@ class DemoServer(BaseResource):
     @define
     class Config:
         """Resource configuration (user input)"""
+
         name: str
         instance_type: str = "t2.micro"
         region: str = "us-east-1"
@@ -114,6 +120,7 @@ class DemoServer(BaseResource):
     @define
     class State:
         """Resource state (computed values)"""
+
         id: str
         name: str
         instance_type: str
@@ -129,32 +136,32 @@ class DemoServer(BaseResource):
     @classmethod
     def get_schema(cls):
         """Define resource schema"""
-        return s_resource({
-            # Required attributes
-            "id": a_str(computed=True, description="Unique server identifier"),
-            "name": a_str(required=True, description="Server name"),
-
-            # Optional attributes with defaults
-            "instance_type": a_str(
-                optional=True,
-                description="Instance type (t2.micro, t2.small, t2.medium)",
-            ),
-            "region": a_str(
-                optional=True,
-                description="AWS region",
-            ),
-            "tags": a_map(a_str(), optional=True, description="Resource tags"),
-            "enable_monitoring": a_bool(
-                optional=True,
-                description="Enable CloudWatch monitoring",
-            ),
-
-            # Computed attributes
-            "public_ip": a_str(computed=True, description="Public IP address"),
-            "private_ip": a_str(computed=True, description="Private IP address"),
-            "status": a_str(computed=True, description="Server status"),
-            "created_at": a_str(computed=True, description="Creation timestamp"),
-        })
+        return s_resource(
+            {
+                # Required attributes
+                "id": a_str(computed=True, description="Unique server identifier"),
+                "name": a_str(required=True, description="Server name"),
+                # Optional attributes with defaults
+                "instance_type": a_str(
+                    optional=True,
+                    description="Instance type (t2.micro, t2.small, t2.medium)",
+                ),
+                "region": a_str(
+                    optional=True,
+                    description="AWS region",
+                ),
+                "tags": a_map(a_str(), optional=True, description="Resource tags"),
+                "enable_monitoring": a_bool(
+                    optional=True,
+                    description="Enable CloudWatch monitoring",
+                ),
+                # Computed attributes
+                "public_ip": a_str(computed=True, description="Public IP address"),
+                "private_ip": a_str(computed=True, description="Private IP address"),
+                "status": a_str(computed=True, description="Server status"),
+                "created_at": a_str(computed=True, description="Creation timestamp"),
+            }
+        )
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[Any, Any]:
         """Create a new server"""
@@ -201,13 +208,15 @@ class DemoServer(BaseResource):
 
         # Update server data
         server_data = self._servers[server_id]
-        server_data.update({
-            "name": ctx.config.name,
-            "instance_type": ctx.config.instance_type,
-            "region": ctx.config.region,
-            "tags": ctx.config.tags,
-            "enable_monitoring": ctx.config.enable_monitoring,
-        })
+        server_data.update(
+            {
+                "name": ctx.config.name,
+                "instance_type": ctx.config.instance_type,
+                "region": ctx.config.region,
+                "tags": ctx.config.tags,
+                "enable_monitoring": ctx.config.enable_monitoring,
+            }
+        )
 
         # Return updated state
         state = self.State(**server_data)
@@ -226,6 +235,7 @@ class DemoServer(BaseResource):
 # Data Source: demo_server_info
 # ============================================================================
 
+
 @register_data_source("server_info")
 class DemoServerInfo(BaseDataSource):
     """
@@ -240,11 +250,13 @@ class DemoServerInfo(BaseDataSource):
     @define
     class Config:
         """Data source configuration (query parameters)"""
+
         server_id: str
 
     @define
     class State:
         """Data source state (query results)"""
+
         id: str
         name: str
         instance_type: str
@@ -257,20 +269,21 @@ class DemoServerInfo(BaseDataSource):
     @classmethod
     def get_schema(cls):
         """Define data source schema"""
-        return s_data_source({
-            # Query parameters
-            "server_id": a_str(required=True, description="Server ID to query"),
-
-            # Results
-            "id": a_str(computed=True, description="Server ID"),
-            "name": a_str(computed=True, description="Server name"),
-            "instance_type": a_str(computed=True, description="Instance type"),
-            "region": a_str(computed=True, description="Region"),
-            "status": a_str(computed=True, description="Server status"),
-            "public_ip": a_str(computed=True, description="Public IP"),
-            "private_ip": a_str(computed=True, description="Private IP"),
-            "uptime_seconds": a_num(computed=True, description="Server uptime in seconds"),
-        })
+        return s_data_source(
+            {
+                # Query parameters
+                "server_id": a_str(required=True, description="Server ID to query"),
+                # Results
+                "id": a_str(computed=True, description="Server ID"),
+                "name": a_str(computed=True, description="Server name"),
+                "instance_type": a_str(computed=True, description="Instance type"),
+                "region": a_str(computed=True, description="Region"),
+                "status": a_str(computed=True, description="Server status"),
+                "public_ip": a_str(computed=True, description="Public IP"),
+                "private_ip": a_str(computed=True, description="Private IP"),
+                "uptime_seconds": a_num(computed=True, description="Server uptime in seconds"),
+            }
+        )
 
     async def read(self, ctx) -> Any:
         """Read server information"""
@@ -303,6 +316,7 @@ class DemoServerInfo(BaseDataSource):
 # Function: demo_format_tags
 # ============================================================================
 
+
 @register_function("format_tags")
 class FormatTagsFunction(BaseFunction):
     """
@@ -318,23 +332,21 @@ class FormatTagsFunction(BaseFunction):
     def get_schema(cls):
         """Define function schema"""
         return s_function(
-            description="Format tags as JSON string",
             parameters=[
-                FunctionParameter(
-                    name="tags",
-                    description="Tag map to format",
-                    type=CtyMap(CtyString()),
-                ),
-                FunctionParameter(
-                    name="pretty",
-                    description="Pretty print the JSON",
-                    type=CtyBool(),
-                ),
+                a_map(a_str(), description="Tag map to format"),
+                a_bool(description="Pretty print the JSON"),
             ],
-            return_type=FunctionReturnType(
-                type=CtyString(),
-            ),
+            return_type=a_str(description="Formatted JSON string"),
         )
+
+    def get_parameters(self) -> list[FunctionParameter]:
+        return [
+            FunctionParameter(name="tags", type=CtyMap(CtyString()), description="Tag map to format"),
+            FunctionParameter(name="pretty", type=CtyBool(), description="Pretty print the JSON"),
+        ]
+
+    def get_return_type(self) -> FunctionReturnType:
+        return FunctionReturnType(type=CtyString())
 
     async def call(self, tags: dict[str, str], pretty: bool = False) -> str:
         """Execute the function"""
@@ -346,6 +358,7 @@ class FormatTagsFunction(BaseFunction):
 # ============================================================================
 # Function: demo_calculate_cost
 # ============================================================================
+
 
 @register_function("calculate_cost")
 class CalculateCostFunction(BaseFunction):
@@ -359,23 +372,23 @@ class CalculateCostFunction(BaseFunction):
     def get_schema(cls):
         """Define function schema"""
         return s_function(
-            description="Calculate estimated monthly cost",
             parameters=[
-                FunctionParameter(
-                    name="instance_type",
-                    description="Instance type",
-                    type=CtyString(),
-                ),
-                FunctionParameter(
-                    name="hours_per_month",
-                    description="Expected hours per month",
-                    type=CtyNumber(),
-                ),
+                a_str(description="Instance type"),
+                a_num(description="Expected hours per month"),
             ],
-            return_type=FunctionReturnType(
-                type=CtyNumber(),
-            ),
+            return_type=a_num(description="Estimated monthly cost"),
         )
+
+    def get_parameters(self) -> list[FunctionParameter]:
+        return [
+            FunctionParameter(name="instance_type", type=CtyString(), description="Instance type"),
+            FunctionParameter(
+                name="hours_per_month", type=CtyNumber(), description="Expected hours per month"
+            ),
+        ]
+
+    def get_return_type(self) -> FunctionReturnType:
+        return FunctionReturnType(type=CtyNumber())
 
     async def call(self, instance_type: str, hours_per_month: float) -> float:
         """Calculate cost"""
@@ -393,6 +406,7 @@ class CalculateCostFunction(BaseFunction):
 # ============================================================================
 # Resource: demo_database
 # ============================================================================
+
 
 @register_resource("database")
 class DemoDatabase(BaseResource):
@@ -413,6 +427,7 @@ class DemoDatabase(BaseResource):
     @define
     class Config:
         """Database configuration"""
+
         name: str
         engine: str = "postgresql"
         engine_version: str = "14.0"
@@ -425,6 +440,7 @@ class DemoDatabase(BaseResource):
     @define
     class State:
         """Database state"""
+
         id: str
         name: str
         engine: str
@@ -443,22 +459,24 @@ class DemoDatabase(BaseResource):
     @classmethod
     def get_schema(cls):
         """Define database schema"""
-        return s_resource({
-            "id": a_str(computed=True, description="Database identifier"),
-            "name": a_str(required=True, description="Database name"),
-            "engine": a_str(optional=True, description="Database engine (postgresql, mysql, mariadb)"),
-            "engine_version": a_str(optional=True, description="Engine version"),
-            "storage_gb": a_num(optional=True, description="Storage size in GB"),
-            "instance_class": a_str(optional=True, description="Instance class"),
-            "backup_retention_days": a_num(optional=True, description="Backup retention in days"),
-            "multi_az": a_bool(optional=True, description="Enable multi-AZ deployment"),
-            "tags": a_map(a_str(), optional=True, description="Resource tags"),
-            # Computed
-            "endpoint": a_str(computed=True, description="Connection endpoint"),
-            "port": a_num(computed=True, description="Connection port"),
-            "status": a_str(computed=True, description="Database status"),
-            "created_at": a_str(computed=True, description="Creation timestamp"),
-        })
+        return s_resource(
+            {
+                "id": a_str(computed=True, description="Database identifier"),
+                "name": a_str(required=True, description="Database name"),
+                "engine": a_str(optional=True, description="Database engine (postgresql, mysql, mariadb)"),
+                "engine_version": a_str(optional=True, description="Engine version"),
+                "storage_gb": a_num(optional=True, description="Storage size in GB"),
+                "instance_class": a_str(optional=True, description="Instance class"),
+                "backup_retention_days": a_num(optional=True, description="Backup retention in days"),
+                "multi_az": a_bool(optional=True, description="Enable multi-AZ deployment"),
+                "tags": a_map(a_str(), optional=True, description="Resource tags"),
+                # Computed
+                "endpoint": a_str(computed=True, description="Connection endpoint"),
+                "port": a_num(computed=True, description="Connection port"),
+                "status": a_str(computed=True, description="Database status"),
+                "created_at": a_str(computed=True, description="Creation timestamp"),
+            }
+        )
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[Any, Any]:
         """Create a new database"""
@@ -503,12 +521,14 @@ class DemoDatabase(BaseResource):
         db_data = self._databases[db_id]
 
         # Update mutable fields
-        db_data.update({
-            "storage_gb": ctx.config.storage_gb,
-            "backup_retention_days": ctx.config.backup_retention_days,
-            "multi_az": ctx.config.multi_az,
-            "tags": ctx.config.tags,
-        })
+        db_data.update(
+            {
+                "storage_gb": ctx.config.storage_gb,
+                "backup_retention_days": ctx.config.backup_retention_days,
+                "multi_az": ctx.config.multi_az,
+                "tags": ctx.config.tags,
+            }
+        )
 
         state = self.State(**db_data)
         return state, None
@@ -523,6 +543,7 @@ class DemoDatabase(BaseResource):
 # ============================================================================
 # Resource: demo_network
 # ============================================================================
+
 
 @register_resource("network")
 class DemoNetwork(BaseResource):
@@ -543,6 +564,7 @@ class DemoNetwork(BaseResource):
     @define
     class Config:
         """Network configuration"""
+
         name: str
         cidr_block: str
         enable_dns: bool = True
@@ -553,6 +575,7 @@ class DemoNetwork(BaseResource):
     @define
     class State:
         """Network state"""
+
         id: str
         name: str
         cidr_block: str
@@ -570,21 +593,23 @@ class DemoNetwork(BaseResource):
     @classmethod
     def get_schema(cls):
         """Define network schema"""
-        return s_resource({
-            "id": a_str(computed=True, description="Network identifier"),
-            "name": a_str(required=True, description="Network name"),
-            "cidr_block": a_str(required=True, description="CIDR block (e.g., 10.0.0.0/16)"),
-            "enable_dns": a_bool(optional=True, description="Enable DNS resolution"),
-            "enable_dns_hostnames": a_bool(optional=True, description="Enable DNS hostnames"),
-            "subnets": a_list(a_str(), optional=True, description="List of subnet CIDR blocks"),
-            "tags": a_map(a_str(), optional=True, description="Resource tags"),
-            # Computed
-            "vpc_id": a_str(computed=True, description="VPC ID"),
-            "default_route_table_id": a_str(computed=True, description="Default route table ID"),
-            "default_security_group_id": a_str(computed=True, description="Default security group ID"),
-            "status": a_str(computed=True, description="Network status"),
-            "created_at": a_str(computed=True, description="Creation timestamp"),
-        })
+        return s_resource(
+            {
+                "id": a_str(computed=True, description="Network identifier"),
+                "name": a_str(required=True, description="Network name"),
+                "cidr_block": a_str(required=True, description="CIDR block (e.g., 10.0.0.0/16)"),
+                "enable_dns": a_bool(optional=True, description="Enable DNS resolution"),
+                "enable_dns_hostnames": a_bool(optional=True, description="Enable DNS hostnames"),
+                "subnets": a_list(a_str(), optional=True, description="List of subnet CIDR blocks"),
+                "tags": a_map(a_str(), optional=True, description="Resource tags"),
+                # Computed
+                "vpc_id": a_str(computed=True, description="VPC ID"),
+                "default_route_table_id": a_str(computed=True, description="Default route table ID"),
+                "default_security_group_id": a_str(computed=True, description="Default security group ID"),
+                "status": a_str(computed=True, description="Network status"),
+                "created_at": a_str(computed=True, description="Creation timestamp"),
+            }
+        )
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[Any, Any]:
         """Create a new network"""
@@ -624,12 +649,14 @@ class DemoNetwork(BaseResource):
         net_data = self._networks[net_id]
 
         # Update mutable fields
-        net_data.update({
-            "enable_dns": ctx.config.enable_dns,
-            "enable_dns_hostnames": ctx.config.enable_dns_hostnames,
-            "subnets": ctx.config.subnets,
-            "tags": ctx.config.tags,
-        })
+        net_data.update(
+            {
+                "enable_dns": ctx.config.enable_dns,
+                "enable_dns_hostnames": ctx.config.enable_dns_hostnames,
+                "subnets": ctx.config.subnets,
+                "tags": ctx.config.tags,
+            }
+        )
 
         state = self.State(**net_data)
         return state, None
@@ -645,6 +672,7 @@ class DemoNetwork(BaseResource):
 # Data Source: demo_regions
 # ============================================================================
 
+
 @register_data_source("regions")
 class DemoRegions(BaseDataSource):
     """
@@ -659,39 +687,48 @@ class DemoRegions(BaseDataSource):
     @define
     class Config:
         """Query configuration"""
+
         filter_prefix: str = ""
 
     @define
     class State:
         """Query results"""
+
         regions: list[str]
         count: int
 
     @classmethod
     def get_schema(cls):
         """Define data source schema"""
-        return s_data_source({
-            "filter_prefix": a_str(optional=True, description="Filter regions by prefix"),
-            # Results
-            "regions": a_list(a_str(), computed=True, description="List of region codes"),
-            "count": a_num(computed=True, description="Number of regions"),
-        })
+        return s_data_source(
+            {
+                "filter_prefix": a_str(optional=True, description="Filter regions by prefix"),
+                # Results
+                "regions": a_list(a_str(), computed=True, description="List of region codes"),
+                "count": a_num(computed=True, description="Number of regions"),
+            }
+        )
 
     async def read(self, ctx) -> Any:
         """Read available regions"""
         all_regions = [
-            "us-east-1", "us-east-2", "us-west-1", "us-west-2",
-            "eu-west-1", "eu-west-2", "eu-central-1",
-            "ap-southeast-1", "ap-southeast-2", "ap-northeast-1",
-            "sa-east-1", "ca-central-1"
+            "us-east-1",
+            "us-east-2",
+            "us-west-1",
+            "us-west-2",
+            "eu-west-1",
+            "eu-west-2",
+            "eu-central-1",
+            "ap-southeast-1",
+            "ap-southeast-2",
+            "ap-northeast-1",
+            "sa-east-1",
+            "ca-central-1",
         ]
 
         # Filter if prefix provided
         filter_prefix = ctx.config.filter_prefix
-        if filter_prefix:
-            regions = [r for r in all_regions if r.startswith(filter_prefix)]
-        else:
-            regions = all_regions
+        regions = [r for r in all_regions if r.startswith(filter_prefix)] if filter_prefix else all_regions
 
         return self.State(
             regions=regions,
@@ -707,6 +744,7 @@ class DemoRegions(BaseDataSource):
 # Data Source: demo_instance_types
 # ============================================================================
 
+
 @register_data_source("instance_types")
 class DemoInstanceTypes(BaseDataSource):
     """
@@ -721,29 +759,33 @@ class DemoInstanceTypes(BaseDataSource):
     @define
     class Config:
         """Query configuration"""
+
         family: str = ""
         min_vcpus: int = 0
 
     @define
     class State:
         """Query results"""
+
         instance_types: dict[str, dict[str, Any]]
         count: int
 
     @classmethod
     def get_schema(cls):
         """Define data source schema"""
-        return s_data_source({
-            "family": a_str(optional=True, description="Filter by instance family (t2, t3, m5, etc)"),
-            "min_vcpus": a_num(optional=True, description="Minimum vCPUs required"),
-            # Results
-            "instance_types": a_map(
-                a_map(a_str()),  # map of maps
-                computed=True,
-                description="Instance type specifications"
-            ),
-            "count": a_num(computed=True, description="Number of instance types"),
-        })
+        return s_data_source(
+            {
+                "family": a_str(optional=True, description="Filter by instance family (t2, t3, m5, etc)"),
+                "min_vcpus": a_num(optional=True, description="Minimum vCPUs required"),
+                # Results
+                "instance_types": a_map(
+                    a_map(a_str()),  # map of maps
+                    computed=True,
+                    description="Instance type specifications",
+                ),
+                "count": a_num(computed=True, description="Number of instance types"),
+            }
+        )
 
     async def read(self, ctx) -> Any:
         """Read available instance types"""
@@ -760,10 +802,7 @@ class DemoInstanceTypes(BaseDataSource):
 
         # Filter by family
         family = ctx.config.family
-        if family:
-            filtered = {k: v for k, v in all_types.items() if k.startswith(family)}
-        else:
-            filtered = all_types
+        filtered = {k: v for k, v in all_types.items() if k.startswith(family)} if family else all_types
 
         # Filter by min vCPUs
         min_vcpus = ctx.config.min_vcpus
@@ -784,6 +823,7 @@ class DemoInstanceTypes(BaseDataSource):
 # Function: demo_validate_cidr
 # ============================================================================
 
+
 @register_function("validate_cidr")
 class ValidateCIDRFunction(BaseFunction):
     """
@@ -799,18 +839,19 @@ class ValidateCIDRFunction(BaseFunction):
     def get_schema(cls):
         """Define function schema"""
         return s_function(
-            description="Validate if a string is a valid CIDR block",
             parameters=[
-                FunctionParameter(
-                    name="cidr",
-                    description="CIDR block to validate (e.g., 10.0.0.0/16)",
-                    type=CtyString(),
-                ),
+                a_str(description="CIDR block to validate (e.g., 10.0.0.0/16)"),
             ],
-            return_type=FunctionReturnType(
-                type=CtyBool(),
-            ),
+            return_type=a_bool(description="Whether CIDR is valid"),
         )
+
+    def get_parameters(self) -> list[FunctionParameter]:
+        return [
+            FunctionParameter(name="cidr", type=CtyString(), description="CIDR block to validate"),
+        ]
+
+    def get_return_type(self) -> FunctionReturnType:
+        return FunctionReturnType(type=CtyBool())
 
     async def call(self, cidr: str) -> bool:
         """Validate CIDR block"""
@@ -833,10 +874,7 @@ class ValidateCIDRFunction(BaseFunction):
 
             # Validate prefix length
             prefix = int(prefix_part)
-            if prefix < 0 or prefix > 32:
-                return False
-
-            return True
+            return not (prefix < 0 or prefix > 32)
         except (ValueError, AttributeError):
             return False
 
@@ -844,6 +882,7 @@ class ValidateCIDRFunction(BaseFunction):
 # ============================================================================
 # Function: demo_generate_name
 # ============================================================================
+
 
 @register_function("generate_name")
 class GenerateNameFunction(BaseFunction):
@@ -860,33 +899,25 @@ class GenerateNameFunction(BaseFunction):
     def get_schema(cls):
         """Define function schema"""
         return s_function(
-            description="Generate a standardized resource name",
             parameters=[
-                FunctionParameter(
-                    name="prefix",
-                    description="Name prefix (e.g., 'web', 'db', 'app')",
-                    type=CtyString(),
-                ),
-                FunctionParameter(
-                    name="environment",
-                    description="Environment (e.g., 'prod', 'staging', 'dev')",
-                    type=CtyString(),
-                ),
-                FunctionParameter(
-                    name="region",
-                    description="Region code (e.g., 'us-east-1')",
-                    type=CtyString(),
-                ),
-                FunctionParameter(
-                    name="sequence",
-                    description="Sequence number",
-                    type=CtyNumber(),
-                ),
+                a_str(description="Name prefix (e.g., 'web', 'db', 'app')"),
+                a_str(description="Environment (e.g., 'prod', 'staging', 'dev')"),
+                a_str(description="Region code (e.g., 'us-east-1')"),
+                a_num(description="Sequence number"),
             ],
-            return_type=FunctionReturnType(
-                type=CtyString(),
-            ),
+            return_type=a_str(description="Standardized resource name"),
         )
+
+    def get_parameters(self) -> list[FunctionParameter]:
+        return [
+            FunctionParameter(name="prefix", type=CtyString(), description="Name prefix"),
+            FunctionParameter(name="environment", type=CtyString(), description="Environment"),
+            FunctionParameter(name="region", type=CtyString(), description="Region code"),
+            FunctionParameter(name="sequence", type=CtyNumber(), description="Sequence number"),
+        ]
+
+    def get_return_type(self) -> FunctionReturnType:
+        return FunctionReturnType(type=CtyString())
 
     async def call(self, prefix: str, environment: str, region: str, sequence: float) -> str:
         """Generate standardized name"""
