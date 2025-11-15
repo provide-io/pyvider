@@ -8,7 +8,8 @@
       "Bash(python:*)",
       "Bash(./terraform-provider-demo --help)",
       "Bash(pip show:*)",
-      "Bash(pip uninstall:*)"
+      "Bash(pip uninstall:*)",
+      "Bash(pyvider install --uninstall)"
     ],
     "deny": [],
     "ask": []
