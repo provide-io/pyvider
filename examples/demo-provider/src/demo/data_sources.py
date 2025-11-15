@@ -14,7 +14,8 @@ from attrs import define
 
 from pyvider.data_sources import register_data_source
 from pyvider.data_sources.base import BaseDataSource
-from pyvider.schema import a_list, a_map, a_num, a_str, s_data_source
+from pyvider.data_sources.context import DataSourceContext
+from pyvider.schema import PvsSchema, a_list, a_map, a_num, a_str, s_data_source
 
 from .resources import DemoServer
 
@@ -50,7 +51,7 @@ class DemoServerInfo(BaseDataSource):
         uptime_seconds: int  # Computed
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define data source schema"""
         return s_data_source(
             {
@@ -68,7 +69,7 @@ class DemoServerInfo(BaseDataSource):
             }
         )
 
-    async def read(self, ctx) -> Any:
+    async def read(self, ctx: DataSourceContext) -> Any:
         """Read server information"""
         server_id = ctx.config.server_id
 
@@ -120,7 +121,7 @@ class DemoRegions(BaseDataSource):
         count: int
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define data source schema"""
         return s_data_source(
             {
@@ -131,7 +132,7 @@ class DemoRegions(BaseDataSource):
             }
         )
 
-    async def read(self, ctx) -> Any:
+    async def read(self, ctx: DataSourceContext) -> Any:
         """Read available regions"""
         all_regions = [
             "us-east-1",
@@ -157,7 +158,7 @@ class DemoRegions(BaseDataSource):
             count=len(regions),
         )
 
-    async def _validate_config(self, config) -> list[str]:
+    async def _validate_config(self, config: Any) -> list[str]:
         """Validate configuration"""
         return []
 
@@ -188,7 +189,7 @@ class DemoInstanceTypes(BaseDataSource):
         count: int
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define data source schema"""
         return s_data_source(
             {
@@ -204,7 +205,7 @@ class DemoInstanceTypes(BaseDataSource):
             }
         )
 
-    async def read(self, ctx) -> Any:
+    async def read(self, ctx: DataSourceContext) -> Any:
         """Read available instance types"""
         all_types = {
             "t2.micro": {"vcpus": "1", "memory_gb": "1", "price_per_hour": "0.0116"},
@@ -231,6 +232,6 @@ class DemoInstanceTypes(BaseDataSource):
             count=len(filtered),
         )
 
-    async def _validate_config(self, config) -> list[str]:
+    async def _validate_config(self, config: Any) -> list[str]:
         """Validate configuration"""
         return []

@@ -8,12 +8,12 @@ Contains:
 """
 
 import time
-from typing import Any
+from typing import Any, ClassVar
 
 from attrs import define, field
 
 from pyvider.resources import BaseResource, ResourceContext, register_resource
-from pyvider.schema import a_bool, a_list, a_map, a_num, a_str, s_resource
+from pyvider.schema import PvsSchema, a_bool, a_list, a_map, a_num, a_str, s_resource
 
 
 @register_resource("server")
@@ -30,8 +30,8 @@ class DemoServer(BaseResource):
     """
 
     # In-memory storage simulating a backend API
-    _servers: dict[str, dict[str, Any]] = {}
-    _next_id = 1
+    _servers: ClassVar[dict[str, dict[str, Any]]] = {}
+    _next_id: ClassVar[int] = 1
 
     @define
     class Config:
@@ -60,7 +60,7 @@ class DemoServer(BaseResource):
         created_at: str
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define resource schema"""
         return s_resource(
             {
@@ -170,8 +170,8 @@ class DemoDatabase(BaseResource):
     """
 
     # In-memory storage
-    _databases: dict[str, dict[str, Any]] = {}
-    _next_db_id = 1
+    _databases: ClassVar[dict[str, dict[str, Any]]] = {}
+    _next_db_id: ClassVar[int] = 1
 
     @define
     class Config:
@@ -206,7 +206,7 @@ class DemoDatabase(BaseResource):
         created_at: str
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define database schema"""
         return s_resource(
             {
@@ -302,8 +302,8 @@ class DemoNetwork(BaseResource):
     """
 
     # In-memory storage
-    _networks: dict[str, dict[str, Any]] = {}
-    _next_net_id = 1
+    _networks: ClassVar[dict[str, dict[str, Any]]] = {}
+    _next_net_id: ClassVar[int] = 1
 
     @define
     class Config:
@@ -335,7 +335,7 @@ class DemoNetwork(BaseResource):
         created_at: str
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define network schema"""
         return s_resource(
             {

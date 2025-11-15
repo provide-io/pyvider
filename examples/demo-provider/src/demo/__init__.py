@@ -18,27 +18,27 @@ from .provider import DemoProvider
 from .resources import DemoDatabase, DemoNetwork, DemoServer
 
 __all__ = [
+    "CalculateCostFunction",
+    "DemoDatabase",
+    "DemoInstanceTypes",
+    "DemoNetwork",
     # Provider
     "DemoProvider",
+    "DemoRegions",
     # Resources
     "DemoServer",
-    "DemoDatabase",
-    "DemoNetwork",
     # Data Sources
     "DemoServerInfo",
-    "DemoRegions",
-    "DemoInstanceTypes",
     # Functions
     "FormatTagsFunction",
-    "CalculateCostFunction",
-    "ValidateCIDRFunction",
     "GenerateNameFunction",
+    "ValidateCIDRFunction",
     # Entry point
     "main",
 ]
 
 
-def main():
+def main() -> None:
     """Entry point for terraform-provider-demo command."""
     from pyvider.cli import main as pyvider_main
 

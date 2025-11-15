@@ -3,7 +3,7 @@ Demo Provider - Main Provider Configuration
 """
 
 from pyvider.providers import BaseProvider, ProviderMetadata, register_provider
-from pyvider.schema import a_bool, a_num, a_str, s_provider
+from pyvider.schema import PvsSchema, a_bool, a_num, a_str, s_provider
 
 
 @register_provider("demo")
@@ -28,7 +28,7 @@ class DemoProvider(BaseProvider):
         )
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define provider configuration schema"""
         return s_provider(
             {

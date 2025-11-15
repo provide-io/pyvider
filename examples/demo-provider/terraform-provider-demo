@@ -5,8 +5,9 @@ Entry point for terraform-provider-demo.
 This script bootstraps the demo provider for use with Terraform.
 It uses relative paths to locate the src directory and pyvider.
 """
-import sys
+
 from pathlib import Path
+import sys
 
 # Get the directory where this script is located
 script_dir = Path(__file__).resolve().parent

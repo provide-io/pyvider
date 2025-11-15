@@ -12,7 +12,7 @@ import json
 
 from pyvider.cty import CtyBool, CtyMap, CtyNumber, CtyString
 from pyvider.functions import BaseFunction, FunctionParameter, FunctionReturnType, register_function
-from pyvider.schema import a_bool, a_map, a_num, a_str, s_function
+from pyvider.schema import PvsSchema, a_bool, a_map, a_num, a_str, s_function
 
 
 @register_function("format_tags")
@@ -27,7 +27,7 @@ class FormatTagsFunction(BaseFunction):
     """
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define function schema"""
         return s_function(
             parameters=[
@@ -62,7 +62,7 @@ class CalculateCostFunction(BaseFunction):
     """
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define function schema"""
         return s_function(
             parameters=[
@@ -108,7 +108,7 @@ class ValidateCIDRFunction(BaseFunction):
     """
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define function schema"""
         return s_function(
             parameters=[
@@ -163,7 +163,7 @@ class GenerateNameFunction(BaseFunction):
     """
 
     @classmethod
-    def get_schema(cls):
+    def get_schema(cls) -> PvsSchema:
         """Define function schema"""
         return s_function(
             parameters=[
