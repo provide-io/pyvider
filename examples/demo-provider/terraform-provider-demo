@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import sys
-import os
 
-# Add pyvider to path
+# Add to path
 sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/src')
 sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider')
 
-# Import and run provider
+# Import provider to register components
+import provider  # noqa
+
+# Run pyvider CLI
 from pyvider.cli import main
 main()
