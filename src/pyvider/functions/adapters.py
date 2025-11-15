@@ -186,9 +186,11 @@ def _extract_docstring_meta(func_obj: Callable[..., Any], base_meta: dict[str, A
 def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
     base_meta = getattr(func_obj, "_function_metadata", {})
     base_meta.setdefault("name", func_obj.__name__)
-    sig = inspect.signature(func_obj)
+    # Introspect the 'call' method instead of the class constructor
+    call_method = getattr(func_obj, 'call', func_obj)
+    sig = inspect.signature(call_method)
     try:
-        type_hints = get_type_hints(func_obj)
+        type_hints = get_type_hints(call_method)
     except (NameError, TypeError) as e:
         logger.warning(
             f"Could not resolve type hints for {func_obj.__name__}: {e}. Types will default to CtyDynamic."
