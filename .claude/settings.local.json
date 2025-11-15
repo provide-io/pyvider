@@ -43,7 +43,8 @@
       "Bash(source:*)",
       "Bash(/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider/.venv/bin/python -m pip install:*)",
       "Bash(cd:*)",
-      "Bash(.venv/bin/python:*)"
+      "Bash(.venv/bin/python:*)",
+      "Bash(.venv/bin/pip install:*)"
     ],
     "deny": [],
     "ask": [],
