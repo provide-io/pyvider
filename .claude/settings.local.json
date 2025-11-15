@@ -41,7 +41,9 @@
       "Bash(timeout:*)",
       "Bash(deactivate)",
       "Bash(source:*)",
-      "Bash(/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider/.venv/bin/python -m pip install:*)"
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider/.venv/bin/python -m pip install:*)",
+      "Bash(cd:*)",
+      "Bash(.venv/bin/python:*)"
     ],
     "deny": [],
     "ask": [],

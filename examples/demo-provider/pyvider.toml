@@ -4,7 +4,7 @@
 private_state_shared_secret = "demo-secret-key-for-testing"
 
 [logging]
-level = "INFO"
+level = "ERROR"
 format = "emoji"
 omit_timestamp = false
 
