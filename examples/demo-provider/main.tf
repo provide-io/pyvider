@@ -6,16 +6,7 @@ terraform {
   }
 }
 
-provider "pyvider" {
-  api_key = "test-key"
-}
-
-resource "demo_resource" "test" {
-  provider    = pyvider
-  name        = "test-resource"
-  description = "Testing s_function with real Terraform"
-  count       = 5
-}
+provider "pyvider" {}
 
 # Test the upper function (using s_function!)
 output "test_upper" {

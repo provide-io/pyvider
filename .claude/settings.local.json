@@ -30,7 +30,8 @@
       "Bash(terraform plan:*)",
       "Bash(pyvider:*)",
       "Bash(uv venv:*)",
-      "Bash(uv pip install:*)"
+      "Bash(uv pip install:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": [],
