@@ -6,7 +6,8 @@
       "Bash(mypy:*)",
       "Bash(pip install:*)",
       "Bash(python:*)",
-      "Bash(./terraform-provider-demo --help)"
+      "Bash(./terraform-provider-demo --help)",
+      "Bash(pip show:*)"
     ],
     "deny": [],
     "ask": []
