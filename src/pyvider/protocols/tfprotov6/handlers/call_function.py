@@ -213,10 +213,10 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
                 "This is an internal error - Terraform should always provide a function name."
             )
 
-        function_obj = hub.get_component("function", func_name)
-        if not function_obj or not callable(function_obj):
+        function_cls = hub.get_component("function", func_name)
+        if not function_cls:
             logger.error(
-                "Function not found or not callable",
+                "Function not found",
                 operation="call_function",
                 function_name=func_name,
                 registered_functions=list(hub.get_components("function").keys())
@@ -225,7 +225,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             )
 
             raise PyviderFunctionError(
-                f"Function '{func_name}' not found or not callable.\n\n"
+                f"Function '{func_name}' not found.\n\n"
                 f"Suggestion: Ensure the function is registered using the @function decorator "
                 f"and that component discovery has completed successfully.\n\n"
                 f"Troubleshooting:\n"
@@ -235,13 +235,19 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
                 f"  4. Review provider logs for component registration errors"
             )
 
+        # Instantiate the function class if it's a class
+        if inspect.isclass(function_cls):
+            function_obj = function_cls(name=func_name)
+        else:
+            function_obj = function_cls
+
         # Check if this is a test-only component accessed without test mode
         check_test_only_access(function_obj, func_name, "function")
 
-        func_meta = function_to_dict(function_obj)
+        func_meta = function_to_dict(function_cls)
         params_meta = func_meta.get("parameters", [])
         variadic_meta = func_meta.get("variadic_parameter")  # Optional variadic parameter
-        func_sig = inspect.signature(function_obj)
+        func_sig = inspect.signature(function_obj.call)
 
         # Validate argument count
         # - Without variadic: must match exactly
