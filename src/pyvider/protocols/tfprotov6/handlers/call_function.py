@@ -89,10 +89,10 @@ def _process_function_arguments(
     return native_kwargs, has_unknown
 
 
-def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> None:
+def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any], func_name: str) -> None:
     parent_capability = getattr(function_obj, "_parent_capability", None)
     logger.info(
-        f"FUNCTION_DISPATCH 🔍 Checking capability injection for '{function_obj.__name__}', parent_capability={parent_capability}"
+        f"FUNCTION_DISPATCH 🔍 Checking capability injection for '{func_name}', parent_capability={parent_capability}"
     )
     if parent_capability and parent_capability != "provider":
         capability_class = hub.get_component("capability", parent_capability)
@@ -106,11 +106,11 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any]) -> No
                 capability_instance = capability_class
             native_kwargs[parent_capability] = capability_instance
             logger.info(
-                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{function_obj.__name__}', instance={capability_instance}"
+                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{func_name}', instance={capability_instance}"
             )
         else:
             logger.warning(
-                f"FUNCTION_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{function_obj.__name__}'"
+                f"FUNCTION_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{func_name}'"
             )
 
 
@@ -142,7 +142,7 @@ def _build_function_arguments(
     return all_args, keyword_only_kwargs
 
 
-async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> Any:
+async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], func_name: str) -> Any:
     """
     Invoke a function with properly ordered positional and variadic arguments.
 
@@ -159,17 +159,17 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any]) -> 
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
-        logger.debug(f"FUNCTION_DISPATCH ✅ Function '{function_obj.__name__}' executed successfully")
+        logger.debug(f"FUNCTION_DISPATCH ✅ Function '{func_name}' executed successfully")
         return result_py_val
     except PyviderFunctionError:
         raise
     except Exception as func_err:
         logger.error(
-            f"FUNCTION_DISPATCH 💥 Function '{function_obj.__name__}' failed: {func_err}",
+            f"FUNCTION_DISPATCH 💥 Function '{func_name}' failed: {func_err}",
             exc_info=True,
         )
         raise PyviderFunctionError(
-            f"Function '{function_obj.__name__}' execution failed: {func_err}"
+            f"Function '{func_name}' execution failed: {func_err}"
         ) from func_err
 
 
