@@ -178,7 +178,7 @@ class TestInjectCapabilities:
             mock_capability = mock.MagicMock()
             mock_get.return_value = mock_capability
 
-            _inject_capabilities(func_obj, kwargs)
+            _inject_capabilities(func_obj, kwargs, "test_func")
 
             assert "test_capability" in kwargs
 
@@ -190,7 +190,7 @@ class TestInjectCapabilities:
 
         kwargs = {"name": "test"}
 
-        _inject_capabilities(func_obj, kwargs)
+        _inject_capabilities(func_obj, kwargs, "test_func")
 
         assert kwargs == {"name": "test"}
 
@@ -202,7 +202,7 @@ class TestInjectCapabilities:
 
         kwargs = {"name": "test"}
 
-        _inject_capabilities(func_obj, kwargs)
+        _inject_capabilities(func_obj, kwargs, "test_func")
 
         assert kwargs == {"name": "test"}
 

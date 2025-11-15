@@ -85,7 +85,7 @@ class TestInvokeFunction:
             return f"{name}_{count}"
 
         kwargs = {"name": "test", "count": 42}
-        result = await _invoke_function(test_func, kwargs)
+        result = await _invoke_function(test_func, kwargs, "test_func")
 
         assert result == "test_42"
 
@@ -98,7 +98,7 @@ class TestInvokeFunction:
             return f"{name}_{count}"
 
         kwargs = {"name": "async_test", "count": 99}
-        result = await _invoke_function(async_test_func, kwargs)
+        result = await _invoke_function(async_test_func, kwargs, "async_test_func")
 
         assert result == "async_test_99"
 
@@ -111,7 +111,7 @@ class TestInvokeFunction:
             return f"{name}: {','.join(str(o) for o in options)}"
 
         kwargs = {"name": "test", "options": (1, 2, 3)}
-        result = await _invoke_function(variadic_func, kwargs)
+        result = await _invoke_function(variadic_func, kwargs, "variadic_func")
 
         assert result == "test: 1,2,3"
 
@@ -124,7 +124,7 @@ class TestInvokeFunction:
             return f"{name}_{'debug' if debug else 'prod'}"
 
         kwargs = {"name": "test", "debug": True}
-        result = await _invoke_function(keyword_func, kwargs)
+        result = await _invoke_function(keyword_func, kwargs, "keyword_func")
 
         assert result == "test_debug"
 
@@ -138,7 +138,7 @@ class TestInvokeFunction:
             return f"{name}[{items_str}]{'!' if verbose else ''}"
 
         kwargs = {"name": "test", "items": ("a", "b", "c"), "verbose": True}
-        result = await _invoke_function(complex_func, kwargs)
+        result = await _invoke_function(complex_func, kwargs, "complex_func")
 
         assert result == "test[a,b,c]!"
 
@@ -152,7 +152,7 @@ class TestInvokeFunction:
 
         # Provide as list (should be converted to tuple internally)
         kwargs = {"args": [1, 2, 3, 4]}
-        result = await _invoke_function(variadic_func, kwargs)
+        result = await _invoke_function(variadic_func, kwargs, "variadic_func")
 
         assert result == 10
 
@@ -166,7 +166,7 @@ class TestInvokeFunction:
 
         # Single value, not in a tuple
         kwargs = {"args": "single"}
-        result = await _invoke_function(variadic_func, kwargs)
+        result = await _invoke_function(variadic_func, kwargs, "variadic_func")
 
         assert result == 1
 
@@ -182,7 +182,7 @@ class TestInvokeFunction:
         kwargs = {"x": 42}
 
         with pytest.raises(PyviderFunctionError) as exc_info:
-            await _invoke_function(failing_func, kwargs)
+            await _invoke_function(failing_func, kwargs, "failing_func")
 
         assert "failing_func" in str(exc_info.value)
         assert "Something went wrong" in str(exc_info.value)
@@ -199,7 +199,7 @@ class TestInvokeFunction:
         kwargs = {"x": 42}
 
         with pytest.raises(PyviderFunctionError) as exc_info:
-            await _invoke_function(failing_func, kwargs)
+            await _invoke_function(failing_func, kwargs, "failing_func")
 
         # Should re-raise directly (but the except clause still triggers, so it re-raises)
         assert "Direct pyvider error" in str(exc_info.value)
@@ -215,7 +215,7 @@ class TestInvokeFunction:
         kwargs = {"x": 21}
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.logger") as mock_logger:
-            result = await _invoke_function(simple_func, kwargs)
+            result = await _invoke_function(simple_func, kwargs, "simple_func")
 
             assert result == 42
             # Should log debug info about return
@@ -232,7 +232,7 @@ class TestInvokeFunction:
 
         with mock.patch("pyvider.protocols.tfprotov6.handlers.call_function.logger") as mock_logger:
             with pytest.raises(PyviderFunctionError):
-                await _invoke_function(error_func, {})
+                await _invoke_function(error_func, {}, "error_func")
 
             # Should log error
             mock_logger.error.assert_called_once()
