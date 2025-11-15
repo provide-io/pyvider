@@ -31,7 +31,8 @@
       "Bash(pyvider:*)",
       "Bash(uv venv:*)",
       "Bash(uv pip install:*)",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "Bash(git ls-tree:*)"
     ],
     "deny": [],
     "ask": [],
