@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 import sys
+import os
+
+# Add pyvider to path
+sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/src')
 sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider')
-from provider import main
+
+# Import and run provider
+from pyvider.cli import main
 main()
