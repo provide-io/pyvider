@@ -35,7 +35,9 @@
       "Bash(git ls-tree:*)",
       "Bash(source .venv/bin/activate)",
       "Bash(chmod:*)",
-      "Bash(export TF_CLI_CONFIG_FILE=.terraformrc)"
+      "Bash(export TF_CLI_CONFIG_FILE=.terraformrc)",
+      "Bash(~/.terraform.d/plugins/local/providers/demo/0.0.0/darwin_arm64/terraform-provider-demo)",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": [],
