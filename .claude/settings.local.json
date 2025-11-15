@@ -30,7 +30,8 @@
       "/Users/tim/.cache",
       "/Users/tim/.terraform.d",
       "/Users/tim/Library/Caches/flavor/workenv/terraform-provider-pyvider/bin",
-      "/Users/tim"
+      "/Users/tim",
+      "/Users/tim/code"
     ]
   }
 }

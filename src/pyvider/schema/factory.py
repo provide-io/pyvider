@@ -171,6 +171,51 @@ def s_provider(
     return _create_schema(1, attributes=attributes, block_types=block_types)
 
 
+def s_function(
+    parameters: list[PvsAttribute] | None = None,
+    return_type: PvsAttribute | None = None,
+    variadic_parameter: PvsAttribute | None = None,
+) -> PvsSchema:
+    """
+    Create a schema for a Terraform function.
+
+    Args:
+        parameters: List of function parameters (created with a_str(), a_num(), etc.)
+        return_type: The function's return type (created with a_str(), a_num(), etc.)
+        variadic_parameter: Optional variadic parameter for functions that accept variable arguments
+
+    Returns:
+        PvsSchema: A schema representing the function signature
+
+    Example:
+        >>> schema = s_function(
+        ...     parameters=[
+        ...         a_str(description="Input string"),
+        ...         a_num(description="Multiplier"),
+        ...     ],
+        ...     return_type=a_str(description="Processed result"),
+        ... )
+    """
+    # Build attributes dict to store function metadata
+    # We use a special structure where parameters are stored as numbered attributes
+    attributes: dict[str, PvsAttribute] = {}
+
+    # Store parameters as param_0, param_1, etc.
+    if parameters:
+        for idx, param in enumerate(parameters):
+            attributes[f"param_{idx}"] = param
+
+    # Store return type as special attribute
+    if return_type:
+        attributes["return_type"] = return_type
+
+    # Store variadic parameter if provided
+    if variadic_parameter:
+        attributes["variadic_param"] = variadic_parameter
+
+    return _create_schema(1, attributes=attributes, block_types=None)
+
+
 # --- Special Value Factories ---
 
 
