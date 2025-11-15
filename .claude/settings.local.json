@@ -25,7 +25,8 @@
       "Bash(ruff format:*)",
       "Bash(ruff check:*)",
       "Bash(mypy:*)",
-      "Bash(terraform version:*)"
+      "Bash(terraform version:*)",
+      "Bash(terraform init:*)"
     ],
     "deny": [],
     "ask": [],

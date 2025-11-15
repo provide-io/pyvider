@@ -166,9 +166,9 @@ class AddFunction(BaseFunction):
 
 def main():
     """Main entry point for the provider."""
-    from pyvider.server import serve
+    from pyvider.cli import main as pyvider_main
 
-    serve()
+    pyvider_main()
 
 
 if __name__ == "__main__":
