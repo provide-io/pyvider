@@ -3,7 +3,8 @@
     "allow": [
       "Bash(ruff format:*)",
       "Bash(ruff check:*)",
-      "Bash(mypy:*)"
+      "Bash(mypy:*)",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": []
