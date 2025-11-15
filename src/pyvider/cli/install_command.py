@@ -202,6 +202,12 @@ def install_command(
         _uninstall_provider(pyvider_ctx, quiet=True)
         # Fall through to install logic below
 
+    # Show provider information
+    pout(f"📦 Installing provider: {pyvider_ctx.provider_name}", fg="cyan", bold=True)
+    pout(f"  Version: {pyvider_ctx.pyvider_version}")
+    pout(f"  Platform: {pyvider_ctx.tf_os}_{pyvider_ctx.tf_arch}")
+    pout(f"  Target: {pyvider_ctx.tf_plugin_dir}")
+
     if is_running_as_binary():
         _install_binary_provider(pyvider_ctx)
     else:
