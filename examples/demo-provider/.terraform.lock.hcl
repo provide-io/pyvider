@@ -4,6 +4,6 @@
 provider "local/providers/demo" {
   version = "1.0.0"
   hashes = [
-    "h1:5yPcTonqwW0Sv49DuM95oMz5A3WoNywk1Ii1H3pAp9E=",
+    "h1:YP9jlaeEntV8wabC/GiaB/J/xGri82dz1uz5ZAbNKZs=",
   ]
 }
