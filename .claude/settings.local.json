@@ -37,7 +37,11 @@
       "Bash(chmod:*)",
       "Bash(export TF_CLI_CONFIG_FILE=.terraformrc)",
       "Bash(~/.terraform.d/plugins/local/providers/demo/0.0.0/darwin_arm64/terraform-provider-demo)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(timeout:*)",
+      "Bash(deactivate)",
+      "Bash(source:*)",
+      "Bash(/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider/.venv/bin/python -m pip install:*)"
     ],
     "deny": [],
     "ask": [],
