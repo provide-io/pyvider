@@ -20,12 +20,21 @@ terraform plan
 
 ```
 demo-provider/
-├── provider.py          # Provider implementation (resources, data sources, functions)
-├── pyproject.toml       # Project metadata and pyvider configuration
-├── pyvider.toml         # Runtime configuration (logging, secrets)
-├── main.tf              # Sample Terraform configuration
-├── VERSION              # Provider version
-└── test_provider.py     # Python tests for the provider
+├── src/
+│   └── demo/
+│       ├── __init__.py      # Package init with main entry point
+│       ├── provider.py      # Provider configuration
+│       ├── resources.py     # Resource definitions (server, database, network)
+│       ├── data_sources.py  # Data source definitions (regions, instance_types, server_info)
+│       └── functions.py     # Function definitions (format_tags, calculate_cost, etc.)
+├── tests/
+│   └── test_provider.py     # Python tests for the provider
+├── tf/
+│   └── main.tf              # Sample Terraform configuration
+├── terraform-provider-demo  # Entry point script
+├── pyproject.toml           # Project metadata and pyvider configuration
+├── pyvider.toml             # Runtime configuration (logging, secrets)
+└── VERSION                  # Provider version
 ```
 
 ## Configuration
@@ -36,8 +45,15 @@ demo-provider/
 [tool.pyvider]
 provider_name = "demo"        # Name used in Terraform (local/providers/demo)
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["demo"]
+
 [project.entry-points."pyvider"]
-demo = "provider"              # Entry point for component discovery
+demo = "demo"                  # Entry point for component discovery
+
+[project.scripts]
+terraform-provider-demo = "demo:main"  # CLI entry point
 ```
 
 ### pyvider.toml
@@ -100,6 +116,7 @@ terraform-provider-demo
 ### 5. Initialize Terraform
 
 ```bash
+cd tf
 terraform init
 ```
 
@@ -159,6 +176,7 @@ pyvider install
 
 ```bash
 pyvider install --reinstall
+cd tf
 terraform init
 terraform plan
 ```
@@ -192,10 +210,10 @@ provider_name = "demo"
 
 Run the Python test suite:
 ```bash
-python test_provider.py
+python tests/test_provider.py
 ```
 
 Check provider components:
 ```bash
-python -c "import provider; from pyvider.hub import hub; print(hub.list_components())"
+python -c "import sys; sys.path.insert(0, 'src'); import demo; from pyvider.hub import hub; print(hub.list_components())"
 ```

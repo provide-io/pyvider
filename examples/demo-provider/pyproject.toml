@@ -8,17 +8,18 @@ dependencies = [
 ]
 
 [project.scripts]
-terraform-provider-demo = "provider:main"
+terraform-provider-demo = "demo:main"
 
 [project.entry-points."pyvider"]
-demo = "provider"
+demo = "demo"
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-py-modules = ["provider"]
+package-dir = {"" = "src"}
+packages = ["demo"]
 
 [tool.pyvider]
 provider_name = "demo"

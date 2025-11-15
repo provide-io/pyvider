@@ -1,24 +1,25 @@
 #!/usr/bin/env python3
+"""
+Entry point for terraform-provider-demo.
+
+This script bootstraps the demo provider for use with Terraform.
+It uses relative paths to locate the src directory and pyvider.
+"""
 import sys
-import asyncio
+from pathlib import Path
 
-# Add to path
-sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/src')
-sys.path.insert(0, '/Users/tim/code/gh/provide-io/pyvider/examples/demo-provider')
+# Get the directory where this script is located
+script_dir = Path(__file__).resolve().parent
 
-# Import provider to register components
-import provider  # noqa
+# Add src directory to path for demo package
+src_dir = script_dir / "src"
+if src_dir.exists():
+    sys.path.insert(0, str(src_dir))
 
-# Manually register components since there are no entry points
-from pyvider.hub.components import registry
-from pyvider.hub.discovery import ComponentDiscovery
-
-async def register_components():
-    discovery = ComponentDiscovery(registry)
-    await discovery._process_module(provider)
-
-asyncio.run(register_components())
+# Import the demo package to trigger component registration
+import demo  # noqa: F401
 
 # Run pyvider CLI
 from pyvider.cli import main
+
 main()
