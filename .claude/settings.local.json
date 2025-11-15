@@ -32,7 +32,10 @@
       "Bash(uv venv:*)",
       "Bash(uv pip install:*)",
       "Bash(tee:*)",
-      "Bash(git ls-tree:*)"
+      "Bash(git ls-tree:*)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(chmod:*)",
+      "Bash(export TF_CLI_CONFIG_FILE=.terraformrc)"
     ],
     "deny": [],
     "ask": [],
