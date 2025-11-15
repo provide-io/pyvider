@@ -76,3 +76,11 @@ bf-*.txt
 
 # Extracted provide.io tooling artifacts
 .provide/
+
+# Terraform state (sensitive)
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+.mypy_cache/
+.ruff_cache/
