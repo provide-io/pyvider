@@ -150,11 +150,18 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
     This prevents "multiple values for parameter" errors when using *args.
     """
     try:
-        func_sig = inspect.signature(function_obj)
+        # Get signature of the callable (call method for BaseFunction instances)
+        if hasattr(function_obj, 'call'):
+            func_sig = inspect.signature(function_obj.call)
+        else:
+            func_sig = inspect.signature(function_obj)
         all_args, keyword_only_kwargs = _build_function_arguments(func_sig, native_kwargs)
 
         # Invoke with ordered positional args + keyword-only kwargs
-        if inspect.iscoroutinefunction(function_obj):
+        # Check if __call__ method is async (for BaseFunction instances)
+        if hasattr(function_obj, '__call__') and inspect.iscoroutinefunction(function_obj.__call__):
+            result_py_val = await function_obj(*all_args, **keyword_only_kwargs)
+        elif inspect.iscoroutinefunction(function_obj):
             result_py_val = await function_obj(*all_args, **keyword_only_kwargs)
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
@@ -308,7 +315,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             response.result.CopyFrom(marshal(unknown_result, schema=declared_return_cty_type))
             return response
 
-        _inject_capabilities(function_obj, native_kwargs)
+        _inject_capabilities(function_obj, native_kwargs, func_name)
 
         logger.debug(
             "Invoking function",
@@ -317,7 +324,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             argument_names=list(native_kwargs.keys()),
         )
 
-        result_py_val = await _invoke_function(function_obj, native_kwargs)
+        result_py_val = await _invoke_function(function_obj, native_kwargs, func_name)
 
         marshalled_result = marshal(result_py_val, schema=declared_return_cty_type)
         response.result.CopyFrom(marshalled_result)
