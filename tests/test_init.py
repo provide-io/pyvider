@@ -22,8 +22,6 @@ def test_version_is_available() -> None:
         assert isinstance(module.__version__, str)
 
 
-
-
 def test_init_module_structure() -> None:
     """Test the __init__.py module structure."""
     import importlib.util

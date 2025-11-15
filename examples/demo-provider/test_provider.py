@@ -46,6 +46,7 @@ async def test_provider():
     print("\n3. Testing get_schema() with s_function...")
     try:
         from provider import AddFunction, JoinFunction, UpperFunction
+
         from pyvider.schema import PvsSchema
 
         for func_cls, name in [
@@ -58,9 +59,9 @@ async def test_provider():
                 print(f"   ✅ {name}: get_schema() returns PvsSchema")
                 # Check for parameters
                 if "param_0" in schema.block.attributes:
-                    print(f"      - Has parameters ✓")
+                    print("      - Has parameters ✓")
                 if "return_type" in schema.block.attributes:
-                    print(f"      - Has return type ✓")
+                    print("      - Has return type ✓")
             else:
                 print(f"   ❌ {name}: get_schema() returned {type(schema)}")
                 return False
@@ -131,13 +132,13 @@ async def test_provider():
         return_type = schema.block.attributes["return_type"].type
 
         if isinstance(param_type, CtyString):
-            print(f"   ✅ Parameter type: CtyString")
+            print("   ✅ Parameter type: CtyString")
         else:
             print(f"   ❌ Parameter type: {type(param_type)}")
             return False
 
         if isinstance(return_type, CtyString):
-            print(f"   ✅ Return type: CtyString")
+            print("   ✅ Return type: CtyString")
         else:
             print(f"   ❌ Return type: {type(return_type)}")
             return False

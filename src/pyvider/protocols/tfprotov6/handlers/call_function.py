@@ -109,9 +109,7 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any], func_
                 f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{func_name}', instance={capability_instance}"
             )
         else:
-            logger.warning(
-                f"FUNCTION_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{func_name}'"
-            )
+            logger.warning(f"FUNCTION_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{func_name}'")
 
 
 def _build_function_arguments(
@@ -151,7 +149,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
     """
     try:
         # Get signature of the callable (call method for BaseFunction instances)
-        if hasattr(function_obj, 'call'):
+        if hasattr(function_obj, "call"):
             func_sig = inspect.signature(function_obj.call)
         else:
             func_sig = inspect.signature(function_obj)
@@ -159,9 +157,9 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
 
         # Invoke with ordered positional args + keyword-only kwargs
         # Check if __call__ method is async (for BaseFunction instances)
-        if hasattr(function_obj, '__call__') and inspect.iscoroutinefunction(function_obj.__call__):
-            result_py_val = await function_obj(*all_args, **keyword_only_kwargs)
-        elif inspect.iscoroutinefunction(function_obj):
+        if (
+            callable(function_obj) and inspect.iscoroutinefunction(function_obj.__call__)
+        ) or inspect.iscoroutinefunction(function_obj):
             result_py_val = await function_obj(*all_args, **keyword_only_kwargs)
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
@@ -175,9 +173,7 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
             f"FUNCTION_DISPATCH 💥 Function '{func_name}' failed: {func_err}",
             exc_info=True,
         )
-        raise PyviderFunctionError(
-            f"Function '{func_name}' execution failed: {func_err}"
-        ) from func_err
+        raise PyviderFunctionError(f"Function '{func_name}' execution failed: {func_err}") from func_err
 
 
 @resilient()
@@ -243,10 +239,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             )
 
         # Instantiate the function class if it's a class
-        if inspect.isclass(function_cls):
-            function_obj = function_cls(name=func_name)
-        else:
-            function_obj = function_cls
+        function_obj = function_cls(name=func_name) if inspect.isclass(function_cls) else function_cls
 
         # Check if this is a test-only component accessed without test mode
         check_test_only_access(function_obj, func_name, "function")
@@ -254,7 +247,11 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         func_meta = function_to_dict(function_cls)
         params_meta = func_meta.get("parameters", [])
         variadic_meta = func_meta.get("variadic_parameter")  # Optional variadic parameter
-        func_sig = inspect.signature(function_obj.call)
+        # Support both class-based functions (with .call method) and plain functions
+        if hasattr(function_obj, "call"):
+            func_sig = inspect.signature(function_obj.call)
+        else:
+            func_sig = inspect.signature(function_obj)
 
         # Validate argument count
         # - Without variadic: must match exactly

@@ -52,7 +52,8 @@
       "Bash(python3:*)",
       "Bash(export TF_PLUGIN_MAGIC_COOKIE=\"d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2\" PYVIDER_LOG_LEVEL=DEBUG TF_LOG=DEBUG:*)",
       "Bash(export TF_CLI_CONFIG_FILE=.terraformrc TF_LOG=TRACE)",
-      "Bash(terraform apply:*)"
+      "Bash(terraform apply:*)",
+      "Bash(uv pip list:*)"
     ],
     "deny": [],
     "ask": [],

@@ -187,7 +187,7 @@ def function_to_dict(func_obj: Callable[..., Any]) -> dict[str, Any]:
     base_meta = getattr(func_obj, "_function_metadata", {})
     base_meta.setdefault("name", func_obj.__name__)
     # Introspect the 'call' method instead of the class constructor
-    call_method = getattr(func_obj, 'call', func_obj)
+    call_method = getattr(func_obj, "call", func_obj)
     sig = inspect.signature(call_method)
     try:
         type_hints = get_type_hints(call_method)
