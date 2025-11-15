@@ -4,7 +4,9 @@
       "Bash(ruff format:*)",
       "Bash(ruff check:*)",
       "Bash(mypy:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(python:*)",
+      "Bash(./terraform-provider-demo --help)"
     ],
     "deny": [],
     "ask": []
