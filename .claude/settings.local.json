@@ -27,7 +27,10 @@
       "Bash(mypy:*)",
       "Bash(terraform version:*)",
       "Bash(terraform init:*)",
-      "Bash(terraform plan:*)"
+      "Bash(terraform plan:*)",
+      "Bash(pyvider:*)",
+      "Bash(uv venv:*)",
+      "Bash(uv pip install:*)"
     ],
     "deny": [],
     "ask": [],
