@@ -104,8 +104,9 @@ class PyviderContext(CLIContext):
 
         Priority:
         1. Environment variable PYVIDER_PROVIDER_NAME
-        2. pyproject.toml [tool.pyvider].provider_name
-        3. Default "pyvider" (with warning)
+        2. PYVIDER_CONFIG_FILE (pyvider.toml or soup.toml) [pyvider].name
+        3. pyproject.toml [tool.pyvider].provider_name
+        4. Default "pyvider" (with warning)
 
         Returns:
             Resolved provider name
@@ -120,7 +121,19 @@ class PyviderContext(CLIContext):
             )
             return env_name
 
-        # 2. Check pyproject.toml [tool.pyvider].provider_name
+        # 2. Check PYVIDER_CONFIG_FILE (pyvider.toml or soup.toml)
+        config_file_path = os.environ.get("PYVIDER_CONFIG_FILE")
+        if config_file_path:
+            config_name = self._read_provider_name_from_config_file(config_file_path)
+            if config_name:
+                logger.debug(
+                    "Provider name from config file",
+                    provider_name=config_name,
+                    source=config_file_path,
+                )
+                return config_name
+
+        # 3. Check pyproject.toml [tool.pyvider].provider_name
         pyproject_name = _read_provider_name_from_pyproject()
         if pyproject_name:
             logger.debug(
@@ -130,7 +143,7 @@ class PyviderContext(CLIContext):
             )
             return pyproject_name
 
-        # 3. Fall back to default with warning
+        # 4. Fall back to default with warning
         default_name = "pyvider"
         logger.warning(
             "No provider_name configured, using default",
@@ -138,6 +151,25 @@ class PyviderContext(CLIContext):
             hint="Set provider_name in pyproject.toml under [tool.pyvider] section",
         )
         return default_name
+
+    def _read_provider_name_from_config_file(self, config_file_path: str) -> str | None:
+        """Read provider name from a TOML config file (pyvider.toml or soup.toml)."""
+        try:
+            config_path = Path(config_file_path)
+            if not config_path.exists():
+                return None
+            with config_path.open("rb") as f:
+                import tomllib
+
+                data = tomllib.load(f)
+            pyvider_section = data.get("pyvider", {})
+            if isinstance(pyvider_section, dict):
+                name = pyvider_section.get("name")
+                if isinstance(name, str):
+                    return name
+            return None
+        except Exception:
+            return None
 
     async def _ensure_components_discovered(
         self,
