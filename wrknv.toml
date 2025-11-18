@@ -1,0 +1,140 @@
+# Python Library wrknv.toml Template
+# Canonical task configuration for Python library projects in the provide.io ecosystem
+# This file is maintained in provide-foundry and can be extracted to library projects
+#
+# Source: provide-foundry/src/provide/foundry/config/wrknv.python.tmpl
+# To update: run extraction function from provide-foundry
+#
+# Usage:
+#   we tasks              # List all available tasks
+#   we <task>             # Run a task (e.g., we test, we lint)
+#   we run <task>         # Explicit run command
+#   we run <task> --info  # Show task details
+
+# ==============================================================================
+# 🧪 Testing
+# ==============================================================================
+
+[tasks.test]
+_default = "pytest"
+parallel = "pytest -n auto"
+verbose = "pytest -vvv"
+unit = "pytest -m unit"
+integration = "pytest -m integration"
+
+[tasks.test.coverage]
+_default = "pytest --cov=src --cov-report=html --cov-report=term-missing"
+xml = "pytest --cov=src --cov-report=xml --cov-report=term"
+
+# ==============================================================================
+# 🧬 Mutation Testing
+# ==============================================================================
+
+[tasks.mutation]
+_default = "mutmut run"
+results = "mutmut results"
+browse = "mutmut browse"
+clean = "rm -rf .mutmut-cache html/"
+
+# ==============================================================================
+# 🔍 Code Quality
+# ==============================================================================
+
+[tasks.lint]
+_default = "ruff check ."
+fix = "ruff check . --fix"
+
+[tasks.format]
+_default = "ruff format ."
+check = "ruff format . --check"
+
+[tasks.quality]
+_default = ["lint", "typecheck"]
+all = ["format.check", "lint", "typecheck", "test"]
+
+# ==============================================================================
+# 🏗️ Build & Package
+# ==============================================================================
+
+[tasks.pkg]
+install = "uv pip install -e ."
+uninstall = "uv pip uninstall -y $(grep '^name = ' pyproject.toml | cut -d'\"' -f2)"
+lock = "uv lock"
+version = "cat VERSION 2>/dev/null || grep '^version = ' pyproject.toml | cut -d'\"' -f2"
+
+# ==============================================================================
+# 🧹 Clean
+# ==============================================================================
+
+[tasks.clean]
+run = """
+rm -rf build/ dist/ *.egg-info .pytest_cache .mypy_cache .ruff_cache .hypothesis htmlcov/ .coverage .mutmut-cache site/
+find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+find . -type f -name '*.pyc' -delete 2>/dev/null || true
+find . -type f -name '*.pyo' -delete 2>/dev/null || true
+"""
+
+# ==============================================================================
+# 📚 Documentation
+# ==============================================================================
+
+[tasks.docs]
+_default = "mkdocs serve"
+setup = "python -c \"from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))\""
+build = "mkdocs build"
+serve = "mkdocs serve"
+clean = "rm -rf site .provide"
+
+[tasks.docs.links]
+_default = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+check = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+local = "lychee --offline --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md' 2>&1 | grep -v 'INFO'"
+external = "lychee --verbose --no-progress './docs/**/*.md' './src/**/*.md' './README.md' './.github/**/*.md' './CONTRIBUTING.md'"
+
+# ==============================================================================
+# 🚀 Development Workflow Shortcuts
+# ==============================================================================
+
+[tasks.dev]
+setup = "uv sync"
+test = "pytest -n auto"
+check = "ruff format . && ruff check . && mypy src/"
+
+# ==============================================================================
+# 🤖 CI/CD Pipelines
+# ==============================================================================
+
+[tasks.ci]
+_default = ["quality", "test", "build"]
+test = ["test.parallel", "test.coverage"]
+quality = ["format.check", "lint", "typecheck"]
+
+# ==============================================================================
+# Simple Top-Level Tasks
+# ==============================================================================
+
+[tasks]
+typecheck = "mypy src/"
+build = "uv build"
+
+[tasks.setup]
+_default = "uv sync"
+pre-commit = """
+if ! command -v pre-commit >/dev/null 2>&1; then
+  echo "Installing pre-commit..."
+  uv pip install pre-commit
+fi
+if [ ! -f .pre-commit-config.yaml ]; then
+  echo "Installing standard pre-commit config..."
+  if [ -f ../ci-tooling/configs/pre-commit-config.yaml ]; then
+    cp ../ci-tooling/configs/pre-commit-config.yaml .pre-commit-config.yaml
+  else
+    echo "Warning: ci-tooling/configs/pre-commit-config.yaml not found"
+    echo "Please ensure ci-tooling is cloned at ../ci-tooling"
+    exit 1
+  fi
+fi
+pre-commit install
+pre-commit install --hook-type commit-msg
+echo "✓ Pre-commit hooks installed"
+"""

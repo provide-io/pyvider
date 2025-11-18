@@ -1,0 +1,23 @@
+#!/bin/bash
+# Pyvider Terraform Provider Wrapper Script
+set -eo pipefail
+
+# 🤝 Handshake Fix:
+# Terraform provides the cookie in TF_PLUGIN_MAGIC_COOKIE.
+# The pyvider-rpcplugin library expects this same value in
+# PLUGIN_MAGIC_COOKIE_VALUE to validate the handshake.
+# We export it here to ensure it's set before the Python process starts.
+export PLUGIN_MAGIC_COOKIE_VALUE="${TF_PLUGIN_MAGIC_COOKIE}"
+
+# --- Optional Debug Logging to STDERR ---
+# To enable, uncomment the following lines.
+# log_debug() {
+#   echo -e "🐛 [provider script] $1" >&2
+# }
+# log_debug "TF_PLUGIN_MAGIC_COOKIE      = '${TF_PLUGIN_MAGIC_COOKIE}'"
+# log_debug "PLUGIN_MAGIC_COOKIE_VALUE = '${PLUGIN_MAGIC_COOKIE_VALUE}'"
+# log_debug "Executing Python provider..."
+
+# Execute the pyvider entry point. This assumes the 'pyvider' command
+# is available in the environment where this script is run.
+exec pyvider "$@"
