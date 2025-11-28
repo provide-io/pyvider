@@ -86,6 +86,7 @@ norecursedirs = [
 filterwarnings = [
     "ignore::pytest.PytestAssertRewriteWarning",
 ]
+addopts = "--dist load"
 
 [tool.ruff]
 line-length = 111
