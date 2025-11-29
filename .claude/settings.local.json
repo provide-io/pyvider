@@ -64,7 +64,8 @@
       "Bash(git -C /Users/tim/code/gh/provide-io/pyvider status docs/archive/)",
       "Bash(git -C /Users/tim/code/gh/provide-io/pyvider log:*)",
       "Bash(pytest:*)",
-      "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry log --oneline --all -- src/provide/foundry/theme/overrides)"
+      "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry log --oneline --all -- src/provide/foundry/theme/overrides)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/provide-foundry ls-tree:*)"
     ],
     "deny": [],
     "ask": [],
