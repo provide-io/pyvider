@@ -60,7 +60,9 @@
       "Bash(git -C /Users/tim/code/gh/provide-io/pyvider ls-tree:*)",
       "Bash(git -C /Users/tim/code/gh/provide-io/pyvider log --oneline --all -- *.bak *.old *.orig *~ *copy*)",
       "Bash(git -C /Users/tim/code/gh/provide-io/pyvider status --porcelain)",
-      "Bash(git -C /Users/tim/code/gh/provide-io/pyvider log --oneline docs/archive/)"
+      "Bash(git -C /Users/tim/code/gh/provide-io/pyvider log --oneline docs/archive/)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/pyvider status docs/archive/)",
+      "Bash(git -C /Users/tim/code/gh/provide-io/pyvider log:*)"
     ],
     "deny": [],
     "ask": [],
