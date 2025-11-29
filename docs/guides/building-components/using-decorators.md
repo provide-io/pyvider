@@ -1,9 +1,5 @@
 # Using Decorators
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../#project-status) for details.
-
 Pyvider uses decorators to register components with the hub-based discovery system. This guide shows how to use each decorator type correctly.
 
 ## Overview

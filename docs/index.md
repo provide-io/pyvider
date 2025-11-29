@@ -1,14 +1,7 @@
 # Welcome to Pyvider Documentation
 
-!!! warning "Alpha Software - v0.0.x"
-    Pyvider is currently in **alpha** (v0.0.1000). While functional and actively developed, please note:
-
-    - **APIs may change** before the 1.0 release
-    - **Some documented features** may not be fully implemented yet
-    - **Best suited** for internal tooling, experimentation, and early adopters
-    - See [Roadmap](development/roadmap/) for feature status and future plans
-
-    For production use, test thoroughly and be prepared for potential breaking changes in future releases.
+!!! tip "Current Status"
+    Pyvider is in active development. See the announcement banner above for current version status and our [roadmap](development/roadmap/) for upcoming features.
 
 **Pyvider** is a Python framework that enables you to build Terraform providers using pure Python. By combining Python's expressiveness with Terraform's infrastructure management capabilities, Pyvider makes provider development accessible to the Python ecosystem while maintaining full compatibility with Terraform's Plugin Protocol v6.
 

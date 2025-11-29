@@ -1,8 +1,5 @@
 # How to Create a Data Source
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-
 Quick reference for creating Terraform data sources with pyvider. For a step-by-step tutorial, see [Building Your First Data Source](../../tutorials/building-your-first-data-source/).
 
 ---

@@ -1,9 +1,5 @@
 # Creating Functions
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../#project-status) for details.
-
 This guide shows you how to create provider functions in Pyvider. Functions are callable operations that transform or validate data in Terraform configurations.
 
 ## What is a Provider Function?

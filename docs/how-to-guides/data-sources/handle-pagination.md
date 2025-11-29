@@ -1,8 +1,5 @@
 # How to Handle Pagination
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-
 Handle paginated API responses in data sources to fetch large result sets efficiently.
 
 ---

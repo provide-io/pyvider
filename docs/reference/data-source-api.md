@@ -1,8 +1,5 @@
 # Data Source API Reference
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This reference covers **stable** APIs.
-
 Complete API reference for data sources and the BaseDataSource class.
 
 ---

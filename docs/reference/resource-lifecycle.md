@@ -1,8 +1,5 @@
 # Resource Lifecycle API Reference
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This reference covers **stable** APIs.
-
 Complete API reference for resource lifecycle methods and the ResourceContext object.
 
 ---

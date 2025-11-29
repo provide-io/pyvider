@@ -1,8 +1,5 @@
 # How to Create a Resource
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-
 Quick reference for creating Terraform resources with pyvider. For a step-by-step learning tutorial, see [Building Your First Resource](../../tutorials/building-your-first-resource/).
 
 ---

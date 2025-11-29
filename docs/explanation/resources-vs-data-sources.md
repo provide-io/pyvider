@@ -1,8 +1,5 @@
 # Resources vs Data Sources
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This explanation covers **stable** concepts.
-
 Understanding the fundamental difference between resources and data sources in Terraform providers.
 
 ---

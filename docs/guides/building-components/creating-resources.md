@@ -1,9 +1,5 @@
 # Creating Resources
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This guide covers **stable** functionality.
-    See [project status](../../#project-status) for details.
-
 This guide shows you how to create resources for your Pyvider provider. Resources represent infrastructure components with full CRUD lifecycle management.
 
 ## What is a Resource?
