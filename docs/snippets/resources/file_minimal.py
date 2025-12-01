@@ -5,11 +5,13 @@ This snippet demonstrates the bare minimum needed for a working resource.
 Used in: how-to guides for quick reference.
 """
 
-import attrs
 from pathlib import Path
-from pyvider.resources import register_resource, BaseResource
+
+import attrs
+
+from pyvider.resources import BaseResource, register_resource
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import s_resource, a_str, a_num, PvsSchema
+from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 
 
 @attrs.define

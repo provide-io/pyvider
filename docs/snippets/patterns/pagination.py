@@ -11,6 +11,7 @@ Used in: guides showing how to handle paginated API responses.
 """
 
 import httpx
+
 from pyvider.resources.context import ResourceContext
 
 
@@ -181,8 +182,9 @@ async def fetch_all_link_header_pagination(
 
 
 # --8<-- [start:data_source_pagination]
-from pyvider.data_sources import BaseDataSource
 import attrs
+
+from pyvider.data_sources import BaseDataSource
 
 
 @attrs.define

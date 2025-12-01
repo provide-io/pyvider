@@ -5,11 +5,13 @@ This snippet demonstrates the bare minimum needed for a working data source.
 Used in: how-to guides for quick reference.
 """
 
-import attrs
 from pathlib import Path
-from pyvider.data_sources import register_data_source, BaseDataSource
+
+import attrs
+
+from pyvider.data_sources import BaseDataSource, register_data_source
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import s_data_source, a_str, a_num, a_bool, PvsSchema
+from pyvider.schema import PvsSchema, a_bool, a_num, a_str, s_data_source
 
 
 @attrs.define

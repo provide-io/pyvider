@@ -11,7 +11,9 @@ Used in: guides showing async/concurrent patterns.
 """
 
 import asyncio
+
 import httpx
+
 from pyvider.resources import BaseResource, ResourceContext
 
 
@@ -207,7 +209,7 @@ async def fetch_with_timeout(
                 response.raise_for_status()
                 return response.json()
 
-    except asyncio.TimeoutError:
+    except TimeoutError:
         ctx.add_error(f"Operation timed out after {timeout_seconds}s")
         return None
 # --8<-- [end:async_timeout]

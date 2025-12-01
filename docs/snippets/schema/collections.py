@@ -11,7 +11,7 @@ This snippet demonstrates collection types:
 Used in: schema documentation and guides.
 """
 
-from pyvider.schema import s_resource, a_str, a_num, a_list, a_map, a_set, PvsSchema
+from pyvider.schema import PvsSchema, a_list, a_map, a_num, a_set, a_str, s_resource
 
 
 # --8<-- [start:lists]

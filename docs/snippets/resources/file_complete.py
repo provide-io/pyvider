@@ -10,11 +10,13 @@ This snippet demonstrates a full-featured resource implementation including:
 Used in: tutorials, guides
 """
 
-import attrs
 from pathlib import Path
-from pyvider.resources import register_resource, BaseResource
+
+import attrs
+
+from pyvider.resources import BaseResource, register_resource
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import s_resource, a_str, a_num, PvsSchema
+from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 
 
 # --8<-- [start:types]

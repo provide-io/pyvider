@@ -11,6 +11,7 @@ Used in: guides showing error handling best practices.
 """
 
 import httpx
+
 from pyvider.resources.context import ResourceContext
 
 
@@ -35,7 +36,7 @@ async def handle_http_errors_basic(ctx: ResourceContext, url: str) -> dict | Non
                 raise
 
         except httpx.RequestError as e:
-            ctx.add_error(f"Request failed: {str(e)}")
+            ctx.add_error(f"Request failed: {e!s}")
             raise
 # --8<-- [end:basic_http_errors]
 
@@ -115,7 +116,7 @@ async def create_with_friendly_errors(ctx: ResourceContext, name: str) -> dict:
             # Forbidden - permissions issue
             ctx.add_error(
                 "Permission denied. Ensure your API credentials have "
-                f"permission to create resources in this project."
+                "permission to create resources in this project."
             )
         elif e.response.status_code == 422:
             # Validation error
@@ -133,7 +134,7 @@ async def create_with_friendly_errors(ctx: ResourceContext, name: str) -> dict:
 
     except httpx.RequestError as e:
         ctx.add_error(
-            f"Unable to connect to API server: {str(e)}. "
+            f"Unable to connect to API server: {e!s}. "
             "Check your network connection and API endpoint configuration."
         )
         raise
@@ -176,15 +177,15 @@ class ExampleResource(BaseResource):
             return result, None
 
         except ValueError as e:
-            ctx.add_error(f"Invalid configuration: {str(e)}")
+            ctx.add_error(f"Invalid configuration: {e!s}")
             return None, None
 
         except PermissionError as e:
-            ctx.add_error(f"Permission denied: {str(e)}")
+            ctx.add_error(f"Permission denied: {e!s}")
             return None, None
 
         except Exception as e:
-            ctx.add_error(f"Unexpected error: {str(e)}")
+            ctx.add_error(f"Unexpected error: {e!s}")
             raise
 
     def _check_prerequisites(self, config) -> bool:

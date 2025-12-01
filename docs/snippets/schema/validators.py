@@ -12,16 +12,15 @@ Used in: schema documentation and guides.
 """
 
 from pyvider.schema import (
-    s_resource,
-    a_str,
-    a_num,
-    a_list,
     PvsSchema,
-    v_min_length,
+    a_num,
+    a_str,
+    s_resource,
     v_max_length,
-    v_pattern,
-    v_min_value,
     v_max_value,
+    v_min_length,
+    v_min_value,
+    v_pattern,
 )
 
 

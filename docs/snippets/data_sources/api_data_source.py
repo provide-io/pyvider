@@ -12,9 +12,10 @@ Used in: guides showing real-world API integration patterns.
 
 import attrs
 import httpx
-from pyvider.data_sources import register_data_source, BaseDataSource
+
+from pyvider.data_sources import BaseDataSource, register_data_source
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import s_data_source, a_str, a_num, a_map, PvsSchema
+from pyvider.schema import PvsSchema, a_map, a_str, s_data_source
 
 
 @attrs.define
