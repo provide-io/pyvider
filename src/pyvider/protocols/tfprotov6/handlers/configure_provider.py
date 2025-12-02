@@ -113,7 +113,7 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)
+        config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)  # type: ignore[arg-type]
 
         if config_instance is None:
             logger.error(

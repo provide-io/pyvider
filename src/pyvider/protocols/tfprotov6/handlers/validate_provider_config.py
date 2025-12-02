@@ -61,7 +61,7 @@ async def _validate_provider_config_impl(
                 config_cty = unmarshal(request.config, schema=provider_schema.block)
 
                 if not config_cty.is_unknown:
-                    config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)
+                    config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)  # type: ignore[arg-type]
                     if config_instance:
                         test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)
 

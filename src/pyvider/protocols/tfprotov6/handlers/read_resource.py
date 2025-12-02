@@ -172,7 +172,7 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
             config=None,
             state=prior_state_instance,
             private_state=private_state_instance,
-            capabilities=provider_instance.metadata.capabilities,
+            capabilities=provider_instance.metadata.capabilities,  # type: ignore[arg-type]
             test_mode_enabled=test_mode_enabled,
         )
         new_state_attrs = await resource_handler.read(resource_context)
