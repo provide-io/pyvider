@@ -40,6 +40,8 @@ async def fetch_multiple_resources_concurrent(
         ctx.add_info(f"Fetched {len(results)} resources")
 
         return results
+
+
 # --8<-- [end:concurrent_api_calls]
 
 
@@ -72,11 +74,11 @@ async def fetch_multiple_with_error_handling(
 
         # Filter out None values if needed
         successful = [r for r in results if r is not None]
-        ctx.add_info(
-            f"Successfully fetched {len(successful)}/{len(resource_ids)} resources"
-        )
+        ctx.add_info(f"Successfully fetched {len(successful)}/{len(resource_ids)} resources")
 
         return results
+
+
 # --8<-- [end:concurrent_with_error_handling]
 
 
@@ -87,12 +89,14 @@ import attrs
 @attrs.define
 class MultiConfig:
     """Configuration for creating multiple resources."""
+
     names: list[str]
 
 
 @attrs.define
 class MultiState:
     """State tracking multiple resources."""
+
     id: str
     resource_ids: list[str]
 
@@ -103,9 +107,7 @@ class MultiResourceCreator(BaseResource):
     config_class = MultiConfig
     state_class = MultiState
 
-    async def _create_apply(
-        self, ctx: ResourceContext
-    ) -> tuple[MultiState | None, None]:
+    async def _create_apply(self, ctx: ResourceContext) -> tuple[MultiState | None, None]:
         """Create multiple resources concurrently."""
         if not ctx.config:
             return None, None
@@ -125,9 +127,7 @@ class MultiResourceCreator(BaseResource):
 
             # Create all resources concurrently
             ctx.add_info(f"Creating {len(ctx.config.names)} resources...")
-            resource_ids = await asyncio.gather(
-                *[create_one(name) for name in ctx.config.names]
-            )
+            resource_ids = await asyncio.gather(*[create_one(name) for name in ctx.config.names])
             ctx.add_info(f"Created {len(resource_ids)} resources")
 
             return (
@@ -159,6 +159,8 @@ class MultiResourceCreator(BaseResource):
                 return_exceptions=True,  # Continue even if some deletions fail
             )
             ctx.add_info("Deletion complete")
+
+
 # --8<-- [end:parallel_resource_operations]
 
 
@@ -189,6 +191,8 @@ async def fetch_with_rate_limit(
         results = await asyncio.gather(*[fetch_one(rid) for rid in resource_ids])
 
         return results
+
+
 # --8<-- [end:semaphore_rate_limiting]
 
 
@@ -212,6 +216,8 @@ async def fetch_with_timeout(
     except TimeoutError:
         ctx.add_error(f"Operation timed out after {timeout_seconds}s")
         return None
+
+
 # --8<-- [end:async_timeout]
 
 
@@ -241,4 +247,6 @@ async def process_items_in_batches(
             await asyncio.gather(*tasks)
 
         ctx.add_info(f"Completed batch ({i + len(batch)}/{total} items processed)")
+
+
 # --8<-- [end:streaming_operations]

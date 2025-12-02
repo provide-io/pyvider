@@ -33,9 +33,7 @@ def test_snippet_valid_python(snippet_file: Path) -> None:
         ast.parse(code)
     except SyntaxError as e:
         pytest.fail(
-            f"Syntax error in {snippet_file.relative_to(Path.cwd())}:\n"
-            f"Line {e.lineno}: {e.msg}\n"
-            f"{e.text}"
+            f"Syntax error in {snippet_file.relative_to(Path.cwd())}:\nLine {e.lineno}: {e.msg}\n{e.text}"
         )
 
 
@@ -108,9 +106,7 @@ def test_all_snippet_categories_exist() -> None:
 
     for category, description in expected_categories.items():
         category_dir = snippets_dir / category
-        assert category_dir.exists(), (
-            f"Missing snippet category: {category} ({description})"
-        )
+        assert category_dir.exists(), f"Missing snippet category: {category} ({description})"
         assert category_dir.is_dir(), f"{category} should be a directory"
 
 

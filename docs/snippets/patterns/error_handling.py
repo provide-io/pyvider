@@ -38,6 +38,8 @@ async def handle_http_errors_basic(ctx: ResourceContext, url: str) -> dict | Non
         except httpx.RequestError as e:
             ctx.add_error(f"Request failed: {e!s}")
             raise
+
+
 # --8<-- [end:basic_http_errors]
 
 
@@ -71,8 +73,7 @@ async def fetch_with_retry(
             if attempt < max_retries - 1:
                 delay = base_delay * (2**attempt)  # Exponential backoff
                 ctx.add_warning(
-                    f"Request failed (attempt {attempt + 1}/{max_retries}), "
-                    f"retrying in {delay}s..."
+                    f"Request failed (attempt {attempt + 1}/{max_retries}), retrying in {delay}s..."
                 )
                 await asyncio.sleep(delay)
 
@@ -81,14 +82,15 @@ async def fetch_with_retry(
             if attempt < max_retries - 1:
                 delay = base_delay * (2**attempt)
                 ctx.add_warning(
-                    f"Request failed (attempt {attempt + 1}/{max_retries}), "
-                    f"retrying in {delay}s..."
+                    f"Request failed (attempt {attempt + 1}/{max_retries}), retrying in {delay}s..."
                 )
                 await asyncio.sleep(delay)
 
     # All retries exhausted
     ctx.add_error(f"Failed after {max_retries} attempts: {last_error}")
     raise last_error
+
+
 # --8<-- [end:retry_pattern]
 
 
@@ -109,8 +111,7 @@ async def create_with_friendly_errors(ctx: ResourceContext, name: str) -> dict:
         if e.response.status_code == 409:
             # Conflict - resource already exists
             ctx.add_error(
-                f"Resource '{name}' already exists. "
-                "Choose a different name or import the existing resource."
+                f"Resource '{name}' already exists. Choose a different name or import the existing resource."
             )
         elif e.response.status_code == 403:
             # Forbidden - permissions issue
@@ -121,9 +122,7 @@ async def create_with_friendly_errors(ctx: ResourceContext, name: str) -> dict:
         elif e.response.status_code == 422:
             # Validation error
             error_details = e.response.json().get("errors", [])
-            ctx.add_error(
-                f"Validation failed: {', '.join(error_details)}"
-            )
+            ctx.add_error(f"Validation failed: {', '.join(error_details)}")
         else:
             # Generic error
             ctx.add_error(
@@ -138,6 +137,8 @@ async def create_with_friendly_errors(ctx: ResourceContext, name: str) -> dict:
             "Check your network connection and API endpoint configuration."
         )
         raise
+
+
 # --8<-- [end:user_friendly_errors]
 
 
@@ -158,9 +159,7 @@ class ExampleResource(BaseResource):
 
         # Validate prerequisites
         if not self._check_prerequisites(ctx.config):
-            ctx.add_error(
-                "Prerequisites not met. Ensure dependencies are configured."
-            )
+            ctx.add_error("Prerequisites not met. Ensure dependencies are configured.")
             return None, None
 
         # Add warnings for potentially risky operations
@@ -195,4 +194,6 @@ class ExampleResource(BaseResource):
     async def _perform_create(self, ctx: ResourceContext) -> dict:
         """Perform creation (example)."""
         return {}
+
+
 # --8<-- [end:context_diagnostics]

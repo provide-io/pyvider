@@ -21,12 +21,14 @@ from pyvider.schema import PvsSchema, a_map, a_str, s_data_source
 @attrs.define
 class UserConfig:
     """Configuration for user lookup."""
+
     user_id: str
 
 
 @attrs.define
 class UserData:
     """User information from API."""
+
     id: str
     name: str
     email: str
@@ -43,17 +45,18 @@ class User(BaseDataSource):
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
-        return s_data_source({
-            # Input
-            "user_id": a_str(required=True, description="User ID to query"),
-
-            # Outputs
-            "id": a_str(computed=True, description="User ID"),
-            "name": a_str(computed=True, description="User name"),
-            "email": a_str(computed=True, description="User email"),
-            "role": a_str(computed=True, description="User role"),
-            "metadata": a_map(a_str(), computed=True, description="User metadata"),
-        })
+        return s_data_source(
+            {
+                # Input
+                "user_id": a_str(required=True, description="User ID to query"),
+                # Outputs
+                "id": a_str(computed=True, description="User ID"),
+                "name": a_str(computed=True, description="User name"),
+                "email": a_str(computed=True, description="User email"),
+                "role": a_str(computed=True, description="User role"),
+                "metadata": a_map(a_str(), computed=True, description="User metadata"),
+            }
+        )
 
     async def read(self, ctx: ResourceContext) -> UserData | None:
         """Fetch user information from API."""

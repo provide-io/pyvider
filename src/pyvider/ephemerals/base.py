@@ -47,7 +47,8 @@ class BaseEphemeralResource(ABC, Generic[ResultType, PrivateStateType, ConfigTyp
 
     @abstractmethod
     async def open(
-        self, ctx: EphemeralResourceContext[ConfigType, None]  # type: ignore[type-var]
+        self,
+        ctx: EphemeralResourceContext[ConfigType, None],  # type: ignore[type-var]
     ) -> tuple[ResultType, PrivateStateType, datetime]:
         """
         Opens the ephemeral resource.

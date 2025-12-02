@@ -53,6 +53,8 @@ async def fetch_all_offset_pagination(
             offset += limit
 
     return all_items
+
+
 # --8<-- [end:offset_pagination]
 
 
@@ -97,6 +99,8 @@ async def fetch_all_cursor_pagination(
                 break
 
     return all_items
+
+
 # --8<-- [end:cursor_pagination]
 
 
@@ -142,6 +146,8 @@ async def fetch_all_page_pagination(
             page += 1
 
     return all_items
+
+
 # --8<-- [end:page_pagination]
 
 
@@ -178,6 +184,8 @@ async def fetch_all_link_header_pagination(
                         break
 
     return all_items
+
+
 # --8<-- [end:link_header_pagination]
 
 
@@ -190,6 +198,7 @@ from pyvider.data_sources import BaseDataSource
 @attrs.define
 class ItemsConfig:
     """Configuration for items data source."""
+
     filter: str | None = None
     limit: int | None = None
 
@@ -197,6 +206,7 @@ class ItemsConfig:
 @attrs.define
 class ItemsData:
     """Items data returned to Terraform."""
+
     id: str
     items: list[dict]
     total_count: int
@@ -222,11 +232,7 @@ class ItemsDataSource(BaseDataSource):
 
         # Apply filtering if requested
         if ctx.config.filter:
-            all_items = [
-                item
-                for item in all_items
-                if self._matches_filter(item, ctx.config.filter)
-            ]
+            all_items = [item for item in all_items if self._matches_filter(item, ctx.config.filter)]
 
         # Apply limit if requested
         if ctx.config.limit:
@@ -241,4 +247,6 @@ class ItemsDataSource(BaseDataSource):
     def _matches_filter(self, item: dict, filter_expr: str) -> bool:
         """Check if item matches filter (example)."""
         return True  # Implement actual filtering logic
+
+
 # --8<-- [end:data_source_pagination]

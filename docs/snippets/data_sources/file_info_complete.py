@@ -24,6 +24,7 @@ from pyvider.schema import PvsSchema, a_bool, a_num, a_str, s_data_source
 @attrs.define
 class FileInfoConfig:
     """What the user wants to query."""
+
     path: str  # Which file to query
 
 
@@ -31,11 +32,14 @@ class FileInfoConfig:
 @attrs.define
 class FileInfoData:
     """Information we return about the file."""
-    id: str          # Unique identifier
-    path: str        # File path
-    size: int        # File size in bytes
-    exists: bool     # Whether file exists
-    content: str     # File content
+
+    id: str  # Unique identifier
+    path: str  # File path
+    size: int  # File size in bytes
+    exists: bool  # Whether file exists
+    content: str  # File content
+
+
 # --8<-- [end:types]
 
 
@@ -51,17 +55,19 @@ class FileInfo(BaseDataSource):
     @classmethod
     def get_schema(cls) -> PvsSchema:
         """Define what Terraform users see."""
-        return s_data_source({
-            # Input (from user)
-            "path": a_str(required=True, description="File path to query"),
+        return s_data_source(
+            {
+                # Input (from user)
+                "path": a_str(required=True, description="File path to query"),
+                # Outputs (we compute all of these)
+                "id": a_str(computed=True, description="File path as ID"),
+                "size": a_num(computed=True, description="File size in bytes"),
+                "exists": a_bool(computed=True, description="Whether file exists"),
+                "content": a_str(computed=True, description="File content"),
+            }
+        )
 
-            # Outputs (we compute all of these)
-            "id": a_str(computed=True, description="File path as ID"),
-            "size": a_num(computed=True, description="File size in bytes"),
-            "exists": a_bool(computed=True, description="Whether file exists"),
-            "content": a_str(computed=True, description="File content"),
-        })
-# --8<-- [end:schema]
+    # --8<-- [end:schema]
 
     # --8<-- [start:read]
     async def read(self, ctx: ResourceContext) -> FileInfoData | None:
@@ -93,4 +99,5 @@ class FileInfo(BaseDataSource):
                 exists=False,
                 content="",
             )
+
     # --8<-- [end:read]

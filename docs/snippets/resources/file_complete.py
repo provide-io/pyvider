@@ -24,20 +24,24 @@ from pyvider.schema import PvsSchema, a_num, a_str, s_resource
 @attrs.define
 class FileConfig:
     """What the user configures."""
-    path: str           # Where to create the file
-    content: str        # What to write in the file
-    mode: str = "644"   # File permissions (optional, defaults to 644)
+
+    path: str  # Where to create the file
+    content: str  # What to write in the file
+    mode: str = "644"  # File permissions (optional, defaults to 644)
 
 
 # Runtime state class (Python type safety)
 @attrs.define
 class FileState:
     """What Terraform tracks about the file."""
-    id: str             # Unique identifier
-    path: str           # File path
-    content: str        # Current content
-    mode: str           # Current permissions
-    size: int           # File size in bytes (computed by us)
+
+    id: str  # Unique identifier
+    path: str  # File path
+    content: str  # Current content
+    mode: str  # Current permissions
+    size: int  # File size in bytes (computed by us)
+
+
 # --8<-- [end:types]
 
 
@@ -53,17 +57,19 @@ class File(BaseResource):
     @classmethod
     def get_schema(cls) -> PvsSchema:
         """Define what Terraform users see."""
-        return s_resource({
-            # User inputs
-            "path": a_str(required=True, description="File path"),
-            "content": a_str(required=True, description="File content"),
-            "mode": a_str(default="644", description="File permissions"),
+        return s_resource(
+            {
+                # User inputs
+                "path": a_str(required=True, description="File path"),
+                "content": a_str(required=True, description="File content"),
+                "mode": a_str(default="644", description="File permissions"),
+                # Provider outputs (we compute these)
+                "id": a_str(computed=True, description="File ID"),
+                "size": a_num(computed=True, description="File size in bytes"),
+            }
+        )
 
-            # Provider outputs (we compute these)
-            "id": a_str(computed=True, description="File ID"),
-            "size": a_num(computed=True, description="File size in bytes"),
-        })
-# --8<-- [end:schema]
+    # --8<-- [end:schema]
 
     # --8<-- [start:validation]
     async def _validate_config(self, config: FileConfig) -> list[str]:
@@ -79,6 +85,7 @@ class File(BaseResource):
             errors.append("Mode must be 3 digits (e.g., '644')")
 
         return errors
+
     # --8<-- [end:validation]
 
     # --8<-- [start:read]
@@ -103,6 +110,7 @@ class File(BaseResource):
             mode=ctx.state.mode,
             size=len(content),
         )
+
     # --8<-- [end:read]
 
     # --8<-- [start:create]
@@ -124,6 +132,7 @@ class File(BaseResource):
             mode=ctx.config.mode,
             size=len(ctx.config.content),
         ), None
+
     # --8<-- [end:create]
 
     # --8<-- [start:update]
@@ -145,6 +154,7 @@ class File(BaseResource):
             mode=ctx.config.mode,
             size=len(ctx.config.content),
         ), None
+
     # --8<-- [end:update]
 
     # --8<-- [start:delete]
@@ -158,4 +168,5 @@ class File(BaseResource):
         # Delete file if it exists
         if file_path.exists():
             file_path.unlink()
+
     # --8<-- [end:delete]

@@ -37,12 +37,14 @@ class File(BaseResource):
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
-        return s_resource({
-            "path": a_str(required=True),
-            "content": a_str(required=True),
-            "id": a_str(computed=True),
-            "size": a_num(computed=True),
-        })
+        return s_resource(
+            {
+                "path": a_str(required=True),
+                "content": a_str(required=True),
+                "id": a_str(computed=True),
+                "size": a_num(computed=True),
+            }
+        )
 
     async def read(self, ctx: ResourceContext) -> FileState | None:
         if not ctx.state:

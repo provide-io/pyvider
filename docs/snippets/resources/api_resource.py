@@ -43,14 +43,15 @@ class APIObject(BaseResource):
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
-        return s_resource({
-            "name": a_str(required=True, description="Object name"),
-            "enabled": a_bool(default=True, description="Whether enabled"),
-            "labels": a_map(a_str(), default={}, description="Labels"),
-
-            "id": a_str(computed=True, description="Object ID"),
-            "created_at": a_str(computed=True, description="Creation timestamp"),
-        })
+        return s_resource(
+            {
+                "name": a_str(required=True, description="Object name"),
+                "enabled": a_bool(default=True, description="Whether enabled"),
+                "labels": a_map(a_str(), default={}, description="Labels"),
+                "id": a_str(computed=True, description="Object ID"),
+                "created_at": a_str(computed=True, description="Creation timestamp"),
+            }
+        )
 
     async def _validate_config(self, config: APIObjectConfig) -> list[str]:
         errors = []
@@ -88,7 +89,7 @@ class APIObject(BaseResource):
                     "name": ctx.config.name,
                     "enabled": ctx.config.enabled,
                     "labels": ctx.config.labels or {},
-                }
+                },
             )
             data = response.json()
 
@@ -111,7 +112,7 @@ class APIObject(BaseResource):
                     "name": ctx.config.name,
                     "enabled": ctx.config.enabled,
                     "labels": ctx.config.labels or {},
-                }
+                },
             )
             data = response.json()
 

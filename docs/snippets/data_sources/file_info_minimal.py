@@ -35,12 +35,14 @@ class FileInfo(BaseDataSource):
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
-        return s_data_source({
-            "path": a_str(required=True),
-            "id": a_str(computed=True),
-            "size": a_num(computed=True),
-            "exists": a_bool(computed=True),
-        })
+        return s_data_source(
+            {
+                "path": a_str(required=True),
+                "id": a_str(computed=True),
+                "size": a_num(computed=True),
+                "exists": a_bool(computed=True),
+            }
+        )
 
     async def read(self, ctx: ResourceContext) -> FileInfoData | None:
         if not ctx.config:
