@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
-def provider_with_test_mode(provider_in_hub: Any) -> Generator[None]:
+def provider_with_test_mode(_provider_in_hub: Any) -> Generator[None]:
     """
     Enable test mode for test-only components.
 

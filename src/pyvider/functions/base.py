@@ -252,7 +252,7 @@ class FunctionAdapter:
         summary: str = "",
         description: str = "",
         param_descriptions: dict[str, str] | None = None,
-        return_description: str = "",  # Currently unused
+        _return_description: str = "",  # Reserved for future use
         allow_null: bool | list[str] = False,
         allow_unknown: bool | list[str] = False,
         deprecation_message: str = "",

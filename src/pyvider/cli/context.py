@@ -174,8 +174,8 @@ class PyviderContext(CLIContext):
         self,
         registry_obj: Any,
         component_discovery_cls: Any,
-        click_echo_func: Any,
-        click_secho_func: Any,
+        _click_echo_func: Any,
+        _click_secho_func: Any,
     ) -> None:
         if not self.components_discovered:
             try:
