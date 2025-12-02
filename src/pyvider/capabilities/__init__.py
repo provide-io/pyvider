@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from pyvider.capabilities.base import BaseCapability
 from pyvider.capabilities.decorators import register_capability, requires_capability

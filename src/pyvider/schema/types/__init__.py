@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from pyvider.schema.types.attribute import PvsAttribute
 from pyvider.schema.types.blocks import PvsNestedBlock

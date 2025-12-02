@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Literal, overload
