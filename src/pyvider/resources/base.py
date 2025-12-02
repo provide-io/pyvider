@@ -35,7 +35,7 @@ _UNREFINED_UNKNOWN_SENTINEL = CtyValue.unknown(CtyDynamic()).value
 class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     config_class: type[ConfigType] | None = None
     state_class: type[StateType] | None = None
-    private_state_class: type[PrivateStateType] | None = None
+    private_state_class: type[PrivateState] | None = None
 
     @classmethod
     @abstractmethod

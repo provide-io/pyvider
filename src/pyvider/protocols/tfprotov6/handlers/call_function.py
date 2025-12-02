@@ -115,9 +115,9 @@ def _build_function_arguments(
     func_sig: inspect.Signature, native_kwargs: dict[str, Any]
 ) -> tuple[list[Any], dict[str, Any]]:
     """Build positional and keyword arguments from native kwargs based on signature."""
-    positional_args = []
-    variadic_args = []
-    keyword_only_kwargs = {}
+    positional_args: list[Any] = []
+    variadic_args: list[Any] | tuple[Any, ...] = []
+    keyword_only_kwargs: dict[str, Any] = {}
 
     for param_name, param in func_sig.parameters.items():
         if param.kind == inspect.Parameter.VAR_POSITIONAL:
