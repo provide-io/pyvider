@@ -257,6 +257,7 @@ class TestUninstallCommand:
         provider_script = plugin_dir / "terraform-provider-pyvider"
         provider_script.write_text("#!/bin/bash\necho 'provider'")
         ctx.tf_plugin_dir = plugin_dir
+        ctx.provider_name = "pyvider"
 
         # Call uninstall
         with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=None):
@@ -282,6 +283,7 @@ class TestUninstallCommand:
         plugin_dir = tmp_path / "plugins"
         plugin_dir.mkdir(parents=True)
         ctx.tf_plugin_dir = plugin_dir
+        ctx.provider_name = "pyvider"
 
         # Call uninstall
         with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=venv_dir):
@@ -299,6 +301,7 @@ class TestUninstallCommand:
         plugin_dir = tmp_path / "empty_plugins"
         plugin_dir.mkdir(parents=True)
         ctx.tf_plugin_dir = plugin_dir
+        ctx.provider_name = "pyvider"
 
         # Should not raise error even when nothing installed
         with mock.patch("pyvider.cli.install_command._find_actual_venv", return_value=None):
