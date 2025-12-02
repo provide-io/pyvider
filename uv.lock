@@ -3222,7 +3222,7 @@ docs = [
 requires-dist = [
     { name = "attrs", specifier = ">=25.3.0" },
     { name = "click", specifier = ">=8.1.8" },
-    { name = "cryptography", specifier = ">=42.0.8" },
+    { name = "cryptography", specifier = ">=45.0.7" },
     { name = "google", specifier = ">=3.0.0" },
     { name = "grpcio", specifier = ">=1.76.0" },
     { name = "msgpack", specifier = ">=1.1.1" },
