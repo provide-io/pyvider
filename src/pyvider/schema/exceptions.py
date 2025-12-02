@@ -4,7 +4,6 @@
 #
 
 
-
 class PyviderSchemaError(Exception):
     """Base class for all schema-related errors."""
 
