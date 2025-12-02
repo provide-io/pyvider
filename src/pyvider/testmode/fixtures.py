@@ -28,6 +28,12 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture
+def _provider_in_hub(provider_in_hub: Any) -> Any:
+    """Alias for provider_in_hub to support internal fixture naming convention."""
+    return provider_in_hub
+
+
+@pytest.fixture
 def provider_with_test_mode(_provider_in_hub: Any) -> Generator[None]:
     """
     Enable test mode for test-only components.
