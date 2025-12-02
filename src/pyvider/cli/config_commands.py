@@ -18,7 +18,7 @@ from pyvider.cli.context import PyviderContext, pass_ctx
 @click.group()
 @flexible_options  # Allow logging control at the config group level
 @pass_ctx
-def config(ctx: PyviderContext, **kwargs: Any) -> None:
+def config(ctx: PyviderContext, /, **kwargs: Any) -> None:
     """Manage and display Pyvider configuration."""
     pass
 

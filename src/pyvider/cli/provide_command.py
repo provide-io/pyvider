@@ -32,17 +32,21 @@ def _configure_telemetry(config: Any) -> None:
     logger.info("Telemetry configured for provider server mode.", domain="system")
 
 
+_discovery_done = False
+
+
 async def _discover_components_once() -> None:
+    global _discovery_done
     # Deferred Imports for Provider Mode
     from pyvider.hub import hub
     from pyvider.hub.discovery import ComponentDiscovery
 
-    if hasattr(_discover_components_once, "done"):
+    if _discovery_done:
         return
 
     discovery = ComponentDiscovery(hub)
     await discovery.discover_all()
-    _discover_components_once.done = True
+    _discovery_done = True
 
 
 async def _instantiate_providers(logger: Any, hub: Any) -> dict:
@@ -183,7 +187,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
             graceful_shutdown_timeout=server_config["PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN"],
         )
 
-        server = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
+        server: Any = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
         hub.register("singleton", "rpc_plugin_server", lambda: server)
         await server.serve()
 
@@ -262,7 +266,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
     help="Set the logging level for the provider server.",
 )
 @click.pass_context
-def provide_cmd(ctx: click.Context, force: bool, log_level: str, **kwargs: Any) -> None:
+def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: Any) -> None:
     """
     Starts the provider in gRPC server mode for Terraform. (This is the default
     action when run by Terraform or when the binary is run with no arguments).

@@ -8,7 +8,7 @@ import time
 from typing import Any
 
 import attrs
-import msgpack  # type: ignore[import-untyped]
+import msgpack
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
@@ -223,7 +223,7 @@ def _handle_apply_result(
     if new_private_state_attrs:
         serialized_bytes = msgpack.packb(attrs.asdict(new_private_state_attrs), use_bin_type=True)
         response.private = encrypt(serialized_bytes)
-        logger.debug(f"Setting response.private: {response.private}")
+        logger.debug(f"Setting response.private: {response.private!r}")
         logger.debug(f"Serialized private bytes: {serialized_bytes}")
 
 

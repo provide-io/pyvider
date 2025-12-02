@@ -104,7 +104,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
         operation="compute_schema",
     )
 
-    diagnostics = []
+    diagnostics: list[Any] = []
     try:
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:

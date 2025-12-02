@@ -8,7 +8,7 @@ import time
 from typing import Any
 
 import attrs
-import msgpack  # type: ignore[import-untyped]
+import msgpack
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
@@ -86,7 +86,7 @@ async def _open_ephemeral_resource_impl(
         provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
 
-        ctx = EphemeralResourceContext(config=config_instance, test_mode_enabled=test_mode_enabled)
+        ctx: Any = EphemeralResourceContext(config=config_instance, test_mode_enabled=test_mode_enabled)
         resource_instance = resource_class()
 
         result_obj, private_state_obj, renew_at = await resource_instance.open(ctx)

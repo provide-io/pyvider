@@ -7,7 +7,7 @@
 import time
 from typing import Any
 
-import msgpack  # type: ignore[import-untyped]
+import msgpack
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
@@ -49,7 +49,7 @@ async def ReadResourceHandler(request: pb.ReadResource.Request, context: Any) ->
 async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) -> pb.ReadResource.Response:
     """Implementation of ReadResource handler."""
     response = pb.ReadResource.Response()
-    resource_context = None
+    resource_context: Any = None
 
     logger.debug(
         "ReadResource handler called",

@@ -58,7 +58,7 @@ async def _read_data_source_impl(
     )
 
     response = pb.ReadDataSource.Response()
-    resource_context = None
+    resource_context: Any = None
     try:
         ds_class = hub.get_component("data_source", request.type_name)
         if not ds_class:
