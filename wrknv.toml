@@ -49,15 +49,15 @@ version = "cat VERSION 2>/dev/null || grep '^version = ' pyproject.toml | cut -d
 run = "rm -rf build/ dist/ *.egg-info .pytest_cache .mypy_cache .ruff_cache .hypothesis htmlcov/ .coverage .mutmut-cache site/\nfind . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true\nfind . -type f -name '*.pyc' -delete 2>/dev/null || true\nfind . -type f -name '*.pyo' -delete 2>/dev/null || true\n"
 
 [tasks.docs]
-_default = "python scripts/docs_serve.py"
+_default = "python .provide/foundry/scripts/docs_serve.py"
 setup = "python -c \"from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))\""
-build = "python scripts/docs_preflight.py && mkdocs build"
+build = "python .provide/foundry/scripts/docs_preflight.py && mkdocs build"
 clean = "rm -rf site .provide"
-preflight = "python scripts/docs_preflight.py"
-validate = "python scripts/docs_validate.py"
+preflight = "python .provide/foundry/scripts/docs_preflight.py"
+validate = "python .provide/foundry/scripts/docs_validate.py"
 
 [tasks.docs.serve]
-run = "python scripts/docs_serve.py"
+run = "python .provide/foundry/scripts/docs_serve.py"
 timeout = 604800.0
 
 [tasks.docs.links]
