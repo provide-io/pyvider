@@ -98,6 +98,10 @@ exclude = ["**/*pb2*.py"]
 select = ["E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF"]
 ignore = ["ANN401", "B008", "E501"]
 
+[tool.ruff.lint.per-file-ignores]
+"docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
+"tests/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "SIM117", "SIM102"]
+
 [tool.ruff.lint.isort]
 known-first-party = ["pyvider", "tests"]
 force-sort-within-sections = true
