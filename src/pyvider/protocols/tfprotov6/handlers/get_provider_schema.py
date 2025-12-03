@@ -31,67 +31,66 @@ _task: asyncio.Task | None = None  # Store a reference to the task
 _cache_lock = asyncio.Lock()  # Lock to protect the creation of the Future itself
 
 
-async def _collect_resource_schemas(
+async def _collect_schemas(
+    component_type: str,
     diagnostics: list[pb.Diagnostic],
-) -> dict[str, pb.Schema]:
-    resource_schemas = {}
-    all_resources = get_all_components("resource")
-    for name, resource_class in all_resources.items():
+    converter=None,
+) -> dict[str, Any]:
+    """Collect and convert schemas for any component type.
+
+    Args:
+        component_type: Type of component ('resource', 'data_source', 'function')
+        diagnostics: List to append diagnostic messages to
+        converter: Optional async converter function for functions
+
+    Returns:
+        Dictionary of converted schemas keyed by component name
+
+    """
+    schemas = {}
+    all_components = get_all_components(component_type)
+
+    for name, component in all_components.items():
         try:
-            schema_obj = resource_class.get_schema()
-            resource_schemas[name] = await pvs_schema_to_proto(schema_obj)
+            if component_type == "function":
+                # Functions use a different conversion path
+                func_dict = function_to_dict(component)
+                if func_dict:
+                    proto_func = dict_to_proto_function(func_dict)
+                    if proto_func:
+                        schemas[name] = proto_func
+            else:
+                # Resources and data sources use schema conversion
+                schema_obj = component.get_schema()
+                schemas[name] = await pvs_schema_to_proto(schema_obj)
         except Exception as e:
             diagnostics.append(
                 pb.Diagnostic(
                     severity=pb.Diagnostic.WARNING,
-                    summary=f"Schema collection error for resource '{name}'",
+                    summary=f"Schema collection error for {component_type} '{name}'",
                     detail=str(e),
                 )
             )
-    return resource_schemas
+
+    return schemas
+
+
+async def _collect_resource_schemas(
+    diagnostics: list[pb.Diagnostic],
+) -> dict[str, pb.Schema]:
+    return await _collect_schemas("resource", diagnostics)
 
 
 async def _collect_data_source_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Schema]:
-    data_source_schemas = {}
-    all_data_sources = get_all_components("data_source")
-    for name, ds_class in all_data_sources.items():
-        try:
-            schema_obj = ds_class.get_schema()
-            data_source_schemas[name] = await pvs_schema_to_proto(schema_obj)
-        except Exception as e:
-            diagnostics.append(
-                pb.Diagnostic(
-                    severity=pb.Diagnostic.WARNING,
-                    summary=f"Schema collection error for data_source '{name}'",
-                    detail=str(e),
-                )
-            )
-    return data_source_schemas
+    return await _collect_schemas("data_source", diagnostics)
 
 
 async def _collect_function_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Function]:
-    functions = {}
-    all_functions = get_all_components("function")
-    for name, func_obj in all_functions.items():
-        try:
-            func_dict = function_to_dict(func_obj)
-            if func_dict:
-                proto_func = dict_to_proto_function(func_dict)
-                if proto_func:
-                    functions[name] = proto_func
-        except Exception as e:
-            diagnostics.append(
-                pb.Diagnostic(
-                    severity=pb.Diagnostic.WARNING,
-                    summary=f"Schema collection error for function '{name}'",
-                    detail=str(e),
-                )
-            )
-    return functions
+    return await _collect_schemas("function", diagnostics)
 
 
 async def _compute_schema_once() -> pb.GetProviderSchema.Response:
