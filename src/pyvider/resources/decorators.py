@@ -25,7 +25,7 @@ def register_resource(
         cls._registered_name = name  # type: ignore[attr-defined]
         cls._is_test_only = test_only  # type: ignore[attr-defined]
         if component_of:
-            cls._parent_capability = component_of  # type: ignore
+            cls._parent_capability = component_of  # type: ignore[attr-defined]
         logger.debug(
             "📊 Marked resource for discovery",
             resource=name,

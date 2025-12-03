@@ -19,8 +19,8 @@ def register_capability(name: str) -> Callable[[type], type]:
     """Decorator to register a capability class for discovery."""
 
     def decorator(cls: type) -> type:
-        cls._is_registered_capability = True  # type: ignore
-        cls._registered_name = name  # type: ignore
+        cls._is_registered_capability = True  # type: ignore[attr-defined]
+        cls._registered_name = name  # type: ignore[attr-defined]
         return cls
 
     return decorator

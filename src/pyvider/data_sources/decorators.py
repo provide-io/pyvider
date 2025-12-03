@@ -17,11 +17,11 @@ def register_data_source(
     """
 
     def decorator(cls: type) -> type:
-        cls._is_registered_data_source = True  # type: ignore
-        cls._registered_name = name  # type: ignore
-        cls._is_test_only = test_only  # type: ignore
+        cls._is_registered_data_source = True  # type: ignore[attr-defined]
+        cls._registered_name = name  # type: ignore[attr-defined]
+        cls._is_test_only = test_only  # type: ignore[attr-defined]
         if component_of:
-            cls._parent_capability = component_of  # type: ignore
+            cls._parent_capability = component_of  # type: ignore[attr-defined]
         logger.debug(
             f"📊 Marked data source '{name}' for discovery",
             capability=component_of,

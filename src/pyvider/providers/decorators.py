@@ -16,8 +16,8 @@ def register_provider(name: str) -> Callable[[type], type]:
 
     def decorator(cls: type) -> type:
         # Attach metadata to the class for discovery purposes
-        cls._is_registered_provider = True  # type: ignore
-        cls._registered_name = name  # type: ignore
+        cls._is_registered_provider = True  # type: ignore[attr-defined]
+        cls._registered_name = name  # type: ignore[attr-defined]
 
         # Register the provider class immediately
         hub.register("provider", name, cls)

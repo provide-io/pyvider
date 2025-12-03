@@ -24,11 +24,11 @@ def register_function(
     """
 
     def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
-        func._is_registered_function = True  # type: ignore
-        func._registered_name = name  # type: ignore
-        func._is_test_only = test_only  # type: ignore
+        func._is_registered_function = True  # type: ignore[attr-defined]
+        func._registered_name = name  # type: ignore[attr-defined]
+        func._is_test_only = test_only  # type: ignore[attr-defined]
         if component_of:
-            func._parent_capability = component_of  # type: ignore
+            func._parent_capability = component_of  # type: ignore[attr-defined]
 
         metadata = {
             "name": name,
@@ -42,7 +42,7 @@ def register_function(
             "discovery_method": "decorator",
             "test_only": test_only,
         }
-        func._function_metadata = metadata  # type: ignore
+        func._function_metadata = metadata  # type: ignore[attr-defined]
 
         logger.debug(
             "Debug info",
