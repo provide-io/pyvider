@@ -47,6 +47,7 @@ plugins:
 
 # Enable version detection hook
 hooks:
+  - .provide/foundry/theme/hooks/global_partials_hook.py
   - .provide/foundry/theme/hooks/version_hook.py
 
 # Navigation Structure
