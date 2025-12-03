@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from pyvider.cty import CtyNumber, CtyObject, CtyString
 from pyvider.schema.factory import a_num, a_str

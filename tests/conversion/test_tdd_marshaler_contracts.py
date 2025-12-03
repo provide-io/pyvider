@@ -3,7 +3,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
 
 from pyvider.conversion.marshaler import (
     _apply_schema_marks_iterative as _apply_schema_marks,
