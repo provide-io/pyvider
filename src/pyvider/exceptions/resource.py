@@ -18,25 +18,17 @@ from pyvider.exceptions.base import PluginError, PyviderValueError
 class ResourceError(PluginError):
     """Base class for resource-related errors."""
 
-    pass
-
 
 class DataSourceError(ResourceError):
     """Errors specific to data source operations."""
-
-    pass
 
 
 class CapabilityError(PluginError):  # Or could be ResourceError if capabilities are tied to resources
     """Errors related to component capabilities."""
 
-    pass
-
 
 class ResourceValidationError(ResourceError, PyviderValueError):
     """Raised when resource configuration or state validation fails."""
-
-    pass
 
 
 class ResourceNotFoundError(FoundationNotFoundError):

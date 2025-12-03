@@ -20,7 +20,6 @@ class BaseCapability(ABC):
         Subclasses can override this to perform their own setup.
         """
         # No-op by default, subclasses can override
-        pass
 
     @staticmethod
     @abstractmethod

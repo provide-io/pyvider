@@ -357,7 +357,7 @@ def cty_path_to_proto_path(cty_path: CtyPath | None) -> pb.AttributePath | None:
     return pb.AttributePath(steps=proto_steps)
 
 
-async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:  # noqa: C901
+async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
     """Create a Terraform diagnostic from an exception.
 
     Uses foundation's ErrorContext when available for richer diagnostics.

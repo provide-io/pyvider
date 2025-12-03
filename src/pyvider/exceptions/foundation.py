@@ -7,8 +7,6 @@
 class PyviderError(Exception):
     """Base class for all Pyvider errors."""
 
-    pass
-
 
 class CapabilityError(PyviderError):
     pass

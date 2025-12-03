@@ -22,8 +22,6 @@ class ProviderError(FoundationConfigurationError):
 class ProviderConfigurationError(ProviderError, ComponentConfigurationError):
     """Raised when provider configuration is invalid."""
 
-    pass
-
 
 class ProviderInitializationError(FoundationRuntimeError):
     """Raised when provider initialization fails."""

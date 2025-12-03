@@ -7,8 +7,6 @@
 class PyviderSchemaError(Exception):
     """Base class for all schema-related errors."""
 
-    pass
-
 
 class SchemaConversionError(PyviderSchemaError):
     """Error during schema conversion processes."""
@@ -30,25 +28,17 @@ class SchemaConversionError(PyviderSchemaError):
 class PvsValidationError(PyviderSchemaError):
     """Raised when schema validation fails."""
 
-    pass
-
 
 class PvsSchemaDefinitionError(PyviderSchemaError):
     """Raised when schema definition is invalid."""
-
-    pass
 
 
 class PvsAttributeError(PyviderSchemaError):
     """Raised when an attribute definition is invalid."""
 
-    pass
-
 
 class PvsBlockError(PyviderSchemaError):
     """Raised when a block definition is invalid. (Retained for general block-like errors)."""
-
-    pass
 
 
 # 🐍🏗️🔚

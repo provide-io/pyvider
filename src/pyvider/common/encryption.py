@@ -64,8 +64,6 @@ ERROR_TOO_SHORT: Final[str] = (
 class EncryptionError(Exception):
     """Raised when encryption/decryption operations fail."""
 
-    pass
-
 
 class EncryptionManager:
     """

@@ -116,7 +116,7 @@ class BaseFunction(ABC):
         Returns:
             A list of FunctionParameter objects describing the expected inputs.
         """
-        pass  # pragma: no cover
+        # pragma: no cover
 
     @abstractmethod
     def get_return_type(self) -> FunctionReturnType:
@@ -126,7 +126,7 @@ class BaseFunction(ABC):
         Returns:
             A FunctionReturnType object describing the output type.
         """
-        pass  # pragma: no cover
+        # pragma: no cover
 
     @abstractmethod
     async def call(self, *args: Any, **kwargs: Any) -> Any:
@@ -147,7 +147,7 @@ class BaseFunction(ABC):
         Raises:
             FunctionError: For errors reportable to the Terraform user.
         """
-        pass  # pragma: no cover
+        # pragma: no cover
 
     async def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """Allows BaseFunction instances to be called directly like functions."""

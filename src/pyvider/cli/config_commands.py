@@ -20,7 +20,6 @@ from pyvider.cli.context import PyviderContext, pass_ctx
 @pass_ctx
 def config(ctx: PyviderContext, /, **kwargs: Any) -> None:
     """Manage and display Pyvider configuration."""
-    pass
 
 
 @config.command(name="show")

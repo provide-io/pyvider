@@ -15,7 +15,5 @@ class PrivateState:
     for clarity and type-hinting purposes.
     """
 
-    pass
-
 
 # 🐍🏗️🔚

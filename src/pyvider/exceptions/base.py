@@ -96,8 +96,6 @@ class FrameworkConfigurationError(PyviderError):
 class PluginError(PyviderError):
     """Base class for errors originating from plugin operations or lifecycle."""
 
-    pass
-
 
 class PyviderValueError(PyviderError):
     """Generic value-related errors within Pyvider."""

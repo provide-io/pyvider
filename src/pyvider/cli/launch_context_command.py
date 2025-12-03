@@ -26,7 +26,7 @@ from pyvider.common.launch_context import LaunchMethod
     is_flag=True,
     help="Show detailed information including environment variables.",
 )
-def launch_context_cmd(format: str, verbose: bool) -> None:  # noqa: C901
+def launch_context_cmd(format: str, verbose: bool) -> None:
     """
     Display detailed information about how Pyvider was launched.
 
