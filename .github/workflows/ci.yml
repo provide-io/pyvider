@@ -1,0 +1,53 @@
+name: 🧪 CI - Tests with Deployment Gate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+        with:
+          python-version: '3.11'
+          install-extras: 'dev,test'
+      - uses: provide-io/ci-tooling/actions/python-quality@v0.0.1
+        with:
+          source-paths: 'src tests'
+
+  test:
+    name: Tests
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+        with:
+          python-version: '3.11'
+          install-extras: 'dev,test'
+      - uses: provide-io/ci-tooling/actions/python-test@v0.0.1
+        with:
+          coverage-threshold: 80
+
+  release:
+    name: Release
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: provide-io/ci-tooling/actions/setup-python-env@v0.0.1
+        with:
+          python-version: '3.11'
+      - uses: provide-io/ci-tooling/actions/python-build@v0.0.1
+      - uses: provide-io/ci-tooling/actions/python-release@v0.0.1
