@@ -166,3 +166,6 @@ exclude_lines = [
     "def __str__",
     "pass",
 ]
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "workenv"]
