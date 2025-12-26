@@ -1,0 +1,35 @@
+# CI workflow for Python projects
+# Uses wrknv tasks for consistency between local and CI environments.
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Run CI pipeline
+        run: |
+          source .venv/bin/activate
+          we run ci
+
+      - name: Run security scan
+        run: |
+          source .venv/bin/activate
+          we run security
