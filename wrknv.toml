@@ -90,3 +90,6 @@ quality = [
 [tasks.setup]
 _default = "uv sync"
 pre-commit = "if ! command -v pre-commit >/dev/null 2>&1; then\n  echo \"Installing pre-commit...\"\n  uv pip install pre-commit\nfi\nif [ ! -f .pre-commit-config.yaml ]; then\n  echo \"Installing standard pre-commit config...\"\n  if [ -f ../ci-tooling/configs/pre-commit-config.yaml ]; then\n    cp ../ci-tooling/configs/pre-commit-config.yaml .pre-commit-config.yaml\n  else\n    echo \"Warning: ci-tooling/configs/pre-commit-config.yaml not found\"\n    echo \"Please ensure ci-tooling is cloned at ../ci-tooling\"\n    exit 1\n  fi\nfi\npre-commit install\npre-commit install --hook-type commit-msg\necho \"✓ Pre-commit hooks installed\"\n"
+
+[tasks.security]
+_default = "bandit -r src/ -c pyproject.toml"
