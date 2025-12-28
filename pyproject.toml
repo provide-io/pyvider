@@ -102,6 +102,9 @@ ignore = ["ANN401", "B008", "E501"]
 [tool.ruff.lint.per-file-ignores]
 "docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
 "tests/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "SIM117", "SIM102"]
+# Complex protocol handlers - inherently complex due to Terraform protocol requirements
+"src/pyvider/cli/launch_context_command.py" = ["C901"]
+"src/pyvider/protocols/tfprotov6/handlers/utils.py" = ["C901"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["pyvider", "tests"]

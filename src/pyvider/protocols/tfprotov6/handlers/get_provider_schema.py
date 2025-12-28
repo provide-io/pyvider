@@ -34,7 +34,7 @@ _cache_lock = asyncio.Lock()  # Lock to protect the creation of the Future itsel
 async def _collect_schemas(
     component_type: str,
     diagnostics: list[pb.Diagnostic],
-    converter=None,
+    converter: Any = None,
 ) -> dict[str, Any]:
     """Collect and convert schemas for any component type.
 
