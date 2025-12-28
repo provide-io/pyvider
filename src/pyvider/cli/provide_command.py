@@ -160,8 +160,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         provider_instances = await _instantiate_providers(logger, hub)
 
-        # Register the first provider as the singleton "provider" for backwards compatibility
-        # TODO: In the future, handlers should route to the correct provider based on resource type
+        # Register the provider as the singleton - pyvider follows Terraform's model of one provider per binary
         primary_provider = next(iter(provider_instances.values()))
         hub.register("singleton", "provider", primary_provider)
         logger.debug(
