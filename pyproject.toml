@@ -116,6 +116,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S110", "S311", "PLR0124"]
 "docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
 "tests/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "SIM117", "SIM102"]
 # Complex protocol handlers - inherently complex due to Terraform protocol requirements
