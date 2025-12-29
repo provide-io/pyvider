@@ -120,9 +120,8 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["PLR0124"]
+"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "B017", "C901", "E402", "PLR0124", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117"]
 "docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
-"tests/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "SIM117", "SIM102"]
 # Complex protocol handlers - inherently complex due to Terraform protocol requirements
 "src/pyvider/cli/launch_context_command.py" = ["C901"]
 "src/pyvider/protocols/tfprotov6/handlers/utils.py" = ["C901"]
