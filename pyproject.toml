@@ -72,6 +72,7 @@ log_cli = true
 log_cli_level = "DEBUG"
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["src", "."]
 python_files = ["test_*.py"]
 norecursedirs = [
     ".git",
