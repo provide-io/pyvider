@@ -104,6 +104,7 @@ ignore = [
     "B008",     # function-call-in-default-argument (Click uses this pattern)
     "E501",     # line-too-long (handled by formatter)
     "S101",     # assert (valid in tests)
+    "S104",   # binding-to-all-interfaces (intentional for servers)
     "S108",     # hardcoded-temp-file (/tmp is fine for our use cases)
     "S310",     # suspicious-url-open-for-protocol (URLs are controlled)
     "S603",     # subprocess-without-shell-equals-true (trusted input)
