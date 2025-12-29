@@ -97,8 +97,22 @@ target-version = "py311"
 exclude = ["**/*pb2*.py"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF"]
-ignore = ["ANN401", "B008", "E501"]
+select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
+ignore = [
+    "ANN401",   # any-type (too restrictive)
+    "B008",     # function-call-in-default-argument (Click uses this pattern)
+    "E501",     # line-too-long (handled by formatter)
+    "S101",     # assert (valid in tests)
+    "S108",     # hardcoded-temp-file (/tmp is fine for our use cases)
+    "S310",     # suspicious-url-open-for-protocol (URLs are controlled)
+    "S603",     # subprocess-without-shell-equals-true (trusted input)
+    "S607",     # start-process-with-partial-path (trusted executables)
+    "PLR0911",  # too-many-return-statements (refactor later)
+    "PLR0912",  # too-many-branches (refactor later)
+    "PLR0913",  # too-many-arguments (common in config classes)
+    "PLR0915",  # too-many-statements (refactor later)
+    "PLR2004",  # magic-value-comparison (too noisy)
+]
 
 [tool.ruff.lint.per-file-ignores]
 "docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
