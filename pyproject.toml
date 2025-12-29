@@ -104,9 +104,12 @@ ignore = [
     "B008",     # function-call-in-default-argument (Click uses this pattern)
     "E501",     # line-too-long (handled by formatter)
     "S101",     # assert (valid in tests)
-    "S104",   # binding-to-all-interfaces (intentional for servers)
+    "S104",     # binding-to-all-interfaces (intentional for servers)
+    "S105",     # hardcoded-password-string (false positive for variable names)
     "S108",     # hardcoded-temp-file (/tmp is fine for our use cases)
+    "S110",     # try-except-pass (legitimate for cleanup)
     "S310",     # suspicious-url-open-for-protocol (URLs are controlled)
+    "S311",     # random (not for crypto)
     "S603",     # subprocess-without-shell-equals-true (trusted input)
     "S607",     # start-process-with-partial-path (trusted executables)
     "PLR0911",  # too-many-return-statements (refactor later)
@@ -117,7 +120,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S110", "S311", "PLR0124"]
+"tests/**" = ["PLR0124"]
 "docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
 "tests/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "SIM117", "SIM102"]
 # Complex protocol handlers - inherently complex due to Terraform protocol requirements
