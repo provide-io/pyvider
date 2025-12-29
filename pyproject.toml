@@ -55,7 +55,7 @@ docs = [
 pyvider = "pyvider.cli.__main__:main"
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=75.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
