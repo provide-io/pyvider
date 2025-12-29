@@ -94,7 +94,6 @@ def test_exception_instantiation_and_str(exc_class: type[Exception]) -> None:
             assert isinstance(instance, Exception)
     except TypeError as e:
         print(f"Note: {exc_class.__name__} could not be instantiated generically for str test: {e}")
-        pass
 
 
 @given(st.text(min_size=1, max_size=100))

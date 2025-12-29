@@ -112,7 +112,6 @@ class ProviderHandler(ProviderServicer):
                 pass
         except Exception:
             pass
-        return
 
     async def StartStream(self, request: Any, context: Any) -> None:
         return

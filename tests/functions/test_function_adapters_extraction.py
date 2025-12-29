@@ -186,7 +186,6 @@ class TestExtractDocstringMeta:
 
             This is more detail.
             """
-            pass
 
         base_meta = {}
         _extract_docstring_meta(test_func, base_meta)
@@ -199,7 +198,6 @@ class TestExtractDocstringMeta:
 
         def test_func() -> None:
             """Docstring summary."""
-            pass
 
         base_meta = {"summary": "Existing summary"}
         _extract_docstring_meta(test_func, base_meta)
@@ -276,7 +274,6 @@ class TestFunctionToDict:
 
         def test_func(name: str) -> None:
             """This function does something."""
-            pass
 
         result = function_to_dict(test_func)
 

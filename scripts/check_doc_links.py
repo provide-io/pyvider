@@ -128,23 +128,21 @@ def _check_internal_link(
                     f"{rel_source}:{line_num}: Broken link to '{link_url}' "
                     f"(resolved to {target_path}, which does not exist)"
                 )
-            else:
-                # If there's an anchor, check it exists in target file
-                if anchor:
-                    target_headings = extract_headings(target_path)
-                    if anchor not in target_headings:
-                        rel_source = file_path.relative_to(DOCS_DIR)
-                        errors.append(
-                            f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in '{link_path_str}'"
-                        )
+            # If there's an anchor, check it exists in target file
+            elif anchor:
+                target_headings = extract_headings(target_path)
+                if anchor not in target_headings:
+                    rel_source = file_path.relative_to(DOCS_DIR)
+                    errors.append(
+                        f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in '{link_path_str}'"
+                    )
         except Exception as e:
             rel_source = file_path.relative_to(DOCS_DIR)
             errors.append(f"{rel_source}:{line_num}: Error resolving link '{link_url}': {e}")
-    else:
-        # Just an anchor link (same file)
-        if anchor and anchor not in file_headings:
-            rel_source = file_path.relative_to(DOCS_DIR)
-            errors.append(f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in same file")
+    # Just an anchor link (same file)
+    elif anchor and anchor not in file_headings:
+        rel_source = file_path.relative_to(DOCS_DIR)
+        errors.append(f"{rel_source}:{line_num}: Broken anchor link '#{anchor}' in same file")
     return errors
 
 

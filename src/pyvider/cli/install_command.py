@@ -29,9 +29,8 @@ def _remove_provider_script(ctx: PyviderContext, quiet: bool) -> None:
         target_provider_path.unlink()
         if not quiet:
             pout(f"  Provider script removed: {target_provider_path}", style="cyan")
-    else:
-        if not quiet:
-            pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
+    elif not quiet:
+        pout(f"  Provider script not found at: {target_provider_path}", style="yellow")
 
 
 def _remove_empty_parent_dirs(ctx: PyviderContext, quiet: bool) -> None:

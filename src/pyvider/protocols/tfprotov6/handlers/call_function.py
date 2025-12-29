@@ -276,23 +276,22 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
                     f"Suggestion: Provide at least {num_required} arguments. This function accepts "
                     f"additional variadic arguments beyond the required ones."
                 )
-        else:
-            # Without variadic parameter, must match exactly
-            if num_provided != num_required:
-                logger.error(
-                    "Function called with wrong number of arguments",
-                    operation="call_function",
-                    function_name=func_name,
-                    required_count=num_required,
-                    provided_count=num_provided,
-                    has_variadic=False,
-                )
-                raise PyviderFunctionError(
-                    f"Incorrect number of arguments for function '{func_name}'.\n\n"
-                    f"Expected: {num_required} arguments\n"
-                    f"Received: {num_provided} arguments\n\n"
-                    f"Suggestion: Provide exactly {num_required} arguments to this function."
-                )
+        # Without variadic parameter, must match exactly
+        elif num_provided != num_required:
+            logger.error(
+                "Function called with wrong number of arguments",
+                operation="call_function",
+                function_name=func_name,
+                required_count=num_required,
+                provided_count=num_provided,
+                has_variadic=False,
+            )
+            raise PyviderFunctionError(
+                f"Incorrect number of arguments for function '{func_name}'.\n\n"
+                f"Expected: {num_required} arguments\n"
+                f"Received: {num_provided} arguments\n\n"
+                f"Suggestion: Provide exactly {num_required} arguments to this function."
+            )
 
         native_kwargs, has_unknown = _process_function_arguments(
             request.arguments, params_meta, variadic_meta, func_sig

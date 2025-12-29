@@ -103,7 +103,6 @@ class MockConnectionResource(BaseEphemeralResource):
         if not ctx.private_state or ctx.private_state.connection_id != "conn-123":
             raise ResourceError("Close called with invalid private state.")
         # In a real implementation, this is where you'd call something like `connection.close()`
-        pass
 
 
 @pytest.mark.asyncio

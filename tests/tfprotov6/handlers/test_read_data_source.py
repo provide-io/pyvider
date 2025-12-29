@@ -238,7 +238,6 @@ class TestReadDataSourceCapabilityInjection:
 
         async def mock_read(ctx: ResourceContext, **kwargs: Any) -> None:
             read_called_with_kwargs.update(kwargs)
-            return None
 
         mock_ds_instance = MagicMock()
         mock_ds_instance.read = mock_read
@@ -298,7 +297,6 @@ class TestReadDataSourceCapabilityInjection:
 
         async def mock_read(ctx: ResourceContext, **kwargs: Any) -> None:
             read_called_with_kwargs.update(kwargs)
-            return None
 
         mock_ds_instance = MagicMock()
         mock_ds_instance.read = mock_read
@@ -344,7 +342,6 @@ class TestReadDataSourceCapabilityInjection:
 
         async def mock_read(ctx: ResourceContext, **kwargs: Any) -> None:
             read_called_with_kwargs.update(kwargs)
-            return None
 
         mock_ds_instance = MagicMock()
         mock_ds_instance.read = mock_read
@@ -403,7 +400,6 @@ class TestReadDataSourceContextDiagnostics:
         async def mock_read(ctx: ResourceContext) -> None:
             # Store diagnostic in context
             ctx.diagnostics.append(diag)
-            return None
 
         mock_ds_instance = MagicMock()
         mock_ds_instance.read = mock_read

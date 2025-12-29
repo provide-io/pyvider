@@ -419,24 +419,23 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
                     detail_parts.append(f"{key}: {value}")
 
             detail = "\n".join(detail_parts) if detail_parts else str(exc)
+    # Handle other specific exception types
+    elif isinstance(exc, ResourceLifecycleContractError):
+        detail = str(exc)
+        if hasattr(exc, "detail") and exc.detail:
+            detail += f"\n\nDetails:\n{exc.detail}"
+    elif isinstance(exc, (FunctionError, ResourceError | DataSourceError, PyviderError)):
+        detail = str(exc)
     else:
-        # Handle other specific exception types
-        if isinstance(exc, ResourceLifecycleContractError):
-            detail = str(exc)
-            if hasattr(exc, "detail") and exc.detail:
-                detail += f"\n\nDetails:\n{exc.detail}"
-        elif isinstance(exc, (FunctionError, ResourceError | DataSourceError, PyviderError)):
-            detail = str(exc)
-        else:
-            summary = "Internal Provider Error"
-            detail = (
-                "The provider encountered an unexpected error. This is likely a bug in the provider."
-                "\nPlease report this issue to the provider developers."
-            )
-            logger.error(
-                f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
-                exc_info=True,
-            )
+        summary = "Internal Provider Error"
+        detail = (
+            "The provider encountered an unexpected error. This is likely a bug in the provider."
+            "\nPlease report this issue to the provider developers."
+        )
+        logger.error(
+            f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
+            exc_info=True,
+        )
 
     return pb.Diagnostic(
         severity=severity,

@@ -101,7 +101,6 @@ class TestHandlerMetricsInstrumentation:
         # This handler requires a running server instance
         # Metrics instrumentation is identical to other handlers
         # Coverage is provided by integration tests
-        pass
 
     @pytest.mark.asyncio
     async def test_validate_provider_config_metrics(self, mock_provider_in_hub: Any) -> None:
