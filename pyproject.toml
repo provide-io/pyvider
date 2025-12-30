@@ -1,6 +1,12 @@
 #
 # pyvider/pyproject.toml
 #
+# Python Terraform Provider Framework
+#
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyvider"
@@ -55,10 +61,6 @@ docs = [
 
 [project.scripts]
 pyvider = "pyvider.cli.__main__:main"
-
-[build-system]
-requires = ["setuptools>=75.0", "wheel"]
-build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
