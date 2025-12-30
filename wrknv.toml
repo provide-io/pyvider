@@ -32,6 +32,7 @@ _default = [
     "lint",
     "typecheck",
 ]
+parallel = true
 all = [
     "format.check",
     "lint",
