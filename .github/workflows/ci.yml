@@ -24,10 +24,8 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-groups
 
-      - name: Install wrknv from GitHub releases
-        run: |
-          WRKNV_URL=$(curl -sL https://api.github.com/repos/provide-io/wrknv/releases/latest | jq -r '.assets[] | select(.name | endswith(".whl")) | .browser_download_url')
-          uv pip install "$WRKNV_URL"
+      - name: Install wrknv
+        run: uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
 
       - name: Run CI pipeline
         run: |
