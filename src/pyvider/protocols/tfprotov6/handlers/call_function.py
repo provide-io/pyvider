@@ -294,7 +294,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             )
 
         native_kwargs, has_unknown = _process_function_arguments(
-            request.arguments, params_meta, variadic_meta, func_sig
+            list(request.arguments), params_meta, variadic_meta, func_sig
         )
 
         declared_return_cty_type = func_meta.get("return", {}).get("cty_type", CtyDynamic())
