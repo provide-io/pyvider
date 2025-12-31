@@ -7,7 +7,7 @@
 import time
 from typing import Any
 
-import msgpack
+import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
 from provide.foundation.errors import resilient
 
