@@ -132,4 +132,4 @@ uv add pyvider
   Made with ❤️ by <a href="https://provide.io">Provide</a>
 </p>
 
-Copyright (c) Provide.io LLC.
+Copyright (c) provide.io LLC.
