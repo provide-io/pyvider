@@ -7,7 +7,7 @@ This page documents Pyvider's built-in metrics for monitoring provider operation
 Pyvider provides automatic metrics collection for all provider operations using the `provide.foundation.metrics` library. These metrics are exported as counters and histograms that can be integrated with monitoring systems like Prometheus, CloudWatch, or Datadog.
 
 !!! note "Metrics vs Full Observability"
-    Pyvider currently provides **metrics only** through the `pyvider.observability` module. For structured logging, use `structlog` or `provide.foundation.logging` directly in your provider code. Advanced tracing and profiling features may be added in future releases.
+Pyvider currently provides **metrics only** through the `pyvider.observability` module. For structured logging, use `structlog` or `provide.foundation.logging` directly in your provider code. Advanced tracing and profiling features may be added later; timing may change or be removed.
 
 ## Available Metrics
 

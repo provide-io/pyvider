@@ -250,7 +250,7 @@ Interested in contributing to the capabilities system?
 
 - Join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - Review the [Contributing Guidelines](../contributing/guidelines/)
-- Check the [Roadmap](../development/roadmap/) for upcoming features
+- Check the [Roadmap](../development/roadmap/) for exploratory features
 
 ---
 

@@ -223,7 +223,7 @@ The roadmap is a living document. Priorities may shift based on:
 - Terraform protocol updates
 - Resource constraints
 
-Have ideas for future Pyvider features? We'd love to hear them!
+Have ideas for potential Pyvider features? We'd love to hear them!
 
 - Open an issue on GitHub with the `enhancement` label
 - Participate in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
