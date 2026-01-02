@@ -39,8 +39,8 @@ Pyvider removes these barriers by letting you write providers in Python while ma
 
 ## ⚠️ Current Status
 
-!!! warning "Alpha Software"
-    **Pyvider is in alpha (v0.0.1000)** - please be aware:
+!!! warning "Pre-release"
+    **Pyvider is in pre-release (v0.3.0)** - please be aware:
 
     - **APIs may change** before the 1.0 release without prior notice
     - **Best suited** for internal tooling, experimentation, and learning

@@ -1,7 +1,7 @@
 # Building Your First Resource
 
-!!! info "Alpha Status"
-    pyvider is in alpha. This tutorial covers **stable** functionality.
+!!! info "Release Status"
+    pyvider is in pre-release. This tutorial covers **stable** functionality.
     See [project status](../#project-status) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform resource using pyvider. By the end, you'll have a working file resource that creates, reads, updates, and deletes local files through Terraform.
