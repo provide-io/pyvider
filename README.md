@@ -91,15 +91,15 @@ This project uses `wrknv` for task automation. Run `we tasks` to see all availab
 - `we format` - Format code
 - `we typecheck` - Run type checker
 
-See [CLAUDE.md](CLAUDE.md) for detailed development instructions and architecture information.
+See [CLAUDE.md](https://github.com/provide-io/pyvider/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
 
 ## 🤝 Contributing
 
-Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) and the [Development](#-development) section above for setup instructions.
+Contributions welcome! See [Contributing Guidelines](https://github.com/provide-io/pyvider/blob/main/CONTRIBUTING.md) and the [Development](#-development) section above for setup instructions.
 
 ## 📄 License
 
-Apache 2.0 - See [LICENSE](LICENSE) for details.
+Apache 2.0 - See [LICENSE](https://github.com/provide-io/pyvider/blob/main/LICENSE) for details.
 
 ## 📦 Installation
 
@@ -131,3 +131,5 @@ uv add pyvider
 <p align="center">
   Made with ❤️ by <a href="https://provide.io">Provide</a>
 </p>
+
+Copyright (c) Provide.io LLC.
