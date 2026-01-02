@@ -166,12 +166,12 @@ Perfect for:
 
 ### What are Capabilities?
 
-Capabilities are a planned composition mechanism that would allow you to create reusable, modular components extending provider functionality. Think of them as mixins or plugins.
+Capabilities are a roadmap composition mechanism for reusable, modular components that extend provider functionality. Think of them as mixins or plugins.
 
 **Current Status:**
 - ✅ Basic infrastructure implemented (`BaseCapability`, decorators)
 - ⚠️ Lifecycle hooks partially implemented
-- 🔮 Advanced features planned but not yet available
+- 🔮 Advanced features tracked in the roadmap
 
 ### Planned Features
 
