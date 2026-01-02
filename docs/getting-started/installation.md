@@ -385,7 +385,7 @@ uv sync --upgrade
 python -c "import pyvider; print(pyvider.__version__)"
 ```
 
-**Note**: Pyvider is in alpha. Breaking changes may occur between releases. Check the release notes before upgrading.
+**Note**: Check the release notes before upgrading.
 
 ## 📚 Next Steps
 

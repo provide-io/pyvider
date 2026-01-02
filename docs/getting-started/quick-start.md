@@ -13,7 +13,7 @@ Before starting, ensure you have:
 
 ## ⚠️ Alpha Notice
 
-Pyvider is in alpha. The APIs shown here may change before 1.0. This example is tested and working as of version 0.0.1000.
+This example is tested and working as of version 0.3.0.
 
 ## 🎯 What We'll Build
 
