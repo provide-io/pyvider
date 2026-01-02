@@ -10,7 +10,8 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 - **Auto-generated documentation**: Extracted from Python docstrings using mkdocstrings
 
 !!! warning "API Stability - Pre-release (v0.0.1000)"
-    Pyvider is in its initial release series. Breaking changes are documented in release notes.
+    Pyvider is in its pre-release series. Breaking changes are documented in release notes.
+    Some documented or roadmap items are exploratory and may change or be removed.
 
     **Important Notes:**
     - Some documented APIs may not be fully implemented yet

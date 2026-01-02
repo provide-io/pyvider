@@ -27,7 +27,7 @@ To democratize Terraform provider development by making it accessible to Python 
 ## 📊 Comparison with Traditional Providers
 
 !!! note "For Reference Only"
-    This comparison is provided for informational purposes. As Pyvider is in pre-release, we recommend evaluating based on your specific needs rather than treating this as a definitive decision matrix.
+    This comparison is provided for informational purposes. As Pyvider is in pre-release, we recommend evaluating based on your specific needs rather than treating this as a definitive decision matrix. Some documented or roadmap items are exploratory and may change or be removed.
 
 | Feature | Pyvider (Python) | Traditional (Go) |
 |---------|------------------|------------------|
@@ -55,6 +55,8 @@ To democratize Terraform provider development by making it accessible to Python 
 ## 🌟 Early Adopters & Use Cases
 
 Pyvider is in pre-release and being used by early adopters for:
+
+Some documented or roadmap items are exploratory and may change or be removed.
 
 ### Internal Tooling
 Building custom providers for company-specific infrastructure:
