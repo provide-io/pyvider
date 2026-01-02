@@ -354,7 +354,7 @@ resource "mycloud_server" "web" {
 
 ## Real-World Example: Complete Web Server
 
-Let's build a complete, production-ready web server resource schema:
+Let's build a complete, production-focused web server resource schema:
 
 ```python
 from pyvider.resources import register_resource, BaseResource

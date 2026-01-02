@@ -11,7 +11,7 @@
 
 ## Recommended Approaches
 
-This guide shows you how to share code and functionality across your Pyvider components using standard Python patterns. These approaches are production-ready and well-tested.
+This guide shows you how to share code and functionality across your Pyvider components using standard Python patterns. These approaches are production-focused and well-tested.
 
 ### 1. Base Class Inheritance
 
@@ -139,7 +139,7 @@ pip install my-pyvider-bundle
 
 ### Example: pyvider-components
 
-The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides a comprehensive collection of production-ready components:
+The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides a comprehensive collection of production-focused components:
 
 - **Resources**: file_content, local_directory, timed_token
 - **Data Sources**: env_variables, file_info, http_api, lens_jq

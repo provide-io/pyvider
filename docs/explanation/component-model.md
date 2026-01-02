@@ -379,7 +379,7 @@ class Server(BaseCloudResource):
 - **[Creating Resources](../guides/building-components/creating-resources/)** - Resource implementation guide
 - **[Creating Data Sources](../guides/building-components/creating-data-sources/)** - Data source patterns
 - **[Creating Functions](../guides/building-components/creating-functions/)** - Function development
-- **[Best Practices](../guides/production/best-practices/)** - Production-ready patterns
+- **[Best Practices](../guides/production/best-practices/)** - Production-focused patterns
 
 ---
 

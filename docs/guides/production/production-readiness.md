@@ -1,6 +1,6 @@
 # Production Readiness Guide
 
-This guide covers operational concerns for building production-ready Pyvider providers, including error handling, logging, performance optimization, testing, and security.
+This guide covers operational concerns for building production-focused Pyvider providers, including error handling, logging, performance optimization, testing, and security.
 
 For foundational design patterns and code organization, see [Best Practices](../production/best-practices/).
 
@@ -403,13 +403,13 @@ For comprehensive security guidance, see [Security Best Practices](../production
 - [Performance Optimization](../production/performance-optimization/) - In-depth performance tuning
 - [Error Handling](../development/error-handling/) - Error handling patterns
 - [Logging](../development/logging/) - Structured logging guide
-- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
+- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-focused examples
 
 ## Learn by Example
 
 The best way to learn is by studying working code. Check out [pyvider-components](https://github.com/provide-io/pyvider-components) for:
 
-- **Production-ready implementations**: file_content, local_directory, http_api, and more
+- **Production-focused implementations**: file_content, local_directory, http_api, and more
 - **100+ working examples**: Complete Terraform configurations
 - **Comprehensive tests**: See how to test every scenario
 - **Real-world patterns**: Learn from battle-tested code

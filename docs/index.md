@@ -38,7 +38,7 @@
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
 
 ### 📖 [Developer Guides](guides/building-components/creating-providers/)
-Build production-ready providers:
+Build production-focused providers:
 - [Creating Providers](guides/building-components/creating-providers/) - Provider configuration
 - [Creating Resources](guides/building-components/creating-resources/) - CRUD operations
 - [Creating Data Sources](guides/building-components/creating-data-sources/) - Read-only data
@@ -88,7 +88,7 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 
 ## 📦 Ready-to-Use Components
 
-The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides 100+ production-ready components:
+The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides 100+ production-focused components:
 
 - **Resources**: file_content, local_directory, timed_token
 - **Data Sources**: env_variables, file_info, http_api, lens_jq

@@ -16,7 +16,7 @@ To democratize Terraform provider development by making it accessible to Python 
 - **⚡ Rapid Development**: Build providers 3-5x faster than traditional Go implementations
 - **🔒 Type Safety**: Leverage Python's type hints and attrs for robust, maintainable code
 - **📊 Better Observability**: Built-in structured logging with provide.foundation
-- **🚀 Production Ready**: Battle-tested with comprehensive error handling and state management
+- **🚀 Production-focused**: Battle-tested with comprehensive error handling and state management
 
 ### For Organizations
 - **💼 Lower Barrier to Entry**: Tap into your existing Python talent pool

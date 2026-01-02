@@ -1,6 +1,6 @@
 # Creating Providers
 
-This comprehensive guide walks you through creating production-ready Terraform providers using Pyvider, from basic setup to advanced features.
+This comprehensive guide walks you through creating production-focused Terraform providers using Pyvider, from basic setup to advanced features.
 
 ## Table of Contents
 

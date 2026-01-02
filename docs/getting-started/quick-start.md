@@ -386,7 +386,7 @@ Now that you understand the basics, explore:
 - **[Creating Providers](../guides/building-components/creating-providers/)** - Comprehensive provider guide
 - **[Creating Resources](../guides/building-components/creating-resources/)** - Advanced resource patterns
 - **[Testing Providers](../guides/development/testing-providers/)** - Write comprehensive tests
-- **[Best Practices](../guides/production/best-practices/)** - Production-ready patterns
+- **[Best Practices](../guides/production/best-practices/)** - Production-focused patterns
 
 ### See Examples
 - **[Pyvider Components](https://github.com/provide-io/pyvider-components)** - 100+ working examples including:

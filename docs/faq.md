@@ -23,7 +23,7 @@ Pyvider is a Python framework for building Terraform providers. It implements th
 - Your team has Go expertise
 - You want the most mature, battle-tested framework
 
-### Is Pyvider production-ready?
+### Is Pyvider production-focused?
 
 Pyvider is in its pre-release series. It implements the full Terraform Plugin Protocol v6 and is well-tested. It's best suited for:
 

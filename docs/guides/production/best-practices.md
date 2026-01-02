@@ -536,13 +536,13 @@ async def _create(self, ctx: ResourceContext, base_plan: dict) -> tuple[dict | N
 - [Production Readiness Guide](../production/production-readiness/) - Error handling, logging, performance, testing, and security
 - [Creating Resources](../building-components/creating-resources/) - Resource implementation guide
 - [Schema Best Practices](../../schema/best-practices/) - Schema-specific guidance
-- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-ready examples
+- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Production-focused examples
 
 ## Learn by Example
 
 The best way to learn is by studying working code. Check out [pyvider-components](https://github.com/provide-io/pyvider-components) for:
 
-- **Production-ready implementations**: file_content, local_directory, http_api, and more
+- **Production-focused implementations**: file_content, local_directory, http_api, and more
 - **100+ working examples**: Complete Terraform configurations
 - **Comprehensive tests**: See how to test every scenario
 - **Real-world patterns**: Learn from battle-tested code
