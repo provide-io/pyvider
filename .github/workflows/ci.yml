@@ -27,10 +27,30 @@ jobs:
       - name: Install wrknv
         run: uv pip install --python .venv/bin/python "wrknv @ https://github.com/provide-io/wrknv/releases/download/v0.3.0/wrknv-0.3.0-py3-none-any.whl"
 
-      - name: Run CI pipeline
+      - name: Check formatting
         run: |
           source .venv/bin/activate
-          we run ci
+          ruff format . --check
+
+      - name: Lint
+        run: |
+          source .venv/bin/activate
+          ruff check .
+
+      - name: Type check
+        run: |
+          source .venv/bin/activate
+          mypy src/
+
+      - name: Run tests
+        run: |
+          source .venv/bin/activate
+          pytest -n auto
+
+      - name: Build
+        run: |
+          source .venv/bin/activate
+          uv build
 
       - name: Run security scan
         run: |
