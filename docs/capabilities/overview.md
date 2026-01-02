@@ -173,20 +173,20 @@ Capabilities are a roadmap composition mechanism for reusable, modular component
 - ⚠️ Lifecycle hooks partially implemented
 - 🔮 Advanced features tracked in the roadmap
 
-### Planned Features
+### Exploratory Features
 
 ### Capability Lifecycle
 
 **Status:** Partial implementation
 
-Planned lifecycle hooks:
+Exploratory lifecycle hooks:
 - `setup()` - Initialize capability
 - `configure()` - Configure with provider settings
 - `teardown()` - Cleanup on shutdown
 
 ### Capability Marketplace
 
-**Status:** Planned for post-1.0
+**Status:** Exploratory (post-1.0; timing may change or be removed)
 
 A central hub for discovering and sharing reusable capabilities:
 - Browse by category
@@ -196,7 +196,7 @@ A central hub for discovering and sharing reusable capabilities:
 
 ### Advanced Composition
 
-**Status:** Planned
+**Status:** Exploratory
 
 Features under consideration:
 - Capability dependency management
