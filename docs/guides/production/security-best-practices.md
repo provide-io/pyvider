@@ -487,7 +487,7 @@ In `pyproject.toml`:
 ```toml
 [project]
 dependencies = [
-    "pyvider>=0.0.1000,<0.1.0",  # Pin to known-good versions
+    "pyvider>=0.0.3,<0.1.0",  # Pin to known-good versions
     "httpx>=0.24.0,<0.25.0",
     "cryptography>=41.0.0,<42.0.0",
 ]

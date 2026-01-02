@@ -56,7 +56,7 @@ version = "0.1.0"
 description = "Terraform provider for JSONPlaceholder API"
 requires-python = ">=3.11"
 dependencies = [
-    "pyvider>=0.0.1000",
+    "pyvider>=0.0.3",
     "httpx>=0.24.0",
 ]
 

@@ -103,7 +103,7 @@ Install with: `pip install pyvider-components`
 
 ## 📈 Project Status
 
-- **Version**: 0.0.1000 (Alpha)
+- **Version**: 0.3.0 (Pre-release)
 - **Protocol**: Terraform Plugin Protocol v6
 - **Python**: 3.11+
 - **License**: Apache 2.0

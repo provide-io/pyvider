@@ -120,7 +120,7 @@ my-pyvider-bundle/
 name = "my-pyvider-bundle"
 version = "0.1.0"
 dependencies = [
-    "pyvider>=0.0.1000",
+    "pyvider>=0.0.3",
 ]
 
 [project.entry-points."pyvider.components"]

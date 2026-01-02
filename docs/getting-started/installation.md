@@ -125,7 +125,7 @@ description = "A Terraform provider built with Pyvider"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pyvider>=0.0.1000",
+    "pyvider>=0.0.3",
     "httpx>=0.24.0",  # For HTTP APIs
 ]
 
