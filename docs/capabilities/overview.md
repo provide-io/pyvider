@@ -156,11 +156,11 @@ Perfect for:
 
 !!! warning "Experimental Feature"
 
-    This feature is experimental and may change significantly in future releases.
+    This feature is experimental and may change significantly in later releases; timing may change or be removed.
     Use in production at your own risk.
 
     **Stability:** ⚠️ Experimental
-    **Planned Stable:** v0.4.0 (Q2 2026)
+    **Target Stability (Exploratory):** TBD
 
     Feedback welcome! [Report issues](https://github.com/provide-io/pyvider/issues)
 
