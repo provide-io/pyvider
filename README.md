@@ -17,16 +17,6 @@
 - **⚡ Async** - Built on modern async/await for high performance
 - **🧪 Testable** - Comprehensive testing with pytest integration
 
-## 📦 Installation
-
-```bash
-# Using pip
-pip install pyvider
-
-# Using uv (recommended)
-uv add pyvider
-```
-
 ## 🚀 Quick Start
 
 ```python
@@ -73,14 +63,6 @@ class Server(BaseResource):
 - **[API Reference](https://foundry.provide.io/pyvider/api/)** - Complete API documentation
 - **[Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
 
-## 🚦 Project Status
-
-**Version**: 0.0.x (Alpha)
-**Protocol**: Terraform Plugin Protocol v6
-**Python**: 3.11+
-
-⚠️ **Alpha Software** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning. See the [Roadmap](https://foundry.provide.io/pyvider/development/roadmap/) for details.
-
 ## 🛠️ Development
 
 ### Quick Start
@@ -118,6 +100,24 @@ Contributions welcome! See [Contributing Guidelines](CONTRIBUTING.md) and the [D
 ## 📄 License
 
 Apache 2.0 - See [LICENSE](LICENSE) for details.
+
+## 📦 Installation
+
+```bash
+# Using pip
+pip install pyvider
+
+# Using uv (recommended)
+uv add pyvider
+```
+
+## 🚦 Project Status
+
+**Version**: 0.0.x (Alpha)
+**Protocol**: Terraform Plugin Protocol v6
+**Python**: 3.11+
+
+⚠️ **Alpha Software** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning. See the [Roadmap](https://foundry.provide.io/pyvider/development/roadmap/) for details.
 
 ## 🔗 Links
 
