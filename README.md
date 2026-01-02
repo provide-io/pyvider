@@ -105,7 +105,7 @@ Apache 2.0 - See [LICENSE](https://github.com/provide-io/pyvider/blob/main/LICEN
 
 ```bash
 # Using pip
-uv pip install pyvider
+uv add pyvider
 
 # Using uv (recommended)
 uv add pyvider
