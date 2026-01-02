@@ -181,7 +181,7 @@ Benefits:
 - Self-documenting schemas
 - IDE support
 
-## Future Vision
+## Exploratory Vision
 
 Pyvider aims to become:
 

@@ -229,7 +229,7 @@ class MyCloudProvider(BaseProvider):
 6. **Version Carefully**: Shared code is a dependency - version appropriately
 7. **Avoid Over-Abstraction**: Don't create abstractions until you need them in 3+ places
 
-## Future Plans
+## Exploratory Plans
 
 See the [Roadmap](../development/roadmap/) for details on:
 - Capability marketplace timeline

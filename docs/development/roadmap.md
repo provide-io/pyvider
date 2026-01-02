@@ -81,7 +81,7 @@ pyvider validate --with-terraform
 
 ---
 
-## Future Feature Phases
+## Exploratory Feature Phases
 
 ### Phase 1: Enhanced Developer Experience 🟢
 **Target**: Pre-1.0

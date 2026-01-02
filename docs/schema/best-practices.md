@@ -239,7 +239,7 @@ Include examples in descriptions when helpful.
 
 ## Schema Evolution
 
-Design schemas for future evolution.
+Design schemas for forward evolution.
 
 ### Version Schema
 
