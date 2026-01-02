@@ -56,4 +56,4 @@ Pyvider removes these barriers by letting you write providers in Python while ma
 - Educational and learning projects
 - Wrapping existing Python APIs for Terraform
 
-See the [Roadmap](../development/roadmap/) for feature status and future plans.
+See the [Roadmap](../development/roadmap/) for feature status and exploratory items.

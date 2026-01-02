@@ -282,7 +282,7 @@ No! Pyvider providers run as Python scripts. However, you can package them into 
 
 ### Can I publish to the Terraform Registry?
 
-Public registry support is tracked in the roadmap. For now, use:
+Public registry support is tracked in the roadmap as an exploratory item and may change or be removed. For now, use:
 - Local dev provider file
 - Private distribution
 - Internal package repository

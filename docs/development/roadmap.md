@@ -1,22 +1,22 @@
 # Pyvider Roadmap
 
-This document outlines planned features and future development directions for Pyvider.
+This document outlines exploratory features and potential development directions for Pyvider. Roadmap items are non-binding and may change or be removed.
 
-**Project Status**: Alpha (v0.0.x)
+**Project Status**: Pre-release (v0.0.x)
 **Target 1.0 Release**: TBD
 
 ## Legend
-- 🟢 **Planned** - On roadmap, not started
+- 🟢 **Exploratory** - On roadmap, not started
 - 🟡 **In Progress** - Active development
 - 🔴 **Blocked** - Waiting on dependencies
 - ✅ **Completed** - Available in current version
 
 ---
 
-## Planned CLI Commands
+## Exploratory CLI Commands
 
 ### `pyvider new` 🟢
-**Status:** Planned
+**Status:** Exploratory
 **Target:** Pre-1.0
 **Description:** Scaffold a new provider project with recommended structure
 
@@ -32,7 +32,7 @@ This would create a new directory with:
 - README and documentation templates
 
 ### `pyvider build` 🟢
-**Status:** Planned
+**Status:** Exploratory
 **Target:** Pre-1.0
 **Description:** Build and package provider for distribution
 
@@ -49,7 +49,7 @@ This would:
 **Workaround:** Currently, use `python scripts/build_provider.py` for building providers (see CLAUDE.md)
 
 ### `pyvider validate` 🟢
-**Status:** Planned
+**Status:** Exploratory
 **Target:** Post-1.0
 **Description:** Validate provider schema and configuration
 
