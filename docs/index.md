@@ -1,5 +1,9 @@
 # Welcome to Pyvider Documentation
 
+!!! warning "Pre-release"
+    This documentation covers a pre-release. APIs and features may change, and some documented or roadmap items are exploratory and may change or be removed.
+
+
 !!! tip "Current Status"
     Pyvider is in active development. See the announcement banner above for current version status and our [roadmap](development/roadmap/) for exploratory items.
 
