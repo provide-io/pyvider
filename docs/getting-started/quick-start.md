@@ -7,7 +7,7 @@ Build your first Terraform provider in Python! This guide walks you through crea
 Before starting, ensure you have:
 
 - ✅ Python 3.11+ installed
-- ✅ Pyvider installed (`pip install pyvider` or `uv add pyvider`)
+- ✅ Pyvider installed (`uv add pyvider` or `uv add pyvider`)
 - ✅ Basic understanding of Terraform concepts
 - ✅ Familiarity with Python async/await
 

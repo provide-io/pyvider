@@ -98,7 +98,7 @@ The **[pyvider-components](https://github.com/provide-io/pyvider-components)** r
 - **Data Sources**: env_variables, file_info, http_api, lens_jq
 - **Functions**: String manipulation, numeric operations, JQ transformations
 
-Install with: `pip install pyvider-components`
+Install with: `uv add pyvider-components`
 
 ## 💬 Community & Support
 

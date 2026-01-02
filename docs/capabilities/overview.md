@@ -131,7 +131,7 @@ my_bundle = "my_bundle"
 
 ```bash
 # Install the bundle
-pip install my-pyvider-bundle
+uv add my-pyvider-bundle
 
 # Components are automatically discovered
 # Use them in Terraform configurations

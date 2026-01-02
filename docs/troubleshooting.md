@@ -593,7 +593,7 @@ async def read_multiple(self, resource_ids: list):
 **4. Profile to find bottlenecks:**
 ```bash
 # Install py-spy
-pip install py-spy
+uv tool install py-spy
 
 # Profile provider
 py-spy top --pid $(pgrep -f terraform-provider-pyvider)

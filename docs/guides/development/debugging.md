@@ -82,8 +82,9 @@ export TF_LOG_PATH=./terraform-debug.log
 
 ```bash
 # Debugging tools
-pip install ipdb  # Enhanced debugger
-pip install py-spy  # Performance profiler
+uv add ipdb # Enhanced debugger
+uv add # Performance profiler
+uv tool install py-spy
 
 # System tools (macOS)
 brew install httpie  # HTTP testing

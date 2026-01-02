@@ -24,7 +24,7 @@ The quickest way to get started with Pyvider:
 
 ```bash
 # Basic installation
-pip install pyvider
+uv add pyvider
 ```
 
 **Note**: Pyvider uses dependency groups (via uv) rather than extras. For development dependencies, see Method 2.
@@ -79,7 +79,7 @@ Always use a virtual environment to avoid dependency conflicts:
 After activation, install Pyvider:
 
 ```bash
-uv add pyvider  # or: pip install pyvider
+uv add pyvider  # or: uv add pyvider
 ```
 
 ### 2. Development Environment Setup
@@ -289,13 +289,13 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Pyvider
-RUN pip install --no-cache-dir pyvider
+RUN uv pip install --no-cache-dir pyvider
 
 # Copy your provider code
 COPY . .
 
 # Install provider dependencies
-RUN pip install --no-cache-dir -e .
+RUN uv pip install --no-cache-dir -e .
 
 # Run provider
 CMD ["pyvider", "provide"]
@@ -348,7 +348,7 @@ ERROR: Could not install packages due to an EnvironmentError: [Errno 13] Permiss
 **Solution**: Use a virtual environment or install with `--user`:
 
 ```bash
-pip install --user pyvider
+uv pip install --user pyvider
 ```
 
 ### Issue: Conflicting Dependencies
@@ -362,12 +362,12 @@ ERROR: pip's dependency resolver does not currently take into account all the pa
 ```bash
 # With uv
 uv venv
-uv pip install pyvider
+uv uv add pyvider
 
 # With standard venv
 python -m venv fresh_env
 source fresh_env/bin/activate
-pip install pyvider
+uv add pyvider
 ```
 
 ## 🔄 Upgrading Pyvider
@@ -376,7 +376,7 @@ Keep Pyvider up to date for the latest features and fixes:
 
 ```bash
 # Using pip
-pip install --upgrade pyvider
+uv add --upgrade pyvider
 
 # Using uv
 uv sync --upgrade

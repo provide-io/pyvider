@@ -60,7 +60,7 @@ uv sync --group dev
 # Or with pip
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 ```
 
 ### 3. Create a Branch

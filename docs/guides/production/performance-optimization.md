@@ -533,7 +533,7 @@ async def _create_apply(self, ctx: ResourceContext):
 
 ```bash
 # Install py-spy
-pip install py-spy
+uv tool install py-spy
 
 # Profile running provider
 py-spy top --pid $(pgrep -f terraform-provider-pyvider)
