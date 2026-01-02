@@ -111,7 +111,7 @@ class ProviderHandler(ProviderServicer):
             async for _ in request_iterator:
                 pass
         except Exception:
-            pass
+            pass  # nosec B110 - intentionally ignoring in stub handler
 
     async def StartStream(self, request: Any, context: Any) -> None:
         return

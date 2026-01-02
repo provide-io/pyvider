@@ -45,7 +45,7 @@ def _read_provider_name_from_pyproject() -> str | None:
             return str(pyvider_section["provider_name"])
 
     except Exception:
-        pass
+        pass  # nosec B110 - intentionally silencing parse errors
 
     return None
 
@@ -62,7 +62,7 @@ def _read_version_from_file() -> str:
         try:
             return version_file.read_text().strip()
         except Exception:
-            pass
+            pass  # nosec B110 - intentionally silencing read errors
     return "0.0.0"
 
 

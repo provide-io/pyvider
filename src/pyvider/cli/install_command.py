@@ -91,7 +91,7 @@ def _is_pyvider_project() -> bool:
             if "[tool.pyvider]" in content or "[pyvider]" in content:
                 return True
         except Exception:
-            pass  # File doesn't exist or can't be read
+            pass  # nosec B110 - File doesn't exist or can't be read
     return False
 
 
