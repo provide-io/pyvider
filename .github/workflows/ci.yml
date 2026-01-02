@@ -25,7 +25,7 @@ jobs:
         run: uv sync --all-groups
 
       - name: Install wrknv
-        run: uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
+        run: uv pip install "wrknv @ https://github.com/provide-io/wrknv/releases/download/v0.3.0/wrknv-0.3.0-py3-none-any.whl"
 
       - name: Run CI pipeline
         run: |
