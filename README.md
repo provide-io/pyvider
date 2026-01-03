@@ -17,7 +17,7 @@
 - **⚡ Async** - Built on modern async/await for high performance
 - **🧪 Testable** - Comprehensive testing with pytest integration
 
-## 🚀 Quick Start
+## Quick Start
 
 ```python
 from pyvider.providers import register_provider, BaseProvider
@@ -52,7 +52,7 @@ class Server(BaseResource):
 
 **See the full example in the [Quick Start Guide →](https://foundry.provide.io/pyvider/getting-started/quick-start/)**
 
-## 📚 Documentation
+## Documentation
 
 **📖 [Read the Full Documentation →](https://foundry.provide.io/pyvider/)**
 
@@ -63,7 +63,7 @@ class Server(BaseResource):
 - **[API Reference](https://foundry.provide.io/pyvider/api/)** - Complete API documentation
 - **[Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
 
-## 🛠️ Development
+## Development
 
 ### Quick Start
 
@@ -104,11 +104,11 @@ Apache 2.0 - See [LICENSE](https://github.com/provide-io/pyvider/blob/main/LICEN
 ## 📦 Installation
 
 ```bash
-# Using pip
-uv add pyvider
-
 # Using uv (recommended)
 uv add pyvider
+
+# Or using pip
+pip install pyvider
 ```
 
 ## 🚦 Project Status
