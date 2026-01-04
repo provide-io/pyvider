@@ -232,7 +232,6 @@ class MyCloudProvider(BaseProvider):
 ## Exploratory Plans
 
 See the [Roadmap](../development/roadmap/) for details on:
-- Capability marketplace goals
 - Advanced composition features
 - Built-in capability library
 - Integration with telemetry systems
