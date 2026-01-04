@@ -232,7 +232,7 @@ class MyCloudProvider(BaseProvider):
 ## Exploratory Plans
 
 See the [Roadmap](../development/roadmap/) for details on:
-- Capability marketplace timeline
+- Capability marketplace goals
 - Advanced composition features
 - Built-in capability library
 - Integration with telemetry systems
@@ -241,7 +241,7 @@ See the [Roadmap](../development/roadmap/) for details on:
 
 - [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
 - [Best Practices](../guides/production/best-practices/) - Code reuse patterns
-- [Roadmap](../development/roadmap/) - Feature timeline
+- [Roadmap](../development/roadmap/) - Feature priorities
 - [Advanced Patterns](../guides/advanced/advanced-patterns/) - Advanced implementation techniques
 
 ## Contributing
