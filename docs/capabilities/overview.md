@@ -156,7 +156,7 @@ Perfect for:
 
 !!! warning "Experimental Feature"
 
-    This feature is experimental and may change significantly in later releases; timing may change or be removed.
+    This feature is experimental and may change significantly in later releases; availability may change or be removed.
     Use in production at your own risk.
 
     **Stability:** ⚠️ Experimental
@@ -186,7 +186,7 @@ Exploratory lifecycle hooks:
 
 ### Capability Marketplace
 
-**Status:** Exploratory (post-1.0; timing may change or be removed)
+**Status:** Exploratory (availability may change or be removed)
 
 A central hub for discovering and sharing reusable capabilities:
 - Browse by category
