@@ -160,7 +160,6 @@ Perfect for:
     Use in production at your own risk.
 
     **Stability:** ⚠️ Experimental
-    **Target Stability (Exploratory):** TBD
 
     Feedback welcome! [Report issues](https://github.com/provide-io/pyvider/issues)
 
@@ -183,16 +182,6 @@ Exploratory lifecycle hooks:
 - `setup()` - Initialize capability
 - `configure()` - Configure with provider settings
 - `teardown()` - Cleanup on shutdown
-
-### Capability Marketplace
-
-**Status:** Exploratory (availability may change or be removed)
-
-A central hub for discovering and sharing reusable capabilities:
-- Browse by category
-- Search by functionality
-- Community ratings
-- One-command installation via PyPI
 
 ### Advanced Composition
 
