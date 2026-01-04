@@ -5,19 +5,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Quick Commands
 
 ### Task Runner (wrknv)
-This project uses `wrknv` for task automation. All tasks can be run with `we <task>`.
+This project uses `wrknv` for task automation. All tasks can be run with `we run <task>`.
 
 ```bash
-we tasks          # List all available tasks
-we test           # Run tests
-we test coverage  # Run with coverage report
-we test parallel  # Run tests in parallel
-we lint           # Check code quality
-we lint fix       # Auto-fix linting issues
-we format         # Format code
-we format check   # Check formatting without changes
-we typecheck      # Run type checker
-we build          # Build distribution
+we tasks             # List all available tasks
+we run test          # Run tests
+we run test.coverage # Run with coverage report
+we run test.parallel # Run tests in parallel
+we run lint          # Check code quality
+we run lint.fix      # Auto-fix linting issues
+we run format        # Format code
+we run format.check  # Check formatting without changes
+we run typecheck     # Run type checker
+we run build         # Build distribution
 ```
 
 For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
@@ -85,4 +85,4 @@ For detailed architecture documentation, see `docs/core-concepts/`.
 
 ## After Changes
 
-Always run `we test` to verify your changes work correctly.
+Always run `we run test` to verify your changes work correctly.
