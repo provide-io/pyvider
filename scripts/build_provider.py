@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""TODO: Add module docstring."""
+"""Local helper for building and staging the pyvider provider binary."""
 
 from pathlib import Path
 import platform
