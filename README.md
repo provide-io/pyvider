@@ -72,9 +72,9 @@ class Server(BaseResource):
 uv sync
 
 # Run common tasks
-we test           # Run tests
-we lint           # Check code
-we format         # Format code
+we run test       # Run tests
+we run lint       # Check code
+we run format     # Format code
 we tasks          # See all available commands
 ```
 
@@ -83,12 +83,12 @@ we tasks          # See all available commands
 This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
 
 **Common tasks:**
-- `we test` - Run all tests
-- `we test coverage` - Run tests with coverage
-- `we test parallel` - Run tests in parallel
-- `we lint` - Check code quality
-- `we lint fix` - Auto-fix linting issues
-- `we format` - Format code
+- `we run test` - Run all tests
+- `we run test.coverage` - Run tests with coverage
+- `we run test.parallel` - Run tests in parallel
+- `we run lint` - Check code quality
+- `we run lint.fix` - Auto-fix linting issues
+- `we run format` - Format code
 - `we typecheck` - Run type checker
 
 See [CLAUDE.md](https://github.com/provide-io/pyvider/blob/main/CLAUDE.md) for detailed development instructions and architecture information.
