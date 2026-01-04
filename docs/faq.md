@@ -34,7 +34,7 @@ Some documented or roadmap items are exploratory and may change or be removed.
 - Learning and experimentation
 - Custom providers for specific needs
 
-See the [Roadmap](development/roadmap/) for the path to 1.0.
+See the [Roadmap](development/roadmap/) for current priorities.
 
 ### What Python version is required?
 

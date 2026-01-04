@@ -65,13 +65,13 @@ pyvider validate --with-terraform
 
 **Focus**: API stability, production readiness
 
-- [ ] Finalize core API surface (no breaking changes post-1.0)
+- [ ] Finalize core API surface (avoid breaking changes once stabilized)
 - [ ] Complete protocol v6 implementation (95%+ coverage)
 - [ ] Comprehensive test coverage (>90%)
 - [ ] Performance benchmarking and optimization
 - [ ] Security audit
 - [ ] Complete documentation review
-- [ ] Migration guide from pre-1.0 versions
+- [ ] Migration guide from early versions
 
 ---
 
