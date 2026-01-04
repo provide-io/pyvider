@@ -42,7 +42,7 @@ Pyvider removes these barriers by letting you write providers in Python while ma
 !!! warning "Pre-release"
     **Pyvider is in pre-release (v0.3.0)** - please be aware.
 
-    Some documented or roadmap items are exploratory and may change or be removed.
+    Some documented items are exploratory and may change or be removed.
 
     - **APIs may change** before the 1.0 release without prior notice
     - **Best suited** for internal tooling, experimentation, and learning
@@ -56,4 +56,3 @@ Pyvider removes these barriers by letting you write providers in Python while ma
 - Educational and learning projects
 - Wrapping existing Python APIs for Terraform
 
-See the [Roadmap](../development/roadmap/) for feature status and exploratory items.

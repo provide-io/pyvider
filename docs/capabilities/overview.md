@@ -165,12 +165,12 @@ Perfect for:
 
 ### What are Capabilities?
 
-Capabilities are a roadmap composition mechanism for reusable, modular components that extend provider functionality. Think of them as mixins or plugins.
+Capabilities are a composition mechanism for reusable, modular components that extend provider functionality. Think of them as mixins or plugins.
 
 **Current Status:**
 - ✅ Basic infrastructure implemented (`BaseCapability`, decorators)
 - ⚠️ Lifecycle hooks partially implemented
-- 🔮 Advanced features tracked in the roadmap
+- 🔮 Advanced features remain exploratory
 
 ### Exploratory Features
 
@@ -220,7 +220,7 @@ class MyCloudProvider(BaseProvider):
 
 ## Exploratory Plans
 
-See the [Roadmap](../development/roadmap/) for details on:
+Exploratory plans include:
 - Advanced composition features
 - Built-in capability library
 - Integration with telemetry systems
@@ -229,7 +229,6 @@ See the [Roadmap](../development/roadmap/) for details on:
 
 - [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
 - [Best Practices](../guides/production/best-practices/) - Code reuse patterns
-- [Roadmap](../development/roadmap/) - Feature priorities
 - [Advanced Patterns](../guides/advanced/advanced-patterns/) - Advanced implementation techniques
 
 ## Contributing
@@ -238,7 +237,7 @@ Interested in contributing to the capabilities system?
 
 - Join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - Review the [Contributing Guidelines](../contributing/guidelines/)
-- Check the [Roadmap](../development/roadmap/) for exploratory features
+- Share feedback on exploratory capability features
 
 ---
 

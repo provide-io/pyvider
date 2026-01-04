@@ -390,10 +390,9 @@ Paste relevant logs here
 
 Have an idea for a new feature?
 
-1. **Check the [Roadmap](../development/roadmap/)** - Feature may already be listed as exploratory
-2. **Search existing issues** - Someone may have requested it
-3. **Open a discussion** - Discuss the idea before implementing
-4. **Create a feature request** - With clear use case and examples
+1. **Search existing issues** - Someone may have requested it
+2. **Open a discussion** - Discuss the idea before implementing
+3. **Create a feature request** - With clear use case and examples
 
 ## Getting Help
 

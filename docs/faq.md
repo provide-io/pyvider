@@ -27,14 +27,12 @@ Pyvider is a Python framework for building Terraform providers. It implements th
 
 Pyvider is in its pre-release series. It implements the full Terraform Plugin Protocol v6 and is well-tested. It's best suited for:
 
-Some documented or roadmap items are exploratory and may change or be removed.
+Some documented items are exploratory and may change or be removed.
 
 - Internal tooling and automation
 - Rapid prototyping
 - Learning and experimentation
 - Custom providers for specific needs
-
-See the [Roadmap](development/roadmap/) for current priorities.
 
 ### What Python version is required?
 
@@ -282,7 +280,7 @@ No! Pyvider providers run as Python scripts. However, you can package them into 
 
 ### Can I publish to the Terraform Registry?
 
-Public registry support is tracked in the roadmap as an exploratory item and may change or be removed. For now, use:
+Public registry support is not available yet. For now, use:
 - Local dev provider file
 - Private distribution
 - Internal package repository

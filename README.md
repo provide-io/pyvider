@@ -117,7 +117,7 @@ pip install pyvider
 **Protocol**: Terraform Plugin Protocol v6
 **Python**: 3.11+
 
-⚠️ **Pre-release** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning. See the [Roadmap](https://foundry.provide.io/pyvider/development/roadmap/) for details.
+⚠️ **Pre-release** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning.
 
 ## 🔗 Links
 

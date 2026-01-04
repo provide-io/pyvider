@@ -11,13 +11,11 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 
 !!! warning "API Stability - Pre-release (v0.3.0)"
     Pyvider is in its pre-release series. Breaking changes are documented in release notes.
-    Some documented or roadmap items are exploratory and may change or be removed.
+    Some documented items are exploratory and may change or be removed.
 
     **Important Notes:**
     - Some documented APIs may not be fully implemented yet
     - Test thoroughly before using in production environments
-    - See [Roadmap](../development/roadmap/) for feature status
-
     **Public API Stability:**
     - ✅ **Stable**: Decorator API (`@register_resource`, `@register_provider`, etc.)
     - ✅ **Stable**: Schema factory functions (`s_resource`, `a_str`, `a_num`, etc.)
