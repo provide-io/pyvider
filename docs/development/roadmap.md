@@ -3,7 +3,6 @@
 This document outlines exploratory features and potential development directions for Pyvider. Roadmap items are non-binding and may change or be removed.
 
 **Project Status**: Pre-release (v0.0.x)
-**Target 1.0 Release**: TBD
 
 ## Legend
 - 🟢 **Exploratory** - On roadmap, not started
@@ -17,7 +16,6 @@ This document outlines exploratory features and potential development directions
 
 ### `pyvider new` 🟢
 **Status:** Exploratory
-**Target:** Pre-1.0
 **Description:** Scaffold a new provider project with recommended structure
 
 ```bash
@@ -33,7 +31,6 @@ This would create a new directory with:
 
 ### `pyvider build` 🟢
 **Status:** Exploratory
-**Target:** Pre-1.0
 **Description:** Build and package provider for distribution
 
 ```bash
@@ -50,7 +47,6 @@ This would:
 
 ### `pyvider validate` 🟢
 **Status:** Exploratory
-**Target:** Post-1.0
 **Description:** Validate provider schema and configuration
 
 ```bash
@@ -65,7 +61,7 @@ pyvider validate --with-terraform
 
 ## Core Framework Roadmap
 
-### 1.0 Release Goals 🟡
+### Release Goals 🟡
 
 **Focus**: API stability, production readiness
 
@@ -77,14 +73,11 @@ pyvider validate --with-terraform
 - [ ] Complete documentation review
 - [ ] Migration guide from pre-1.0 versions
 
-**Estimated Timeline**: Early-Mid 2026 (subject to change)
-
 ---
 
-## Exploratory Feature Phases
+## Exploratory Focus Areas
 
-### Phase 1: Enhanced Developer Experience 🟢
-**Target**: Pre-1.0
+### Enhanced Developer Experience 🟢
 
 - Better error messages with actionable suggestions
 - Improved type checking and validation
@@ -92,8 +85,7 @@ pyvider validate --with-terraform
 - Provider scaffolding (`pyvider new`)
 - Build tooling integration (`pyvider build`)
 
-### Phase 2: Production Hardening 🟡
-**Target**: 1.0 Release
+### Production Hardening 🟡
 
 - Comprehensive integration test suite
 - Performance benchmarking framework
@@ -101,8 +93,7 @@ pyvider validate --with-terraform
 - Connection pool management
 - Resource lifecycle cleanup improvements
 
-### Phase 3: Telemetry & Monitoring Integration 🟢
-**Target**: Post-1.0
+### Telemetry & Monitoring Integration 🟢
 
 Leverage provide.foundation's telemetry capabilities for comprehensive observability:
 
@@ -139,7 +130,7 @@ Leverage provide.foundation's telemetry capabilities for comprehensive observabi
   - Resource operation success rates
   - Active gRPC connection monitoring
 
-### Phase 4: Circuit Breaker Patterns
+### Circuit Breaker Patterns
 
 Add resilience patterns for external API calls:
 
@@ -149,7 +140,7 @@ Add resilience patterns for external API calls:
 - Request timeout configuration
 - Retry policies with exponential backoff
 
-### Phase 5: Advanced Error Recovery Strategies
+### Advanced Error Recovery Strategies
 
 Enhanced error handling and recovery:
 
@@ -159,7 +150,7 @@ Enhanced error handling and recovery:
 - Enhanced diagnostic generation
 - Recovery state persistence
 
-### Phase 6: Distributed Tracing Support
+### Distributed Tracing Support
 
 Full distributed tracing integration:
 
@@ -169,7 +160,7 @@ Full distributed tracing integration:
 - Cross-service correlation
 - Trace sampling strategies
 
-### Phase 7: Advanced Diagnostics
+### Advanced Diagnostics
 
 Enhanced diagnostic capabilities:
 
@@ -179,7 +170,7 @@ Enhanced diagnostic capabilities:
 - Schema validation diagnostics
 - Terraform plan diff analysis
 
-### Phase 8: Performance Optimization
+### Performance Optimization
 
 Optimization of critical paths:
 
@@ -228,6 +219,3 @@ Have ideas for potential Pyvider features? We'd love to hear them!
 - Open an issue on GitHub with the `enhancement` label
 - Participate in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - Submit a feature proposal PR to this roadmap
-
-**Last Updated:** 2025-10-24
-**Next Review:** Monthly
