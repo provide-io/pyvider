@@ -134,7 +134,7 @@ class EnvVarDataSource(DataSourceBase[EnvVarConfig, EnvVarData]):
 ## Related Projects
 
 - **[pyvider-components](https://github.com/provide-io/pyvider-components)** - Example components library
-- **[terraform-provider-pyvider](https://github.com/provide-io/terraform-provider-pyvider)** - POC provider for testing
+- **[terraform-provider-pyvider](https://github.com/provide-io/terraform-provider-pyvider)** - pre-release provider for testing
 - **[pyvider-rpcplugin](https://github.com/provide-io/pyvider-rpcplugin)** - RPC plugin framework
 - **[pyvider-cty](https://github.com/provide-io/pyvider-cty)** - CTY type system
 - **[pyvider-hcl](https://github.com/provide-io/pyvider-hcl)** - HCL parsing
