@@ -34,7 +34,7 @@ Welcome! Here's how to get started:
 
 - Python 3.11 or higher
 - Git
-- [uv](https://github.com/astral-sh/uv) (recommended) or pip
+- [uv](https://github.com/astral-sh/uv)
 - Basic understanding of Terraform concepts
 - Familiarity with async/await in Python
 
@@ -56,11 +56,6 @@ git remote add upstream https://github.com/provide-io/pyvider.git
 ```bash
 # Install dependencies with uv (recommended)
 uv sync --group dev
-
-# Or with pip
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-uv pip install -e ".[dev]"
 ```
 
 ### 3. Create a Branch
