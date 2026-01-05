@@ -23,12 +23,6 @@ Pyvider is a Python framework for building Terraform providers. It lets you crea
 uv add pyvider
 ```
 
-### Using pip
-
-```bash
-uv add pyvider
-```
-
 ## Quick Start
 
 Ready to build your first provider? Check out the [Quick Start Guide](quick-start.md) for a hands-on introduction that walks you through creating a working provider in about 5 minutes!
