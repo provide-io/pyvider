@@ -37,7 +37,7 @@ Plugin reinitialization required. Please run "terraform init".
 **1. Verify installation:**
 ```bash
 # Check if provider is installed
-uv pip list | grep pyvider
+uv run python -c "import importlib.metadata as m; print(m.version('pyvider'))"
 
 # Reinstall if needed
 uv add --editable .
@@ -806,7 +806,7 @@ When creating an issue, include:
 
 - **Clear description** of the problem
 - **Steps to reproduce** the issue
-- **Pyvider version**: `uv pip show pyvider`
+- **Pyvider version**: `uv run python -c "import importlib.metadata as m; print(m.version('pyvider'))"`
 - **Terraform version**: `terraform version`
 - **Python version**: `python --version`
 - **Relevant logs** from debug output

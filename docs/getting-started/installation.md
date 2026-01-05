@@ -289,16 +289,16 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Pyvider
-RUN uv pip install --no-cache-dir pyvider
+RUN uv tool install pyvider
 
 # Copy your provider code
 COPY . .
 
 # Install provider dependencies
-RUN uv pip install --no-cache-dir -e .
+RUN uv sync
 
 # Run provider
-CMD ["pyvider", "provide"]
+CMD ["uv", "run", "pyvider", "provide"]
 ```
 
 Build and run:
