@@ -541,7 +541,7 @@ async def _create_apply(self, ctx: ResourceContext) -> tuple[State | None, None]
 
 Pyvider's architecture is stable, but as a pre-release project:
 
-Some documented items are exploratory and may change or be removed.
+Some APIs may change during the pre-release series.
 
 - Internal APIs may change before 1.0
 - Performance characteristics are still being optimized

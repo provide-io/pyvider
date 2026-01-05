@@ -11,7 +11,7 @@ This section provides detailed API documentation for Pyvider's modules, classes,
 
 !!! warning "API Stability - Pre-release (v0.3.0)"
     Pyvider is in its pre-release series. Breaking changes are documented in release notes.
-    Some documented items are exploratory and may change or be removed.
+    Some APIs may change during the pre-release series.
 
     **Important Notes:**
     - Some documented APIs may not be fully implemented yet

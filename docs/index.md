@@ -1,7 +1,7 @@
 # Welcome to Pyvider Documentation
 
 !!! warning "Pre-release"
-    This documentation covers a pre-release. APIs and features may change, and some documented items are exploratory and may change or be removed.
+    This documentation covers a pre-release. APIs and features may change during the pre-release series.
 
 
 !!! tip "Current Status"
