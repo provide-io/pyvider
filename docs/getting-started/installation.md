@@ -18,7 +18,7 @@ This guide covers everything you need to install Pyvider and set up your develop
 
 ## 🎯 Installation Methods
 
-### Method 1: Using pip (Simple)
+### Method 1: Using uv (Quick install)
 
 The quickest way to get started with Pyvider:
 
@@ -345,16 +345,18 @@ ERROR: error: Microsoft Visual C++ 14.0 or greater is required
 ERROR: Could not install packages due to an EnvironmentError: [Errno 13] Permission denied
 ```
 
-**Solution**: Use a virtual environment or install with `--user`:
+**Solution**: Use a virtual environment and install with uv:
 
 ```bash
-uv pip install --user pyvider
+uv venv
+source .venv/bin/activate
+uv add pyvider
 ```
 
 ### Issue: Conflicting Dependencies
 
 ```bash
-ERROR: pip's dependency resolver does not currently take into account all the packages that are installed
+ERROR: dependency resolution failed with conflicting packages
 ```
 
 **Solution**: Use uv or create a fresh virtual environment:
@@ -362,10 +364,10 @@ ERROR: pip's dependency resolver does not currently take into account all the pa
 ```bash
 # With uv
 uv venv
-uv uv add pyvider
+uv add pyvider
 
-# With standard venv
-python -m venv fresh_env
+# Or start from a fresh environment
+uv venv fresh_env
 source fresh_env/bin/activate
 uv add pyvider
 ```
@@ -375,7 +377,7 @@ uv add pyvider
 Keep Pyvider up to date for the latest features and fixes:
 
 ```bash
-# Using pip
+# Using uv (single project)
 uv add --upgrade pyvider
 
 # Using uv
