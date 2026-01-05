@@ -41,7 +41,7 @@ Set up your environment for effective debugging:
 ```bash
 # Install in editable mode
 cd /path/to/pyvider-provider
-uv pip install -e .
+uv add --editable .
 
 # Set debug environment variables
 export PYVIDER_LOG_LEVEL=DEBUG

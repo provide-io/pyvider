@@ -18,8 +18,8 @@ A comprehensive example showcasing all major Pyvider features:
 **Quick Start**:
 ```bash
 cd demo-provider
-uv pip install -e .
-pyvider install
+uv sync
+uv run pyvider install
 cd tf
 terraform init
 terraform plan
@@ -35,14 +35,14 @@ Each example is a standalone Python package that can be installed with:
 
 ```bash
 cd <example-directory>
-uv pip install -e .
+uv sync
 ```
 
 ### Running Examples
 
 1. **Install the provider**:
    ```bash
-   pyvider install
+   uv run pyvider install
    ```
 
 2. **Navigate to the Terraform configuration**:
@@ -63,7 +63,7 @@ When making changes to a provider:
 
 ```bash
 # Reinstall the provider
-pyvider install --reinstall
+uv run pyvider install --reinstall
 
 # Reinitialize Terraform
 cd tf
@@ -128,8 +128,8 @@ port = 50051
 1. **Start with the Demo Provider** - Explore [`demo-provider/`](demo-provider/) to see all features in action
 2. **Read the Documentation** - Visit [Getting Started](../docs/getting-started/index.md) for conceptual overview
 3. **Follow the Quick Start** - Work through the [Quick Start Guide](../docs/getting-started/quick-start.md) for hands-on learning
-4. **Review Core Concepts** - Understand the [architecture and patterns](../docs/core-concepts/index.md)
-5. **Explore the API** - Dive into the [API Reference](../docs/reference/index.md) for detailed documentation
+4. **Review Core Concepts** - Understand the [architecture and patterns](../docs/explanation/architecture.md)
+5. **Explore the API** - Dive into the [API Reference](../docs/api/index.md) for detailed documentation
 
 ## Common Patterns
 
@@ -190,7 +190,7 @@ For integration testing with Terraform, use the included `tf/` configurations.
 
 Ensure the package is installed with entry points:
 ```bash
-uv pip install -e .
+uv add --editable .
 pyvider install
 ```
 
@@ -221,7 +221,7 @@ To contribute a new example:
 - **[Pyvider Documentation](../docs/)** - Complete framework documentation
 - **[Getting Started](../docs/getting-started/index.md)** - Introduction and installation
 - **[Quick Start Guide](../docs/getting-started/quick-start.md)** - 5-minute tutorial
-- **[API Reference](../docs/reference/index.md)** - Detailed API documentation
+- **[API Reference](../docs/api/index.md)** - Detailed API documentation
 - **[GitHub Repository](https://github.com/provide-io/pyvider)** - Source code and issues
 
 ---

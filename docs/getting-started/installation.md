@@ -61,7 +61,7 @@ cd pyvider
 uv sync --group dev
 
 # Install in editable mode
-uv pip install -e .
+uv add --editable .
 
 # Run tests to verify installation
 uv run pytest

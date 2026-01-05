@@ -40,7 +40,7 @@ Plugin reinitialization required. Please run "terraform init".
 uv pip list | grep pyvider
 
 # Reinstall if needed
-uv pip install -e .
+uv add --editable .
 ```
 
 **2. Check Terraform plugin directory:**
@@ -153,7 +153,7 @@ apt-get install python3.11  # Ubuntu
 # Recreate virtual environment
 uv venv --python 3.11
 source .venv/bin/activate
-uv pip install -e .
+uv add --editable .
 ```
 
 ## Resource Lifecycle Issues

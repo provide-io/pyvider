@@ -6,7 +6,7 @@ A complete example of a Terraform provider built with Pyvider, demonstrating pro
 
 ```bash
 # 1. Install dependencies
-uv pip install -e .
+uv add --editable .
 
 # 2. Install provider for Terraform
 pyvider install
@@ -187,7 +187,7 @@ terraform plan
 
 Ensure the package is installed with entry points:
 ```bash
-uv pip install -e .
+uv add --editable .
 ```
 
 ### Version mismatch in terraform init

@@ -30,8 +30,8 @@ Ready to build your first provider? Check out the [Quick Start Guide](quick-star
 ## Documentation Structure
 
 - **[Quick Start Guide](quick-start.md)** - Build your first provider in 5 minutes
-- **[Core Concepts](../core-concepts/index.md)** - Understanding Pyvider architecture
-- **[API Reference](../reference/index.md)** - Complete API documentation
+- **[Core Concepts](../explanation/architecture.md)** - Understanding Pyvider architecture
+- **[API Reference](../api/index.md)** - Complete API documentation
 - **[Examples](../../examples/README.md)** - Working examples and patterns
 
 ## Prerequisites
@@ -136,9 +136,9 @@ class EnvVarDataSource(DataSourceBase[EnvVarConfig, EnvVarData]):
 ## Next Steps
 
 1. **[Quick Start Guide](quick-start.md)** - Build your first provider
-2. **[Core Concepts](../core-concepts/index.md)** - Understand Pyvider architecture
+2. **[Core Concepts](../explanation/architecture.md)** - Understand Pyvider architecture
 3. **[Examples](../../examples/README.md)** - Explore working examples
-4. **[API Reference](../reference/index.md)** - Dive into the API
+4. **[API Reference](../api/index.md)** - Dive into the API
 
 ---
 
