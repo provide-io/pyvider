@@ -26,7 +26,7 @@ uv add pyvider
 ### Using pip
 
 ```bash
-pip install pyvider
+uv add pyvider
 ```
 
 ## Quick Start
