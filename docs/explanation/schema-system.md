@@ -118,7 +118,7 @@ This overview introduces the core concepts. For comprehensive documentation incl
 - **Advanced patterns** - Schema composition and reuse
 - **Examples** - Real-world schema definitions
 
-See the **[Complete Schema Documentation →](../schema/overview/)**
+See the **[Complete Schema Documentation →](../schema/overview.md)**
 
 ---
 

@@ -321,9 +321,9 @@ export FOUNDATION_LOG_LEVEL=INFO
 ## Related Documentation
 
 - [provide.foundation metrics](https://github.com/provide-io/provide-foundation) - Underlying metrics library
-- [Logging Guide](../guides/development/logging/) - Structured logging patterns
-- [Debugging](../guides/development/debugging/) - Debug with metrics
-- [Error Handling](../guides/development/error-handling/) - Error tracking
+- [Logging Guide](../guides/development/logging.md) - Structured logging patterns
+- [Debugging](../guides/development/debugging.md) - Debug with metrics
+- [Error Handling](../guides/development/error-handling.md) - Error tracking
 
 ## Module Reference
 

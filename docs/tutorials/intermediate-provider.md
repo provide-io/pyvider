@@ -15,7 +15,7 @@ A provider for the **JSONPlaceholder API** (a fake REST API for testing):
 ## Prerequisites
 
 - Python 3.11+
-- Basic understanding of Pyvider (complete [Quick Start](../getting-started/quick-start/) first)
+- Basic understanding of Pyvider (complete [Quick Start](../getting-started/quick-start.md) first)
 - Familiarity with REST APIs
 - Knowledge of async/await in Python
 
@@ -837,10 +837,10 @@ For a real provider, also implement:
 
 ## Related Documentation
 
-- [Creating Providers](../guides/building-components/creating-providers/) - Complete provider guide
-- [Creating Resources](../guides/building-components/creating-resources/) - Resource patterns
-- [Creating Data Sources](../guides/building-components/creating-data-sources/) - Data source patterns
-- [Testing Providers](../guides/development/testing-providers/) - Testing strategies
-- [Error Handling](../guides/development/error-handling/) - Error patterns
-- [Security Best Practices](../guides/production/security-best-practices/) - Security guidance
-- [Performance Optimization](../guides/production/performance-optimization/) - Performance tips
+- [Creating Providers](../guides/building-components/creating-providers.md) - Complete provider guide
+- [Creating Resources](../guides/building-components/creating-resources.md) - Resource patterns
+- [Creating Data Sources](../guides/building-components/creating-data-sources.md) - Data source patterns
+- [Testing Providers](../guides/development/testing-providers.md) - Testing strategies
+- [Error Handling](../guides/development/error-handling.md) - Error patterns
+- [Security Best Practices](../guides/production/security-best-practices.md) - Security guidance
+- [Performance Optimization](../guides/production/performance-optimization.md) - Performance tips

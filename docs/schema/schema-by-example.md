@@ -739,7 +739,7 @@ output "server_id" {
 
 ## See Also
 
-- [Schema Overview](overview/) - Complete schema system guide
-- [Attributes](attributes/) - All attribute types
-- [Blocks](blocks/) - Nested block patterns
-- [Creating Resources](../guides/building-components/creating-resources/) - Implementing resources
+- [Schema Overview](overview.md) - Complete schema system guide
+- [Attributes](attributes.md) - All attribute types
+- [Blocks](blocks.md) - Nested block patterns
+- [Creating Resources](../guides/building-components/creating-resources.md) - Implementing resources

@@ -458,8 +458,8 @@ except PyviderError as e:
 
 ## Related Documentation
 
-- [Error Handling Guide](../guides/development/error-handling/) - Comprehensive error handling patterns
-- [Logging](../guides/development/logging/) - Structured logging with exceptions
-- [Testing Providers](../guides/development/testing-providers/) - Testing error scenarios
+- [Error Handling Guide](../guides/development/error-handling.md) - Comprehensive error handling patterns
+- [Logging](../guides/development/logging.md) - Structured logging with exceptions
+- [Testing Providers](../guides/development/testing-providers.md) - Testing error scenarios
 
 ## Auto-Generated API Documentation

@@ -36,42 +36,42 @@
 
 ## Documentation Structure
 
-### 🚀 [Getting Started](getting-started/installation/)
-- [Installation](getting-started/installation/) - Set up Pyvider
-- [Quick Start](getting-started/quick-start/) - Build your first provider in 5 minutes
+### 🚀 [Getting Started](getting-started/installation.md)
+- [Installation](getting-started/installation.md) - Set up Pyvider
+- [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
 
-### 📖 [Developer Guides](guides/building-components/creating-providers/)
+### 📖 [Developer Guides](guides/building-components/creating-providers.md)
 Build production-focused providers:
-- [Creating Providers](guides/building-components/creating-providers/) - Provider configuration
-- [Creating Resources](guides/building-components/creating-resources/) - CRUD operations
-- [Creating Data Sources](guides/building-components/creating-data-sources/) - Read-only data
-- [Creating Functions](guides/building-components/creating-functions/) - Transformations
-- [Testing Providers](guides/development/testing-providers/) - Testing strategies
-- [Best Practices](guides/production/best-practices/) - Production patterns
+- [Creating Providers](guides/building-components/creating-providers.md) - Provider configuration
+- [Creating Resources](guides/building-components/creating-resources.md) - CRUD operations
+- [Creating Data Sources](guides/building-components/creating-data-sources.md) - Read-only data
+- [Creating Functions](guides/building-components/creating-functions.md) - Transformations
+- [Testing Providers](guides/development/testing-providers.md) - Testing strategies
+- [Best Practices](guides/production/best-practices.md) - Production patterns
 
-### 🏛️ [Core Concepts](explanation/architecture/)
+### 🏛️ [Core Concepts](explanation/architecture.md)
 Understand Pyvider's foundation:
-- [Architecture](explanation/architecture/) - System design and data flow
-- [Design Philosophy](explanation/design-philosophy/) - Vision and principles
-- [Component Model](explanation/component-model/) - Hub-based discovery
-- [Schema System](explanation/schema-system/) - Type-safe data modeling
+- [Architecture](explanation/architecture.md) - System design and data flow
+- [Design Philosophy](explanation/design-philosophy.md) - Vision and principles
+- [Component Model](explanation/component-model.md) - Hub-based discovery
+- [Schema System](explanation/schema-system.md) - Type-safe data modeling
 
-### 📦 [Schema System](schema/overview/)
-- [Overview](schema/overview/) - Schema introduction
-- [Types](schema/types/) - Available schema types
-- [Attributes](schema/attributes/) - Attribute definitions
-- [Blocks](schema/blocks/) - Nested blocks
-- [Validators](schema/validators/) - Input validation
+### 📦 [Schema System](schema/overview.md)
+- [Overview](schema/overview.md) - Schema introduction
+- [Types](schema/types.md) - Available schema types
+- [Attributes](schema/attributes.md) - Attribute definitions
+- [Blocks](schema/blocks.md) - Nested blocks
+- [Validators](schema/validators.md) - Input validation
 
-### 📘 [API Reference](api/index/)
-- [Schema API](api/schema/index/) - Attributes, blocks, and validation
-- [CLI Commands](api/cli/) - Command-line interface
-- [Common Types](api/common/) - Type system reference
+### 📘 [API Reference](api/index.md)
+- [Schema API](api/schema/index.md) - Attributes, blocks, and validation
+- [CLI Commands](api/cli.md) - Command-line interface
+- [Common Types](api/common.md) - Type system reference
 
-### 🤝 [Contributing](contributing/guidelines/)
-- [Contribution Guidelines](contributing/guidelines/) - How to contribute
-- [Code of Conduct](contributing/code-of-conduct/) - Community standards
+### 🤝 [Contributing](contributing/guidelines.md)
+- [Contribution Guidelines](contributing/guidelines.md) - How to contribute
+- [Code of Conduct](contributing/code-of-conduct.md) - Community standards
 
 ## Part of the provide.io Ecosystem
 

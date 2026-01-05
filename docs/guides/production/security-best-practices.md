@@ -688,7 +688,7 @@ We take security seriously and will respond promptly to all reports.
 
 ## Related Documentation
 
-- [Error Handling Guide](../development/error-handling/) - Exception handling patterns
-- [Logging Guide](../development/logging/) - Structured logging
-- [Best Practices](../production/best-practices/) - General best practices
-- [Testing Providers](../development/testing-providers/) - Security testing
+- [Error Handling Guide](../development/error-handling.md) - Exception handling patterns
+- [Logging Guide](../development/logging.md) - Structured logging
+- [Best Practices](../production/best-practices.md) - General best practices
+- [Testing Providers](../development/testing-providers.md) - Security testing

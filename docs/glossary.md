@@ -12,7 +12,7 @@ A key-value pair in a schema that defines configuration or state data. Attribute
 "name": a_str(required=True)
 ```
 
-See: [Schema Types](schema/types/)
+See: [Schema Types](schema/types.md)
 
 ### Async/Await
 Python's asynchronous programming syntax. Pyvider uses async/await for non-blocking I/O operations.
@@ -40,7 +40,7 @@ config {
 }
 ```
 
-See: [Schema Blocks](schema/blocks/)
+See: [Schema Blocks](schema/blocks.md)
 
 ## C
 
@@ -50,7 +50,7 @@ A registered Terraform provider element (provider, resource, data source, or fun
 ### Component Hub
 Pyvider's auto-discovery system that registers and manages all components via decorators.
 
-See: [Component Model](explanation/component-model/)
+See: [Component Model](explanation/component-model.md)
 
 ### Computed Attribute
 An attribute whose value is determined by the provider, not the user. Marked with `computed=True`.
@@ -85,7 +85,7 @@ class User(BaseDataSource):
         return UserData(...)
 ```
 
-See: [Creating Data Sources](guides/building-components/creating-data-sources/)
+See: [Creating Data Sources](guides/building-components/creating-data-sources.md)
 
 ### Decorator
 Python syntax (`@decorator`) used to register components with Pyvider.
@@ -100,7 +100,7 @@ Python syntax (`@decorator`) used to register components with Pyvider.
 ### Ephemeral Resource
 A short-lived resource with open/renew/close lifecycle instead of create/update/delete. Used for temporary credentials, sessions, etc.
 
-See: [API Reference - Ephemerals](api/ephemerals/)
+See: [API Reference - Ephemerals](api/ephemerals.md)
 
 ## F
 
@@ -182,7 +182,7 @@ Encrypted storage for sensitive data that shouldn't appear in terraform.tfstate.
 return state, {"password": db.password}  # Private state (encrypted)
 ```
 
-See: [Security Best Practices](guides/production/security-best-practices/)
+See: [Security Best Practices](guides/production/security-best-practices.md)
 
 ### Provider
 The root component that configures authentication and shared resources for a Terraform provider.
@@ -195,7 +195,7 @@ class MyCloudProvider(BaseProvider):
         self.api_client = APIClient(config["api_key"])
 ```
 
-See: [Creating Providers](guides/building-components/creating-providers/)
+See: [Creating Providers](guides/building-components/creating-providers.md)
 
 ### Protocol v6
 Version 6 of the Terraform Plugin Protocol. Pyvider implements this version.
@@ -231,7 +231,7 @@ class Server(BaseResource):
         pass
 ```
 
-See: [Creating Resources](guides/building-components/creating-resources/)
+See: [Creating Resources](guides/building-components/creating-resources.md)
 
 ## S
 
@@ -246,7 +246,7 @@ s_resource({
 })
 ```
 
-See: [Schema System](schema/overview/)
+See: [Schema System](schema/overview.md)
 
 ### Sensitive Attribute
 An attribute whose value should be masked in logs and output. Marked with `sensitive=True`.
@@ -289,7 +289,7 @@ A function that checks if an attribute value is valid.
 )
 ```
 
-See: [Schema Validators](schema/validators/)
+See: [Schema Validators](schema/validators.md)
 
 ## W
 
@@ -300,11 +300,11 @@ A Terraform workspace containing separate state. Providers may need to handle mu
 
 ## Related Documentation
 
-- [Core Concepts](explanation/architecture/) - Architecture overview
-- [Component Model](explanation/component-model/) - How components work
-- [Schema System](schema/overview/) - Schema definitions
-- [Quick Reference](quick-reference/) - API quick lookup
-- [FAQ](faq/) - Frequently asked questions
+- [Core Concepts](explanation/architecture.md) - Architecture overview
+- [Component Model](explanation/component-model.md) - How components work
+- [Schema System](schema/overview.md) - Schema definitions
+- [Quick Reference](quick-reference.md) - API quick lookup
+- [FAQ](faq.md) - Frequently asked questions
 
 ---
 

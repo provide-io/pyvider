@@ -1,6 +1,6 @@
 # Quick Reference
 
-This page provides quick lookup tables for common Pyvider APIs. For complete documentation, see the [API Reference](api/index/).
+This page provides quick lookup tables for common Pyvider APIs. For complete documentation, see the [API Reference](api/index.md).
 
 ## Schema Factory Functions
 
@@ -285,8 +285,8 @@ class Example(BaseDataSource):
 
 ## See Also
 
-- [Complete API Reference](api/index/)
-- [Schema System](schema/overview/)
-- [Creating Resources Guide](guides/building-components/creating-resources/)
-- [Creating Providers Guide](guides/building-components/creating-providers/)
+- [Complete API Reference](api/index.md)
+- [Schema System](schema/overview.md)
+- [Creating Resources Guide](guides/building-components/creating-resources.md)
+- [Creating Providers Guide](guides/building-components/creating-providers.md)
 - [pyvider-components Examples](https://github.com/provide-io/pyvider-components)

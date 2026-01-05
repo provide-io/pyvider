@@ -669,11 +669,11 @@ INFO  - Provider cleanup complete
 
 ## Related Documentation
 
-- [Creating Providers](../building-components/creating-providers/) - How to implement providers
-- [Best Practices](../production/best-practices/) - Provider development patterns
-- [Debugging](../development/debugging/) - Debugging lifecycle issues
-- [Error Handling](../development/error-handling/) - Exception handling in lifecycle
-- [Testing Providers](../development/testing-providers/) - Testing lifecycle hooks
+- [Creating Providers](../building-components/creating-providers.md) - How to implement providers
+- [Best Practices](../production/best-practices.md) - Provider development patterns
+- [Debugging](../development/debugging.md) - Debugging lifecycle issues
+- [Error Handling](../development/error-handling.md) - Exception handling in lifecycle
+- [Testing Providers](../development/testing-providers.md) - Testing lifecycle hooks
 
 ---
 

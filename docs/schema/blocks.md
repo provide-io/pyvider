@@ -558,7 +558,7 @@ async def _validate_config(self, config: ServerConfig) -> list[str]:
 
 ## See Also
 
-- [Schema Overview](overview/) - Complete schema system guide
-- [Attributes](attributes/) - Attribute types and options
-- [Best Practices](best-practices/) - Schema design guidelines
-- [Creating Resources](../guides/building-components/creating-resources/) - Using blocks in resources
+- [Schema Overview](overview.md) - Complete schema system guide
+- [Attributes](attributes.md) - Attribute types and options
+- [Best Practices](best-practices.md) - Schema design guidelines
+- [Creating Resources](../guides/building-components/creating-resources.md) - Using blocks in resources

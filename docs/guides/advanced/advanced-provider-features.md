@@ -2,7 +2,7 @@
 
 This guide covers advanced features and patterns for building production-focused Pyvider providers, including error handling, retry logic, rate limiting, caching, and testing.
 
-For basic provider creation, see [Creating Providers](../building-components/creating-providers/).
+For basic provider creation, see [Creating Providers](../building-components/creating-providers.md).
 
 ## Table of Contents
 
@@ -372,13 +372,13 @@ See the full example provider at:
 
 ## Related Documentation
 
-- [Creating Providers](../building-components/creating-providers/) - Provider basics
-- [Creating Resources](../building-components/creating-resources/) - Resource implementation
-- [Creating Data Sources](../building-components/creating-data-sources/) - Data source implementation
-- [Creating Functions](../building-components/creating-functions/) - Function implementation
-- [Testing Providers](../development/testing-providers/) - Comprehensive testing strategies
-- [Production Readiness](../production/production-readiness/) - Production best practices
-- [Best Practices](../production/best-practices/) - General best practices
+- [Creating Providers](../building-components/creating-providers.md) - Provider basics
+- [Creating Resources](../building-components/creating-resources.md) - Resource implementation
+- [Creating Data Sources](../building-components/creating-data-sources.md) - Data source implementation
+- [Creating Functions](../building-components/creating-functions.md) - Function implementation
+- [Testing Providers](../development/testing-providers.md) - Comprehensive testing strategies
+- [Production Readiness](../production/production-readiness.md) - Production best practices
+- [Best Practices](../production/best-practices.md) - General best practices
 
 ---
 

@@ -16,7 +16,7 @@ Thank you for your interest in contributing to Pyvider! This guide will help you
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our [Code of Conduct](code-of-conduct/). Please read it before contributing.
+By participating in this project, you agree to abide by our [Code of Conduct](code-of-conduct.md). Please read it before contributing.
 
 ## Getting Started
 
@@ -26,8 +26,8 @@ Welcome! Here's how to get started:
 
 1. **Look for "good first issue" labels** in the [issue tracker](https://github.com/provide-io/pyvider/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
 2. **Read the architecture docs** to understand how Pyvider works:
-   - [Architecture Overview](../explanation/architecture/)
-   - [Component Model](../explanation/component-model/)
+   - [Architecture Overview](../explanation/architecture.md)
+   - [Component Model](../explanation/component-model.md)
 3. **Ask questions** in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 
 ### Prerequisites
@@ -165,7 +165,7 @@ async def test_resource_creation():
     assert state.name == "test"
 ```
 
-See the [Testing Providers Guide](../guides/development/testing-providers/) for more details.
+See the [Testing Providers Guide](../guides/development/testing-providers.md) for more details.
 
 ## Documentation Updates
 
@@ -393,7 +393,7 @@ Have an idea for a new feature?
 
 Need help contributing?
 
-- **Documentation**: Read our [guides](../guides/building-components/creating-providers/)
+- **Documentation**: Read our [guides](../guides/building-components/creating-providers.md)
 - **Discussions**: Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - **Issues**: Search [existing issues](https://github.com/provide-io/pyvider/issues)
 - **Examples**: Check [pyvider-components](https://github.com/provide-io/pyvider-components)

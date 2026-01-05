@@ -343,10 +343,10 @@ servers = [
 
 ## Related Documentation
 
-- [Overview](overview/) - Schema system introduction
-- [Attributes](attributes/) - Attribute options
-- [Validators](validators/) - Custom validation
-- [Best Practices](best-practices/) - Design guidelines
+- [Overview](overview.md) - Schema system introduction
+- [Attributes](attributes.md) - Attribute options
+- [Validators](validators.md) - Custom validation
+- [Best Practices](best-practices.md) - Design guidelines
 
 ---
 

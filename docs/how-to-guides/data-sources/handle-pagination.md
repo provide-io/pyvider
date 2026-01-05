@@ -419,7 +419,7 @@ async def read(self, config: Config) -> Data:
 
 ## See Also
 
-- [Create a Data Source](create-data-source/) - Data source basics
-- [Building Your First Data Source](../../tutorials/building-your-first-data-source/) - Tutorial
-- [Data Source API Reference](../../reference/data-source-api/) - Complete API
-- [Testing Data Sources](../../guides/development/testing-providers/) - Testing strategies
+- [Create a Data Source](create-data-source.md) - Data source basics
+- [Building Your First Data Source](../../tutorials/building-your-first-data-source.md) - Tutorial
+- [Data Source API Reference](../../reference/data-source-api.md) - Complete API
+- [Testing Data Sources](../../guides/development/testing-providers.md) - Testing strategies

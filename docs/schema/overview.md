@@ -460,21 +460,21 @@ Schemas are validated at multiple points:
 
 ## Related Documentation
 
-- [Types Reference](types/) - All available attribute types
-- [Attributes](attributes/) - Attribute options and behavior
-- [Blocks](blocks/) - Nested block patterns
-- [Validators](validators/) - Custom validation
-- [Sensitive Data](sensitive-data/) - Handling secrets
-- [Common Patterns](common-patterns/) - Schema patterns
-- [Best Practices](best-practices/) - Schema design guidelines
+- [Types Reference](types.md) - All available attribute types
+- [Attributes](attributes.md) - Attribute options and behavior
+- [Blocks](blocks.md) - Nested block patterns
+- [Validators](validators.md) - Custom validation
+- [Sensitive Data](sensitive-data.md) - Handling secrets
+- [Common Patterns](common-patterns.md) - Schema patterns
+- [Best Practices](best-practices.md) - Schema design guidelines
 
 ## Next Steps
 
-- Learn about [all available types](types/)
-- Understand [attribute options](attributes/)
-- Explore [nested blocks](blocks/)
-- Add [custom validators](validators/)
-- See [common patterns](common-patterns/)
+- Learn about [all available types](types.md)
+- Understand [attribute options](attributes.md)
+- Explore [nested blocks](blocks.md)
+- Add [custom validators](validators.md)
+- See [common patterns](common-patterns.md)
 
 ---
 

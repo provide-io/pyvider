@@ -733,8 +733,8 @@ async def create_test_resource(provider, i):
 
 ## Related Documentation
 
-- [Architecture Overview](../../explanation/architecture/) - System design
-- [Async Patterns Guide](../advanced/advanced-patterns/) - Advanced async usage
-- [Best Practices](../production/best-practices/) - General best practices
-- [Logging Guide](../development/logging/) - Performance logging
-- [Testing Providers](../development/testing-providers/) - Performance testing
+- [Architecture Overview](../../explanation/architecture.md) - System design
+- [Async Patterns Guide](../advanced/advanced-patterns.md) - Advanced async usage
+- [Best Practices](../production/best-practices.md) - General best practices
+- [Logging Guide](../development/logging.md) - Performance logging
+- [Testing Providers](../development/testing-providers.md) - Performance testing

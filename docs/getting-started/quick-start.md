@@ -378,15 +378,15 @@ The `ResourceContext` provides:
 Now that you understand the basics, explore:
 
 ### Learn Core Concepts
-- **[Architecture Overview](../explanation/architecture/)** - Understand how Pyvider works
-- **[Component Model](../explanation/component-model/)** - Deep dive into components
-- **[Schema System](../explanation/schema-system/)** - Master schema definition
+- **[Architecture Overview](../explanation/architecture.md)** - Understand how Pyvider works
+- **[Component Model](../explanation/component-model.md)** - Deep dive into components
+- **[Schema System](../explanation/schema-system.md)** - Master schema definition
 
 ### Build Real Providers
-- **[Creating Providers](../guides/building-components/creating-providers/)** - Comprehensive provider guide
-- **[Creating Resources](../guides/building-components/creating-resources/)** - Advanced resource patterns
-- **[Testing Providers](../guides/development/testing-providers/)** - Write comprehensive tests
-- **[Best Practices](../guides/production/best-practices/)** - Production-focused patterns
+- **[Creating Providers](../guides/building-components/creating-providers.md)** - Comprehensive provider guide
+- **[Creating Resources](../guides/building-components/creating-resources.md)** - Advanced resource patterns
+- **[Testing Providers](../guides/development/testing-providers.md)** - Write comprehensive tests
+- **[Best Practices](../guides/production/best-practices.md)** - Production-focused patterns
 
 ### See Examples
 - **[Pyvider Components](https://github.com/provide-io/pyvider-components)** - 100+ working examples including:
@@ -447,7 +447,7 @@ class FileInfo(BaseDataSource):
 
 If you run into issues:
 
-- Check the [Troubleshooting Guide](../troubleshooting/)
+- Check the [Troubleshooting Guide](../troubleshooting.md)
 - Search [GitHub Issues](https://github.com/provide-io/pyvider/issues)
 - Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - Review [pyvider-components examples](https://github.com/provide-io/pyvider-components)

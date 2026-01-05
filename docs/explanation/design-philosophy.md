@@ -212,8 +212,8 @@ We welcome contributions that align with these principles:
 - Clear documentation
 - Working examples
 
-See our [Contributing Guidelines](../contributing/guidelines/) for details.
+See our [Contributing Guidelines](../contributing/guidelines.md) for details.
 
 ---
 
-**Ready to build with Pyvider?** Check out the [Quick Start Guide](../getting-started/quick-start/)
+**Ready to build with Pyvider?** Check out the [Quick Start Guide](../getting-started/quick-start.md)

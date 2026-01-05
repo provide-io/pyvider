@@ -534,7 +534,7 @@ class ServerQuery(BaseDataSource):
 
 ## See Also
 
-- [Create a Data Source](../how-to-guides/data-sources/create-data-source/) - How-to guide
-- [Building Your First Data Source](../tutorials/building-your-first-data-source/) - Tutorial
-- [Handle Pagination](../how-to-guides/data-sources/handle-pagination/) - Pagination patterns
-- [API Reference](../api/data_sources/) - Auto-generated API docs
+- [Create a Data Source](../how-to-guides/data-sources/create-data-source.md) - How-to guide
+- [Building Your First Data Source](../tutorials/building-your-first-data-source.md) - Tutorial
+- [Handle Pagination](../how-to-guides/data-sources/handle-pagination.md) - Pagination patterns
+- [API Reference](../api/data_sources.md) - Auto-generated API docs

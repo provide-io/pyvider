@@ -228,15 +228,15 @@ Exploratory plans include:
 ## Related Documentation
 
 - [pyvider-components](https://github.com/provide-io/pyvider-components) - Working examples
-- [Best Practices](../guides/production/best-practices/) - Code reuse patterns
-- [Advanced Patterns](../guides/advanced/advanced-patterns/) - Advanced implementation techniques
+- [Best Practices](../guides/production/best-practices.md) - Code reuse patterns
+- [Advanced Patterns](../guides/advanced/advanced-patterns.md) - Advanced implementation techniques
 
 ## Contributing
 
 Interested in contributing to the capabilities system?
 
 - Join the discussion on [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
-- Review the [Contributing Guidelines](../contributing/guidelines/)
+- Review the [Contributing Guidelines](../contributing/guidelines.md)
 - Share feedback on exploratory capability features
 
 ---

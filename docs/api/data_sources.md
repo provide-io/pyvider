@@ -458,10 +458,10 @@ def get_schema(cls):
 
 ## Related Guides
 
-- [Creating Data Sources](../guides/building-components/creating-data-sources/) - Complete data source guide
-- [Best Practices](../guides/production/best-practices/) - Data source patterns
-- [Testing Providers](../guides/development/testing-providers/) - Testing data sources
-- [Performance Optimization](../guides/production/performance-optimization/) - Caching strategies
-- [Tutorials](../tutorials/intermediate-provider/) - Real-world examples
+- [Creating Data Sources](../guides/building-components/creating-data-sources.md) - Complete data source guide
+- [Best Practices](../guides/production/best-practices.md) - Data source patterns
+- [Testing Providers](../guides/development/testing-providers.md) - Testing data sources
+- [Performance Optimization](../guides/production/performance-optimization.md) - Caching strategies
+- [Tutorials](../tutorials/intermediate-provider.md) - Real-world examples
 
 ## Module Reference

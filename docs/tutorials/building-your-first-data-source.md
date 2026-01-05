@@ -15,7 +15,7 @@ Welcome! In this tutorial, you'll build your first Terraform data source using p
 **Prerequisites:**
 
 - Python 3.11+ installed
-- pyvider installed ([installation guide](../getting-started/installation/))
+- pyvider installed ([installation guide](../getting-started/installation.md))
 - Basic Python knowledge
 - Basic Terraform knowledge
 
@@ -435,11 +435,11 @@ Congratulations! You've built your first pyvider data source. You now understand
 
 Now that you understand data sources, explore:
 
-- **[Building Your First Resource](building-your-first-resource/)** - For comparison
-- **[How to Create a Data Source](../how-to-guides/data-sources/create-data-source/)** - Quick reference
-- **[Handle Pagination](../how-to-guides/data-sources/handle-pagination/)** - For large result sets
-- **[Data Source API Reference](../reference/data-source-api/)** - Complete API documentation
-- **[Intermediate Provider Tutorial](intermediate-provider/)** - Build a complete HTTP API provider
+- **[Building Your First Resource](building-your-first-resource.md)** - For comparison
+- **[How to Create a Data Source](../how-to-guides/data-sources/create-data-source.md)** - Quick reference
+- **[Handle Pagination](../how-to-guides/data-sources/handle-pagination.md)** - For large result sets
+- **[Data Source API Reference](../reference/data-source-api.md)** - Complete API documentation
+- **[Intermediate Provider Tutorial](intermediate-provider.md)** - Build a complete HTTP API provider
 
 ---
 
@@ -476,4 +476,4 @@ async def read(self, config):
         return QueryData(id=id, results=[], error=str(e))
 ```
 
-For more help, see [Troubleshooting Guide](../troubleshooting/).
+For more help, see [Troubleshooting Guide](../troubleshooting.md).

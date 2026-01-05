@@ -327,7 +327,7 @@ Document your schema in multiple places:
 
 ## See Also
 
-- [Schema Overview](overview/) - Schema system introduction
-- [Attributes](attributes/) - Attribute reference
-- [Blocks](blocks/) - Block patterns
-- [Validators](validators/) - Validation techniques
+- [Schema Overview](overview.md) - Schema system introduction
+- [Attributes](attributes.md) - Attribute reference
+- [Blocks](blocks.md) - Block patterns
+- [Validators](validators.md) - Validation techniques

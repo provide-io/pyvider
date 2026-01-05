@@ -656,8 +656,8 @@ async def _delete_apply(self, ctx: ResourceContext) -> None:
 
 ## See Also
 
-- [Creating Resources](../building-components/creating-resources/) - Detailed resource development guide
-- [Best Practices](../production/best-practices/) - Production patterns
-- [Error Handling](../development/error-handling/) - Error management strategies
-- [Schema System](../../schema/overview/) - Schema definition reference
-- [Testing Providers](../development/testing-providers/) - Resource testing strategies
+- [Creating Resources](../building-components/creating-resources.md) - Detailed resource development guide
+- [Best Practices](../production/best-practices.md) - Production patterns
+- [Error Handling](../development/error-handling.md) - Error management strategies
+- [Schema System](../../schema/overview.md) - Schema definition reference
+- [Testing Providers](../development/testing-providers.md) - Resource testing strategies

@@ -340,11 +340,11 @@ logger.debug("API request failed", api_key=self.api_key)
 
 ## Related Documentation
 
-- [Overview](overview/) - Schema system introduction
-- [Types](types/) - Available attribute types
-- [Validators](validators/) - Validation including sensitive data
-- [Best Practices](best-practices/) - Schema design guidelines
-- [Security Practices](../guides/production/production-readiness/#security-practices)
+- [Overview](overview.md) - Schema system introduction
+- [Types](types.md) - Available attribute types
+- [Validators](validators.md) - Validation including sensitive data
+- [Best Practices](best-practices.md) - Schema design guidelines
+- [Security Practices](../guides/production/production-readiness.md#security-practices)
 
 ---
 
