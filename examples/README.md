@@ -190,7 +190,7 @@ For integration testing with Terraform, use the included `tf/` configurations.
 
 Ensure the package is installed with entry points:
 ```bash
-uv add --editable .
+uv pip install -e .
 pyvider install
 ```
 
