@@ -806,7 +806,7 @@ When creating an issue, include:
 
 - **Clear description** of the problem
 - **Steps to reproduce** the issue
-- **Pyvider version**: `pip show pyvider`
+- **Pyvider version**: `uv pip show pyvider`
 - **Terraform version**: `terraform version`
 - **Python version**: `python --version`
 - **Relevant logs** from debug output

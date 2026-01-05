@@ -371,7 +371,7 @@ What should happen
 What actually happens
 
 ### Environment
-- Pyvider version: (from `pip show pyvider`)
+- Pyvider version: (from `uv pip show pyvider`)
 - Python version: (from `python --version`)
 - Terraform version: (from `terraform version`)
 - OS: (e.g., macOS 14.0, Ubuntu 22.04)
