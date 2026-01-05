@@ -500,7 +500,7 @@ dependencies = [
 pip-audit
 
 # Or with uv
-uv uv tool install pip-audit
+uv tool install pip-audit
 uv run pip-audit
 ```
 
