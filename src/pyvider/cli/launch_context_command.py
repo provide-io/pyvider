@@ -132,7 +132,7 @@ def _show_method_specific_help(method: LaunchMethod) -> None:
 
     elif method.value == "editable_install":
         pout("\n💡 Development Mode Detected", fg="blue", bold=True)
-        pout("  This provider is running from an editable install (pip install -e).")
+        pout("  This provider is running from an editable install (uv pip install -e).")
         pout("  This is typically used during development.")
 
     elif method.value == "script_direct":

@@ -40,7 +40,7 @@ def _handle_discovery_errors(ctx: PyviderContext) -> None:
         perr("Action Required:", style="yellow bold")
         perr("  1. Ensure all dependencies listed in 'pyproject.toml' are installed.")
         perr(
-            "  2. If developing locally, run 'uv pip install -e .[dev]' to install\n"
+            "  2. If developing locally, run 'uv sync --group dev' to install\n"
             "     the project in editable mode with all development dependencies."
         )
         perr("  3. Verify that all local component packages are correctly structured.")
