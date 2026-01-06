@@ -37,18 +37,15 @@ Pyvider removes these barriers by letting you write providers in Python while ma
 - **Decorator-based**: Simple registration system
 - **Well-tested**: Comprehensive test suite
 
-## ⚠️ Current Status
+## Current Status
 
-!!! warning "Pre-release"
-    **Pyvider is in pre-release (v0.3.0)** - please be aware.
+Pyvider is in pre-release (v0.3.0). Some APIs may change during the pre-release series.
 
-    Some APIs may change during the pre-release series.
-
-    - **APIs may change** before the 1.0 release without prior notice
-    - **Best suited** for internal tooling, experimentation, and learning
-    - **Not yet recommended** for public or production-critical providers
-    - **Some documented features** may not be fully implemented yet
-    - **Active development** toward 1.0 release with community feedback
+- **APIs may change** before the 1.0 release without prior notice
+- **Best suited** for internal tooling, experimentation, and learning
+- **Not yet recommended** for public or production-critical providers
+- **Some documented features** may not be fully implemented yet
+- **Active development** toward 1.0 release with community feedback
 
 **Recommended Use Cases:**
 - Internal company tooling and automation
