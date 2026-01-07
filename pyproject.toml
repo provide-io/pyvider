@@ -53,7 +53,7 @@ Issues = "https://foundry.provide.io/pyvider/issues"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[standard,advanced-testing,typecheck,grpc,build,profiling,security]",
+    "provide-testkit[pyvider-dev]",
 ]
 docs = [
     "provide-testkit[docs]",
