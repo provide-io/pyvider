@@ -1,46 +1,26 @@
-name: 🏷️ GitHub Release
+name: 🚀 Release
 
 on:
   push:
     tags: ['v*']
   workflow_dispatch:
-
-permissions:
-  contents: write
+    inputs:
+      publish-testpypi:
+        description: 'Publish to TestPyPI'
+        type: boolean
+        default: false
+      publish-pypi:
+        description: 'Publish to PyPI'
+        type: boolean
+        default: false
 
 jobs:
-  download-artifacts:
-    name: 📥 Download CI Artifacts
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Download artifacts from CI
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: ci.yml
-          name: dist
-          path: dist/
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-dist
-          path: dist/
-
-  github-release:
-    name: 📋 Create GitHub Release
-    needs: download-artifacts
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-dist
-          path: dist/
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/*
-          generate_release_notes: true
+  release:
+    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@main
+    with:
+      python-version: '3.11'
+      run-tests: true
+      test-repository: false
+      publish-testpypi: ${{ inputs.publish-testpypi || false }}
+      publish-pypi: ${{ inputs.publish-pypi || false }}
+    secrets: inherit
