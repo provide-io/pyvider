@@ -225,9 +225,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         pout("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
         pout("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
-        pout(
-            "  2. Verify all dependencies are installed: 'uv sync'", fg="white", err=True
-        )
+        pout("  2. Verify all dependencies are installed: 'uv sync'", fg="white", err=True)
         pout("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
         pout("  4. Review the full error trace above for specific details", fg="white", err=True)
         pout("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
