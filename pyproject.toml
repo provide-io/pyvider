@@ -201,3 +201,22 @@ exclude_lines = [
 
 [tool.bandit]
 exclude_dirs = [".venv", "tests", "workenv"]
+
+################################################################################
+# Security Scanning Allowlist
+################################################################################
+
+[tool.security]
+# Paths to exclude from secret scanning (TruffleHog, GitGuardian, Gitleaks)
+# Run: we security generate (via wrknv) to regenerate tool configs
+description = "Documentation with example credentials - intentionally committed"
+allowed_paths = [
+    # Documentation with example API keys and config patterns
+    "docs/**",
+    # Markdown files with examples
+    "*.md",
+    # Old gitleaks report
+    "gitleaks-report.json",
+    # Config file with examples
+    "pyvider.toml",
+]
