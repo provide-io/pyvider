@@ -7,6 +7,7 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 jobs:
   ci:
@@ -25,32 +26,12 @@ jobs:
         run: uv sync --all-groups
 
       - name: Install wrknv
-        run: uv pip install --python .venv/bin/python "wrknv @ https://github.com/provide-io/wrknv/releases/download/v0.3.0/wrknv-0.3.0-py3-none-any.whl"
+        run: uv pip install "wrknv @ git+https://github.com/provide-io/wrknv.git@main"
 
-      - name: Check formatting
+      - name: Run CI pipeline
         run: |
           source .venv/bin/activate
-          ruff format . --check
-
-      - name: Lint
-        run: |
-          source .venv/bin/activate
-          ruff check .
-
-      - name: Type check
-        run: |
-          source .venv/bin/activate
-          mypy src/
-
-      - name: Run tests
-        run: |
-          source .venv/bin/activate
-          pytest -n auto
-
-      - name: Build
-        run: |
-          source .venv/bin/activate
-          uv build
+          we run ci
 
       - name: Run security scan
         run: |
