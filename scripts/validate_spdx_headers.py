@@ -55,10 +55,7 @@ def should_skip(file_path: Path) -> bool:
             return True
 
     # Skip nearly empty __init__.py files
-    if is_nearly_empty(file_path):
-        return True
-
-    return False
+    return bool(is_nearly_empty(file_path))
 
 
 def find_python_files(root: Path) -> list[Path]:
