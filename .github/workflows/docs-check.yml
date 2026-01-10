@@ -1,4 +1,4 @@
-name: Documentation Check
+name: 📚 Documentation Check
 
 on:
   pull_request:
