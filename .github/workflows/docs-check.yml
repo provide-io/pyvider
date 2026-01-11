@@ -16,7 +16,7 @@ on:
 jobs:
   check-docs:
     name: Check Documentation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
 
   build-and-deploy:
     name: Build and Deploy Docs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: check-docs
 
