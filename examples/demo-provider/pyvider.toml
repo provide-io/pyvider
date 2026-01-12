@@ -1,0 +1,14 @@
+# Pyvider Configuration for Demo Provider
+
+# Private state encryption secret (REQUIRED)
+private_state_shared_secret = "demo-secret-key-for-testing"
+
+[logging]
+level = "ERROR"
+format = "emoji"
+omit_timestamp = false
+
+[server]
+timeout_graceful_shutdown = 5
+max_message_size = 4194304  # 4 MiB
+keepalive_time = 60
