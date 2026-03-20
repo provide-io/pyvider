@@ -22,12 +22,12 @@ def register_data_source(
         cls._is_test_only = test_only  # type: ignore[attr-defined]
         if component_of:
             cls._parent_capability = component_of  # type: ignore[attr-defined]
-        if logger.is_debug_enabled():
-            logger.debug(
-                f"📊 Marked data source '{name}' for discovery",
-                capability=component_of,
-                test_only=test_only,
-            )
+        logger.debug(
+            "Marked data source for discovery",
+            name=name,
+            capability=component_of,
+            test_only=test_only,
+        )
         return cls
 
     return decorator

@@ -105,10 +105,15 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any], func_
                 capability_instance = capability_class
             native_kwargs[parent_capability] = capability_instance
             logger.info(
-                f"FUNCTION_DISPATCH 🔌 Injected capability '{parent_capability}' for function '{func_name}', instance={capability_instance}"
+                "Injected capability for function",
+                capability=parent_capability,
+                func_name=func_name,
+                instance=str(capability_instance),
             )
         else:
-            logger.warning(f"FUNCTION_DISPATCH ⚠️ Capability '{parent_capability}' not found for '{func_name}'")
+            logger.warning(
+                "Capability not found for function", capability=parent_capability, func_name=func_name
+            )
 
 
 def _build_function_arguments(
@@ -163,14 +168,15 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
-        if logger.is_debug_enabled():
-            logger.debug(f"FUNCTION_DISPATCH ✅ Function '{func_name}' executed successfully")
+        logger.debug("Function executed successfully", func_name=func_name)
         return result_py_val
     except PyviderFunctionError:
         raise
     except Exception as func_err:
         logger.error(
-            f"FUNCTION_DISPATCH 💥 Function '{func_name}' failed: {func_err}",
+            "Function execution failed",
+            func_name=func_name,
+            error=str(func_err),
             exc_info=True,
         )
         raise PyviderFunctionError(f"Function '{func_name}' execution failed: {func_err}") from func_err

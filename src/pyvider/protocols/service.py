@@ -38,8 +38,7 @@ class ProtocolService:
                         if self._shutdown_event.is_set():
                             break
 
-                        if logger.is_debug_enabled():
-                            logger.debug(f"StreamStdio received message: {message}")
+                        logger.debug("StreamStdio received message", message=str(message))
 
                         # Don't terminate on empty messages
                         if message is not None:  # Changed condition
@@ -49,7 +48,7 @@ class ProtocolService:
                         yield message
 
                 except Exception as e:
-                    logger.error(f"StreamStdio error: {e}")
+                    logger.error("StreamStdio error", error=str(e))
                     raise
                 finally:
                     logger.debug("StreamStdio message processing complete")
@@ -61,7 +60,7 @@ class ProtocolService:
                 yield response
 
         except Exception as e:
-            logger.error(f"StreamStdio outer error: {e}")
+            logger.error("StreamStdio outer error", error=str(e))
             raise
         finally:
             await self.handle_shutdown()  # Added graceful shutdown
@@ -90,7 +89,7 @@ class ProtocolService:
             context.set_details("Timeout waiting for StreamStdio setup")
             raise
         except Exception as e:
-            logger.error(f"StartStream error: {e}")
+            logger.error("StartStream error", error=str(e))
             context.set_code("UNIMPLEMENTED")
             context.set_details(f"Internal error: {e!s}")
             raise
@@ -122,7 +121,7 @@ class ProtocolService:
                 if self._stream_active:
                     await self._message_queue.put(b"")  # Empty heartbeat
             except Exception as e:
-                logger.error(f"Heartbeat error: {e}")
+                logger.error("Heartbeat error", error=str(e))
                 break
 
 
