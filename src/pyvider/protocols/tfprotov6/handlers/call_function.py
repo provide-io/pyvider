@@ -162,7 +162,8 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
         else:
             result_py_val = function_obj(*all_args, **keyword_only_kwargs)
 
-        logger.debug("Function executed successfully", func_name=func_name)
+        if logger.is_debug_enabled():
+            logger.debug(f"FUNCTION_DISPATCH ✅ Function '{func_name}' executed successfully")
         return result_py_val
     except PyviderFunctionError:
         raise

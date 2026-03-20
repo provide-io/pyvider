@@ -228,8 +228,9 @@ def _handle_apply_result(
     if new_private_state_attrs:
         serialized_bytes = msgpack.packb(attrs.asdict(new_private_state_attrs), use_bin_type=True)
         response.private = encrypt(serialized_bytes)
-        logger.debug("Setting response.private", private=repr(response.private))
-        logger.debug("Serialized private bytes", serialized_bytes=repr(serialized_bytes))
+        if logger.is_debug_enabled():
+            logger.debug(f"Setting response.private: {response.private!r}")
+            logger.debug(f"Serialized private bytes: {serialized_bytes}")
 
 
 @rpc_handler("ApplyResourceChange")
