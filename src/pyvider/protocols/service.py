@@ -60,8 +60,32 @@ class ProtocolService:
         """
         logger.debug("StreamStdio started")
         try:
-            async for message in request_iterator:
-                if self._shutdown_event.is_set() or self._stream_stopped.is_set():
+
+            async def process_messages() -> AsyncGenerator[Any, Any]:
+                try:
+                    async for message in request_iterator:
+                        if self._shutdown_event.is_set():
+                            break
+
+                        if logger.is_debug_enabled():
+                            logger.debug(f"StreamStdio received message: {message}")
+
+                        # Don't terminate on empty messages
+                        if message is not None:  # Changed condition
+                            await self._message_queue.put(message)
+
+                        self._setup_complete.set()
+                        yield message
+
+                except Exception as e:
+                    logger.error(f"StreamStdio error: {e}")
+                    raise
+                finally:
+                    logger.debug("StreamStdio message processing complete")
+                    self._stream_active = False
+
+            async for response in process_messages():
+                if not self._stream_active:
                     break
 
                 logger.debug("StreamStdio received message", message=str(message))

@@ -21,7 +21,8 @@ def register_provider(name: str) -> Callable[[type], type]:
 
         # Register the provider class immediately
         hub.register("provider", name, cls)
-        logger.debug("Registered provider via decorator", name=name)
+        if logger.is_debug_enabled():
+            logger.debug(f"Registered provider '{name}' via decorator.")
         return cls
 
     return decorator
