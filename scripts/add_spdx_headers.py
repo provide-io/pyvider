@@ -33,20 +33,20 @@ EXCLUDED_PATTERNS = [
 
 def check_header_correctness(content: str) -> tuple[bool, str]:
     """Check if existing header is correct. Returns (is_correct, issue)."""
-    lines = content.split('\n')[:15]
+    lines = content.split("\n")[:15]
 
     # Check for SPDX format
-    has_spdx = any('SPDX-FileCopyrightText' in line for line in lines)
-    has_license = any('SPDX-License-Identifier: Apache-2.0' in line for line in lines)
+    has_spdx = any("SPDX-FileCopyrightText" in line for line in lines)
+    has_license = any("SPDX-License-Identifier: Apache-2.0" in line for line in lines)
 
     if not has_spdx or not has_license:
         return False, "Missing SPDX tags or incorrect license"
 
     # Check year and company
-    copyright_line = next((line for line in lines if 'SPDX-FileCopyrightText' in line), '')
-    if '2025' not in copyright_line:
+    copyright_line = next((line for line in lines if "SPDX-FileCopyrightText" in line), "")
+    if "2025" not in copyright_line:
         return False, "Incorrect year (not 2025)"
-    if 'provide.io llc' not in copyright_line:
+    if "provide.io llc" not in copyright_line:
         return False, "Incorrect company name"
 
     return True, ""
@@ -62,7 +62,7 @@ def should_skip_file(file_path: Path) -> tuple[bool, str]:
     # Skip nearly empty __init__.py files (namespace packages)
     if file_path.name == "__init__.py":
         content = file_path.read_text()
-        lines = content.strip().split('\n')
+        lines = content.strip().split("\n")
         if len(lines) <= 3:
             return True, "nearly empty namespace package"
 
@@ -106,12 +106,12 @@ def add_header(file_path: Path, dry_run: bool = False, verbose: bool = False) ->
         return header_result
 
     # Determine header placement
-    lines = content.split('\n')
+    lines = content.split("\n")
     insert_line = 1 if has_shebang(content) else 0
 
     # Insert header with blank line after
-    new_lines = lines[:insert_line] + HEADER_LINES + [''] + lines[insert_line:]
-    new_content = '\n'.join(new_lines)
+    new_lines = lines[:insert_line] + HEADER_LINES + [""] + lines[insert_line:]
+    new_content = "\n".join(new_lines)
 
     # Validate syntax before writing
     try:
@@ -142,18 +142,12 @@ def find_python_files(root: Path) -> list[Path]:
 
 def main() -> int:
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description="Add SPDX copyright headers to Python files"
+    parser = argparse.ArgumentParser(description="Add SPDX copyright headers to Python files")
+    parser.add_argument(
+        "--dry-run", "-n", action="store_true", help="Show what would change without modifying files"
     )
     parser.add_argument(
-        "--dry-run", "-n",
-        action="store_true",
-        help="Show what would change without modifying files"
-    )
-    parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Show detailed output including skipped files"
+        "--verbose", "-v", action="store_true", help="Show detailed output including skipped files"
     )
     args = parser.parse_args()
 

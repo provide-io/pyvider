@@ -4,8 +4,8 @@
 #
 
 
-import json
 from functools import lru_cache
+import json
 
 from pyvider.cty import CtyType
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
@@ -30,7 +30,7 @@ _NESTING_MODE_MAP: dict[NestingMode, int] | None = None
 
 
 def _get_nesting_mode_map() -> dict[NestingMode, int]:
-    global _NESTING_MODE_MAP  # noqa: PLW0603
+    global _NESTING_MODE_MAP
     if _NESTING_MODE_MAP is None:
         _NESTING_MODE_MAP = {
             NestingMode.SINGLE: pb.Schema.NestedBlock.NestingMode.SINGLE,
