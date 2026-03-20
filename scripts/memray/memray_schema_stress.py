@@ -5,10 +5,11 @@ import os
 
 os.environ["PROVIDE_LOG_LEVEL"] = "ERROR"
 
-from pyvider.cty import CtyNumber, CtyString
 from pyvider.schema.factory import a_num, a_obj, a_str, b_list, s_resource
 from pyvider.schema.types.attribute import PvsAttribute
 from pyvider.schema.types.object import PvsObjectType
+
+from pyvider.cty import CtyNumber, CtyString
 
 
 def main() -> None:
@@ -19,7 +20,7 @@ def main() -> None:
         s_resource(attributes={"name": a_str("A name")})
 
     # --- Stress: s_resource() with mixed attributes (10K cycles) ---
-    for _i in range(10_000):
+    for i in range(10_000):
         s_resource(
             attributes={
                 "name": a_str("Resource name", required=True),

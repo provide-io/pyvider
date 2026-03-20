@@ -12,7 +12,7 @@ site_url: https://pyvider.com/docs/
 repo_url: https://github.com/provide-io/pyvider
 repo_name: pyvider
 edit_uri: edit/main/docs/
-copyright: ©2024-2026 provide.io llc
+copyright: ©2024-2025 provide.io llc
 
 # Development server configuration
 dev_addr: 127.0.0.1:11004

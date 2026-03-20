@@ -99,9 +99,3 @@ bf-*.txt
 
 # Memray profiling output
 memray-output/
-
-# Local act CI config (machine-specific)
-.actrc
-
-# Mutation testing output
-mutants/

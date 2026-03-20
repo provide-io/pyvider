@@ -53,7 +53,6 @@ class Server(BaseResource):
 **📖 [Read the Full Documentation →](https://pyvider.com/docs/)**
 
 ### Quick Links
-
 - **[Installation Guide](https://pyvider.com/docs/getting-started/installation/)** - Get up and running
 - **[Quick Start Tutorial](https://pyvider.com/docs/getting-started/quick-start/)** - Build your first provider in 5 minutes
 - **[Architecture Overview](https://pyvider.com/docs/core-concepts/architecture/)** - Understand how Pyvider works
@@ -118,6 +117,6 @@ uv add pyvider
 - **[PyPI](https://pypi.org/project/pyvider/)** - Package repository
 - **[Discussions](https://github.com/provide-io/pyvider/discussions)** - Community support
 
-______________________________________________________________________
+---
 
 Copyright (c) provide.io LLC.

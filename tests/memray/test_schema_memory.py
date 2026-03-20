@@ -1,16 +1,17 @@
 """Memory profiling test for schema processing."""
 
 import pytest
-from wrknv.memray.runner import run_memray_stress
+
+from tests.memray.conftest import assert_allocation_within_threshold, run_memray_stress
 
 
 @pytest.mark.memray
-def test_schema_processing_memory(memray_output_dir, memray_baseline, memray_baselines_path):
+def test_schema_processing_memory(memray_output_dir, memray_baseline):
     """Profile memory allocations in schema processing hot path."""
-    run_memray_stress(
-        script="scripts/memray/memray_schema_stress.py",
-        baseline_key="schema_total_allocations",
-        output_dir=memray_output_dir,
-        baselines=memray_baseline,
-        baselines_path=memray_baselines_path,
-    )
+    bin_path, total_allocs = run_memray_stress("memray_schema_stress", memray_output_dir)
+
+    assert bin_path.exists(), f"memray binary not created: {bin_path}"
+    assert total_allocs > 0, "No allocations recorded"
+
+    baseline = memray_baseline.get("schema_total_allocations")
+    assert_allocation_within_threshold(baseline, total_allocs, "schema")

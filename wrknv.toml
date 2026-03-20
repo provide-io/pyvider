@@ -97,10 +97,10 @@ _default = "uv sync"
 pre-commit = "if ! command -v pre-commit >/dev/null 2>&1; then\n  echo \"Installing pre-commit...\"\n  uv tool install pre-commit\nfi\nif [ ! -f .pre-commit-config.yaml ]; then\n  echo \"Installing standard pre-commit config...\"\n  if [ -f ../ci-tooling/configs/pre-commit-config.yaml ]; then\n    cp ../ci-tooling/configs/pre-commit-config.yaml .pre-commit-config.yaml\n  else\n    echo \"Warning: ci-tooling/configs/pre-commit-config.yaml not found\"\n    echo \"Please ensure ci-tooling is cloned at ../ci-tooling\"\n    exit 1\n  fi\nfi\npre-commit install\npre-commit install --hook-type commit-msg\necho \"✓ Pre-commit hooks installed\"\n"
 
 [tasks.memray]
-_default = "pytest tests/memray/ -m memray -v --tb=short --no-cov -o addopts="
+_default = "pytest tests/memray/ -m memray -v --tb=short --no-cov"
 analyze = "python scripts/memray/memray_analysis.py"
 flamegraph = "python scripts/memray/memray_analysis.py --flamegraph-only"
-update-baseline = "MEMRAY_UPDATE_BASELINE=1 pytest tests/memray/ -m memray -v --tb=short --no-cov -o addopts="
+update-baseline = "MEMRAY_UPDATE_BASELINE=1 pytest tests/memray/ -m memray -v --tb=short --no-cov"
 
 [tasks.security]
 _default = "bandit -r src/ -c pyproject.toml"

@@ -113,4 +113,5 @@ Install with: `uv add pyvider-components`
 - **License**: Apache 2.0
 - **Status**: Alpha - Under Active Development
 
-______________________________________________________________________
+---
+
