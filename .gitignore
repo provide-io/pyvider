@@ -94,3 +94,6 @@ bf-*.txt
 .cache/
 .uv-cache/
 .uvcache/
+
+# Memray profiling output
+memray-output/

@@ -37,20 +37,20 @@ class ComponentRegistry:
         # Check if already registered
         existing = self._registry.get(name, dimension=component_type)
         if existing is component:
-            logger.debug(f"Skipping redundant registration: {component_type}.{name}")
+            logger.debug("Skipping redundant registration", component_type=component_type, name=name)
             return
         elif existing is not None:
-            logger.warning(f"Component '{name}' under type '{component_type}' is being replaced.")
+            logger.warning("Component is being replaced", component_type=component_type, name=name)
 
         # Register with replace=True to allow overwrites
         self._registry.register(name=name, value=component, dimension=component_type, replace=True)
-        logger.debug(f"Registered component: type='{component_type}', name='{name}'")
+        logger.debug("Registered component", component_type=component_type, name=name)
 
     def unregister(self, component_type: str, name: str) -> None:
         """Unregisters a component by type and name."""
         if not self._registry.remove(name, dimension=component_type):
             raise ComponentRegistryError(f"Component '{name}' under type '{component_type}' does not exist.")
-        logger.debug(f"Unregistered component: type='{component_type}', name='{name}'")
+        logger.debug("Unregistered component", component_type=component_type, name=name)
 
     # Singleton overloads - fixed names with specific return types
     @overload

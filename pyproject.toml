@@ -82,6 +82,7 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks integration tests",
     "unit: marks unit tests",
+    "memray: memory profiling stress tests (run with -m memray)",
 ]
 norecursedirs = [
     ".git",
@@ -103,7 +104,7 @@ addopts = ""
 line-length = 111
 indent-width = 4
 target-version = "py311"
-exclude = ["**/*pb2*.py"]
+exclude = ["**/*pb2*.py", "mutants"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
@@ -169,6 +170,11 @@ ignore_missing_imports = true
 module = ["pyvider.cty.*"]
 ignore_missing_imports = true
 disable_error_code = ["type-arg"]
+
+[[tool.mypy.overrides]]
+module = ["pyvider.hcl.*", "hcl2", "hcl2.*"]
+ignore_missing_imports = true
+ignore_errors = true
 
 [tool.mutmut]
 paths_to_mutate = ["src/pyvider/protocols/tfprotov6/handlers"]
