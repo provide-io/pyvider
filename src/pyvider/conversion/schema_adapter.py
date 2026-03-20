@@ -5,7 +5,9 @@
 
 
 import json
+from functools import lru_cache
 
+from pyvider.cty import CtyType
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema.types import (
@@ -15,6 +17,29 @@ from pyvider.schema.types import (
     PvsObjectType,
     PvsSchema,
 )
+
+
+@lru_cache(maxsize=256)
+def _encode_cty_type_bytes(cty_type: CtyType) -> bytes:
+    """Cache JSON-encoded wire representation of CtyType objects."""
+    return json.dumps(encode_cty_type_to_wire_json(cty_type)).encode("utf-8")
+
+
+# Module-level constant — avoids rebuilding on every call
+_NESTING_MODE_MAP: dict[NestingMode, int] | None = None
+
+
+def _get_nesting_mode_map() -> dict[NestingMode, int]:
+    global _NESTING_MODE_MAP  # noqa: PLW0603
+    if _NESTING_MODE_MAP is None:
+        _NESTING_MODE_MAP = {
+            NestingMode.SINGLE: pb.Schema.NestedBlock.NestingMode.SINGLE,
+            NestingMode.LIST: pb.Schema.NestedBlock.NestingMode.LIST,
+            NestingMode.SET: pb.Schema.NestedBlock.NestingMode.SET,
+            NestingMode.MAP: pb.Schema.NestedBlock.NestingMode.MAP,
+            NestingMode.GROUP: pb.Schema.NestedBlock.NestingMode.GROUP,
+        }
+    return _NESTING_MODE_MAP
 
 
 async def pvs_schema_to_proto(schema: PvsSchema) -> pb.Schema:
@@ -36,10 +61,9 @@ def _pvs_object_type_to_proto(block: PvsObjectType) -> pb.Schema.Block:
 
 def _pvs_attribute_to_proto(attr: PvsAttribute) -> pb.Schema.Attribute:
     """Converts a PvsAttribute to a protobuf Attribute message."""
-    type_bytes = json.dumps(encode_cty_type_to_wire_json(attr.type)).encode("utf-8")
     return pb.Schema.Attribute(
         name=attr.name,
-        type=type_bytes,
+        type=_encode_cty_type_bytes(attr.type),
         description=attr.description,
         required=attr.required,
         optional=attr.optional,
@@ -51,13 +75,7 @@ def _pvs_attribute_to_proto(attr: PvsAttribute) -> pb.Schema.Attribute:
 
 def _pvs_nested_block_to_proto(nb: PvsNestedBlock) -> pb.Schema.NestedBlock:
     """Converts a PvsNestedBlock to a protobuf NestedBlock message."""
-    nesting_map = {
-        NestingMode.SINGLE: pb.Schema.NestedBlock.NestingMode.SINGLE,
-        NestingMode.LIST: pb.Schema.NestedBlock.NestingMode.LIST,
-        NestingMode.SET: pb.Schema.NestedBlock.NestingMode.SET,
-        NestingMode.MAP: pb.Schema.NestedBlock.NestingMode.MAP,
-        NestingMode.GROUP: pb.Schema.NestedBlock.NestingMode.GROUP,
-    }
+    nesting_map = _get_nesting_mode_map()
     return pb.Schema.NestedBlock(
         type_name=nb.type_name,
         block=_pvs_object_type_to_proto(nb.block),

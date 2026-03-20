@@ -70,14 +70,14 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
 
     if test_mode_enabled:
         logger.info(
-            f"Test mode enabled, returning all {component_type} components (including test-only).",
+            "Test mode enabled, returning all components (including test-only)",
             component_type=component_type,
             total_count=len(all_components),
         )
         return all_components
     else:
         logger.debug(
-            f"Test mode is not enabled, filtering {component_type} components for production mode.",
+            "Filtering components for production mode",
             component_type=component_type,
             total=len(all_components),
         )
@@ -86,7 +86,8 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
         name: comp for name, comp in all_components.items() if not getattr(comp, "_is_test_only", False)
     }
     logger.debug(
-        f"Filtered {component_type} components for production mode.",
+        "Filtered components for production mode",
+        component_type=component_type,
         total=len(all_components),
         production=len(production_components),
     )
@@ -125,7 +126,8 @@ def check_test_only_access(
 
     if test_mode_enabled:
         logger.debug(
-            f"Allowing access to test-only {component_type}",
+            "Allowing access to test-only component",
+            component_type=component_type,
             component_name=component_name,
             test_mode_enabled=True,
         )
@@ -133,7 +135,8 @@ def check_test_only_access(
 
     # Test-only component accessed without test mode - DENY
     logger.warning(
-        f"⚠️  Blocked access to test-only {component_type}",
+        "Blocked access to test-only component",
+        component_type=component_type,
         component_name=component_name,
         test_mode_enabled=False,
     )
