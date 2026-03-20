@@ -17,6 +17,6 @@ try:
         logger.warning("⚠️ msgpack library not found. msgpack features will be unavailable.")
 except Exception as e:
     HAS_MSGPACK = False
-    logger.error(f"❌ Error checking msgpack availability: {e}")
+    logger.error("Error checking msgpack availability", error=str(e))
 
 # 🐍🏗️🔚

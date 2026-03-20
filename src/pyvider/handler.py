@@ -77,7 +77,7 @@ class ProviderHandler(ProviderServicer):
         """Delegate a request to its handler."""
         handler = self._handlers.get(method)
         if not handler:
-            logger.warning(f"No handler found for RPC method '{method}'.")
+            logger.warning("No handler found for RPC method", method=method)
             # Return a default empty response if the method is unknown.
             response_class = getattr(pb, f"{method}.Response", None)
             return response_class() if response_class else None

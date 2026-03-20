@@ -23,7 +23,8 @@ class Validators:
 
         def decorator(func: Callable[..., Any]) -> Callable[..., Any]:
             cls._registry[name] = func
-            logger.debug(f"Validator '{name}' registered.")
+            if logger.is_debug_enabled():
+                logger.debug(f"Validator '{name}' registered.")
             return func
 
         return decorator
@@ -45,9 +46,10 @@ class Validators:
                 continue
 
             metadata.validators.append(validator)
-            logger.debug(
-                f"Validator '{name}' attached to '{getattr(metadata, 'description', 'unknown attribute')}'."
-            )
+            if logger.is_debug_enabled():
+                logger.debug(
+                    f"Validator '{name}' attached to '{getattr(metadata, 'description', 'unknown attribute')}'."
+                )
 
     @classmethod
     @resilient()

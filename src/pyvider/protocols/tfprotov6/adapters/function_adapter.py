@@ -104,7 +104,7 @@ def dict_to_proto_function(func_data: dict[str, Any]) -> pb.Function | None:
         return pb.Function(**constructor_kwargs)
 
     except Exception as e:
-        logger.error(f"Error converting '{func_name}' to protobuf: {e}", exc_info=True)
+        logger.error("Error converting function to protobuf", func_name=func_name, error=str(e), exc_info=True)
         return None
 
 

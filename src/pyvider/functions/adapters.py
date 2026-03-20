@@ -95,7 +95,7 @@ def _python_type_to_cty_type(python_type: Any) -> CtyType[object]:
         if primitive_cty_type:
             return primitive_cty_type
 
-    logger.warning(f"Could not infer a specific CtyType for hint '{python_type}', defaulting to CtyDynamic.")
+    logger.warning("Could not infer a specific CtyType for hint, defaulting to CtyDynamic", python_type=str(python_type))
     return CtyDynamic()
 
 

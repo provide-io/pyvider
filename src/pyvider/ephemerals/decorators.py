@@ -24,7 +24,8 @@ def register_ephemeral_resource(name: str) -> Callable[[type], type]:
         from pyvider.hub import hub
 
         hub.register("ephemeral_resource", name, cls)
-        logger.debug(f"Registered ephemeral resource '{name}'")
+        if logger.is_debug_enabled():
+            logger.debug(f"Registered ephemeral resource '{name}'")
         return cls
 
     return decorator
