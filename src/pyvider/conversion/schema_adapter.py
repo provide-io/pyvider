@@ -25,23 +25,6 @@ def _encode_cty_type_bytes(cty_type: CtyType) -> bytes:
     return json.dumps(encode_cty_type_to_wire_json(cty_type)).encode("utf-8")
 
 
-# Module-level constant — avoids rebuilding on every call
-_NESTING_MODE_MAP: dict[NestingMode, int] | None = None
-
-
-def _get_nesting_mode_map() -> dict[NestingMode, int]:
-    global _NESTING_MODE_MAP
-    if _NESTING_MODE_MAP is None:
-        _NESTING_MODE_MAP = {
-            NestingMode.SINGLE: pb.Schema.NestedBlock.NestingMode.SINGLE,
-            NestingMode.LIST: pb.Schema.NestedBlock.NestingMode.LIST,
-            NestingMode.SET: pb.Schema.NestedBlock.NestingMode.SET,
-            NestingMode.MAP: pb.Schema.NestedBlock.NestingMode.MAP,
-            NestingMode.GROUP: pb.Schema.NestedBlock.NestingMode.GROUP,
-        }
-    return _NESTING_MODE_MAP
-
-
 async def pvs_schema_to_proto(schema: PvsSchema) -> pb.Schema:
     """Converts a PvsSchema into a protobuf Schema message.
 
@@ -95,7 +78,13 @@ def _pvs_attribute_to_proto(attr: PvsAttribute) -> pb.Schema.Attribute:
 
 def _pvs_nested_block_to_proto(nb: PvsNestedBlock) -> pb.Schema.NestedBlock:
     """Converts a PvsNestedBlock to a protobuf NestedBlock message."""
-    nesting_map = _get_nesting_mode_map()
+    nesting_map = {
+        NestingMode.SINGLE: pb.Schema.NestedBlock.NestingMode.SINGLE,
+        NestingMode.LIST: pb.Schema.NestedBlock.NestingMode.LIST,
+        NestingMode.SET: pb.Schema.NestedBlock.NestingMode.SET,
+        NestingMode.MAP: pb.Schema.NestedBlock.NestingMode.MAP,
+        NestingMode.GROUP: pb.Schema.NestedBlock.NestingMode.GROUP,
+    }
     return pb.Schema.NestedBlock(
         type_name=nb.type_name,
         block=_pvs_object_type_to_proto(nb.block),
