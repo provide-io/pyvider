@@ -97,7 +97,7 @@ norecursedirs = [
 filterwarnings = [
     "ignore::pytest.PytestAssertRewriteWarning",
 ]
-addopts = ""
+addopts = "-m 'not memray'"
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 
 [tool.ruff]
