@@ -1,5 +1,5 @@
 {
-  "conversion_total_allocations": 15059,
-  "hub_total_allocations": 4735,
-  "schema_total_allocations": 3169
+  "conversion_total_allocations": 16812,
+  "hub_total_allocations": 66404,
+  "schema_total_allocations": 3199
 }

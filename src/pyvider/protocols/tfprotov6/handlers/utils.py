@@ -136,9 +136,7 @@ def check_test_only_access(
             test_mode_enabled = parse_bool_extended(env_val)
 
     if test_mode_enabled:
-        # Info-level — test-only component access is an auditable event
-        # (a production operator should be able to grep for these).
-        logger.info(
+        logger.debug(
             "Allowing access to test-only component",
             component_type=component_type,
             component_name=component_name,

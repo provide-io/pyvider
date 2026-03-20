@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """Memray stress test for hub/discovery and schema-to-proto hot paths."""
 
 import os
@@ -36,13 +33,11 @@ def main() -> None:
 
     # --- Stress: pvs_schema_to_proto() schema conversion (5K cycles) ---
     schemas = [
-        s_resource(
-            attributes={
-                "id": a_str("Resource ID", computed=True),
-                "name": a_str("Resource name", required=True),
-                "count": a_num("Count", optional=True),
-            }
-        )
+        s_resource(attributes={
+            "id": a_str("Resource ID", computed=True),
+            "name": a_str("Resource name", required=True),
+            "count": a_num("Count", optional=True),
+        })
         for _ in range(10)
     ]
 

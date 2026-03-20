@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """Memray stress test for conversion/marshaling hot paths."""
 
 import os
@@ -58,9 +55,18 @@ def main() -> None:
 
     # --- Stress: unify_and_validate_list_of_objects() with varied dicts (10K cycles) ---
     dict_batches = [
-        [{"name": f"a_{j}", "count": j, "active": True} for j in range(5)],
-        [{"name": f"b_{j}", "value": j * 1.5} for j in range(5)],
-        [{"name": f"c_{j}", "count": j, "value": j * 2.0, "active": False} for j in range(5)],
+        [
+            {"name": f"a_{j}", "count": j, "active": True}
+            for j in range(5)
+        ],
+        [
+            {"name": f"b_{j}", "value": j * 1.5}
+            for j in range(5)
+        ],
+        [
+            {"name": f"c_{j}", "count": j, "value": j * 2.0, "active": False}
+            for j in range(5)
+        ],
     ]
     for i in range(10_000):
         unify_and_validate_list_of_objects(dict_batches[i % len(dict_batches)])

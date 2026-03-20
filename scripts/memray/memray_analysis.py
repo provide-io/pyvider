@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 """Memray analysis utilities for pyvider.
 
 Provides post-run analysis for memray stress test binaries:
@@ -10,9 +7,9 @@ Provides post-run analysis for memray stress test binaries:
 - Generate ANALYSIS.md report with comparisons
 """
 
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
 
 
@@ -99,27 +96,25 @@ def generate_analysis_report(output_dir: Path) -> str:
         else:
             report_lines.append(f"| {name} | {size} | {peak} | {allocs} |")
 
-    report_lines.extend(
-        [
-            "",
-            "## Hot Paths Profiled",
-            "",
-            "1. **Schema processing** (`memray_schema_stress`): s_resource(), PvsObjectType.to_cty_type(), PvsAttribute creation",
-            "2. **Conversion/marshaling** (`memray_conversion_stress`): attrs_to_dict_for_cty(), unify_and_validate_list_of_objects()",
-            "3. **Hub/discovery** (`memray_hub_stress`): ComponentRegistry.get_components(), pvs_schema_to_proto()",
-            "",
-            "## Next Steps",
-            "",
-            "```bash",
-            "# View flamegraphs in browser",
-            "open memray-output/*_flamegraph.html",
-            "",
-            "# Update baselines after optimization",
-            "we run memray.update-baseline",
-            "```",
-            "",
-        ]
-    )
+    report_lines.extend([
+        "",
+        "## Hot Paths Profiled",
+        "",
+        "1. **Schema processing** (`memray_schema_stress`): s_resource(), PvsObjectType.to_cty_type(), PvsAttribute creation",
+        "2. **Conversion/marshaling** (`memray_conversion_stress`): attrs_to_dict_for_cty(), unify_and_validate_list_of_objects()",
+        "3. **Hub/discovery** (`memray_hub_stress`): ComponentRegistry.get_components(), pvs_schema_to_proto()",
+        "",
+        "## Next Steps",
+        "",
+        "```bash",
+        "# View flamegraphs in browser",
+        "open memray-output/*_flamegraph.html",
+        "",
+        "# Update baselines after optimization",
+        "we run memray.update-baseline",
+        "```",
+        "",
+    ])
 
     return "\n".join(report_lines)
 
