@@ -86,8 +86,8 @@ def test_logs_error_when_detection_fails(monkeypatch: pytest.MonkeyPatch) -> Non
     assert module.HAS_MSGPACK is False
     logger.error.assert_called_once()
     message = logger.error.call_args.args[0]
-    assert "❌ Error checking msgpack availability" in message
-    assert "boom" in message
+    assert "Error checking msgpack availability" in message
+    assert "boom" in logger.error.call_args.kwargs.get("error", "")
 
 
 # 🐍🏗️🔚
