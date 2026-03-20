@@ -162,9 +162,8 @@ def _handle_planned_state_dict(
     resource_schema: Any,
     response: pb.PlanResourceChange.Response,
 ) -> None:
-    if logger.is_debug_enabled():
-        logger.debug(f"_handle_planned_state_dict received: {list(planned_state_dict.keys())}")
-        logger.debug(f"Planned state dict values: {planned_state_dict}")
+    logger.debug("_handle_planned_state_dict received", keys=list(planned_state_dict.keys()))
+    logger.debug("Planned state dict values", planned_state_dict=planned_state_dict)
 
     validator_type = resource_schema.block.to_cty_type()
     if not isinstance(validator_type, CtyObject):
@@ -192,8 +191,7 @@ def _handle_planned_state_dict(
     # Don't convert to None, as that creates null CtyValues which fail validation for required fields
     raw_values_for_validation = planned_state_dict.copy()
 
-    if logger.is_debug_enabled():
-        logger.debug(f"Raw values for validation: {list(raw_values_for_validation.keys())}")
+    logger.debug("Raw values for validation", keys=list(raw_values_for_validation.keys()))
 
     # Validate the planned state - unknown values will be preserved by CTY
     planned_state_cty_final = validator_type.validate(raw_values_for_validation)

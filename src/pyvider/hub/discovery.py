@@ -131,8 +131,7 @@ class ComponentDiscovery:
                 continue
 
             if inspect.isclass(obj) and inspect.isabstract(obj):
-                if logger.is_debug_enabled():
-                    logger.debug(f"Skipping abstract class: {obj.__name__}")
+                logger.debug("Skipping abstract class", class_name=obj.__name__)
                 continue
 
             reg_checks = [

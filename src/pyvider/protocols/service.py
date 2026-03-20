@@ -67,8 +67,7 @@ class ProtocolService:
                         if self._shutdown_event.is_set():
                             break
 
-                        if logger.is_debug_enabled():
-                            logger.debug(f"StreamStdio received message: {message}")
+                        logger.debug("StreamStdio received message", message=str(message))
 
                         # Don't terminate on empty messages
                         if message is not None:  # Changed condition
@@ -78,7 +77,7 @@ class ProtocolService:
                         yield message
 
                 except Exception as e:
-                    logger.error(f"StreamStdio error: {e}")
+                    logger.error("StreamStdio error", error=str(e))
                     raise
                 finally:
                     logger.debug("StreamStdio message processing complete")
@@ -96,7 +95,7 @@ class ProtocolService:
                 self._setup_complete.set()
                 yield message
         except Exception as e:
-            logger.error("StreamStdio error", error=str(e))
+            logger.error("StreamStdio outer error", error=str(e))
             raise
         finally:
             logger.debug("StreamStdio message processing complete")
