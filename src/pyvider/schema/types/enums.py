@@ -4,17 +4,17 @@
 #
 
 
-from enum import Enum
+from enum import StrEnum
 
 
-class StringKind(str, Enum):
+class StringKind(StrEnum):
     """Defines the interpretation of a string (e.g., for descriptions)."""
 
     PLAIN = "PLAIN"
     MARKDOWN = "MARKDOWN"
 
 
-class NestingMode(str, Enum):
+class NestingMode(StrEnum):
     """Defines how a nested block is represented in the configuration."""
 
     SINGLE = "SINGLE"
