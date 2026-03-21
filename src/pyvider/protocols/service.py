@@ -38,7 +38,8 @@ class ProtocolService:
                         if self._shutdown_event.is_set():
                             break
 
-                        logger.debug("StreamStdio received message", message=str(message))
+                        if logger.is_debug_enabled():
+                            logger.debug("StreamStdio received message", message=str(message))
 
                         # Don't terminate on empty messages
                         if message is not None:  # Changed condition
