@@ -42,9 +42,9 @@ dependencies = [
     "msgpack>=1.1.1",
     "google>=3.0.0",
     "cryptography>=45.0.7",
-    "provide-foundation>=0.3.29",
-    "pyvider-cty>=0.3.21",
-    "pyvider-rpcplugin>=0.3.21",
+    "provide-foundation>=0.3.21,<0.4",
+    "pyvider-cty",
+    "pyvider-rpcplugin",
 ]
 
 [project.urls]
