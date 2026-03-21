@@ -25,6 +25,10 @@ def _encode_cty_type_bytes(cty_type: CtyType) -> bytes:
     return json.dumps(encode_cty_type_to_wire_json(cty_type)).encode("utf-8")
 
 
+_proto_block_cache: dict[int, tuple[PvsObjectType, pb.Schema.Block]] = {}
+_proto_schema_cache: dict[int, tuple[PvsSchema, pb.Schema]] = {}
+
+
 async def pvs_schema_to_proto(schema: PvsSchema) -> pb.Schema:
     """Converts a PvsSchema into a protobuf Schema message.
 
