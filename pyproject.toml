@@ -1,0 +1,228 @@
+#
+# pyvider/pyproject.toml
+#
+# Python Terraform Provider Framework
+#
+
+[build-system]
+requires = ["setuptools>=75.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyvider"
+description = "Python Terraform Provider Framework"
+dynamic = ["version"]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Tim Perkins", email = "code@tim.life" },
+]
+maintainers = [
+    { name = "provide.io", email = "code@provide.io" },
+]
+keywords = ["terraform", "provider", "framework", "opentofu", "grpc", "plugin"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Typing :: Typed",
+]
+dependencies = [
+    "attrs>=25.4.0",
+    "click>=8.3.1",
+    "grpcio>=1.76.0",
+    "msgpack>=1.1.1",
+    "google>=3.0.0",
+    "cryptography>=45.0.7",
+    "provide-foundation",
+    "pyvider-cty",
+    "pyvider-rpcplugin",
+]
+
+[project.urls]
+Homepage = "https://foundry.provide.io/pyvider/"
+Documentation = "https://foundry.provide.io/pyvider/"
+Repository = "https://foundry.provide.io/pyvider/repo"
+Issues = "https://foundry.provide.io/pyvider/issues"
+
+[dependency-groups]
+dev = [
+    "provide-testkit[pyvider-dev]",
+]
+docs = [
+    "provide-testkit[docs]",
+]
+
+[project.scripts]
+pyvider = "pyvider.cli.__main__:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+python_files = ["test_*.py"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks integration tests",
+    "unit: marks unit tests",
+    "memray: memory profiling stress tests (run with -m memray)",
+]
+norecursedirs = [
+    ".git",
+    "build",
+    "dist",
+    "*.egg-info",
+    ".venv",
+    "htmlcov",
+    ".hypothesis",
+    "mutants",
+]
+filterwarnings = [
+    "ignore::pytest.PytestAssertRewriteWarning",
+]
+addopts = ""
+# Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
+
+[tool.ruff]
+line-length = 111
+indent-width = 4
+target-version = "py311"
+exclude = ["**/*pb2*.py", "mutants"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
+ignore = [
+    "ANN401",   # any-type (too restrictive)
+    "BLE001",   # blind-except (too restrictive for cleanup patterns)
+    "B008",     # function-call-in-default-argument (Click uses this pattern)
+    "E501",     # line-too-long (handled by formatter)
+    "S101",     # assert (valid in tests)
+    "S104",     # binding-to-all-interfaces (intentional for servers)
+    "S105",     # hardcoded-password-string (false positive for variable names)
+    "S108",     # hardcoded-temp-file (/tmp is fine for our use cases)
+    "S110",     # try-except-pass (legitimate for cleanup)
+    "S310",     # suspicious-url-open-for-protocol (URLs are controlled)
+    "S311",     # random (not for crypto)
+    "S603",     # subprocess-without-shell-equals-true (trusted input)
+    "S607",     # start-process-with-partial-path (trusted executables)
+    "PLR0911",  # too-many-return-statements (refactor later)
+    "PLR0912",  # too-many-branches (refactor later)
+    "PLR0913",  # too-many-arguments (common in config classes)
+    "PLR0915",  # too-many-statements (refactor later)
+    "PLR2004",  # magic-value-comparison (too noisy)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "B017", "C901", "E402", "PLR0124", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117"]
+"docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
+# Complex protocol handlers - inherently complex due to Terraform protocol requirements
+"src/pyvider/cli/launch_context_command.py" = ["C901"]
+"src/pyvider/protocols/tfprotov6/handlers/utils.py" = ["C901"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pyvider", "tests"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.11"
+mypy_path = "src"
+namespace_packages = true
+explicit_package_bases = true
+strict = true
+pretty = true
+show_error_codes = true
+show_column_numbers = true
+warn_unused_ignores = true
+warn_unused_configs = true
+disallow_untyped_decorators = false
+disable_error_code = ["type-arg"]
+exclude = ["src/pyvider/protocols/tfprotov6/protobuf/tfplugin6_pb2.py", "src/pyvider/protocols/tfprotov6/protobuf/tfplugin6_pb2.pyi", "src/pyvider/protocols/tfprotov6/protobuf/tfplugin6_pb2_grpc.py", "src/pyvider/protocols/tfprotov6/protobuf/docs/tfplugin6_pb2_grpc.py"]
+
+[[tool.mypy.overrides]]
+module = ["structlog.*", "google.*", "grpc.*", "pytest.*", "jq.*", "psutil.*", "opentelemetry.*", "pyvider.server", "provide.foundation.logging"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["pyvider.cty.*"]
+ignore_missing_imports = true
+disable_error_code = ["type-arg"]
+
+[[tool.mypy.overrides]]
+module = ["pyvider.hcl.*", "hcl2", "hcl2.*"]
+ignore_missing_imports = true
+ignore_errors = true
+
+[tool.mutmut]
+paths_to_mutate = ["src/pyvider/protocols/tfprotov6/handlers"]
+runner = "pytest tests/tfprotov6/handlers/ -x --tb=short"
+dict_synonyms = ["dict", "OrderedDict", "defaultdict"]
+use_patch_file = false
+
+[tool.coverage.run]
+source = ["pyvider"]
+branch = true
+parallel = true
+omit = [
+    "*/protocols/tfprotov6/protobuf/*",
+    "*/protocols/tfprotov6/handlers/validate_resource_config.py",
+]
+
+[tool.coverage.report]
+fail_under = 70
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "def __repr__",
+    "def __str__",
+    "pass",
+]
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests", "workenv"]
+
+################################################################################
+# Security Scanning Allowlist
+################################################################################
+
+[tool.security]
+# Paths to exclude from secret scanning (TruffleHog, GitGuardian, Gitleaks)
+# Run: we security generate (via wrknv) to regenerate tool configs
+description = "Documentation with example credentials - intentionally committed"
+allowed_paths = [
+    # Documentation with example API keys and config patterns
+    "docs/**",
+    # Markdown files with examples
+    "*.md",
+    # Old gitleaks report
+    "gitleaks-report.json",
+    # Config file with examples
+    "pyvider.toml",
+]
