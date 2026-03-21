@@ -54,6 +54,7 @@ Issues = "https://foundry.provide.io/pyvider/issues"
 [dependency-groups]
 dev = [
     "provide-testkit[pyvider-dev]",
+    "wrknv @ git+https://github.com/provide-io/wrknv.git@main",
 ]
 docs = [
     "provide-testkit[docs]",
