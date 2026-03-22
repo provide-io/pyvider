@@ -40,7 +40,7 @@ dependencies = [
     "msgpack>=1.1.1",
     "google>=3.0.0",
     "cryptography>=45.0.7",
-    "provide-foundation",
+    "provide-foundation>=0.3.21",
     "pyvider-cty",
     "pyvider-rpcplugin",
 ]
