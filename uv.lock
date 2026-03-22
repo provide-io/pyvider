@@ -2531,16 +2531,16 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.3.21"
+version = "0.3.21.post1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "structlog" },
     { name = "tomli-w" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/3b/78/0b8bdfed16c2d03eff9bf27f4a4f42d7d027a30ac3bd285152b59f83da7a/provide_foundation-0.3.21.tar.gz", hash = "sha256:4f1c7b243ae3291bfa0492dba32ade8b30387852add1be9a83f82e72572d717f", size = 417231, upload-time = "2026-03-21T23:25:04.438Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/8d/28/271f6a877c2ebda05e8fb2c36ff7506bc0756f612193f8e0f4f3b2c5efbb/provide_foundation-0.3.21.post1.tar.gz", hash = "sha256:01018ef477ad88611316f092f47563e2bed185e755a59d953e605ce4cbfd05c0", size = 417610, upload-time = "2026-03-22T01:16:00.46Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/6a/4a0ab8711d55fc1d4134cb0d138c6e2eb2b07569c5d8a7ac1e2be435c166/provide_foundation-0.3.21-py3-none-any.whl", hash = "sha256:50ad183bfc7e33d100d37b579796c95dcfca1ca0bd552daa8ef640d4d440e089", size = 613949, upload-time = "2026-03-21T23:25:05.713Z" },
+    { url = "https://files.pythonhosted.org/packages/78/54/1c66f1b6c608ffbb27858dd0cd62c22fc278e8616a0af57fada698b092c9/provide_foundation-0.3.21.post1-py3-none-any.whl", hash = "sha256:fe79dedebd606ce2c1f5921a907f63442d389b6866e5ccd4c964998d86c1deed", size = 614499, upload-time = "2026-03-22T01:16:02.018Z" },
 ]
 
 [package.optional-dependencies]
