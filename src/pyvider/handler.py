@@ -4,6 +4,7 @@
 #
 
 
+import asyncio
 from collections.abc import Callable
 from typing import Any
 
@@ -17,10 +18,17 @@ from pyvider.providers.base import BaseProvider
 
 @define
 class ProviderHandler(ProviderServicer):
-    """Handler for provider operations that delegates to individual operation handlers."""
+    """Handler for provider operations that delegates to individual operation handlers.
 
-    _provider: BaseProvider = field()
+    The _provider can be either:
+    - A BaseProvider instance (for immediate use)
+    - An asyncio.Task that resolves to a BaseProvider (for lazy initialization)
+    - None (provider will be fetched from hub on first use)
+    """
+
+    _provider: BaseProvider | asyncio.Task | None = field(default=None)
     _handlers: dict[str, Callable] = field(init=False, factory=dict)
+    _resolved_provider: BaseProvider | None = field(init=False, default=None)
 
     def __attrs_post_init__(self) -> None:
         """Initialize handler mapping."""
@@ -73,8 +81,55 @@ class ProviderHandler(ProviderServicer):
             "CallFunction": CallFunctionHandler,
         }
 
+    async def _ensure_provider_ready(self) -> BaseProvider:
+        """Ensure the provider is ready, resolving it if necessary.
+
+        Handles three cases:
+        1. _provider is a BaseProvider instance - return it
+        2. _provider is an asyncio.Task - await it for lazy initialization
+        3. _provider is None - fetch from hub (already discovered)
+        """
+        # Return cached resolved provider if available
+        if self._resolved_provider is not None:
+            return self._resolved_provider
+
+        # Case 1: Provider is already a BaseProvider instance
+        if isinstance(self._provider, BaseProvider):
+            self._resolved_provider = self._provider
+            return self._provider
+
+        # Case 2: Provider is an asyncio.Task (lazy initialization)
+        if isinstance(self._provider, asyncio.Task):
+            logger.debug(
+                "Waiting for lazy provider initialization",
+                operation="provider_init_lazy",
+            )
+            self._resolved_provider = await self._provider
+            logger.debug(
+                "Lazy provider initialization completed",
+                operation="provider_init_lazy",
+            )
+            return self._resolved_provider
+
+        # Case 3: Fetch provider from hub
+        from pyvider.hub import hub
+
+        provider = hub.get_component("singleton", "provider")
+        if provider is None:
+            logger.error(
+                "Provider not available in hub",
+                operation="provider_fetch",
+            )
+            raise RuntimeError("Provider not available - discovery may not be complete")
+        self._resolved_provider = provider
+        return provider
+
     async def _delegate(self, method: str, request: Any, context: Any) -> Any:
         """Delegate a request to its handler."""
+        # Ensure provider is ready before handling the request
+        # This allows handlers to access the provider via the hub
+        await self._ensure_provider_ready()
+
         handler = self._handlers.get(method)
         if not handler:
             logger.warning("No handler found for RPC method", method=method)
