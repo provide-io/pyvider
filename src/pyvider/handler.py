@@ -104,7 +104,15 @@ class ProviderHandler(ProviderServicer):
                 "Waiting for lazy provider initialization",
                 operation="provider_init_lazy",
             )
-            self._resolved_provider = await self._provider
+            # The task returns a tuple (provider_instances, primary_provider)
+            # Extract just the provider instance
+            result = await self._provider
+            if isinstance(result, tuple) and len(result) == 2:
+                # Tuple of (provider_instances, primary_provider)
+                self._resolved_provider = result[1]  # Use primary_provider
+            else:
+                # Fallback: assume result is the provider
+                self._resolved_provider = result
             logger.debug(
                 "Lazy provider initialization completed",
                 operation="provider_init_lazy",
