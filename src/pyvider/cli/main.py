@@ -47,7 +47,7 @@ def _show_interactive_mode(ctx: click.Context) -> None:
         # If we can't print to console (encoding error), assume we're being run in a non-interactive context
         # (like by Terraform) and silently proceed to provider mode
         pass
-    except Exception:  # nosec B110
+    except Exception:
         # Silently ignore other errors in interactive mode - fall through to provider startup
         pass
 

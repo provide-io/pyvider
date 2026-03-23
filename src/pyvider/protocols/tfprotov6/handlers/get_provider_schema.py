@@ -107,22 +107,20 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     try:
         # Wait for component discovery to complete before collecting schemas
         # Discovery runs in the background and signals via an event when done
-        from pyvider.hub import DISCOVERY_READY_EVENT
-
-        discovery_ready_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
+        discovery_ready_event = hub.get_component("singleton", "_discovery_ready_event")
         if discovery_ready_event is not None:
             logger.debug(
                 "Waiting for component discovery to complete",
                 operation="compute_schema",
             )
             try:
-                # 55 seconds: Terraform kills unresponsive plugins at 60 seconds.
-                await asyncio.wait_for(discovery_ready_event.wait(), timeout=55.0)
+                # Wait up to 5 minutes for discovery to complete
+                await asyncio.wait_for(discovery_ready_event.wait(), timeout=300.0)
                 logger.debug(
                     "Component discovery completed, proceeding with schema computation",
                     operation="compute_schema",
                 )
-            except TimeoutError:
+            except asyncio.TimeoutError:
                 logger.warning(
                     "Component discovery timeout, proceeding with partial schema",
                     operation="compute_schema",

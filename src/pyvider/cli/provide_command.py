@@ -133,12 +133,26 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
         )
 
         # --- LAZY INITIALIZATION STRATEGY ---
+        # Create an event that will be set when discovery is complete
+        discovery_ready_event = asyncio.Event()
+        hub.register("singleton", "_discovery_ready_event", discovery_ready_event)
+
         # Start component discovery immediately as a background task
         logger.debug(
             "Starting component discovery in background",
             operation="component_discovery",
         )
-        discovery_task = asyncio.create_task(_discover_components_once())
+
+        async def discover_and_signal() -> None:
+            """Run discovery and signal when it's complete."""
+            await _discover_components_once()
+            discovery_ready_event.set()
+            logger.debug(
+                "Discovery complete, signaling ready event",
+                operation="component_discovery",
+            )
+
+        discovery_task = asyncio.create_task(discover_and_signal())
 
         # Create a coroutine for provider initialization (don't schedule yet)
         async def initialize_and_register_provider() -> None:
