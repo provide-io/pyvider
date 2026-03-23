@@ -214,6 +214,10 @@ async def _run_provider_server(magic_cookie: str) -> None:
         # Server will start listening while provider initializes
         background_init = asyncio.create_task(initialize_and_register_provider())
 
+        # Yield control to let background tasks start before blocking on server.serve()
+        # This ensures provider initialization begins before the RPC server starts blocking
+        await asyncio.sleep(0)
+
         try:
             logger.debug(
                 "Starting RPC server to listen for Terraform connections",
