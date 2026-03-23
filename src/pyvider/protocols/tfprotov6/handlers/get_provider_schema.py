@@ -105,6 +105,32 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
 
     diagnostics: list[Any] = []
     try:
+        # Wait for component discovery to complete before collecting schemas
+        # Discovery runs in the background and signals via an event when done
+        discovery_ready_event = hub.get_component("singleton", "_discovery_ready_event")
+        if discovery_ready_event is not None:
+            logger.debug(
+                "Waiting for component discovery to complete",
+                operation="compute_schema",
+            )
+            try:
+                # Wait up to 5 minutes for discovery to complete
+                await asyncio.wait_for(discovery_ready_event.wait(), timeout=300.0)
+                logger.debug(
+                    "Component discovery completed, proceeding with schema computation",
+                    operation="compute_schema",
+                )
+            except asyncio.TimeoutError:
+                logger.warning(
+                    "Component discovery timeout, proceeding with partial schema",
+                    operation="compute_schema",
+                )
+        else:
+            logger.debug(
+                "Discovery event not found in hub, assuming discovery already complete",
+                operation="compute_schema",
+            )
+
         provider_instance = hub.get_component("singleton", "provider")
         if not provider_instance:
             logger.error(

@@ -18,31 +18,39 @@ def _show_interactive_mode(ctx: click.Context) -> None:
     """Show interactive mode welcome message with launch context."""
     from pyvider.common.launch_context import detect_launch_context
 
-    launch_context = detect_launch_context()
+    try:
+        launch_context = detect_launch_context()
 
-    pout("\n╭─────────────────────────────────────────────────╮", fg="cyan")
-    pout("│           Interactive Mode                      │", fg="cyan", bold=True)
-    pout("╰─────────────────────────────────────────────────╯", fg="cyan")
+        pout("\n╭─────────────────────────────────────────────────╮", fg="cyan")
+        pout("│           Interactive Mode                      │", fg="cyan", bold=True)
+        pout("╰─────────────────────────────────────────────────╯", fg="cyan")
 
-    pout("\nPyvider is running in interactive mode.")
-    pout("To start the provider server for testing, use:\n")
+        pout("\nPyvider is running in interactive mode.")
+        pout("To start the provider server for testing, use:\n")
 
-    # Get the command name from the context
-    cmd_name = ctx.command_path or "pyvider"
-    pout(f"  {cmd_name} provide --force", fg="green", bold=True)
+        # Get the command name from the context
+        cmd_name = ctx.command_path or "pyvider"
+        pout(f"  {cmd_name} provide --force", fg="green", bold=True)
 
-    pout("\n" + "─" * 50)
-    pout("\nLaunch Context:", fg="cyan", bold=True)
-    pout(f"  Method: {launch_context.method.value}", fg="white")
-    pout(f"  Executable: {launch_context.executable_path}", fg="white")
-    pout(f"  Python: {launch_context.python_executable}", fg="white")
-    pout(f"  Working Directory: {launch_context.working_directory}", fg="white")
+        pout("\n" + "─" * 50)
+        pout("\nLaunch Context:", fg="cyan", bold=True)
+        pout(f"  Method: {launch_context.method.value}", fg="white")
+        pout(f"  Executable: {launch_context.executable_path}", fg="white")
+        pout(f"  Python: {launch_context.python_executable}", fg="white")
+        pout(f"  Working Directory: {launch_context.working_directory}", fg="white")
 
-    pout("\n" + "─" * 50)
-    pout("\nFor more information, use:")
-    pout(f"  {cmd_name} --help", fg="yellow")
-    pout(f"  {cmd_name} launch-context", fg="yellow")
-    pout("")
+        pout("\n" + "─" * 50)
+        pout("\nFor more information, use:")
+        pout(f"  {cmd_name} --help", fg="yellow")
+        pout(f"  {cmd_name} launch-context", fg="yellow")
+        pout("")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        # If we can't print to console (encoding error), assume we're being run in a non-interactive context
+        # (like by Terraform) and silently proceed to provider mode
+        pass
+    except Exception:
+        # Silently ignore other errors in interactive mode - fall through to provider startup
+        pass
 
 
 @click.group(invoke_without_command=True)
@@ -68,19 +76,15 @@ def cli(ctx: click.Context, /, **kwargs: Any) -> None:
             setattr(ctx.obj, key, value)
 
     if ctx.invoked_subcommand is None:
-        # Check if we're being run by Terraform via the magic cookie
-        if get_env("TF_PLUGIN_MAGIC_COOKIE"):
-            # Terraform is launching us - go into provider mode
-            provide_command = cli.get_command(ctx, "provide")
-            if provide_command:
-                ctx.invoke(provide_command)
-            else:
-                # This case should not happen if the CLI is assembled correctly.
-                perr("Error: Default command 'provide' not found.")
-                pout(cli.get_help(ctx))
+        # Default behavior: When called with no subcommand, run as provider server
+        # (This is the normal mode when Terraform calls the plugin)
+        provide_command = cli.get_command(ctx, "provide")
+        if provide_command:
+            ctx.invoke(provide_command)
         else:
-            # Not being run by Terraform - show interactive mode
-            _show_interactive_mode(ctx)
+            # This case should not happen if the CLI is assembled correctly
+            perr("Error: Default command 'provide' not found.")
+            pout(cli.get_help(ctx))
 
 
 # This decorator is for our custom context object, which is correct for subcommands.
