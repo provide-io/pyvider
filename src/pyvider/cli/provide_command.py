@@ -148,11 +148,33 @@ async def _run_provider_server(magic_cookie: str) -> None:
             domain="system",
         )
 
+        # Start component discovery immediately as a background task
+        # This will run concurrently while the RPC server starts up
         logger.debug(
-            "Starting component discovery",
+            "Starting component discovery in background",
             operation="component_discovery",
         )
-        await _discover_components_once()
+        discovery_task = asyncio.create_task(_discover_components_once())
+
+        # Create protocol immediately (doesn't need discovery)
+        protocol = PyviderProtocol()
+
+        # Register the discovery task so the handler can wait for it if needed
+        hub.register("singleton", "discovery_task", lambda: discovery_task)
+
+        # Log that we're starting server before discovery completes
+        logger.debug(
+            "Starting RPC server while discovery runs in background",
+            operation="server_start",
+        )
+
+        # Now wait for discovery to complete before instantiating providers
+        # (providers depend on discovered components)
+        logger.debug(
+            "Waiting for component discovery to complete",
+            operation="component_discovery",
+        )
+        await discovery_task
         logger.debug(
             "Component discovery completed",
             operation="component_discovery",
@@ -169,7 +191,6 @@ async def _run_provider_server(magic_cookie: str) -> None:
             provider=next(iter(provider_instances.keys())),
         )
 
-        protocol = PyviderProtocol()
         handler = ProviderHandler(primary_provider)
 
         # Configure the RPC plugin server with Terraform's magic cookie
@@ -268,11 +289,6 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
     Starts the provider in gRPC server mode for Terraform. (This is the default
     action when run by Terraform or when the binary is run with no arguments).
     """
-    # --- FIX: Import discovery and error handling utilities ---
-    from pyvider.cli.components_commands import _handle_discovery_errors
-    from pyvider.hub.components import registry
-    from pyvider.hub.discovery import ComponentDiscovery
-
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
     script_name = Path(sys.argv[0]).name
 
@@ -369,11 +385,6 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
         else:
             pout("\nNo parent context available for help")
         sys.exit(0)
-
-    # --- FIX: Run discovery and handle errors before starting the server ---
-    pyvider_ctx = ctx.obj
-    asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, pout, pout))
-    _handle_discovery_errors(pyvider_ctx)
 
     # If --force is used, provide a dummy cookie value.
     cookie_to_use = magic_cookie or "forced-by-cli"
