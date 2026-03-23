@@ -20,13 +20,11 @@ from pyvider.providers.base import BaseProvider
 class ProviderHandler(ProviderServicer):
     """Handler for provider operations that delegates to individual operation handlers.
 
-    The _provider can be either:
-    - A BaseProvider instance (for immediate use)
-    - An asyncio.Task that resolves to a BaseProvider (for lazy initialization)
-    - None (provider will be fetched from hub on first use)
+    The _provider is lazily resolved from the hub on first use, allowing the RPC server
+    to start listening immediately while provider initialization happens in the background.
     """
 
-    _provider: BaseProvider | asyncio.Task | None = field(default=None)
+    _provider: BaseProvider | None = field(default=None)
     _handlers: dict[str, Callable] = field(init=False, factory=dict)
     _resolved_provider: BaseProvider | None = field(init=False, default=None)
 
@@ -82,53 +80,43 @@ class ProviderHandler(ProviderServicer):
         }
 
     async def _ensure_provider_ready(self) -> BaseProvider:
-        """Ensure the provider is ready, resolving it if necessary.
+        """Ensure the provider is ready, fetching from hub if necessary.
 
-        Handles three cases:
-        1. _provider is a BaseProvider instance - return it
-        2. _provider is an asyncio.Task - await it for lazy initialization
-        3. _provider is None - fetch from hub (already discovered)
+        On first call, fetches the provider from the hub. The provider is registered
+        by background initialization after component discovery completes. This allows
+        the RPC server to start listening immediately while initialization continues.
         """
-        # Return cached resolved provider if available
+        # Return cached provider if available
         if self._resolved_provider is not None:
             return self._resolved_provider
 
-        # Case 1: Provider is already a BaseProvider instance
-        if isinstance(self._provider, BaseProvider):
+        # If _provider is set directly (e.g., for testing), use it
+        if self._provider is not None:
             self._resolved_provider = self._provider
             return self._provider
 
-        # Case 2: Provider is an asyncio.Task (lazy initialization)
-        if isinstance(self._provider, asyncio.Task):
-            logger.debug(
-                "Waiting for lazy provider initialization",
-                operation="provider_init_lazy",
-            )
-            # The task returns a tuple (provider_instances, primary_provider)
-            # Extract just the provider instance
-            result = await self._provider
-            if isinstance(result, tuple) and len(result) == 2:
-                # Tuple of (provider_instances, primary_provider)
-                self._resolved_provider = result[1]  # Use primary_provider
-            else:
-                # Fallback: assume result is the provider
-                self._resolved_provider = result
-            logger.debug(
-                "Lazy provider initialization completed",
-                operation="provider_init_lazy",
-            )
-            return self._resolved_provider
-
-        # Case 3: Fetch provider from hub
+        # Fetch provider from hub
         from pyvider.hub import hub
 
         provider = hub.get_component("singleton", "provider")
         if provider is None:
-            logger.error(
-                "Provider not available in hub",
+            logger.warning(
+                "Provider not yet available in hub, initialization may still be in progress",
                 operation="provider_fetch",
             )
-            raise RuntimeError("Provider not available - discovery may not be complete")
+            # Provider is still initializing - wait a brief moment for it to be registered
+            # In normal operation, by the time a handler method is called, initialization
+            # should be complete. This is just a safety fallback.
+            await asyncio.sleep(0.1)
+            provider = hub.get_component("singleton", "provider")
+
+        if provider is None:
+            logger.error(
+                "Provider still not available after waiting",
+                operation="provider_fetch",
+            )
+            raise RuntimeError("Provider not available - initialization failed to complete")
+
         self._resolved_provider = provider
         return provider
 
