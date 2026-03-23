@@ -4,10 +4,12 @@
 #
 
 
+import asyncio
 import importlib
 import importlib.metadata
 import inspect
 import pkgutil
+import time
 from typing import Any
 
 from provide.foundation import logger, resilient, retry
@@ -35,6 +37,7 @@ class ComponentDiscovery:
         Discovers all components. In strict mode, it re-raises import errors.
         Enhanced with error handling and retry logic.
         """
+        start_time = time.time()
         self.import_errors = []
         logger.debug("🛰️🔍🔄 Starting component discovery", group=self.ENTRY_POINT_GROUP)
 
@@ -44,30 +47,57 @@ class ComponentDiscovery:
             logger.error("🛰️🔍❌ Failed to query for entry points", error=e, exc_info=True)
             return
 
+        # Discover all packages in parallel
+        tasks = []
         for entry_point in entry_points:
             logger.debug(
                 "🛰️🔍 Discovered entry point",
                 name=entry_point.name,
                 module=entry_point.value,
             )
-            await self._discover_package(entry_point.value, strict=strict)
+            tasks.append(self._discover_package(entry_point.value, strict=strict))
 
-        {k: len(v) for k, v in self.hub.list_components().items()}
+        if tasks:
+            await asyncio.gather(*tasks, return_exceptions=True)
+
+        elapsed = time.time() - start_time
+        component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
+        logger.info(
+            "🛰️🔍✅ Component discovery completed",
+            elapsed_seconds=f"{elapsed:.2f}",
+            total_elapsed_ms=f"{int(elapsed * 1000)}",
+            components=component_counts,
+        )
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
         """Recursively discover all modules within a given package name."""
         if package_name in self._discovered_modules:
             return
 
+        start_time = time.time()
         try:
             package = importlib.import_module(package_name)
             self._discovered_modules.add(package_name)
             await self._process_module(package)
 
             if hasattr(package, "__path__"):
-                for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+                # Discover sub-modules in parallel
+                module_infos = list(pkgutil.walk_packages(package.__path__, package.__name__ + "."))
+                tasks = []
+                for module_info in module_infos:
                     if module_info.name not in self._discovered_modules:
-                        await self._discover_package(module_info.name, strict=strict)
+                        tasks.append(self._discover_package(module_info.name, strict=strict))
+
+                if tasks:
+                    await asyncio.gather(*tasks, return_exceptions=True)
+
+            elapsed = time.time() - start_time
+            if elapsed > 0.5:  # Log slow modules
+                logger.debug(
+                    f"🛰️🔍⏱️ Slow module discovery",
+                    module=package_name,
+                    elapsed_ms=f"{int(elapsed * 1000)}",
+                )
 
         except (ImportError, ModuleNotFoundError) as e:
             if strict:
