@@ -20,11 +20,13 @@ from pyvider.providers.base import BaseProvider
 class ProviderHandler(ProviderServicer):
     """Handler for provider operations that delegates to individual operation handlers.
 
-    The _provider is lazily resolved from the hub on first use, allowing the RPC server
-    to start listening immediately while provider initialization happens in the background.
+    The _provider can be either:
+    - A BaseProvider instance (for immediate use)
+    - An asyncio.Task that resolves to a BaseProvider (for lazy initialization)
+    - None (provider will be fetched from hub on first use)
     """
 
-    _provider: BaseProvider | None = field(default=None)
+    _provider: BaseProvider | asyncio.Task | None = field(default=None)
     _handlers: dict[str, Callable] = field(init=False, factory=dict)
     _resolved_provider: BaseProvider | None = field(init=False, default=None)
 
@@ -80,52 +82,45 @@ class ProviderHandler(ProviderServicer):
         }
 
     async def _ensure_provider_ready(self) -> BaseProvider:
-        """Ensure the provider is ready, fetching from hub if necessary.
+        """Ensure the provider is ready, resolving it if necessary.
 
-        On first call, fetches the provider from the hub. The provider is registered
-        by background initialization after component discovery completes. This allows
-        the RPC server to start listening immediately while initialization continues.
+        Handles three cases:
+        1. _provider is a BaseProvider instance - return it
+        2. _provider is an asyncio.Task - await it for lazy initialization
+        3. _provider is None - fetch from hub (already discovered)
         """
-        # Return cached provider if available
+        # Return cached resolved provider if available
         if self._resolved_provider is not None:
             return self._resolved_provider
 
-        # If _provider is set directly (e.g., for testing), use it
-        if self._provider is not None:
+        # Case 1: Provider is already a BaseProvider instance
+        if isinstance(self._provider, BaseProvider):
             self._resolved_provider = self._provider
             return self._provider
 
-        # Fetch provider from hub
-        from pyvider.hub import DISCOVERY_READY_EVENT, hub
-
-        # Wait for discovery to complete by waiting for the discovery ready event
-        discovery_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
-        if discovery_event is not None and not discovery_event.is_set():
+        # Case 2: Provider is an asyncio.Task (lazy initialization)
+        if isinstance(self._provider, asyncio.Task):
             logger.debug(
-                "Waiting for component discovery to complete",
-                operation="provider_wait",
+                "Waiting for lazy provider initialization",
+                operation="provider_init_lazy",
             )
-            try:
-                # 55 seconds: Terraform kills unresponsive plugins at 60 seconds,
-                # so we fail fast with a clear error rather than letting Terraform time out silently.
-                await asyncio.wait_for(discovery_event.wait(), timeout=55.0)
-            except TimeoutError:
-                logger.error(
-                    "Component discovery timed out after 55 seconds",
-                    operation="provider_wait",
-                )
-                raise RuntimeError(
-                    "Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)"
-                ) from None
+            self._resolved_provider = await self._provider
+            logger.debug(
+                "Lazy provider initialization completed",
+                operation="provider_init_lazy",
+            )
+            return self._resolved_provider
+
+        # Case 3: Fetch provider from hub
+        from pyvider.hub import hub
 
         provider = hub.get_component("singleton", "provider")
         if provider is None:
             logger.error(
-                "Provider not available after discovery completed",
+                "Provider not available in hub",
                 operation="provider_fetch",
             )
-            raise RuntimeError("Provider not available - initialization failed to complete")
-
+            raise RuntimeError("Provider not available - discovery may not be complete")
         self._resolved_provider = provider
         return provider
 
