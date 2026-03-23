@@ -98,21 +98,26 @@ class ProviderHandler(ProviderServicer):
         # Fetch provider from hub
         from pyvider.hub import hub
 
+        # Wait for discovery to complete by waiting for the discovery ready event
+        discovery_event = hub.get_component("singleton", "_discovery_ready_event")
+        if discovery_event is not None and not discovery_event.is_set():
+            logger.debug(
+                "Waiting for component discovery to complete",
+                operation="provider_wait",
+            )
+            try:
+                await asyncio.wait_for(discovery_event.wait(), timeout=300.0)
+            except asyncio.TimeoutError:
+                logger.error(
+                    "Component discovery timed out after 5 minutes",
+                    operation="provider_wait",
+                )
+                raise RuntimeError("Provider initialization timed out - discovery did not complete within 5 minutes")
+
         provider = hub.get_component("singleton", "provider")
         if provider is None:
-            logger.warning(
-                "Provider not yet available in hub, initialization may still be in progress",
-                operation="provider_fetch",
-            )
-            # Provider is still initializing - wait a brief moment for it to be registered
-            # In normal operation, by the time a handler method is called, initialization
-            # should be complete. This is just a safety fallback.
-            await asyncio.sleep(0.1)
-            provider = hub.get_component("singleton", "provider")
-
-        if provider is None:
             logger.error(
-                "Provider still not available after waiting",
+                "Provider not available after discovery completed",
                 operation="provider_fetch",
             )
             raise RuntimeError("Provider not available - initialization failed to complete")
