@@ -132,16 +132,35 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             domain="system",
         )
 
-        # --- LAZY INITIALIZATION STRATEGY ---
-        # Create an event that will be set when discovery is complete
-        from pyvider.hub import DISCOVERY_READY_EVENT
-
-        discovery_ready_event = asyncio.Event()
-        hub.register("singleton", DISCOVERY_READY_EVENT, discovery_ready_event)
-
         # Start component discovery immediately as a background task
+        # This will run concurrently while the RPC server starts up
         logger.debug(
             "Starting component discovery in background",
+            operation="component_discovery",
+        )
+        discovery_task = asyncio.create_task(_discover_components_once())
+
+        # Create protocol immediately (doesn't need discovery)
+        protocol = PyviderProtocol()
+
+        # Register the discovery task so the handler can wait for it if needed
+        hub.register("singleton", "discovery_task", lambda: discovery_task)
+
+        # Log that we're starting server before discovery completes
+        logger.debug(
+            "Starting RPC server while discovery runs in background",
+            operation="server_start",
+        )
+
+        # Now wait for discovery to complete before instantiating providers
+        # (providers depend on discovered components)
+        logger.debug(
+            "Waiting for component discovery to complete",
+            operation="component_discovery",
+        )
+        await discovery_task
+        logger.debug(
+            "Component discovery completed",
             operation="component_discovery",
         )
 
@@ -165,43 +184,7 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             finally:
                 discovery_ready_event.set()
 
-        discovery_task = asyncio.create_task(discover_and_signal())
-
-        # Create a coroutine for provider initialization (don't schedule yet)
-        async def initialize_and_register_provider() -> None:
-            """Initialize and register provider after discovery."""
-            logger.debug(
-                "Waiting for component discovery before provider instantiation",
-                operation="provider_init",
-            )
-            await discovery_task
-            logger.debug(
-                "Component discovery completed, now instantiating providers",
-                operation="provider_init",
-            )
-            provider_instances = await _instantiate_providers(logger, hub)
-            primary_provider = next(iter(provider_instances.values()))
-            logger.debug(
-                "Primary provider instantiated",
-                operation="provider_init",
-                provider=next(iter(provider_instances.keys())),
-            )
-            hub.register("singleton", "provider", primary_provider)
-            logger.debug(
-                "Primary provider registered in hub",
-                operation="hub_register",
-                provider=next(iter(provider_instances.keys())),
-            )
-
-        # Create protocol immediately (doesn't need discovery or providers)
-        protocol = PyviderProtocol()
-
-        # Create handler without a provider - it will fetch from hub on first use
-        logger.debug(
-            "Creating RPC handler (will use lazy provider from hub)",
-            operation="handler_creation",
-        )
-        handler = ProviderHandler()
+        handler = ProviderHandler(primary_provider)
 
         # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
