@@ -47,18 +47,13 @@ class ComponentDiscovery:
             logger.error("🛰️🔍❌ Failed to query for entry points", error=e, exc_info=True)
             return
 
-        # Discover all packages in parallel
-        tasks = []
         for entry_point in entry_points:
             logger.debug(
                 "🛰️🔍 Discovered entry point",
                 name=entry_point.name,
                 module=entry_point.value,
             )
-            tasks.append(self._discover_package(entry_point.value, strict=strict))
-
-        if tasks:
-            await asyncio.gather(*tasks, return_exceptions=True)
+            await self._discover_package(entry_point.value, strict=strict)
 
         elapsed = time.time() - start_time
         component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
@@ -81,15 +76,9 @@ class ComponentDiscovery:
             await self._process_module(package)
 
             if hasattr(package, "__path__"):
-                # Discover sub-modules in parallel
-                module_infos = list(pkgutil.walk_packages(package.__path__, package.__name__ + "."))
-                tasks = []
-                for module_info in module_infos:
+                for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
                     if module_info.name not in self._discovered_modules:
-                        tasks.append(self._discover_package(module_info.name, strict=strict))
-
-                if tasks:
-                    await asyncio.gather(*tasks, return_exceptions=True)
+                        await self._discover_package(module_info.name, strict=strict)
 
             elapsed = time.time() - start_time
             if elapsed > 0.5:  # Log slow modules
