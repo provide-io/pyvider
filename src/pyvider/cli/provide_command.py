@@ -396,40 +396,45 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
 
         launch_context = detect_launch_context()
 
-        pout("\n" + "─" * 70, fg="cyan")
-        pout(" i  Interactive Mode", fg="cyan", bold=True)
-        pout("─" * 70, fg="cyan")
-        pout(
-            "\nThis executable is a Pyvider-based Terraform provider. It was not started by\n"
-            "Terraform, so it has entered interactive CLI mode.",
-            fg="white",
-        )
+        try:
+            pout("\n" + "─" * 70, fg="cyan")
+            pout(" i  Interactive Mode", fg="cyan", bold=True)
+            pout("─" * 70, fg="cyan")
+            pout(
+                "\nThis executable is a Pyvider-based Terraform provider. It was not started by\n"
+                "Terraform, so it has entered interactive CLI mode.",
+                fg="white",
+            )
 
-        # Display launch context
-        pout("\n🚀 Launch Context:", fg="green", bold=True)
-        pout(f"   Method: {launch_context.method.value}", fg="white")
-        pout(f"   Executable: {launch_context.executable_path}", fg="white")
-        pout(f"   Python: {launch_context.python_executable}", fg="white")
+            # Display launch context
+            pout("\n🚀 Launch Context:", fg="green", bold=True)
+            pout(f"   Method: {launch_context.method.value}", fg="white")
+            pout(f"   Executable: {launch_context.executable_path}", fg="white")
+            pout(f"   Python: {launch_context.python_executable}", fg="white")
 
-        if launch_context.details:
-            for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
-                pout(f"   {key}: {value}", fg="white")
+            if launch_context.details:
+                for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
+                    pout(f"   {key}: {value}", fg="white")
 
-        pout(
-            "\nYou can use the commands below to inspect the provider's components.",
-            fg="white",
-        )
-        pout(
-            f"\nTo run in server mode for testing, use: '{script_name} provide --force'",
-            fg="yellow",
-        )
-        pout("─" * 70, fg="cyan")
+            pout(
+                "\nYou can use the commands below to inspect the provider's components.",
+                fg="white",
+            )
+            pout(
+                f"\nTo run in server mode for testing, use: '{script_name} provide --force'",
+                fg="yellow",
+            )
+            pout("─" * 70, fg="cyan")
 
-        # Display the full help message for the main CLI group
-        if ctx.parent:
-            pout("\n" + ctx.parent.get_help())
-        else:
-            pout("\nNo parent context available for help")
+            # Display the full help message for the main CLI group
+            if ctx.parent:
+                pout("\n" + ctx.parent.get_help())
+            else:
+                pout("\nNo parent context available for help")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            # If we can't print to console due to encoding issues, just proceed to server mode
+            # This happens when running as a plugin with non-UTF-8 console encoding
+            pass
         sys.exit(0)
 
     # If --force is used, provide a dummy cookie value.
