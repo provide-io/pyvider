@@ -42,7 +42,7 @@ class LazyPackageLoader(importlib.abc.Loader):
                 init_path = f"{self.package_path}/__init__.py"
                 try:
                     code = archive.read(init_path).decode("utf-8")
-                    exec(compile(code, init_path, "exec"), module.__dict__)  # noqa: S102
+                    exec(compile(code, init_path, "exec"), module.__dict__)  # noqa: S102  # nosec B102
                     return
                 except KeyError:
                     pass
@@ -51,7 +51,7 @@ class LazyPackageLoader(importlib.abc.Loader):
                 module_file = f"{self.package_path}.py"
                 try:
                     code = archive.read(module_file).decode("utf-8")
-                    exec(compile(code, module_file, "exec"), module.__dict__)  # noqa: S102
+                    exec(compile(code, module_file, "exec"), module.__dict__)  # noqa: S102  # nosec B102
                     return
                 except KeyError:
                     pass
@@ -125,7 +125,7 @@ class LazyPackageFinder(importlib.abc.MetaPathFinder):
                     return importlib.machinery.ModuleSpec(fullname, loader)
                 except KeyError:
                     pass
-        except Exception:
+        except Exception:  # nosec B110
             pass
 
         return None
