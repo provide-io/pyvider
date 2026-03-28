@@ -8,7 +8,6 @@ from typing import Any
 
 import click
 from provide.foundation.cli.decorators import flexible_options, output_options
-from provide.foundation.config import get_env
 from provide.foundation.console import perr, pout
 
 from pyvider.cli.context import PyviderContext

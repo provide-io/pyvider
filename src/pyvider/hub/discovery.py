@@ -4,7 +4,6 @@
 #
 
 
-import asyncio
 import importlib
 import importlib.metadata
 import inspect
@@ -83,7 +82,7 @@ class ComponentDiscovery:
             elapsed = time.time() - start_time
             if elapsed > 0.5:  # Log slow modules
                 logger.debug(
-                    f"🛰️🔍⏱️ Slow module discovery",
+                    "🛰️🔍⏱️ Slow module discovery",
                     module=package_name,
                     elapsed_ms=f"{int(elapsed * 1000)}",
                 )

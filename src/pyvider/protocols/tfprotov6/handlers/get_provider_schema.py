@@ -120,7 +120,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
                     "Component discovery completed, proceeding with schema computation",
                     operation="compute_schema",
                 )
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.warning(
                     "Component discovery timeout, proceeding with partial schema",
                     operation="compute_schema",
