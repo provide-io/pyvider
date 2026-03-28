@@ -54,7 +54,7 @@ def launch_context_cmd(format: str, verbose: bool) -> None:
         if verbose:
             data["environment_info"] = launch_context.environment_info
 
-        pout(json.dumps(data, indent=2))
+        click.echo(json.dumps(data, indent=2))
 
     else:
         # Human-readable format

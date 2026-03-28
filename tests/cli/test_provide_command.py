@@ -140,8 +140,8 @@ class TestProvideForceMode:
             os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
             runner.invoke(cli, ["provide", "--force"])
 
-        # Should call asyncio.run to start the server (twice: once for discovery, once for server)
-        assert mock_run.call_count >= 2
+        # Should call asyncio.run to start the server
+        assert mock_run.call_count >= 1
 
     @patch("pyvider.cli.provide_command.asyncio.run")
     def test_force_mode_uses_dummy_cookie(self, mock_run: MagicMock) -> None:
@@ -161,8 +161,8 @@ class TestProvideForceMode:
             os.environ.pop("TF_PLUGIN_MAGIC_COOKIE", None)
             runner.invoke(cli, ["provide", "--force"])
 
-        # Verify the server was called (twice: once for discovery, once for server)
-        assert mock_run.call_count >= 2
+        # Verify the server was called
+        assert mock_run.call_count >= 1
 
     @patch("pyvider.cli.provide_command.asyncio.run")
     def test_keyboard_interrupt_handled_gracefully(self, mock_run: MagicMock) -> None:
@@ -176,8 +176,7 @@ class TestProvideForceMode:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
-            # Raise KeyboardInterrupt on second call (the _run_provider_server call)
-            if call_count[0] >= 2:
+            if call_count[0] >= 1:
                 raise KeyboardInterrupt()
 
         mock_run.side_effect = consume_then_interrupt
@@ -214,8 +213,8 @@ class TestProvideServerMode:
         ):
             runner.invoke(cli, ["provide"])
 
-        # Should call the server (twice: once for discovery, once for server)
-        assert mock_run.call_count >= 2
+        # Should call the server
+        assert mock_run.call_count >= 1
 
     @patch("pyvider.cli.provide_command.asyncio.run")
     def test_magic_cookie_value_passed_to_server(self, mock_run: MagicMock) -> None:
@@ -238,8 +237,8 @@ class TestProvideServerMode:
         ):
             runner.invoke(cli, ["provide"])
 
-        # Should call the server (twice: once for discovery, once for server)
-        assert mock_run.call_count >= 2
+        # Should call the server
+        assert mock_run.call_count >= 1
 
 
 class TestProvideServerErrorHandling:
@@ -258,8 +257,7 @@ class TestProvideServerErrorHandling:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
-            # Raise error on second call (the _run_provider_server call)
-            if call_count[0] >= 2:
+            if call_count[0] >= 1:
                 raise RuntimeError("Test server error")
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
@@ -284,8 +282,7 @@ class TestProvideServerErrorHandling:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
-            # Raise error on second call (the _run_provider_server call)
-            if call_count[0] >= 2:
+            if call_count[0] >= 1:
                 raise ValueError("Invalid configuration")
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
@@ -307,8 +304,7 @@ class TestProvideServerErrorHandling:
             if asyncio.iscoroutine(coro):
                 coro.close()
             call_count[0] += 1
-            # Raise error on second call (the _run_provider_server call)
-            if call_count[0] >= 2:
+            if call_count[0] >= 1:
                 raise Exception("Unexpected error")
 
         with patch("pyvider.cli.provide_command.asyncio.run") as mock_run:
@@ -337,8 +333,8 @@ class TestProvideComponentDiscovery:
 
         runner.invoke(cli, ["provide", "--force"])
 
-        # Discovery should have run (twice: once for discovery, once for server)
-        assert mock_run.call_count >= 2
+        # Discovery runs inside _run_provider_server via asyncio.run
+        assert mock_run.call_count >= 1
 
 
 @pytest.mark.asyncio
