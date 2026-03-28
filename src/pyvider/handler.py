@@ -114,7 +114,9 @@ class ProviderHandler(ProviderServicer):
                     "Component discovery timed out after 55 seconds",
                     operation="provider_wait",
                 )
-                raise RuntimeError("Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)")
+                raise RuntimeError(
+                    "Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)"
+                )
 
         provider = hub.get_component("singleton", "provider")
         if provider is None:
