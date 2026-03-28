@@ -27,31 +27,31 @@ from pathlib import Path
 
 # Packages that should NOT be extracted initially
 LAZY_PACKAGES = {
-    'mkdocs',  # Documentation generator
-    'material',  # Material theme
-    'babel',  # Internationalization
-    'pygments',  # Syntax highlighting
-    'pymarkdown',  # Markdown linter
-    'pymdownx',  # Markdown extensions
-    'backrefs',  # Markdown related
-    'bs4',  # BeautifulSoup
-    'beautifulsoup4',  # BeautifulSoup
-    'markdown',  # Markdown
-    'markdown_it',  # Markdown parser
-    'jinja2',  # Template engine
-    'opentelemetry',  # Telemetry
-    'pip',  # Package manager
-    'setuptools',  # Build tools
-    'wheel',  # Build tools
-    'build',  # Build tools
-    'packaging',  # Packaging utilities
+    "mkdocs",  # Documentation generator
+    "material",  # Material theme
+    "babel",  # Internationalization
+    "pygments",  # Syntax highlighting
+    "pymarkdown",  # Markdown linter
+    "pymdownx",  # Markdown extensions
+    "backrefs",  # Markdown related
+    "bs4",  # BeautifulSoup
+    "beautifulsoup4",  # BeautifulSoup
+    "markdown",  # Markdown
+    "markdown_it",  # Markdown parser
+    "jinja2",  # Template engine
+    "opentelemetry",  # Telemetry
+    "pip",  # Package manager
+    "setuptools",  # Build tools
+    "wheel",  # Build tools
+    "build",  # Build tools
+    "packaging",  # Packaging utilities
 }
 
 
 def find_site_packages():
     """Find the site-packages directory."""
     for path in sys.path:
-        if 'site-packages' in path and os.path.isdir(path):
+        if "site-packages" in path and os.path.isdir(path):
             return path
     raise RuntimeError("Could not find site-packages directory")
 
@@ -69,7 +69,7 @@ def get_package_path(site_packages: str, package_name: str) -> Path:
         return path
 
     # Try with underscores instead of hyphens
-    path = Path(site_packages) / package_name.replace('-', '_')
+    path = Path(site_packages) / package_name.replace("-", "_")
     if path.is_dir():
         return path
 
@@ -86,7 +86,7 @@ def build_lazy_archive(site_packages: str, output_path: str):
     total_size = 0
     archive_size = 0
 
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for package_name in sorted(LAZY_PACKAGES):
             try:
                 pkg_path = get_package_path(site_packages, package_name)
@@ -131,8 +131,8 @@ def build_lazy_archive(site_packages: str, output_path: str):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--site-packages', help='Path to site-packages directory')
-    parser.add_argument('--output', default='lazy-packages.zip', help='Output archive path')
+    parser.add_argument("--site-packages", help="Path to site-packages directory")
+    parser.add_argument("--output", default="lazy-packages.zip", help="Output archive path")
     args = parser.parse_args()
 
     # Find site-packages if not provided
@@ -145,5 +145,5 @@ def main():
     build_lazy_archive(site_packages, args.output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
