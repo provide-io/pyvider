@@ -363,7 +363,13 @@ class TestGetProviderSchemaLogging:
                             with patch(
                                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._collect_function_schemas"
                             ) as mock_functions:
-                                mock_get_component.return_value = mock_provider_instance
+
+                                def get_component_side_effect(scope, name):
+                                    if name == "_discovery_ready_event":
+                                        return None  # Skip discovery wait
+                                    return mock_provider_instance
+
+                                mock_get_component.side_effect = get_component_side_effect
                                 mock_to_proto.return_value = pb.Schema()
                                 mock_resources.return_value = {}
                                 mock_data_sources.return_value = {}
