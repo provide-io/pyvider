@@ -17,6 +17,7 @@ if sys.platform == "win32" and "PLUGIN_SERVER_TRANSPORTS" not in os.environ:
 # Install lazy loader for on-demand package extraction
 # This must be done BEFORE importing packages that might be lazily loaded
 from pyvider.lazy_import import install_lazy_loader
+
 install_lazy_loader()
 
 from pyvider.cli.components_commands import components

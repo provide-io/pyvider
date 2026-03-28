@@ -36,12 +36,12 @@ class LazyPackageLoader(importlib.abc.Loader):
     def exec_module(self, module):
         """Load and execute module code."""
         try:
-            with zipfile.ZipFile(self.archive_path, 'r') as archive:
+            with zipfile.ZipFile(self.archive_path, "r") as archive:
                 # Try to load as a package first
                 init_path = f"{self.package_path}/__init__.py"
                 try:
-                    code = archive.read(init_path).decode('utf-8')
-                    exec(compile(code, init_path, 'exec'), module.__dict__)
+                    code = archive.read(init_path).decode("utf-8")
+                    exec(compile(code, init_path, "exec"), module.__dict__)
                     return
                 except KeyError:
                     pass
@@ -49,8 +49,8 @@ class LazyPackageLoader(importlib.abc.Loader):
                 # Try to load as a module
                 module_file = f"{self.package_path}.py"
                 try:
-                    code = archive.read(module_file).decode('utf-8')
-                    exec(compile(code, module_file, 'exec'), module.__dict__)
+                    code = archive.read(module_file).decode("utf-8")
+                    exec(compile(code, module_file, "exec"), module.__dict__)
                     return
                 except KeyError:
                     pass
@@ -65,21 +65,21 @@ class LazyPackageFinder(importlib.abc.MetaPathFinder):
 
     # Packages that should be loaded from compressed archive on-demand
     LAZY_PACKAGES = {
-        'mkdocs',  # Documentation generator (~7MB)
-        'material',  # Material theme (~39MB)
-        'babel',  # Internationalization (~32MB)
-        'pygments',  # Syntax highlighting (~9.5MB)
-        'pymarkdown',  # Markdown linter (~6MB)
-        'pymdownx',  # Markdown extensions (~3.3MB)
-        'backrefs',  # Markdown related (~2.8MB)
-        'bs4',  # BeautifulSoup (~844KB)
-        'beautifulsoup4',  # BeautifulSoup (~844KB)
-        'markdown',  # Markdown (~864KB)
-        'markdown_it',  # Markdown parser (~789KB)
-        'jinja2',  # Template engine (~1.3MB) - optional
-        'opentelemetry',  # Telemetry (~4.5MB) - optional
-        'pip',  # Package manager (~13MB) - not needed at runtime
-        'setuptools',  # Build tools (~11MB) - not needed at runtime
+        "mkdocs",  # Documentation generator (~7MB)
+        "material",  # Material theme (~39MB)
+        "babel",  # Internationalization (~32MB)
+        "pygments",  # Syntax highlighting (~9.5MB)
+        "pymarkdown",  # Markdown linter (~6MB)
+        "pymdownx",  # Markdown extensions (~3.3MB)
+        "backrefs",  # Markdown related (~2.8MB)
+        "bs4",  # BeautifulSoup (~844KB)
+        "beautifulsoup4",  # BeautifulSoup (~844KB)
+        "markdown",  # Markdown (~864KB)
+        "markdown_it",  # Markdown parser (~789KB)
+        "jinja2",  # Template engine (~1.3MB) - optional
+        "opentelemetry",  # Telemetry (~4.5MB) - optional
+        "pip",  # Package manager (~13MB) - not needed at runtime
+        "setuptools",  # Build tools (~11MB) - not needed at runtime
     }
 
     def __init__(self, archive_path: str):
@@ -90,7 +90,7 @@ class LazyPackageFinder(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path, target=None):
         """Find module spec, loading from archive if needed."""
         # Check if this module should be loaded from archive
-        parts = fullname.split('.')
+        parts = fullname.split(".")
         root_package = parts[0]
 
         if root_package not in self.LAZY_PACKAGES:
@@ -102,9 +102,9 @@ class LazyPackageFinder(importlib.abc.MetaPathFinder):
 
         # Try to find in archive
         try:
-            with zipfile.ZipFile(self.archive_path, 'r') as archive:
+            with zipfile.ZipFile(self.archive_path, "r") as archive:
                 # Try as package
-                package_path = fullname.replace('.', '/')
+                package_path = fullname.replace(".", "/")
                 try:
                     archive.getinfo(f"{package_path}/__init__.py")
                     loader = LazyPackageLoader(self.archive_path, fullname, package_path)
@@ -135,8 +135,8 @@ def install_lazy_loader(archive_path: Optional[str] = None):
     if archive_path is None:
         # Try to find in standard workenv locations
         workenv_paths = [
-            os.path.join(os.path.dirname(__file__), '..', '..', 'lazy-packages.zip'),
-            os.path.join(os.path.dirname(sys.executable), '..', 'lazy-packages.zip'),
+            os.path.join(os.path.dirname(__file__), "..", "..", "lazy-packages.zip"),
+            os.path.join(os.path.dirname(sys.executable), "..", "lazy-packages.zip"),
         ]
         archive_path = next((p for p in workenv_paths if os.path.exists(p)), None)
 
