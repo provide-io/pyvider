@@ -104,15 +104,16 @@ class ProviderHandler(ProviderServicer):
                 "Waiting for lazy provider initialization",
                 operation="provider_init_lazy",
             )
-            self._resolved_provider = await self._provider
-            logger.debug(
-                "Lazy provider initialization completed",
-                operation="provider_init_lazy",
-            )
-            return self._resolved_provider
-
-        # Case 3: Fetch provider from hub
-        from pyvider.hub import hub
+            try:
+                # 55 seconds: Terraform kills unresponsive plugins at 60 seconds,
+                # so we fail fast with a clear error rather than letting Terraform time out silently.
+                await asyncio.wait_for(discovery_event.wait(), timeout=55.0)
+            except asyncio.TimeoutError:
+                logger.error(
+                    "Component discovery timed out after 55 seconds",
+                    operation="provider_wait",
+                )
+                raise RuntimeError("Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)")
 
         provider = hub.get_component("singleton", "provider")
         if provider is None:
