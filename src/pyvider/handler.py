@@ -108,14 +108,14 @@ class ProviderHandler(ProviderServicer):
                 # 55 seconds: Terraform kills unresponsive plugins at 60 seconds,
                 # so we fail fast with a clear error rather than letting Terraform time out silently.
                 await asyncio.wait_for(discovery_event.wait(), timeout=55.0)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 logger.error(
                     "Component discovery timed out after 55 seconds",
                     operation="provider_wait",
                 )
                 raise RuntimeError(
                     "Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)"
-                )
+                ) from None
 
         provider = hub.get_component("singleton", "provider")
         if provider is None:
