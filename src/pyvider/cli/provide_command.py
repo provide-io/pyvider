@@ -236,10 +236,8 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             # Clean up background initialization task if it's still running
             if not background_init.done():
                 background_init.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await background_init
-                except asyncio.CancelledError:
-                    pass
 
         logger.info(
             "Provider server has shut down gracefully",

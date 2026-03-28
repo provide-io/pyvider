@@ -20,12 +20,12 @@ from pyvider.lazy_import import install_lazy_loader
 
 install_lazy_loader()
 
-from pyvider.cli.components_commands import components
-from pyvider.cli.config_commands import config
-from pyvider.cli.install_command import install_command
-from pyvider.cli.launch_context_command import launch_context_cmd
-from pyvider.cli.main import cli
-from pyvider.cli.provide_command import provide_cmd
+from pyvider.cli.components_commands import components  # noqa: E402
+from pyvider.cli.config_commands import config  # noqa: E402
+from pyvider.cli.install_command import install_command  # noqa: E402
+from pyvider.cli.launch_context_command import launch_context_cmd  # noqa: E402
+from pyvider.cli.main import cli  # noqa: E402
+from pyvider.cli.provide_command import provide_cmd  # noqa: E402
 
 # Explicitly attach the commands to the main cli group.
 cli.add_command(components)
