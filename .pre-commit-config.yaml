@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.7
+    hooks:
+      - id: ruff-format
+        name: ruff format
+      - id: ruff
+        name: ruff lint
+        args: [--fix, --exit-non-zero-on-fix]
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        additional_dependencies: ["tomli"]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy strict
+        entry: uv run mypy src/pyvider
+        language: system
+        pass_filenames: false
+        always_run: true
+        types: [python]
+
+      - id: bandit
+        name: bandit
+        entry: bandit -r src -ll
+        language: system
+        pass_filenames: false
+        always_run: true
+        types: [python]
