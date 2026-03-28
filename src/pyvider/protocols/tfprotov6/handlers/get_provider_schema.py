@@ -114,8 +114,8 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
                 operation="compute_schema",
             )
             try:
-                # Wait up to 5 minutes for discovery to complete
-                await asyncio.wait_for(discovery_ready_event.wait(), timeout=300.0)
+                # 55 seconds: Terraform kills unresponsive plugins at 60 seconds.
+                await asyncio.wait_for(discovery_ready_event.wait(), timeout=55.0)
                 logger.debug(
                     "Component discovery completed, proceeding with schema computation",
                     operation="compute_schema",
