@@ -2,7 +2,7 @@
 
 !!! info "Release Status"
     pyvider is in pre-release. This tutorial covers **stable** functionality. Some APIs may change during the pre-release series.
-    See [project status](../index.md#-project-status) for details.
+    See [project status](../index.md#project-status) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform resource using pyvider. By the end, you'll have a working file resource that creates, reads, updates, and deletes local files through Terraform.
 
