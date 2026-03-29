@@ -74,11 +74,7 @@ def discovered_components_session(event_loop: asyncio.BaseEventLoop) -> Generato
         # Silently skip discovery on:
         # - I/O errors (e.g., from mutmut redirecting stdio)
         # - UnicodeEncodeError (cp1252 terminal on Windows can't render emoji/box-drawing)
-        if isinstance(e, UnicodeEncodeError):
-            pass
-        elif "I/O operation on closed file" in str(e):
-            pass
-        else:
+        if not isinstance(e, UnicodeEncodeError) and "I/O operation on closed file" not in str(e):
             raise
     yield
 
