@@ -72,7 +72,7 @@ async def _instantiate_providers(logger: Any, hub: Any) -> dict:
     return provider_instances
 
 
-async def _run_provider_server(magic_cookie: str) -> None:
+async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
     """
     Initializes and runs the provider in server mode. This function contains
     all imports for the server machinery to prevent them from running during
