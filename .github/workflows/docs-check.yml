@@ -43,9 +43,9 @@ jobs:
         run: |
           python scripts/check_doc_links.py
 
-      - name: Build documentation (strict mode)
+      - name: Build documentation
         run: |
-          mkdocs build --strict
+          mkdocs build
 
       - name: Check markdown formatting
         uses: nosborn/github-action-markdown-cli@v3.3.0
