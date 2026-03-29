@@ -12,6 +12,29 @@ import sys
 
 import pytest
 
+# Reconfigure stdout/stderr to UTF-8 on Windows so that emoji and box-drawing
+# characters from structlog / rich don't raise UnicodeEncodeError (cp1252).
+# colorama wraps stdout as AnsiToWin32 with a .stream attribute; we must
+# reconfigure that underlying TextIOWrapper, not the wrapper itself.
+if sys.platform == "win32":
+    for _s in (sys.stdout, sys.stderr):
+        if _s is None:
+            continue
+        # Plain TextIOWrapper case
+        if hasattr(_s, "reconfigure"):
+            try:
+                _s.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
+                continue
+            except Exception:
+                pass
+        # colorama AnsiToWin32 case: reconfigure the inner stream
+        _inner = getattr(_s, "stream", None)
+        if _inner is not None and hasattr(_inner, "reconfigure"):
+            try:
+                _inner.reconfigure(encoding="utf-8")
+            except Exception:
+                pass
+
 from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.providers import BaseProvider
@@ -47,9 +70,13 @@ def discovered_components_session(event_loop: asyncio.BaseEventLoop) -> Generato
         discovery = ComponentDiscovery(hub)
         event_loop.run_until_complete(discovery.discover_all())
         print("--- Component discovery complete ---")
-    except (ValueError, OSError) as e:
-        # If there's an I/O error (e.g., from mutmut), skip discovery
-        if "I/O operation on closed file" in str(e):
+    except (ValueError, OSError, UnicodeEncodeError) as e:
+        # Silently skip discovery on:
+        # - I/O errors (e.g., from mutmut redirecting stdio)
+        # - UnicodeEncodeError (cp1252 terminal on Windows can't render emoji/box-drawing)
+        if isinstance(e, UnicodeEncodeError):
+            pass
+        elif "I/O operation on closed file" in str(e):
             pass
         else:
             raise
