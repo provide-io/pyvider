@@ -145,12 +145,23 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         async def discover_and_signal() -> None:
             """Run discovery and signal when it's complete."""
-            await _discover_components_once()
-            discovery_ready_event.set()
-            logger.debug(
-                "Discovery complete, signaling ready event",
-                operation="component_discovery",
-            )
+            try:
+                from pyvider.hub.discovery import ComponentDiscovery
+
+                discovery = ComponentDiscovery(hub)
+                await discovery.discover_all()
+                logger.debug(
+                    "Discovery complete, signaling ready event",
+                    operation="component_discovery",
+                )
+            except Exception:
+                logger.error(
+                    "Component discovery failed",
+                    operation="component_discovery",
+                    exc_info=True,
+                )
+            finally:
+                discovery_ready_event.set()
 
         discovery_task = asyncio.create_task(discover_and_signal())
 

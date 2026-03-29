@@ -4,6 +4,7 @@
 #
 
 
+import asyncio
 import importlib
 import importlib.metadata
 import inspect
@@ -64,7 +65,12 @@ class ComponentDiscovery:
         )
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
-        """Discover components in a package."""
+        """Discover components in a package.
+
+        If the package exposes a `register_components(hub)` function, call it
+        directly (fast path). Otherwise, fall back to recursive module walking
+        and marker scanning (backward-compatible slow path).
+        """
         if package_name in self._discovered_modules:
             return
 
@@ -72,7 +78,25 @@ class ComponentDiscovery:
         try:
             package = importlib.import_module(package_name)
             self._discovered_modules.add(package_name)
-            await self._register_from_package(package, package_name, strict)
+
+            # Fast path: explicit registration function
+            register_fn = getattr(package, "register_components", None)
+            if callable(register_fn):
+                logger.debug(
+                    "🛰️🔍⚡ Using explicit register_components",
+                    module=package_name,
+                )
+                if asyncio.iscoroutinefunction(register_fn):
+                    await register_fn(self.hub)
+                else:
+                    register_fn(self.hub)
+            else:
+                # Slow path: walk all submodules and scan for markers
+                await self._process_module(package)
+                if hasattr(package, "__path__"):
+                    for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+                        if module_info.name not in self._discovered_modules:
+                            await self._discover_package(module_info.name, strict=strict)
 
             elapsed = time.time() - start_time
             if elapsed > 0.5:
