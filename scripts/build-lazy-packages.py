@@ -17,41 +17,41 @@ This significantly reduces initial extraction time by deferring non-critical
 packages until they're actually imported.
 """
 
+from __future__ import annotations
+
 import argparse
 import os
-import shutil
+from pathlib import Path
 import sys
 import zipfile
-from pathlib import Path
-
 
 # Packages that should NOT be extracted initially
 LAZY_PACKAGES = {
-    'mkdocs',  # Documentation generator
-    'material',  # Material theme
-    'babel',  # Internationalization
-    'pygments',  # Syntax highlighting
-    'pymarkdown',  # Markdown linter
-    'pymdownx',  # Markdown extensions
-    'backrefs',  # Markdown related
-    'bs4',  # BeautifulSoup
-    'beautifulsoup4',  # BeautifulSoup
-    'markdown',  # Markdown
-    'markdown_it',  # Markdown parser
-    'jinja2',  # Template engine
-    'opentelemetry',  # Telemetry
-    'pip',  # Package manager
-    'setuptools',  # Build tools
-    'wheel',  # Build tools
-    'build',  # Build tools
-    'packaging',  # Packaging utilities
+    "mkdocs",  # Documentation generator
+    "material",  # Material theme
+    "babel",  # Internationalization
+    "pygments",  # Syntax highlighting
+    "pymarkdown",  # Markdown linter
+    "pymdownx",  # Markdown extensions
+    "backrefs",  # Markdown related
+    "bs4",  # BeautifulSoup
+    "beautifulsoup4",  # BeautifulSoup
+    "markdown",  # Markdown
+    "markdown_it",  # Markdown parser
+    "jinja2",  # Template engine
+    "opentelemetry",  # Telemetry
+    "pip",  # Package manager
+    "setuptools",  # Build tools
+    "wheel",  # Build tools
+    "build",  # Build tools
+    "packaging",  # Packaging utilities
 }
 
 
-def find_site_packages():
+def find_site_packages() -> str:
     """Find the site-packages directory."""
     for path in sys.path:
-        if 'site-packages' in path and os.path.isdir(path):
+        if "site-packages" in path and Path(path).is_dir():
             return path
     raise RuntimeError("Could not find site-packages directory")
 
@@ -69,30 +69,31 @@ def get_package_path(site_packages: str, package_name: str) -> Path:
         return path
 
     # Try with underscores instead of hyphens
-    path = Path(site_packages) / package_name.replace('-', '_')
+    path = Path(site_packages) / package_name.replace("-", "_")
     if path.is_dir():
         return path
 
     raise FileNotFoundError(f"Package {package_name} not found in {site_packages}")
 
 
-def build_lazy_archive(site_packages: str, output_path: str):
+def build_lazy_archive(site_packages: str, output_path: str) -> None:
     """Build the lazy packages archive."""
-    print(f"Building lazy packages archive...")
+    print("Building lazy packages archive...")
     print(f"Source: {site_packages}")
     print(f"Output: {output_path}")
     print()
 
     total_size = 0
     archive_size = 0
+    output = Path(output_path)
 
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for package_name in sorted(LAZY_PACKAGES):
             try:
                 pkg_path = get_package_path(site_packages, package_name)
 
                 # Add package to archive
-                for root, dirs, files in os.walk(pkg_path):
+                for root, _dirs, files in os.walk(pkg_path):
                     for file in files:
                         file_path = Path(root) / file
                         rel_path = file_path.relative_to(Path(site_packages))
@@ -106,8 +107,8 @@ def build_lazy_archive(site_packages: str, output_path: str):
                         archive_size += file_size
 
                 pkg_size_mb = sum(
-                    os.path.getsize(os.path.join(root, file))
-                    for root, dirs, files in os.walk(pkg_path)
+                    (Path(root) / file).stat().st_size
+                    for root, _dirs, files in os.walk(pkg_path)
                     for file in files
                 ) / (1024 * 1024)
 
@@ -118,8 +119,8 @@ def build_lazy_archive(site_packages: str, output_path: str):
                 print(f"  ER {package_name:40} ERROR: {e}")
 
     total_mb = total_size / (1024 * 1024)
-    compressed_mb = os.path.getsize(output_path) / (1024 * 1024)
-    compression_ratio = (1 - (os.path.getsize(output_path) / total_size)) * 100 if total_size > 0 else 0
+    compressed_mb = output.stat().st_size / (1024 * 1024)
+    compression_ratio = (1 - (output.stat().st_size / total_size)) * 100 if total_size > 0 else 0
 
     print()
     print(f"Total packages size:    {total_mb:8.1f} MB")
@@ -129,21 +130,21 @@ def build_lazy_archive(site_packages: str, output_path: str):
     print(f"SUCCESS: Archive created: {output_path}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--site-packages', help='Path to site-packages directory')
-    parser.add_argument('--output', default='lazy-packages.zip', help='Output archive path')
+    parser.add_argument("--site-packages", help="Path to site-packages directory")
+    parser.add_argument("--output", default="lazy-packages.zip", help="Output archive path")
     args = parser.parse_args()
 
     # Find site-packages if not provided
     site_packages = args.site_packages or find_site_packages()
 
-    if not os.path.isdir(site_packages):
+    if not Path(site_packages).is_dir():
         print(f"Error: site-packages not found: {site_packages}")
         sys.exit(1)
 
     build_lazy_archive(site_packages, args.output)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
