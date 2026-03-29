@@ -12,6 +12,29 @@ import sys
 
 import pytest
 
+# On Windows, prevent UnicodeEncodeError from emoji/box-drawing characters in
+# provide.foundation's structured logger.  colorama wraps sys.stdout with an
+# AnsiToWin32 proxy whose .wrapped attribute is the real cp1252 TextIOWrapper.
+# That reference is saved in structlog's PrintLogger._file before pytest
+# replaces sys.stdout with its capture buffer.  Reconfiguring the underlying
+# streams (sys.__stdout__ / sys.__stderr__) to UTF-8 fixes all write paths.
+if sys.platform == "win32":
+    for _real in (sys.__stdout__, sys.__stderr__, sys.stdout, sys.stderr):
+        if _real is None:
+            continue
+        if hasattr(_real, "reconfigure"):
+            try:
+                _real.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+            except Exception:
+                pass
+        for _attr in ("wrapped", "stream"):
+            _inner = getattr(_real, _attr, None)
+            if _inner is not None and hasattr(_inner, "reconfigure"):
+                try:
+                    _inner.reconfigure(encoding="utf-8", errors="replace")
+                except Exception:
+                    pass
+
 from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
 from pyvider.providers import BaseProvider
@@ -47,11 +70,11 @@ def discovered_components_session(event_loop: asyncio.BaseEventLoop) -> Generato
         discovery = ComponentDiscovery(hub)
         event_loop.run_until_complete(discovery.discover_all())
         print("--- Component discovery complete ---")
-    except (ValueError, OSError) as e:
-        # If there's an I/O error (e.g., from mutmut), skip discovery
-        if "I/O operation on closed file" in str(e):
-            pass
-        else:
+    except (ValueError, OSError, UnicodeEncodeError) as e:
+        # Silently skip discovery on:
+        # - I/O errors (e.g., from mutmut redirecting stdio)
+        # - UnicodeEncodeError (cp1252 terminal on Windows can't render emoji/box-drawing)
+        if not isinstance(e, UnicodeEncodeError) and "I/O operation on closed file" not in str(e):
             raise
     yield
 

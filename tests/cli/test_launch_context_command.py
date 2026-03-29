@@ -6,14 +6,23 @@
 """Tests for launch_context_command module."""
 
 import json
+import re
 from unittest.mock import MagicMock
 
 from click.testing import CliRunner
 from provide.testkit import mocking as mock
-import pytest
 
 from pyvider.cli import cli
 from pyvider.common.launch_context import LaunchContext, LaunchMethod
+
+
+def _extract_json(output: str) -> dict:
+    """Extract JSON object from CLI output that may contain log lines."""
+    # Find the first '{' and parse from there
+    match = re.search(r"\{", output)
+    if match:
+        return json.loads(output[match.start() :])
+    raise json.JSONDecodeError("No JSON object found", output, 0)
 
 
 class TestLaunchContextCommand:
@@ -93,16 +102,12 @@ class TestLaunchContextFormatOptions:
         result = runner.invoke(cli, ["launch-context", "--format", "json"])
         assert result.exit_code == 0
 
-        # Should be valid JSON
-        try:
-            data = json.loads(result.output)
-            assert "method" in data
-            assert "executable_path" in data
-            assert "python_executable" in data
-            assert "working_directory" in data
-            assert "is_terraform_invoked" in data
-        except json.JSONDecodeError:
-            pytest.fail("Output is not valid JSON")
+        data = _extract_json(result.output)
+        assert "method" in data
+        assert "executable_path" in data
+        assert "python_executable" in data
+        assert "working_directory" in data
+        assert "is_terraform_invoked" in data
 
     def test_launch_context_json_format_structure(self) -> None:
         """Test that JSON format has correct structure."""
@@ -110,7 +115,7 @@ class TestLaunchContextFormatOptions:
         result = runner.invoke(cli, ["launch-context", "--format", "json"])
         assert result.exit_code == 0
 
-        data = json.loads(result.output)
+        data = _extract_json(result.output)
         # Verify required fields
         assert isinstance(data["method"], str)
         assert isinstance(data["executable_path"], str)
@@ -149,7 +154,7 @@ class TestLaunchContextVerboseOption:
         result = runner.invoke(cli, ["launch-context", "--format", "json", "--verbose"])
         assert result.exit_code == 0
 
-        data = json.loads(result.output)
+        data = _extract_json(result.output)
         # Verbose JSON should include environment_info
         assert "environment_info" in data
 
@@ -343,7 +348,7 @@ class TestLaunchContextEdgeCases:
 
         # Check that it's indented (pretty-printed)
         assert "  " in result.output  # Should have indentation
-        data = json.loads(result.output)
+        data = _extract_json(result.output)
         assert data is not None
 
 

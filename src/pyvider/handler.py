@@ -4,6 +4,7 @@
 #
 
 
+import asyncio
 from collections.abc import Callable
 from typing import Any
 
@@ -17,10 +18,15 @@ from pyvider.providers.base import BaseProvider
 
 @define
 class ProviderHandler(ProviderServicer):
-    """Handler for provider operations that delegates to individual operation handlers."""
+    """Handler for provider operations that delegates to individual operation handlers.
 
-    _provider: BaseProvider = field()
+    The _provider is lazily resolved from the hub on first use, allowing the RPC server
+    to start listening immediately while provider initialization happens in the background.
+    """
+
+    _provider: BaseProvider | None = field(default=None)
     _handlers: dict[str, Callable] = field(init=False, factory=dict)
+    _resolved_provider: BaseProvider | None = field(init=False, default=None)
 
     def __attrs_post_init__(self) -> None:
         """Initialize handler mapping."""
@@ -73,8 +79,62 @@ class ProviderHandler(ProviderServicer):
             "CallFunction": CallFunctionHandler,
         }
 
+    async def _ensure_provider_ready(self) -> BaseProvider:
+        """Ensure the provider is ready, fetching from hub if necessary.
+
+        On first call, fetches the provider from the hub. The provider is registered
+        by background initialization after component discovery completes. This allows
+        the RPC server to start listening immediately while initialization continues.
+        """
+        # Return cached provider if available
+        if self._resolved_provider is not None:
+            return self._resolved_provider
+
+        # If _provider is set directly (e.g., for testing), use it
+        if self._provider is not None:
+            self._resolved_provider = self._provider
+            return self._provider
+
+        # Fetch provider from hub
+        from pyvider.hub import hub
+
+        # Wait for discovery to complete by waiting for the discovery ready event
+        discovery_event = hub.get_component("singleton", "_discovery_ready_event")
+        if discovery_event is not None and not discovery_event.is_set():
+            logger.debug(
+                "Waiting for component discovery to complete",
+                operation="provider_wait",
+            )
+            try:
+                # 55 seconds: Terraform kills unresponsive plugins at 60 seconds,
+                # so we fail fast with a clear error rather than letting Terraform time out silently.
+                await asyncio.wait_for(discovery_event.wait(), timeout=55.0)
+            except TimeoutError:
+                logger.error(
+                    "Component discovery timed out after 55 seconds",
+                    operation="provider_wait",
+                )
+                raise RuntimeError(
+                    "Provider initialization timed out - discovery did not complete within 55 seconds (Terraform plugin timeout is 60s)"
+                ) from None
+
+        provider = hub.get_component("singleton", "provider")
+        if provider is None:
+            logger.error(
+                "Provider not available after discovery completed",
+                operation="provider_fetch",
+            )
+            raise RuntimeError("Provider not available - initialization failed to complete")
+
+        self._resolved_provider = provider
+        return provider
+
     async def _delegate(self, method: str, request: Any, context: Any) -> Any:
         """Delegate a request to its handler."""
+        # Ensure provider is ready before handling the request
+        # This allows handlers to access the provider via the hub
+        await self._ensure_provider_ready()
+
         handler = self._handlers.get(method)
         if not handler:
             logger.warning("No handler found for RPC method", method=method)

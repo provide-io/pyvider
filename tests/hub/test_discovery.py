@@ -112,8 +112,8 @@ class TestDiscoverPackage:
 
     @pytest.mark.asyncio
     async def test_discover_package_success(self, discovery: ComponentDiscovery) -> None:
-        """Test successful package discovery."""
-        mock_module = MagicMock()
+        """Test successful package discovery via fallback (no register_components)."""
+        mock_module = MagicMock(spec=[])  # Empty spec so register_components is absent
         mock_module.__name__ = "test.module"
         mock_module.__path__ = []  # Not a package with submodules
 

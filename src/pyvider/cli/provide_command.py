@@ -5,6 +5,7 @@
 
 
 import asyncio
+import contextlib
 import os
 from pathlib import Path
 import sys
@@ -30,23 +31,6 @@ def _configure_telemetry(config: Any) -> None:
     os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
     # Note: Foundation automatically sets up logging on import, no explicit setup needed
     logger.info("Telemetry configured for provider server mode.", domain="system")
-
-
-_discovery_done = False
-
-
-async def _discover_components_once() -> None:
-    global _discovery_done
-    # Deferred Imports for Provider Mode
-    from pyvider.hub import hub
-    from pyvider.hub.discovery import ComponentDiscovery
-
-    if _discovery_done:
-        return
-
-    discovery = ComponentDiscovery(hub)
-    await discovery.discover_all()
-    _discovery_done = True
 
 
 async def _instantiate_providers(logger: Any, hub: Any) -> dict:
@@ -88,7 +72,7 @@ async def _instantiate_providers(logger: Any, hub: Any) -> dict:
     return provider_instances
 
 
-async def _run_provider_server(magic_cookie: str) -> None:
+async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
     """
     Initializes and runs the provider in server mode. This function contains
     all imports for the server machinery to prevent them from running during
@@ -148,29 +132,74 @@ async def _run_provider_server(magic_cookie: str) -> None:
             domain="system",
         )
 
+        # --- LAZY INITIALIZATION STRATEGY ---
+        # Create an event that will be set when discovery is complete
+        discovery_ready_event = asyncio.Event()
+        hub.register("singleton", "_discovery_ready_event", discovery_ready_event)
+
+        # Start component discovery immediately as a background task
         logger.debug(
-            "Starting component discovery",
+            "Starting component discovery in background",
             operation="component_discovery",
         )
-        await _discover_components_once()
-        logger.debug(
-            "Component discovery completed",
-            operation="component_discovery",
-        )
 
-        provider_instances = await _instantiate_providers(logger, hub)
+        async def discover_and_signal() -> None:
+            """Run discovery and signal when it's complete."""
+            try:
+                from pyvider.hub.discovery import ComponentDiscovery
 
-        # Register the provider as the singleton - pyvider follows Terraform's model of one provider per binary
-        primary_provider = next(iter(provider_instances.values()))
-        hub.register("singleton", "provider", primary_provider)
-        logger.debug(
-            "Primary provider registered in hub",
-            operation="hub_register",
-            provider=next(iter(provider_instances.keys())),
-        )
+                discovery = ComponentDiscovery(hub)
+                await discovery.discover_all()
+                logger.debug(
+                    "Discovery complete, signaling ready event",
+                    operation="component_discovery",
+                )
+            except Exception:
+                logger.error(
+                    "Component discovery failed",
+                    operation="component_discovery",
+                    exc_info=True,
+                )
+            finally:
+                discovery_ready_event.set()
 
+        discovery_task = asyncio.create_task(discover_and_signal())
+
+        # Create a coroutine for provider initialization (don't schedule yet)
+        async def initialize_and_register_provider() -> None:
+            """Initialize and register provider after discovery."""
+            logger.debug(
+                "Waiting for component discovery before provider instantiation",
+                operation="provider_init",
+            )
+            await discovery_task
+            logger.debug(
+                "Component discovery completed, now instantiating providers",
+                operation="provider_init",
+            )
+            provider_instances = await _instantiate_providers(logger, hub)
+            primary_provider = next(iter(provider_instances.values()))
+            logger.debug(
+                "Primary provider instantiated",
+                operation="provider_init",
+                provider=next(iter(provider_instances.keys())),
+            )
+            hub.register("singleton", "provider", primary_provider)
+            logger.debug(
+                "Primary provider registered in hub",
+                operation="hub_register",
+                provider=next(iter(provider_instances.keys())),
+            )
+
+        # Create protocol immediately (doesn't need discovery or providers)
         protocol = PyviderProtocol()
-        handler = ProviderHandler(primary_provider)
+
+        # Create handler without a provider - it will fetch from hub on first use
+        logger.debug(
+            "Creating RPC handler (will use lazy provider from hub)",
+            operation="handler_creation",
+        )
+        handler = ProviderHandler()
 
         # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
@@ -184,11 +213,42 @@ async def _run_provider_server(magic_cookie: str) -> None:
             operation="server_start",
             magic_cookie_present=bool(magic_cookie),
             graceful_shutdown_timeout=server_config["PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN"],
+            lazy_initialization="enabled (provider initializes in background)",
         )
 
         server: Any = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
         hub.register("singleton", "rpc_plugin_server", lambda: server)
-        await server.serve()
+
+        # Schedule provider initialization to run in background immediately
+        # Server will start listening while provider initializes
+        background_init = asyncio.create_task(initialize_and_register_provider())
+
+        # Yield control to let background tasks start before blocking on server.serve()
+        # This ensures provider initialization begins before the RPC server starts blocking
+        await asyncio.sleep(0)
+
+        try:
+            logger.debug(
+                "Starting RPC server to listen for Terraform connections",
+                operation="server_startup",
+            )
+            # Start the server - it will respond to Terraform's handshake within seconds
+            # while provider initialization happens in the background
+            await server.serve()
+        except asyncio.CancelledError:
+            # Server was cancelled
+            logger.info(
+                "Provider server shutting down",
+                operation="server_shutdown",
+            )
+            background_init.cancel()
+            raise
+        finally:
+            # Clean up background initialization task if it's still running
+            if not background_init.done():
+                background_init.cancel()
+                with contextlib.suppress(asyncio.CancelledError):
+                    await background_init
 
         logger.info(
             "Provider server has shut down gracefully",
@@ -268,11 +328,6 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
     Starts the provider in gRPC server mode for Terraform. (This is the default
     action when run by Terraform or when the binary is run with no arguments).
     """
-    # --- FIX: Import discovery and error handling utilities ---
-    from pyvider.cli.components_commands import _handle_discovery_errors
-    from pyvider.hub.components import registry
-    from pyvider.hub.discovery import ComponentDiscovery
-
     magic_cookie = os.environ.get("TF_PLUGIN_MAGIC_COOKIE")
     script_name = Path(sys.argv[0]).name
 
@@ -334,46 +389,46 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
 
         launch_context = detect_launch_context()
 
-        pout("\n" + "─" * 70, fg="cyan")
-        pout(" i  Interactive Mode", fg="cyan", bold=True)
-        pout("─" * 70, fg="cyan")
-        pout(
-            "\nThis executable is a Pyvider-based Terraform provider. It was not started by\n"
-            "Terraform, so it has entered interactive CLI mode.",
-            fg="white",
-        )
+        try:
+            pout("\n" + "─" * 70, fg="cyan")
+            pout(" i  Interactive Mode", fg="cyan", bold=True)
+            pout("─" * 70, fg="cyan")
+            pout(
+                "\nThis executable is a Pyvider-based Terraform provider. It was not started by\n"
+                "Terraform, so it has entered interactive CLI mode.",
+                fg="white",
+            )
 
-        # Display launch context
-        pout("\n🚀 Launch Context:", fg="green", bold=True)
-        pout(f"   Method: {launch_context.method.value}", fg="white")
-        pout(f"   Executable: {launch_context.executable_path}", fg="white")
-        pout(f"   Python: {launch_context.python_executable}", fg="white")
+            # Display launch context
+            pout("\n🚀 Launch Context:", fg="green", bold=True)
+            pout(f"   Method: {launch_context.method.value}", fg="white")
+            pout(f"   Executable: {launch_context.executable_path}", fg="white")
+            pout(f"   Python: {launch_context.python_executable}", fg="white")
 
-        if launch_context.details:
-            for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
-                pout(f"   {key}: {value}", fg="white")
+            if launch_context.details:
+                for key, value in list(launch_context.details.items())[:3]:  # Show first 3 details
+                    pout(f"   {key}: {value}", fg="white")
 
-        pout(
-            "\nYou can use the commands below to inspect the provider's components.",
-            fg="white",
-        )
-        pout(
-            f"\nTo run in server mode for testing, use: '{script_name} provide --force'",
-            fg="yellow",
-        )
-        pout("─" * 70, fg="cyan")
+            pout(
+                "\nYou can use the commands below to inspect the provider's components.",
+                fg="white",
+            )
+            pout(
+                f"\nTo run in server mode for testing, use: '{script_name} provide --force'",
+                fg="yellow",
+            )
+            pout("─" * 70, fg="cyan")
 
-        # Display the full help message for the main CLI group
-        if ctx.parent:
-            pout("\n" + ctx.parent.get_help())
-        else:
-            pout("\nNo parent context available for help")
+            # Display the full help message for the main CLI group
+            if ctx.parent:
+                pout("\n" + ctx.parent.get_help())
+            else:
+                pout("\nNo parent context available for help")
+        except (UnicodeEncodeError, UnicodeDecodeError):
+            # If we can't print to console due to encoding issues, just proceed to server mode
+            # This happens when running as a plugin with non-UTF-8 console encoding
+            pass
         sys.exit(0)
-
-    # --- FIX: Run discovery and handle errors before starting the server ---
-    pyvider_ctx = ctx.obj
-    asyncio.run(pyvider_ctx._ensure_components_discovered(registry, ComponentDiscovery, pout, pout))
-    _handle_discovery_errors(pyvider_ctx)
 
     # If --force is used, provide a dummy cookie value.
     cookie_to_use = magic_cookie or "forced-by-cli"

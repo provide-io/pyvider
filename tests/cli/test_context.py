@@ -112,7 +112,7 @@ class TestPyviderContextProviderName:
         monkeypatch.setenv("PYVIDER_CONFIG_FILE", str(config_file))
         ctx = PyviderContext()
         assert "custom" in str(ctx.tf_plugin_dir)
-        assert "pyvider" not in str(ctx.tf_plugin_dir).split("/providers/")[1]
+        assert "pyvider" not in str(ctx.tf_plugin_dir).replace("\\", "/").split("/providers/")[1]
 
 
 class TestPyviderContextPluginPath:

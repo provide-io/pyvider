@@ -54,7 +54,6 @@ Issues = "https://foundry.provide.io/pyvider/issues"
 [dependency-groups]
 dev = [
     "provide-testkit[pyvider-dev]",
-    "wrknv @ git+https://github.com/provide-io/wrknv.git@main",
 ]
 docs = [
     "provide-testkit[docs]",
@@ -94,11 +93,12 @@ norecursedirs = [
     "htmlcov",
     ".hypothesis",
     "mutants",
+    "tests/memray",
 ]
 filterwarnings = [
     "ignore::pytest.PytestAssertRewriteWarning",
 ]
-addopts = "-m 'not memray'"
+addopts = "-m 'not memray' --strict-markers --strict-config"
 # Parallel execution: pytest -n <workers> (range: 2-16, recommend: CPU cores or 8, max: 16 to avoid xdist hang)
 
 [tool.ruff]

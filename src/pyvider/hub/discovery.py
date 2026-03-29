@@ -4,10 +4,12 @@
 #
 
 
+import asyncio
 import importlib
 import importlib.metadata
 import inspect
 import pkgutil
+import time
 from typing import Any
 
 from provide.foundation import logger, resilient, retry
@@ -35,6 +37,7 @@ class ComponentDiscovery:
         Discovers all components. In strict mode, it re-raises import errors.
         Enhanced with error handling and retry logic.
         """
+        start_time = time.time()
         self.import_errors = []
         logger.debug("🛰️🔍🔄 Starting component discovery", group=self.ENTRY_POINT_GROUP)
 
@@ -52,22 +55,33 @@ class ComponentDiscovery:
             )
             await self._discover_package(entry_point.value, strict=strict)
 
-        {k: len(v) for k, v in self.hub.list_components().items()}
+        elapsed = time.time() - start_time
+        component_counts = {k: len(v) for k, v in self.hub.list_components().items()}
+        logger.info(
+            "🛰️🔍✅ Component discovery completed",
+            elapsed_seconds=f"{elapsed:.2f}",
+            total_elapsed_ms=f"{int(elapsed * 1000)}",
+            components=component_counts,
+        )
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
-        """Recursively discover all modules within a given package name."""
+        """Discover components in a package."""
         if package_name in self._discovered_modules:
             return
 
+        start_time = time.time()
         try:
             package = importlib.import_module(package_name)
             self._discovered_modules.add(package_name)
-            await self._process_module(package)
+            await self._register_from_package(package, package_name, strict)
 
-            if hasattr(package, "__path__"):
-                for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
-                    if module_info.name not in self._discovered_modules:
-                        await self._discover_package(module_info.name, strict=strict)
+            elapsed = time.time() - start_time
+            if elapsed > 0.5:
+                logger.debug(
+                    "🛰️🔍⏱️ Slow module discovery",
+                    module=package_name,
+                    elapsed_ms=f"{int(elapsed * 1000)}",
+                )
 
         except (ImportError, ModuleNotFoundError) as e:
             if strict:
@@ -88,6 +102,27 @@ class ComponentDiscovery:
                 error=e,
                 exc_info=True,
             )
+
+    async def _register_from_package(self, package: Any, package_name: str, strict: bool) -> None:
+        """Register components from a package.
+
+        Fast path: call register_components(hub) if exposed.
+        Slow path: walk submodules and scan for decorator markers.
+        """
+        register_fn = getattr(package, "register_components", None)
+        if callable(register_fn):
+            logger.debug("🛰️🔍⚡ Using explicit register_components", module=package_name)
+            if asyncio.iscoroutinefunction(register_fn):
+                await register_fn(self.hub)
+            else:
+                register_fn(self.hub)
+            return
+
+        await self._process_module(package)
+        if hasattr(package, "__path__"):
+            for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+                if module_info.name not in self._discovered_modules:
+                    await self._discover_package(module_info.name, strict=strict)
 
     async def _process_module(self, module: Any) -> None:
         """Process a module to find and register decorated components."""
