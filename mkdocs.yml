@@ -43,7 +43,6 @@ plugins:
       scripts:
         - .provide/foundry/gen_ref_pages.py
   - literate-nav:
-      nav_file: SUMMARY.md
 
 # Enable version detection hook
 hooks:
