@@ -65,12 +65,7 @@ class ComponentDiscovery:
         )
 
     async def _discover_package(self, package_name: str, strict: bool) -> None:
-        """Discover components in a package.
-
-        If the package exposes a `register_components(hub)` function, call it
-        directly (fast path). Otherwise, fall back to recursive module walking
-        and marker scanning (backward-compatible slow path).
-        """
+        """Discover components in a package."""
         if package_name in self._discovered_modules:
             return
 
@@ -78,28 +73,10 @@ class ComponentDiscovery:
         try:
             package = importlib.import_module(package_name)
             self._discovered_modules.add(package_name)
-
-            # Fast path: explicit registration function
-            register_fn = getattr(package, "register_components", None)
-            if callable(register_fn):
-                logger.debug(
-                    "🛰️🔍⚡ Using explicit register_components",
-                    module=package_name,
-                )
-                if asyncio.iscoroutinefunction(register_fn):
-                    await register_fn(self.hub)
-                else:
-                    register_fn(self.hub)
-            else:
-                # Slow path: walk all submodules and scan for markers
-                await self._process_module(package)
-                if hasattr(package, "__path__"):
-                    for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
-                        if module_info.name not in self._discovered_modules:
-                            await self._discover_package(module_info.name, strict=strict)
+            await self._register_from_package(package, package_name, strict)
 
             elapsed = time.time() - start_time
-            if elapsed > 0.5:  # Log slow modules
+            if elapsed > 0.5:
                 logger.debug(
                     "🛰️🔍⏱️ Slow module discovery",
                     module=package_name,
@@ -125,6 +102,27 @@ class ComponentDiscovery:
                 error=e,
                 exc_info=True,
             )
+
+    async def _register_from_package(self, package: Any, package_name: str, strict: bool) -> None:
+        """Register components from a package.
+
+        Fast path: call register_components(hub) if exposed.
+        Slow path: walk submodules and scan for decorator markers.
+        """
+        register_fn = getattr(package, "register_components", None)
+        if callable(register_fn):
+            logger.debug("🛰️🔍⚡ Using explicit register_components", module=package_name)
+            if asyncio.iscoroutinefunction(register_fn):
+                await register_fn(self.hub)
+            else:
+                register_fn(self.hub)
+            return
+
+        await self._process_module(package)
+        if hasattr(package, "__path__"):
+            for module_info in pkgutil.walk_packages(package.__path__, package.__name__ + "."):
+                if module_info.name not in self._discovered_modules:
+                    await self._discover_package(module_info.name, strict=strict)
 
     async def _process_module(self, module: Any) -> None:
         """Process a module to find and register decorated components."""
