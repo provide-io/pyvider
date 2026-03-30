@@ -33,23 +33,6 @@ def _configure_telemetry(config: Any) -> None:
     logger.info("Telemetry configured for provider server mode.", domain="system")
 
 
-_discovery_done = False
-
-
-async def _discover_components_once() -> None:
-    global _discovery_done
-    # Deferred Imports for Provider Mode
-    from pyvider.hub import hub
-    from pyvider.hub.discovery import ComponentDiscovery
-
-    if _discovery_done:
-        return
-
-    discovery = ComponentDiscovery(hub)
-    await discovery.discover_all()
-    _discovery_done = True
-
-
 async def _instantiate_providers(logger: Any, hub: Any) -> dict:
     provider_classes = hub.get_components("provider")
 
@@ -89,7 +72,7 @@ async def _instantiate_providers(logger: Any, hub: Any) -> dict:
     return provider_instances
 
 
-async def _run_provider_server(magic_cookie: str) -> None:
+async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
     """
     Initializes and runs the provider in server mode. This function contains
     all imports for the server machinery to prevent them from running during
@@ -162,12 +145,23 @@ async def _run_provider_server(magic_cookie: str) -> None:
 
         async def discover_and_signal() -> None:
             """Run discovery and signal when it's complete."""
-            await _discover_components_once()
-            discovery_ready_event.set()
-            logger.debug(
-                "Discovery complete, signaling ready event",
-                operation="component_discovery",
-            )
+            try:
+                from pyvider.hub.discovery import ComponentDiscovery
+
+                discovery = ComponentDiscovery(hub)
+                await discovery.discover_all()
+                logger.debug(
+                    "Discovery complete, signaling ready event",
+                    operation="component_discovery",
+                )
+            except Exception:
+                logger.error(
+                    "Component discovery failed",
+                    operation="component_discovery",
+                    exc_info=True,
+                )
+            finally:
+                discovery_ready_event.set()
 
         discovery_task = asyncio.create_task(discover_and_signal())
 
