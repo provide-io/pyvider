@@ -1,0 +1,155 @@
+# Inherit shared configuration from provide-foundry
+INHERIT: .provide/foundry/base-mkdocs.yml
+
+# Project-Specific Configuration
+site_name: pyvider
+site_description: 'Python framework for building Terraform providers'
+site_author: provide.io
+site_url: https://foundry.provide.io/pyvider/
+repo_url: https://github.com/provide-io/pyvider
+repo_name: provide-io/pyvider
+edit_uri: edit/main/docs/
+copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
+
+# Development server configuration
+dev_addr: 127.0.0.1:11004
+
+# Standalone mode settings
+docs_dir: docs
+
+# Project-specific theme overrides
+theme:
+  palette:
+    # Light mode - custom colors for pyvider
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode - custom colors for pyvider
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+# Project-specific plugins (in addition to base plugins)
+plugins:
+  - gen-files:
+      scripts:
+        - .provide/foundry/gen_ref_pages.py
+  - literate-nav:
+
+# Enable version detection hook
+hooks:
+  - .provide/foundry/theme/hooks/global_partials_hook.py
+  - .provide/foundry/theme/hooks/version_hook.py
+
+# Navigation Structure
+nav:
+  - 'Home': 'index.md'
+
+  - 'Getting Started':
+    - 'What is Pyvider': 'getting-started/what-is-pyvider.md'
+    - 'Installation': 'getting-started/installation.md'
+    - 'Quick Start': 'getting-started/quick-start.md'
+
+  - 'Tutorials':
+    - 'Building Your First Resource': 'tutorials/building-your-first-resource.md'
+    - 'Building Your First Data Source': 'tutorials/building-your-first-data-source.md'
+    - 'Building an HTTP API Provider': 'tutorials/intermediate-provider.md'
+
+  - 'How-To Guides':
+    - 'Resources':
+      - 'Create a Resource': 'how-to-guides/resources/create-resource.md'
+      - 'Add Validation': 'how-to-guides/resources/add-validation.md'
+    - 'Data Sources':
+      - 'Create a Data Source': 'how-to-guides/data-sources/create-data-source.md'
+      - 'Handle Pagination': 'how-to-guides/data-sources/handle-pagination.md'
+    - 'Building Components':
+      - 'Creating Providers': 'guides/building-components/creating-providers.md'
+      - 'Creating Functions': 'guides/building-components/creating-functions.md'
+      - 'Using Decorators': 'guides/building-components/using-decorators.md'
+    - 'Development':
+      - 'Testing Providers': 'guides/development/testing-providers.md'
+      - 'Debugging': 'guides/development/debugging.md'
+      - 'Logging': 'guides/development/logging.md'
+      - 'Error Handling': 'guides/development/error-handling.md'
+    - 'Production':
+      - 'Best Practices': 'guides/production/best-practices.md'
+      - 'Production Readiness': 'guides/production/production-readiness.md'
+      - 'Security Best Practices': 'guides/production/security-best-practices.md'
+      - 'Performance Optimization': 'guides/production/performance-optimization.md'
+    - 'Advanced':
+      - 'Provider Lifecycle': 'guides/advanced/provider-lifecycle.md'
+      - 'Advanced Patterns': 'guides/advanced/advanced-patterns.md'
+      - 'Advanced Provider Features': 'guides/advanced/advanced-provider-features.md'
+    - 'Usage':
+      - 'Configuration': 'guides/usage/configuration.md'
+      - 'Managing Resources': 'guides/usage/managing-resources.md'
+      - 'Using Data Sources': 'guides/usage/using-data-sources.md'
+      - 'Using Functions': 'guides/usage/using-functions.md'
+
+  - 'Explanation':
+    - 'Architecture': 'explanation/architecture.md'
+    - 'Component Model': 'explanation/component-model.md'
+    - 'Schema System': 'explanation/schema-system.md'
+    - 'Resources vs Data Sources': 'explanation/resources-vs-data-sources.md'
+
+  - 'Reference':
+    - 'Resource Lifecycle': 'reference/resource-lifecycle.md'
+    - 'Data Source API': 'reference/data-source-api.md'
+    - 'Examples':
+      - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
+
+  - 'Schema System':
+    - 'Overview': 'schema/overview.md'
+    - 'Types': 'schema/types.md'
+    - 'Attributes': 'schema/attributes.md'
+    - 'Blocks': 'schema/blocks.md'
+    - 'Validators': 'schema/validators.md'
+    - 'Computed Attributes': 'schema/computed-attributes.md'
+    - 'Sensitive Data': 'schema/sensitive-data.md'
+    - 'Schema by Example': 'schema/schema-by-example.md'
+    - 'Common Patterns': 'schema/common-patterns.md'
+    - 'Best Practices': 'schema/best-practices.md'
+
+  - '🔬 Capabilities (Experimental)':
+    - 'Overview': 'capabilities/overview.md'
+
+  - 'API Guide':
+    - 'Overview': 'api/index.md'
+    - 'CLI': 'api/cli.md'
+    - 'Common': 'api/common.md'
+    - 'Hub': 'api/hub.md'
+    - 'Providers':
+      - 'Overview': 'api/providers/index.md'
+    - 'Resources': 'api/resources.md'
+    - 'Data Sources': 'api/data_sources.md'
+    - 'Functions': 'api/functions.md'
+    - 'Ephemeral Resources': 'api/ephemerals.md'
+    - 'Exceptions': 'api/exceptions.md'
+    - 'Observability': 'api/observability.md'
+    - 'Schema':
+      - 'Overview': 'api/schema/index.md'
+      - 'Types': 'api/schema/types.md'
+    - 'Conversion': 'api/conversion/index.md'
+    - 'Protocols': 'api/protocols/index.md'
+
+  - 'Full API Reference': 'reference/'
+
+  - '⚡ Quick Reference': 'quick-reference.md'
+
+  - 'FAQ': 'faq.md'
+
+  - 'Troubleshooting': 'troubleshooting.md'
+
+  - 'Glossary': 'glossary.md'
+
+  - 'Contributing':
+    - 'Guidelines': 'contributing/guidelines.md'
+    - 'Code of Conduct': 'contributing/code-of-conduct.md'

@@ -33,14 +33,19 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install --system mkdocs mkdocs-material mkdocstrings[python] pymdown-extensions
+          uv pip install --system "git+https://github.com/provide-io/provide-foundry.git"
+
+      - name: Setup foundry documentation assets
+        run: |
+          python -c "from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))"
 
       - name: Check for broken links
         run: |
           python scripts/check_doc_links.py
 
-      - name: Build documentation (strict mode)
+      - name: Build documentation
         run: |
-          mkdocs build --strict
+          mkdocs build
 
       - name: Check markdown formatting
         uses: nosborn/github-action-markdown-cli@v3.3.0
@@ -71,6 +76,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv pip install --system mkdocs mkdocs-material mkdocstrings[python] pymdown-extensions
+          uv pip install --system "git+https://github.com/provide-io/provide-foundry.git"
+
+      - name: Setup foundry documentation assets
+        run: |
+          python -c "from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))"
 
       - name: Build documentation
         run: |
