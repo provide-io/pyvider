@@ -93,6 +93,7 @@ norecursedirs = [
     "htmlcov",
     ".hypothesis",
     "mutants",
+    "tests/memray",
 ]
 filterwarnings = [
     "ignore::pytest.PytestAssertRewriteWarning",
