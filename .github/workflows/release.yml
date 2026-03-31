@@ -2,63 +2,126 @@ name: 🚀 Release
 
 on:
   push:
-    tags: ['v*']
+    tags: ["v*"]
   workflow_dispatch:
-    inputs:
-      publish-testpypi:
-        description: 'Publish to TestPyPI'
-        type: boolean
-        default: false
-
-permissions:
-  contents: write
-  id-token: write
 
 jobs:
-  release:
-    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@main
-    with:
-      python-version: '3.11'
-      run-tests: true
-    secrets: inherit
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - uses: astral-sh/setup-uv@v7
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: uv sync --group dev
+      - run: uv run pytest --no-header -q
+      - run: uv run python -m build
+      - run: uv run twine check dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+      - name: Generate Python SBOM
+        run: |
+          uv run pip install cyclonedx-bom
+          uv run cyclonedx-py environment --output-format json -o sbom-python.cdx.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom-python
+          path: sbom-python.cdx.json
 
   publish-testpypi:
-    name: 📦 Publish to TestPyPI
-    needs: [release]
-    if: github.event_name == 'workflow_dispatch' && inputs.publish-testpypi
+    needs: build
     runs-on: ubuntu-24.04
-    environment: testpypi
     permissions:
       id-token: write
+      contents: read
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/pyvider
     steps:
-      - name: 📦 Download Build Artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: release-artifacts
-          path: dist/
-
-      - name: 📤 Publish to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
-          skip-existing: true
+
+  verify-testpypi:
+    needs: publish-testpypi
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          else
+            echo "version=0.0.0" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Wait for TestPyPI propagation
+        run: sleep 30
+      - name: Install from TestPyPI and verify
+        run: |
+          pip install \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "pyvider==${{ steps.version.outputs.version }}"
+          python -c "
+          import pyvider
+          installed = pyvider.__version__
+          expected = '${{ steps.version.outputs.version }}'
+          assert installed == expected, f'Version mismatch: {installed} != {expected}'
+          print(f'TestPyPI verification passed: pyvider {installed}')
+          "
 
   publish-pypi:
-    name: 🚀 Publish to PyPI
-    needs: [release]
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, verify-testpypi]
     runs-on: ubuntu-24.04
-    environment: pypi
     permissions:
       id-token: write
+      contents: read
+    environment:
+      name: pypi
+      url: https://pypi.org/p/pyvider
     steps:
-      - name: 📦 Download Build Artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: release-artifacts
-          path: dist/
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
 
-      - name: 📤 Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+  sign-and-upload:
+    needs: build
+    runs-on: ubuntu-24.04
+    if: github.event_name == 'release'
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
         with:
-          skip-existing: true
+          name: dist
+          path: dist
+      - uses: actions/download-artifact@v4
+        with:
+          name: sbom-python
+          path: sbom
+      - uses: sigstore/gh-action-sigstore-python@v3
+        with:
+          inputs: dist/*.whl dist/*.tar.gz
+      - name: Upload artifacts and signatures to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" \
+            dist/*.whl dist/*.tar.gz dist/*.sigstore.json \
+            sbom/sbom-python.cdx.json \
+            --clobber
