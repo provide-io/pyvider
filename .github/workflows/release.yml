@@ -130,4 +130,5 @@ jobs:
           gh release upload "${{ github.event.release.tag_name }}" \
             dist/*.whl dist/*.tar.gz dist/*.sigstore.json \
             sbom/sbom-python.cdx.json \
+            --repo "$GITHUB_REPOSITORY" \
             --clobber
