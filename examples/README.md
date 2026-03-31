@@ -6,7 +6,7 @@ This directory contains working examples demonstrating Pyvider's capabilities fo
 
 ### Demo Provider
 
-**Location**: [`demo-provider/`](demo-provider/)
+**Location**: [`demo-provider/`](https://github.com/provide-io/pyvider/tree/main/examples/demo-provider/)
 
 A comprehensive example showcasing all major Pyvider features:
 
@@ -25,7 +25,7 @@ terraform init
 terraform plan
 ```
 
-See the [demo-provider README](demo-provider/README.md) for complete documentation, verification steps, and troubleshooting.
+See the [demo-provider README](https://github.com/provide-io/pyvider/blob/main/examples/demo-provider/README.md) for complete documentation, verification steps, and troubleshooting.
 
 ## Using the Examples
 
@@ -125,11 +125,11 @@ port = 50051
 
 ## Learning Path
 
-1. **Start with the Demo Provider** - Explore [`demo-provider/`](demo-provider/) to see all features in action
-2. **Read the Documentation** - Visit [Getting Started](../docs/getting-started/index.md) for conceptual overview
-3. **Follow the Quick Start** - Work through the [Quick Start Guide](../docs/getting-started/quick-start.md) for hands-on learning
-4. **Review Core Concepts** - Understand the [architecture and patterns](../docs/explanation/architecture.md)
-5. **Explore the API** - Dive into the [API Reference](../docs/api/index.md) for detailed documentation
+1. **Start with the Demo Provider** - Explore [`demo-provider/`](https://github.com/provide-io/pyvider/tree/main/examples/demo-provider/) to see all features in action
+2. **Read the Documentation** - Visit [Getting Started](https://github.com/provide-io/pyvider/blob/main/docs/getting-started/index.md) for conceptual overview
+3. **Follow the Quick Start** - Work through the [Quick Start Guide](https://github.com/provide-io/pyvider/blob/main/docs/getting-started/quick-start.md) for hands-on learning
+4. **Review Core Concepts** - Understand the [architecture and patterns](https://github.com/provide-io/pyvider/blob/main/docs/explanation/architecture.md)
+5. **Explore the API** - Dive into the [API Reference](https://github.com/provide-io/pyvider/blob/main/docs/api/index.md) for detailed documentation
 
 ## Common Patterns
 
@@ -218,12 +218,12 @@ To contribute a new example:
 
 ## Additional Resources
 
-- **[Pyvider Documentation](../docs/)** - Complete framework documentation
-- **[Getting Started](../docs/getting-started/index.md)** - Introduction and installation
-- **[Quick Start Guide](../docs/getting-started/quick-start.md)** - 5-minute tutorial
-- **[API Reference](../docs/api/index.md)** - Detailed API documentation
+- **[Pyvider Documentation](https://github.com/provide-io/pyvider/tree/main/docs/)** - Complete framework documentation
+- **[Getting Started](https://github.com/provide-io/pyvider/blob/main/docs/getting-started/index.md)** - Introduction and installation
+- **[Quick Start Guide](https://github.com/provide-io/pyvider/blob/main/docs/getting-started/quick-start.md)** - 5-minute tutorial
+- **[API Reference](https://github.com/provide-io/pyvider/blob/main/docs/api/index.md)** - Detailed API documentation
 - **[GitHub Repository](https://github.com/provide-io/pyvider)** - Source code and issues
 
 ---
 
-**Ready to build your first provider?** Start with the [demo-provider](demo-provider/) example!
+**Ready to build your first provider?** Start with the [demo-provider](https://github.com/provide-io/pyvider/tree/main/examples/demo-provider/) example!
