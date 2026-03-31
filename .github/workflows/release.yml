@@ -9,10 +9,6 @@ on:
         description: 'Publish to TestPyPI'
         type: boolean
         default: false
-      publish-pypi:
-        description: 'Publish to PyPI'
-        type: boolean
-        default: false
 
 permissions:
   contents: write
@@ -24,7 +20,45 @@ jobs:
     with:
       python-version: '3.11'
       run-tests: true
-      test-repository: ${{ inputs.publish-testpypi || false }}
-      publish-testpypi: ${{ inputs.publish-testpypi || false }}
-      publish-pypi: ${{ inputs.publish-pypi || false }}
     secrets: inherit
+
+  publish-testpypi:
+    name: 📦 Publish to TestPyPI
+    needs: [release]
+    if: github.event_name == 'workflow_dispatch' && inputs.publish-testpypi
+    runs-on: ubuntu-24.04
+    environment: testpypi
+    permissions:
+      id-token: write
+    steps:
+      - name: 📦 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist/
+
+      - name: 📤 Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+  publish-pypi:
+    name: 🚀 Publish to PyPI
+    needs: [release]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - name: 📦 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifacts
+          path: dist/
+
+      - name: 📤 Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
