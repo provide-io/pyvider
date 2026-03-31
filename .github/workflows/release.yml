@@ -3,6 +3,8 @@ name: 🚀 Release
 on:
   push:
     tags: ["v*"]
+  release:
+    types: [published]
   workflow_dispatch:
 
 jobs:
@@ -50,6 +52,7 @@ jobs:
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
   verify-testpypi:
     needs: publish-testpypi
@@ -84,6 +87,7 @@ jobs:
 
   publish-pypi:
     needs: [build, verify-testpypi]
+    if: github.event_name == 'release'
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
