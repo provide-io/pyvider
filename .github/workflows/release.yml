@@ -13,23 +13,21 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
-      - uses: astral-sh/setup-uv@v7
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
           python-version: "3.11"
       - run: uv sync --group dev
       - run: uv run pytest --no-header -q
       - run: uv build
       - run: uvx twine check dist/*
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7
         with:
           name: dist
           path: dist/*
       - name: Generate Python SBOM
-        run: |
-          uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
-      - uses: actions/upload-artifact@v4
+        run: uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7
         with:
           name: sbom-python
           path: sbom-python.cdx.json
@@ -44,11 +42,11 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/pyvider
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
         with:
           name: dist
           path: dist
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
@@ -57,17 +55,13 @@ jobs:
     needs: publish-testpypi
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
           python-version: "3.11"
+          enable-cache: false
       - name: Extract version from tag
         id: version
-        run: |
-          if [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-          else
-            echo "version=0.0.0" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
       - name: Wait for TestPyPI propagation
         run: sleep 30
       - name: Install from TestPyPI and verify
@@ -81,7 +75,7 @@ jobs:
           installed = pyvider.__version__
           expected = '${{ steps.version.outputs.version }}'
           assert installed == expected, f'Version mismatch: {installed} != {expected}'
-          print(f'TestPyPI verification passed: pyvider {installed}')
+          print(f'pyvider {installed} OK')
           "
 
   publish-pypi:
@@ -95,29 +89,29 @@ jobs:
       name: pypi
       url: https://pypi.org/p/pyvider
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
         with:
           name: dist
           path: dist
-      - uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
 
   sign-and-upload:
     needs: build
-    runs-on: ubuntu-24.04
     if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
         with:
           name: dist
           path: dist
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
         with:
           name: sbom-python
           path: sbom
-      - uses: sigstore/gh-action-sigstore-python@v3.0.0
+      - uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46  # v3.0.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
       - name: Upload artifacts and signatures to release
