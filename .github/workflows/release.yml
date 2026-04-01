@@ -65,14 +65,26 @@ jobs:
       - name: Extract version from tag
         id: version
         run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-      - name: Wait for TestPyPI propagation
-        run: sleep 30
-      - name: Install from TestPyPI and verify
+      - name: Install from TestPyPI and verify (with retry)
         run: |
-          pip install \
-            --index-url https://test.pypi.org/simple/ \
-            --extra-index-url https://pypi.org/simple/ \
-            "pyvider==${{ steps.version.outputs.version }}"
+          PKG="pyvider==${{ steps.version.outputs.version }}"
+          for attempt in 1 2 3; do
+            echo "Attempt $attempt: installing $PKG from TestPyPI..."
+            if pip install \
+              --index-url https://test.pypi.org/simple/ \
+              --extra-index-url https://pypi.org/simple/ \
+              "$PKG"; then
+              echo "Install succeeded on attempt $attempt"
+              break
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "Install failed, waiting 30s for TestPyPI propagation..."
+              sleep 30
+            else
+              echo "All 3 attempts failed"
+              exit 1
+            fi
+          done
           python -c "
           import pyvider
           installed = pyvider.__version__
