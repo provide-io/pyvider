@@ -121,7 +121,7 @@ jobs:
         with:
           name: sbom-python
           path: sbom
-      - uses: sigstore/gh-action-sigstore-python@v3
+      - uses: sigstore/gh-action-sigstore-python@04cffa1d795717b140764e8b640de88853c92acc  # v3.3.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
       - name: Upload artifacts and signatures to release
