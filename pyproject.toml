@@ -48,8 +48,8 @@ dependencies = [
 [project.urls]
 Homepage = "https://foundry.provide.io/pyvider/"
 Documentation = "https://foundry.provide.io/pyvider/"
-Repository = "https://foundry.provide.io/pyvider/repo"
-Issues = "https://foundry.provide.io/pyvider/issues"
+Repository = "https://github.com/provide-io/pyvider"
+Issues = "https://github.com/provide-io/pyvider/issues"
 
 [dependency-groups]
 dev = [
