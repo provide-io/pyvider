@@ -117,12 +117,22 @@ def check_test_only_access(
     if not is_test_only:
         return  # Not test-only, access always allowed
 
-    # Get test mode status
+    # Get test mode status from provider context or environment variable.
+    # The env var is checked as a fallback when provider isn't configured yet
+    # (e.g., functions evaluated before ConfigureProvider RPC) or when the
+    # provider config didn't enable test mode but the env var does.
     try:
         provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)
     except (KeyError, AttributeError):
         test_mode_enabled = False
+
+    if not test_mode_enabled:
+        from provide.foundation.config import get_env, parse_bool_extended
+
+        env_val = get_env("PYVIDER_TESTMODE", default=None)
+        if env_val:
+            test_mode_enabled = parse_bool_extended(env_val)
 
     if test_mode_enabled:
         logger.debug(
