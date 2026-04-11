@@ -107,7 +107,7 @@ See: [API Reference - Ephemerals](api/ephemerals.md)
 ### Factory Function
 Functions like `a_str()`, `s_resource()`, `b_list()` that create schema objects.
 
-### Flavor / FlavorPack
+### Flavor / Flavorpack
 A packaging tool for creating standalone Python application binaries. Used to package Pyvider providers.
 
 ### Function
