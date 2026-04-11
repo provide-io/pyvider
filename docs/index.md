@@ -7,7 +7,8 @@ hide:
 
 Build Terraform providers in Python — full Protocol v6, decorator-based API, async-first.
 
-!!! tip "Current Status" Pyvider is in active development. See the announcement banner above for current version status.
+!!! tip "Current Status"
+    Pyvider is in active development. See the announcement banner above for current version status.
 
 **Pyvider** is a Python framework that enables you to build Terraform providers using pure Python. By combining Python's expressiveness with Terraform's infrastructure management capabilities, Pyvider makes provider development accessible to the Python ecosystem while maintaining full compatibility with Terraform's Plugin Protocol v6.
 
