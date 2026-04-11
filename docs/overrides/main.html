@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block htmltitle %}{{ super() }}{% endblock %}
+
+{% block extrahead %}
+{{ super() }}
+<!-- Seed dark mode as default before Material palette.js reads localStorage.
+     Index 0 = slate (dark), index 1 = default (light) in our palette list. -->
+<script>
+  (function() {
+    var canonical = document.querySelector('link[rel="canonical"]');
+    var href = canonical ? canonical.getAttribute('href') : '';
+    var prefix;
+    try { prefix = new URL(href).pathname; } catch(e) { prefix = '/docs/'; }
+    var key = prefix + '.__palette';
+    var stored = localStorage.getItem(key);
+    var needsUpdate = !stored || stored.indexOf('indigo') !== -1 || stored.indexOf('"scheme":"default"') !== -1 || stored.indexOf('"index":1') !== -1;
+    if (needsUpdate) {
+      localStorage.setItem(key, JSON.stringify({index: 0, color: {media: '', scheme: 'slate', primary: 'blue', accent: 'blue'}}));
+    }
+    // Two-tone pyvider header title (py white, vider blue)
+    // Also make the title link back to pyvider.com
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.md-header__title .md-ellipsis').forEach(function(el) {
+        if (el.textContent.trim() === 'pyvider') {
+          el.innerHTML = '<a href="/" style="text-decoration:none;color:inherit;"><span class="brand-py">py</span><span class="brand-vider">vider</span></a>';
+        }
+      });
+    });
+  })();
+</script>
+{% endblock %}
