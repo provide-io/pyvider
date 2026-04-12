@@ -21,9 +21,29 @@
   }
   /* Site nav stays above */
   .nav { z-index: 200; }
-  /* Docs sidebar drawer toggle — visible only on mobile */
-  .nav-drawer-toggle { display: none; cursor: pointer; color: var(--text-secondary, #94a3b8); padding: 4px; }
-  @media (max-width: 768px) { .nav-drawer-toggle { display: flex; align-items: center; } }
+  /* Docs section menu — book button + dropdown, sits as first item in tab list */
+  .docs-section-menu { position: relative; display: inline-flex; align-items: center; flex-shrink: 0; }
+  .docs-section-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    background: none; border: 1px solid #1e293b; border-radius: 5px;
+    color: #94a3b8; cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .docs-section-btn:hover, .docs-section-btn.active { border-color: #3b82f6; color: #e2e8f0; }
+  .docs-section-dropdown {
+    display: none; position: fixed; z-index: 300;
+    background: #111827; border: 1px solid #1e293b; border-radius: 6px;
+    padding: 6px 0; min-width: 180px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .docs-section-dropdown.open { display: block; }
+  .docs-section-dropdown a {
+    display: block; padding: 8px 16px; color: #94a3b8; font-size: 13px;
+    text-decoration: none; transition: background 0.1s, color 0.1s;
+  }
+  .docs-section-dropdown a:hover { background: rgba(59,130,246,0.1); color: #e2e8f0; }
+  .docs-section-dropdown a.active { color: #3b82f6; }
   /* On mobile: collapse site nav links into hamburger, keep both rows */
   @media (max-width: 768px) {
     .nav-links { display: none; }
@@ -70,9 +90,6 @@
 <!-- Site-wide nav (same HTML + CSS as Hugo main site) -->
 <nav class="nav">
   <div class="nav-inner">
-    <label class="nav-drawer-toggle" for="__drawer" tabindex="0" aria-label="Open docs sidebar">
-      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
-    </label>
     <a href="/" class="nav-logo">py<span>vider</span></a>
     <div class="nav-links">
       <a href="/#features">Features</a>
@@ -102,6 +119,58 @@
 </nav>
 <!-- Material header (tabs only — inner header hidden via CSS) -->
 {{ super() }}
+<!-- Inject docs section menu into the tabs row via JS -->
+<script>
+(function() {
+  document.addEventListener('DOMContentLoaded', function() {
+    var tabsContainer = document.querySelector('.md-tabs');
+    var tabList = document.querySelector('.md-tabs__list');
+    if (!tabsContainer || !tabList) return;
+
+    // Build dropdown from existing tab links
+    var items = tabList.querySelectorAll('.md-tabs__link');
+    var dropdown = document.createElement('div');
+    dropdown.className = 'docs-section-dropdown';
+    items.forEach(function(link) {
+      var a = document.createElement('a');
+      a.href = link.href;
+      a.textContent = link.textContent.trim();
+      if (link.closest('.md-tabs__item--active')) a.className = 'active';
+      dropdown.appendChild(a);
+    });
+
+    // Create wrapper with button + dropdown
+    var wrapper = document.createElement('div');
+    wrapper.className = 'docs-section-menu';
+    var btn = document.createElement('button');
+    btn.className = 'docs-section-btn';
+    btn.setAttribute('aria-label', 'Docs sections');
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>';
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = dropdown.classList.toggle('open');
+      btn.classList.toggle('active', isOpen);
+      if (isOpen) {
+        var r = btn.getBoundingClientRect();
+        dropdown.style.top = (r.bottom + 4) + 'px';
+        dropdown.style.left = r.left + 'px';
+      }
+    });
+    document.addEventListener('click', function() { dropdown.classList.remove('open'); });
+
+    wrapper.appendChild(btn);
+    // Append dropdown to body so it escapes any overflow/transform clipping
+    document.body.appendChild(dropdown);
+
+    // Insert button as the FIRST item in the tab list
+    var li = document.createElement('li');
+    li.className = 'md-tabs__item';
+    li.style.cssText = 'padding: 0; display: flex; align-items: center;';
+    li.appendChild(wrapper);
+    tabList.insertBefore(li, tabList.firstChild);
+  });
+})();
+</script>
 <script>
 (function() {
   // Theme toggle for docs nav — syncs both pyvider-theme and Material palette
