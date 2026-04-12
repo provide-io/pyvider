@@ -88,12 +88,12 @@
   color: var(--md-primary-fg-color);
 }
 
-/* ── Body text size: larger base for readability ── */
+/* ── Body text size: 16px (Material root is 125% = 20px, so 0.8rem = 16px) ── */
 :root {
-  --md-typeset-font-size: 1rem;
+  --md-typeset-font-size: 0.8rem;
 }
 .md-typeset {
-  font-size: 1rem;
+  font-size: 0.8rem;
   line-height: 1.7;
 }
 
@@ -102,12 +102,12 @@
   font-size: 0.75rem;
 }
 
-/* ── Admonition (callout) body text minimum 14px ── */
+/* ── Admonition (callout) body text 14px (0.7rem on 20px root) ── */
 .md-typeset .admonition p,
 .md-typeset .admonition li,
 .md-typeset details p,
 .md-typeset details li {
-  font-size: 0.875rem !important;
+  font-size: 0.7rem !important;
   line-height: 1.6;
 }
 
@@ -160,10 +160,53 @@
   border-bottom: 1px solid #1e293b;
 }
 
-/* Nav tabs use same deep bg */
+/* Docs tab row — contrast, alignment, active underline */
+/* Force tabs visible at all widths (Material hides them below ~960px) */
+.md-tabs {
+  display: block !important;
+}
 [data-md-color-scheme="slate"] .md-tabs {
-  background-color: #0f172a;
+  background-color: #111827;
   border-bottom: 1px solid #1e293b;
+}
+/* Align tabs with nav-inner (same max-width + padding) */
+.md-tabs .md-grid {
+  max-width: 1400px !important;
+  padding: 0 !important;
+}
+.md-tabs__list {
+  padding: 0 32px !important;
+  margin: 0 !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  justify-content: flex-start;
+}
+.md-tabs__list::-webkit-scrollbar { display: none; }
+/* Remove extra padding on first tab so "Home" aligns with "pyvider" */
+.md-tabs__item:first-child { padding-left: 0 !important; }
+/* Tab link styling */
+.md-tabs__link {
+  font-size: 14px !important;
+  opacity: 0.7;
+}
+.md-tabs__link:hover {
+  opacity: 1;
+}
+/* Active tab: bright + underline */
+.md-tabs__item--active .md-tabs__link {
+  opacity: 1;
+  position: relative;
+}
+.md-tabs__item--active .md-tabs__link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  border-radius: 1px;
 }
 
 /* Sidebar nav background */
