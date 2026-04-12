@@ -141,11 +141,11 @@ def _detect_launch_method(executable_path: str, python_executable: str) -> tuple
 def _is_pspf_launch(executable_path: str, python_executable: str) -> bool:
     """Check if we're running from a PSPF package.
 
-    Per PSPF/2025 specification, FlavorPack launchers ALWAYS set
+    Per PSPF/2025 specification, Flavorpack launchers ALWAYS set
     FLAVOR_WORKENV when executing packaged applications. This is
     the canonical and definitive way to detect PSPF execution.
 
-    See: FlavorPack docs/guide/usage/environment.md
+    See: Flavorpack docs/guide/usage/environment.md
     """
     return "FLAVOR_WORKENV" in os.environ
 
@@ -209,12 +209,12 @@ def _is_direct_script_launch(executable_path: str) -> bool:
 def _get_pspf_details() -> dict[str, Any]:
     """Get details specific to PSPF launches.
 
-    Per PSPF/2025 specification, FlavorPack launchers set several FLAVOR_*
+    Per PSPF/2025 specification, Flavorpack launchers set several FLAVOR_*
     environment variables that provide package and runtime information.
     """
     details: dict[str, Any] = {}
 
-    # Extract FlavorPack environment variables set by the launcher
+    # Extract Flavorpack environment variables set by the launcher
     flavor_env = {
         "workenv": os.environ.get("FLAVOR_WORKENV"),
         "command_name": os.environ.get("FLAVOR_COMMAND_NAME"),
