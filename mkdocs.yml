@@ -5,9 +5,9 @@ INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: pyvider
 site_description: 'Python framework for building Terraform providers'
 site_author: provide.io
-site_url: https://foundry.provide.io/pyvider/
+site_url: https://pyvider.com/docs/
 repo_url: https://github.com/provide-io/pyvider
-repo_name: provide-io/pyvider
+repo_name: pyvider
 edit_uri: edit/main/docs/
 copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
 
@@ -19,23 +19,23 @@ docs_dir: docs
 
 # Project-specific theme overrides
 theme:
+  custom_dir: docs/overrides
+  homepage: https://pyvider.com
   palette:
-    # Light mode - custom colors for pyvider
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    # Dark mode - custom colors for pyvider
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
+    # Dark mode default — matches pyvider.com marketing site
+    - scheme: slate
       primary: blue
       accent: blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+    # Light mode alternate
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
 # Project-specific plugins (in addition to base plugins)
 plugins:
@@ -117,9 +117,6 @@ nav:
     - 'Schema by Example': 'schema/schema-by-example.md'
     - 'Common Patterns': 'schema/common-patterns.md'
     - 'Best Practices': 'schema/best-practices.md'
-
-  - '🔬 Capabilities (Experimental)':
-    - 'Overview': 'capabilities/overview.md'
 
   - 'API Guide':
     - 'Overview': 'api/index.md'
