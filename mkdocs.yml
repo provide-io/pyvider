@@ -5,11 +5,11 @@ INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: pyvider
 site_description: 'Python framework for building Terraform providers'
 site_author: provide.io
-site_url: https://foundry.provide.io/pyvider/
+site_url: https://pyvider.com/docs/
 repo_url: https://github.com/provide-io/pyvider
 repo_name: provide-io/pyvider
 edit_uri: edit/main/docs/
-copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
+copyright: ©2024-2025 provide.io llc
 
 # Development server configuration
 dev_addr: 127.0.0.1:11004

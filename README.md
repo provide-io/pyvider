@@ -50,17 +50,17 @@ class Server(BaseResource):
         return ctx.state
 ```
 
-**See the full example in the [Quick Start Guide →](https://foundry.provide.io/pyvider/getting-started/quick-start/)**
+**See the full example in the [Quick Start Guide →](https://pyvider.com/docs/getting-started/quick-start/)**
 
 ## Documentation
 
-**📖 [Read the Full Documentation →](https://foundry.provide.io/pyvider/)**
+**📖 [Read the Full Documentation →](https://pyvider.com/docs/)**
 
 ### Quick Links
-- **[Installation Guide](https://foundry.provide.io/pyvider/getting-started/installation/)** - Get up and running
-- **[Quick Start Tutorial](https://foundry.provide.io/pyvider/getting-started/quick-start/)** - Build your first provider in 5 minutes
-- **[Architecture Overview](https://foundry.provide.io/pyvider/core-concepts/architecture/)** - Understand how Pyvider works
-- **[API Reference](https://foundry.provide.io/pyvider/api/)** - Complete API documentation
+- **[Installation Guide](https://pyvider.com/docs/getting-started/installation/)** - Get up and running
+- **[Quick Start Tutorial](https://pyvider.com/docs/getting-started/quick-start/)** - Build your first provider in 5 minutes
+- **[Architecture Overview](https://pyvider.com/docs/core-concepts/architecture/)** - Understand how Pyvider works
+- **[API Reference](https://pyvider.com/docs/api/)** - Complete API documentation
 - **[Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
 
 ## Development
@@ -118,15 +118,10 @@ uv add pyvider
 
 ## 🔗 Links
 
-- **[Documentation](https://foundry.provide.io/pyvider/)** - Complete documentation
 - **[Examples](https://github.com/provide-io/pyvider-components)** - Working examples
 - **[PyPI](https://pypi.org/project/pyvider/)** - Package repository
 - **[Discussions](https://github.com/provide-io/pyvider/discussions)** - Community support
 
 ---
-
-<p align="center">
-  Made with ❤️ by <a href="https://provide.io">Provide</a>
-</p>
 
 Copyright (c) provide.io LLC.
