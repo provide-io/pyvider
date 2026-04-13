@@ -176,22 +176,26 @@
       location.reload();
     });
   }
-  // Fetch latest release tag
+  // Fetch latest release tag — stale-while-revalidate so a new release
+  // is reflected on the next page view, not only after closing the tab.
   var factsEl = document.getElementById('gh-facts');
   if (factsEl) {
     var cached = sessionStorage.getItem('gh-pyvider-version');
-    if (cached) { factsEl.textContent = cached; }
-    else {
-      fetch('https://api.github.com/repos/provide-io/pyvider/releases/latest')
-        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
-        .then(function(d) { if (d.tag_name) { factsEl.textContent = d.tag_name; sessionStorage.setItem('gh-pyvider-version', d.tag_name); } })
-        .catch(function() {
-          fetch('https://api.github.com/repos/provide-io/pyvider/tags?per_page=1')
-            .then(function(r) { return r.json(); })
-            .then(function(tags) { if (tags.length && tags[0].name) { factsEl.textContent = tags[0].name; sessionStorage.setItem('gh-pyvider-version', tags[0].name); } })
-            .catch(function() {});
-        });
+    if (cached) factsEl.textContent = cached;
+    function setVersion(tag) {
+      if (!tag) return;
+      factsEl.textContent = tag;
+      sessionStorage.setItem('gh-pyvider-version', tag);
     }
+    fetch('https://api.github.com/repos/provide-io/pyvider/releases/latest')
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(d) { setVersion(d.tag_name); })
+      .catch(function() {
+        fetch('https://api.github.com/repos/provide-io/pyvider/tags?per_page=1')
+          .then(function(r) { return r.json(); })
+          .then(function(tags) { if (tags.length) setVersion(tags[0].name); })
+          .catch(function() {});
+      });
   }
 })();
 </script>
