@@ -47,6 +47,27 @@
   }
   .docs-sidebar-btn:hover { border-color: #3b82f6; color: #e2e8f0; }
   @media (max-width: 1219px) { .docs-sidebar-btn-item { display: flex !important; } }
+  /* Light mode: Material's default `primary: blue` paints the tabs row
+     a mid-blue with near-illegible dark-blue inactive labels — jarring
+     under the white Hugo nav above. Repaint to match the site nav so the
+     two rows read as one continuous header. */
+  [data-md-color-scheme="default"] .md-tabs,
+  [data-md-color-scheme="default"] .md-header {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  [data-md-color-scheme="default"] .md-tabs__link {
+    color: #475569 !important;
+    opacity: 1 !important;
+  }
+  [data-md-color-scheme="default"] .md-tabs__link:hover,
+  [data-md-color-scheme="default"] .md-tabs__link--active {
+    color: #0f172a !important;
+  }
+  [data-md-color-scheme="default"] .md-tabs__link--active {
+    font-weight: 600;
+  }
   /* On mobile: collapse site nav links into hamburger, keep both rows */
   @media (max-width: 768px) {
     .nav-links { display: none; }
