@@ -4,22 +4,57 @@
 
 {% block extrahead %}
 {{ super() }}
-<!-- Seed dark mode as default before Material palette.js reads localStorage.
-     Index 0 = slate (dark), index 1 = default (light) in our palette list. -->
+<!-- Load the same CSS as the main Hugo site for consistent nav -->
+<link rel="stylesheet" href="/css/site.css?v=14">
+<style>
+  /* Hide Material's header content — site nav replaces it on all sizes. Keep tabs. */
+  .md-header__inner { display: none !important; }
+  /* Make Material header (tabs) sticky below the site nav (56px tall) */
+  /* Override Material JS that hides header via transform on scroll */
+  .md-header {
+    position: sticky !important;
+    top: 56px !important;
+    box-shadow: none !important;
+    z-index: 99 !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  /* Site nav stays above */
+  .nav { z-index: 200; }
+  /* Docs sidebar drawer toggle — visible only on mobile */
+  .nav-drawer-toggle { display: none; cursor: pointer; color: var(--text-secondary, #94a3b8); padding: 4px; }
+  @media (max-width: 768px) { .nav-drawer-toggle { display: flex; align-items: center; } }
+  /* On mobile: collapse site nav links into hamburger, keep both rows */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav.nav-open .nav-links {
+      display: flex; flex-direction: column;
+      position: absolute; top: 56px; left: 0; right: 0;
+      background: rgba(8,14,26,0.98); border-bottom: 1px solid #1e293b;
+      padding: 12px 32px; gap: 12px; z-index: 199;
+    }
+    .nav-source { display: none; }
+    .nav-menu-btn { display: block !important; }
+  }
+</style>
+<!-- Sync theme with main site's pyvider-theme localStorage key -->
 <script>
   (function() {
+    // Apply saved theme before render (matches head.html on Hugo side)
+    var t = localStorage.getItem('pyvider-theme');
+    if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+
+    // Seed Material palette based on shared theme preference
     var canonical = document.querySelector('link[rel="canonical"]');
     var href = canonical ? canonical.getAttribute('href') : '';
     var prefix;
     try { prefix = new URL(href).pathname; } catch(e) { prefix = '/docs/'; }
     var key = prefix + '.__palette';
-    var stored = localStorage.getItem(key);
-    var needsUpdate = !stored || stored.indexOf('indigo') !== -1 || stored.indexOf('"scheme":"default"') !== -1 || stored.indexOf('"index":1') !== -1;
-    if (needsUpdate) {
-      localStorage.setItem(key, JSON.stringify({index: 0, color: {media: '', scheme: 'slate', primary: 'blue', accent: 'blue'}}));
-    }
+    var wantLight = (t === 'light');
+    var scheme = wantLight ? 'default' : 'slate';
+    var idx = wantLight ? 1 : 0;
+    localStorage.setItem(key, JSON.stringify({index: idx, color: {media: '', scheme: scheme, primary: 'blue', accent: 'blue'}}));
     // Two-tone pyvider header title (py white, vider blue)
-    // Also make the title link back to pyvider.com
     document.addEventListener('DOMContentLoaded', function() {
       document.querySelectorAll('.md-header__title .md-ellipsis').forEach(function(el) {
         if (el.textContent.trim() === 'pyvider') {
@@ -28,5 +63,80 @@
       });
     });
   })();
+</script>
+{% endblock %}
+
+{% block header %}
+<!-- Site-wide nav (same HTML + CSS as Hugo main site) -->
+<nav class="nav">
+  <div class="nav-inner">
+    <label class="nav-drawer-toggle" for="__drawer" tabindex="0" aria-label="Open docs sidebar">
+      <svg width="20" height="20" viewBox="0 0 20 20"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+    </label>
+    <a href="/" class="nav-logo">py<span>vider</span></a>
+    <div class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#components">Components</a>
+      <a href="/#packages">Packages</a>
+      <a href="/flavorpack/">Flavorpack</a>
+      <a href="/tofusoup/">TofuSoup</a>
+      <a href="/plating/">Plating</a>
+      <a href="/posts/">Blog</a>
+      <a href="/docs/" class="nav-active">Docs</a>
+    </div>
+    <div class="nav-controls">
+      <button class="theme-toggle" id="theme-toggle-docs" aria-label="Toggle light/dark mode">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </button>
+      <a href="https://github.com/provide-io/pyvider" target="_blank" rel="noopener" class="nav-source" title="Go to repository">
+        <svg class="nav-source__icon" viewBox="0 0 448 512" width="16" height="16"><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+        <span class="nav-source__repo">pyvider</span>
+        <span class="nav-source__facts" id="gh-facts"></span>
+      </a>
+      <button class="nav-menu-btn" aria-label="Menu" onclick="this.closest('nav').classList.toggle('nav-open')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<!-- Material header (tabs only — inner header hidden via CSS) -->
+{{ super() }}
+<script>
+(function() {
+  // Theme toggle for docs nav — syncs both pyvider-theme and Material palette
+  var btn = document.getElementById('theme-toggle-docs');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if (!isLight) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('pyvider-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('pyvider-theme');
+      }
+      // Reload to let Material pick up the new palette seed
+      location.reload();
+    });
+  }
+  // Fetch latest release tag
+  var factsEl = document.getElementById('gh-facts');
+  if (factsEl) {
+    var cached = sessionStorage.getItem('gh-pyvider-version');
+    if (cached) { factsEl.textContent = cached; }
+    else {
+      fetch('https://api.github.com/repos/provide-io/pyvider/releases/latest')
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function(d) { if (d.tag_name) { factsEl.textContent = d.tag_name; sessionStorage.setItem('gh-pyvider-version', d.tag_name); } })
+        .catch(function() {
+          fetch('https://api.github.com/repos/provide-io/pyvider/tags?per_page=1')
+            .then(function(r) { return r.json(); })
+            .then(function(tags) { if (tags.length && tags[0].name) { factsEl.textContent = tags[0].name; sessionStorage.setItem('gh-pyvider-version', tags[0].name); } })
+            .catch(function() {});
+        });
+    }
+  }
+})();
 </script>
 {% endblock %}
