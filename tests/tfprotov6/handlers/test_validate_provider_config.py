@@ -75,9 +75,7 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_request_metric(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test request counter incremented."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
-        ) as mock_requests:
+        with patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests:
             await ValidateProviderConfigHandler(sample_request, context=None)
 
             mock_requests.inc.assert_called_once_with(handler="ValidateProviderConfig")
@@ -85,9 +83,7 @@ class TestValidateProviderConfigMetrics:
     @pytest.mark.asyncio
     async def test_records_duration_metric(self, sample_request: pb.ValidateProviderConfig.Request) -> None:
         """Test duration observer called."""
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
-        ) as mock_duration:
+        with patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration:
             await ValidateProviderConfigHandler(sample_request, context=None)
 
             assert mock_duration.observe.call_count == 1
@@ -100,9 +96,7 @@ class TestValidateProviderConfigMetrics:
     ) -> None:
         """Test error counter incremented on exception."""
         with (
-            patch(
-                "pyvider.protocols.tfprotov6.handlers._metrics.handler_errors"
-            ) as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_provider_config._validate_provider_config_impl"
             ) as mock_impl,
