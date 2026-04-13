@@ -295,7 +295,9 @@ class TestGetProviderSchemaMetrics:
     async def test_handler_records_request_metric(self, sample_request, clear_schema_cache) -> None:
         """Test that handler increments request counter."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
+            ) as mock_requests,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
             ) as mock_compute,
@@ -310,7 +312,9 @@ class TestGetProviderSchemaMetrics:
     async def test_handler_records_duration_metric(self, sample_request, clear_schema_cache) -> None:
         """Test that handler records duration metric."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
+            ) as mock_duration,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
             ) as mock_compute,
