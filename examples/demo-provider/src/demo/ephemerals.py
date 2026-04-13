@@ -5,9 +5,8 @@ Contains:
 - DemoSessionToken: Temporary access token for a demo server
 """
 
+from datetime import UTC, datetime, timedelta
 import secrets
-import time
-from datetime import datetime, timedelta, timezone
 from typing import ClassVar
 
 import attrs
@@ -31,7 +30,7 @@ class SessionTokenConfig:
 class SessionTokenResult:
     """Token data returned to Terraform callers."""
 
-    token: str       # sensitive in schema
+    token: str  # sensitive in schema
     token_id: str
     server_id: str
     expires_at: str
@@ -67,15 +66,17 @@ class DemoSessionToken(BaseEphemeralResource):
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
-        return s_resource({
-            # Inputs
-            "server_id":   a_str(required=True, description="Server to grant access to"),
-            "ttl_seconds": a_num(optional=True,  description="Token lifetime in seconds (default 3600)"),
-            # Outputs
-            "token":       a_str(computed=True, sensitive=True, description="Access token"),
-            "token_id":    a_str(computed=True, description="Token identifier"),
-            "expires_at":  a_str(computed=True, description="ISO-8601 expiry timestamp"),
-        })
+        return s_resource(
+            {
+                # Inputs
+                "server_id": a_str(required=True, description="Server to grant access to"),
+                "ttl_seconds": a_num(optional=True, description="Token lifetime in seconds (default 3600)"),
+                # Outputs
+                "token": a_str(computed=True, sensitive=True, description="Access token"),
+                "token_id": a_str(computed=True, description="Token identifier"),
+                "expires_at": a_str(computed=True, description="ISO-8601 expiry timestamp"),
+            }
+        )
 
     async def validate(self, config: SessionTokenConfig) -> list[str]:
         errors = []
@@ -90,7 +91,7 @@ class DemoSessionToken(BaseEphemeralResource):
     ) -> tuple[SessionTokenResult, SessionTokenPrivateState, datetime]:
         token_id = f"tok-{secrets.token_hex(6)}"
         token = secrets.token_urlsafe(32)
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=ctx.config.ttl_seconds)
+        expires_at = datetime.now(UTC) + timedelta(seconds=ctx.config.ttl_seconds)
 
         DemoSessionToken._tokens[token_id] = {
             "token": token,
@@ -117,7 +118,7 @@ class DemoSessionToken(BaseEphemeralResource):
     ) -> tuple[SessionTokenPrivateState, datetime]:
         ps = ctx.private_state
         new_token = secrets.token_urlsafe(32)
-        expires_at = datetime.now(timezone.utc) + timedelta(seconds=ps.ttl_seconds)
+        expires_at = datetime.now(UTC) + timedelta(seconds=ps.ttl_seconds)
 
         if ps.token_id in DemoSessionToken._tokens:
             DemoSessionToken._tokens[ps.token_id]["token"] = new_token
@@ -131,7 +132,5 @@ class DemoSessionToken(BaseEphemeralResource):
         )
         return new_private, expires_at
 
-    async def close(
-        self, ctx: EphemeralResourceContext[None, SessionTokenPrivateState]
-    ) -> None:
+    async def close(self, ctx: EphemeralResourceContext[None, SessionTokenPrivateState]) -> None:
         DemoSessionToken._tokens.pop(ctx.private_state.token_id, None)
