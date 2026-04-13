@@ -56,7 +56,16 @@ class TestDiscoveryFailureResilience:
 
         with (
             patch("pyvider.hub.components.registry", mock_hub),
-            patch.dict("sys.modules", {"pyvider.hub": type("mod", (), {"hub": mock_hub})()}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "pyvider.hub": type(
+                        "mod",
+                        (),
+                        {"hub": mock_hub, "DISCOVERY_READY_EVENT": "_discovery_ready_event"},
+                    )()
+                },
+            ),
             pytest.raises(RuntimeError, match="Provider not available"),
         ):
             await handler._ensure_provider_ready()
@@ -105,7 +114,16 @@ class TestHandlerProviderResolution:
 
         with (
             patch("pyvider.hub.components.registry", hub),
-            patch.dict("sys.modules", {"pyvider.hub": type("mod", (), {"hub": hub})()}),
+            patch.dict(
+                "sys.modules",
+                {
+                    "pyvider.hub": type(
+                        "mod",
+                        (),
+                        {"hub": hub, "DISCOVERY_READY_EVENT": "_discovery_ready_event"},
+                    )()
+                },
+            ),
         ):
             task = asyncio.create_task(set_event_and_register())
             result = await handler._ensure_provider_ready()

@@ -107,7 +107,9 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     try:
         # Wait for component discovery to complete before collecting schemas
         # Discovery runs in the background and signals via an event when done
-        discovery_ready_event = hub.get_component("singleton", "_discovery_ready_event")
+        from pyvider.hub import DISCOVERY_READY_EVENT
+
+        discovery_ready_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
         if discovery_ready_event is not None:
             logger.debug(
                 "Waiting for component discovery to complete",

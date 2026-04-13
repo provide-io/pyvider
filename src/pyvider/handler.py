@@ -98,8 +98,12 @@ class ProviderHandler(ProviderServicer):
             self._resolved_provider = self._provider
             return self._provider
 
-        # Case 2: Provider is an asyncio.Task (lazy initialization)
-        if isinstance(self._provider, asyncio.Task):
+        # Fetch provider from hub
+        from pyvider.hub import DISCOVERY_READY_EVENT, hub
+
+        # Wait for discovery to complete by waiting for the discovery ready event
+        discovery_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
+        if discovery_event is not None and not discovery_event.is_set():
             logger.debug(
                 "Waiting for lazy provider initialization",
                 operation="provider_init_lazy",
