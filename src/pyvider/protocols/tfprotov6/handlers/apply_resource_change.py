@@ -18,6 +18,7 @@ from pyvider.conversion import marshal, unmarshal
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import (
+    FrameworkConfigurationError,
     PyviderError,
     ResourceError,
     ResourceLifecycleContractError,
@@ -78,12 +79,19 @@ async def _get_resource_and_provider_instances(type_name: str) -> tuple[Any, Any
             operation="apply_resource_change",
             resource_type=type_name,
         )
-        raise RuntimeError(
+        err = FrameworkConfigurationError(
             "Provider instance not found in hub.\n\n"
             "This is an internal framework error. The provider should be registered "
             "during server initialization.\n\n"
             "Suggestion: Report this issue - it indicates a provider initialization problem."
         )
+        err.add_context("resource.type_name", type_name)
+        err.add_context("terraform.summary", "Provider not initialized")
+        err.add_context(
+            "terraform.detail",
+            "The provider instance is missing from the component hub during apply.",
+        )
+        raise err
 
     logger.debug(
         "Resource and provider instances retrieved for apply",
@@ -320,6 +328,7 @@ async def _apply_resource_change_impl(
         diag = await create_diagnostic_from_exception(e)
         response.diagnostics.append(diag)
     except Exception as e:
+        handler_errors.inc(handler="ApplyResourceChange")
         logger.error(
             "ApplyResourceChange failed with unexpected error",
             operation="apply_resource_change",
@@ -328,7 +337,13 @@ async def _apply_resource_change_impl(
             error_message=str(e),
             exc_info=True,
         )
-        diag = await create_diagnostic_from_exception(e)
+        wrapped = ResourceError(
+            f"Unexpected error during apply of resource '{request.type_name}': {e}"
+        )
+        wrapped.add_context("resource.type_name", request.type_name)
+        wrapped.add_context("error.origin_type", type(e).__name__)
+        wrapped.__cause__ = e
+        diag = await create_diagnostic_from_exception(wrapped)
         response.diagnostics.append(diag)
 
     if resource_context and resource_context.diagnostics:
