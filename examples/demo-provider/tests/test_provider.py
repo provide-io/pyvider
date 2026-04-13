@@ -13,7 +13,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 async def _test_import_provider() -> bool:
     """Test importing the provider module."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("\n1. Importing provider module...")
     try:
@@ -28,7 +28,7 @@ async def _test_import_provider() -> bool:
 
 async def _test_function_classes() -> bool:
     """Test that function classes exist."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("\n2. Checking function classes...")
     try:
@@ -52,7 +52,7 @@ async def _test_function_classes() -> bool:
 
 async def _test_get_schema() -> bool:
     """Test get_schema with s_function."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("\n3. Testing get_schema() with s_function...")
     try:
@@ -87,7 +87,7 @@ async def _test_get_schema() -> bool:
 
 async def _test_function_execution() -> bool:
     """Test function execution."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("\n4. Testing function execution...")
     try:
@@ -139,7 +139,7 @@ async def _test_function_execution() -> bool:
 
 async def _test_schema_structure() -> bool:
     """Test schema structure."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("\n5. Verifying schema structure...")
     try:
@@ -180,7 +180,7 @@ async def _test_schema_structure() -> bool:
 
 async def test_provider() -> bool:
     """Test that the provider loads and functions work."""
-    from pyvider.telemetry import pout
+    from provide.foundation.console import pout
 
     pout("=" * 60)
     pout("Testing Demo Provider with s_function")

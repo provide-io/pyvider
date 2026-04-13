@@ -148,7 +148,14 @@ class DemoServer(BaseResource):
         state = self.State(**server_data)
         return state, None
 
-    async def delete(self, ctx: ResourceContext) -> None:
+    async def _validate_config(self, config: Any) -> list[str]:
+        """Validate server configuration"""
+        errors = []
+        if config and config.name and len(config.name) > 255:
+            errors.append("name must be 255 characters or less")
+        return errors
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
         """Delete server"""
         server_id = ctx.state.id
 
@@ -282,7 +289,11 @@ class DemoDatabase(BaseResource):
         state = self.State(**db_data)
         return state, None
 
-    async def delete(self, ctx: ResourceContext) -> None:
+    async def _validate_config(self, config: Any) -> list[str]:
+        """Validate database configuration"""
+        return []
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
         """Delete database"""
         db_id = ctx.state.id
         if db_id in DemoDatabase._databases:
@@ -405,7 +416,11 @@ class DemoNetwork(BaseResource):
         state = self.State(**net_data)
         return state, None
 
-    async def delete(self, ctx: ResourceContext) -> None:
+    async def _validate_config(self, config: Any) -> list[str]:
+        """Validate network configuration"""
+        return []
+
+    async def _delete_apply(self, ctx: ResourceContext) -> None:
         """Delete network"""
         net_id = ctx.state.id
         if net_id in DemoNetwork._networks:

@@ -6,6 +6,7 @@ A complete example provider demonstrating all major Pyvider features:
 - Resource management (CRUD operations)
 - Data sources (read-only queries)
 - Provider functions
+- Ephemeral resources (temporary credentials / sessions)
 - State management with private state
 """
 
@@ -13,6 +14,7 @@ A complete example provider demonstrating all major Pyvider features:
 # The @register_* decorators will automatically register them with the hub
 
 from .data_sources import DemoInstanceTypes, DemoRegions, DemoServerInfo
+from .ephemerals import DemoSessionToken
 from .functions import CalculateCostFunction, FormatTagsFunction, GenerateNameFunction, ValidateCIDRFunction
 from .provider import DemoProvider
 from .resources import DemoDatabase, DemoNetwork, DemoServer
@@ -29,6 +31,8 @@ __all__ = [
     "DemoServer",
     # Data Sources
     "DemoServerInfo",
+    # Ephemerals
+    "DemoSessionToken",
     # Functions
     "FormatTagsFunction",
     "GenerateNameFunction",

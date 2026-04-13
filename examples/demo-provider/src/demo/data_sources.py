@@ -14,7 +14,7 @@ from attrs import define
 
 from pyvider.data_sources import register_data_source
 from pyvider.data_sources.base import BaseDataSource
-from pyvider.data_sources.context import DataSourceContext
+from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema, a_list, a_map, a_num, a_str, s_data_source
 
 from .resources import DemoServer
@@ -69,7 +69,7 @@ class DemoServerInfo(BaseDataSource):
             }
         )
 
-    async def read(self, ctx: DataSourceContext) -> Any:
+    async def read(self, ctx: ResourceContext) -> Any:
         """Read server information"""
         server_id = ctx.config.server_id
 
@@ -132,7 +132,7 @@ class DemoRegions(BaseDataSource):
             }
         )
 
-    async def read(self, ctx: DataSourceContext) -> Any:
+    async def read(self, ctx: ResourceContext) -> Any:
         """Read available regions"""
         all_regions = [
             "us-east-1",
@@ -205,7 +205,7 @@ class DemoInstanceTypes(BaseDataSource):
             }
         )
 
-    async def read(self, ctx: DataSourceContext) -> Any:
+    async def read(self, ctx: ResourceContext) -> Any:
         """Read available instance types"""
         all_types = {
             "t2.micro": {"vcpus": "1", "memory_gb": "1", "price_per_hour": "0.0116"},
