@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -28,8 +28,8 @@ class TestGetResourceAndProviderInstances:
 
     @pytest.mark.asyncio
     async def test_raises_error_when_provider_not_in_hub(self, provider_in_hub: mock.MagicMock) -> None:
-        """Test that it raises RuntimeError when provider not in hub."""
-        # Register a test resource first
+        """Test that it raises FrameworkConfigurationError when provider not in hub."""
+        from pyvider.exceptions import FrameworkConfigurationError
         from pyvider.hub import hub
         from pyvider.resources.base import BaseResource
 
@@ -37,12 +37,10 @@ class TestGetResourceAndProviderInstances:
             pass
 
         hub.register("resource", "test_resource", TestResource)
-
-        # Now unregister provider
         hub.unregister("singleton", "provider")
 
         try:
-            with pytest.raises(RuntimeError, match="Provider instance not found"):
+            with pytest.raises(FrameworkConfigurationError, match="Provider instance not found"):
                 await _get_resource_and_provider_instances("test_resource")
         finally:
             hub.unregister("resource", "test_resource")

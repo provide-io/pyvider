@@ -438,7 +438,6 @@ async def _create_apply(self, ctx):
 
 ### Where can I get help?
 
-- **Documentation**: [https://foundry.provide.io/pyvider/](https://foundry.provide.io/pyvider/)
 - **Examples**: [pyvider-components](https://github.com/provide-io/pyvider-components)
 - **Discussions**: [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)
 - **Issues**: [GitHub Issues](https://github.com/provide-io/pyvider/issues)

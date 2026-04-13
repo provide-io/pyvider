@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -33,6 +33,27 @@ _UNREFINED_UNKNOWN_SENTINEL = CtyValue.unknown(CtyDynamic()).value
 
 
 class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
+    """Base class for Terraform-managed resources.
+
+    Subclasses declare three class attributes that describe the resource's
+    data model:
+
+        config_class:        the user-supplied configuration block
+        state_class:         the persisted state shape
+        private_state_class: optional opaque state kept between apply runs
+
+    **Important: these classes must be `attrs` classes** (decorated with
+    ``@attrs.define`` / ``@attrs.frozen``). The framework introspects them
+    via ``attrs.fields()`` during every cty ↔ Python conversion; plain
+    ``dataclasses``, ``pydantic`` models, or bare ``class`` definitions
+    will silently round-trip to empty objects or fail with confusing
+    ``TypeError``s deep in the conversion layer.
+
+    The validator at ``cty_to_attrs_instance`` raises
+    ``FrameworkConfigurationError`` up front when a non-attrs class is
+    supplied, so misuse fails fast rather than corrupting state.
+    """
+
     config_class: type[ConfigType] | None = None
     state_class: type[StateType] | None = None
     private_state_class: type[PrivateState] | None = None

@@ -1,27 +1,21 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 
 import asyncio
-import time
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
 from pyvider.conversion import pvs_schema_to_proto
 from pyvider.functions.adapters import function_to_dict
 from pyvider.hub import hub
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
 from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import get_all_components
 import pyvider.protocols.tfprotov6.protobuf as pb
 
@@ -107,7 +101,9 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     try:
         # Wait for component discovery to complete before collecting schemas
         # Discovery runs in the background and signals via an event when done
-        discovery_ready_event = hub.get_component("singleton", "_discovery_ready_event")
+        from pyvider.hub import DISCOVERY_READY_EVENT
+
+        discovery_ready_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
         if discovery_ready_event is not None:
             logger.debug(
                 "Waiting for component discovery to complete",
@@ -218,7 +214,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
         )
 
 
-@resilient()
+@rpc_handler("GetProviderSchema")
 async def GetProviderSchemaHandler(
     request: pb.GetProviderSchema.Request, context: Any
 ) -> pb.GetProviderSchema.Response:
@@ -226,17 +222,7 @@ async def GetProviderSchemaHandler(
     Handles the GetProviderSchema RPC request using a robust, race-condition-free
     asyncio.Future to ensure the schema is computed only once.
     """
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="GetProviderSchema")
-
-    try:
-        return await _get_provider_schema_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="GetProviderSchema")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="GetProviderSchema")
+    return await _get_provider_schema_impl(request, context)
 
 
 async def _get_provider_schema_impl(

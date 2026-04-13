@@ -30,7 +30,6 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
 dependencies = [
@@ -46,8 +45,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://foundry.provide.io/pyvider/"
-Documentation = "https://foundry.provide.io/pyvider/"
+Homepage = "https://pyvider.com/docs/"
+Documentation = "https://pyvider.com/docs/"
 Repository = "https://github.com/provide-io/pyvider"
 Issues = "https://github.com/provide-io/pyvider/issues"
 

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -60,8 +60,8 @@ async def test_move_resource_state_records_metrics() -> None:
     )
 
     with (
-        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests") as mock_requests,
-        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_duration") as mock_duration,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
     ):
         response = await MoveResourceStateHandler(request, context=None)
 
@@ -80,8 +80,8 @@ async def test_move_resource_state_records_errors_on_exception() -> None:
     )
 
     with (
-        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_requests"),
-        patch("pyvider.protocols.tfprotov6.handlers.move_resource_state.handler_errors") as mock_errors,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"),
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
         patch(
             "pyvider.protocols.tfprotov6.handlers.move_resource_state._move_resource_state_impl"
         ) as mock_impl,

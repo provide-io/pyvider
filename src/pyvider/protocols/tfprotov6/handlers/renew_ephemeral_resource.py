@@ -1,46 +1,30 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 
-import time
 from typing import Any
 
 import attrs
 import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
 from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.utils import datetime_to_proto
 
 
-@resilient()
+@rpc_handler("RenewEphemeralResource")
 async def RenewEphemeralResourceHandler(
     request: pb.RenewEphemeralResource.Request, context: Any
 ) -> pb.RenewEphemeralResource.Response:
     """Handles renewing an ephemeral resource's lease."""
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="RenewEphemeralResource")
-
-    try:
-        return await _renew_ephemeral_resource_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="RenewEphemeralResource")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="RenewEphemeralResource")
+    return await _renew_ephemeral_resource_impl(request, context)
 
 
 async def _renew_ephemeral_resource_impl(

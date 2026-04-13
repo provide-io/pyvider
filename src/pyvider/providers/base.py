@@ -1,11 +1,11 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 
 import asyncio
-from typing import Any, ClassVar
+from typing import Any
 
 from attrs import define, field
 from provide.foundation import logger
@@ -48,7 +48,9 @@ class BaseProvider:
     config_class: Any | None = None  # Add config_class attribute
     _configured: bool = field(default=False, init=False)
     _final_schema: PvsSchema | None = field(default=None, init=False)
-    capabilities: ClassVar[dict[str, Any]] = {}
+    capabilities: dict[str, Any] = field(factory=dict, init=False)
+    _setup_done: bool = field(default=False, init=False)
+    _setup_lock: asyncio.Lock = field(factory=asyncio.Lock, init=False)
 
     async def setup(self) -> None:
         """
@@ -70,63 +72,68 @@ class BaseProvider:
         from pyvider.hub import hub
         from pyvider.schema import s_provider
 
-        logger.debug(
-            "Provider setup started",
-            operation="setup",
-            provider_name=self.metadata.name,
-            provider_version=self.metadata.version,
-            protocol_version=self.metadata.protocol_version,
-        )
+        async with self._setup_lock:
+            if self._setup_done:
+                return
 
-        # Auto-discover and instantiate capabilities
-        final_attributes = {}
-        capability_classes = hub.get_components("capability")
-
-        provider_ctx_factory = hub.get_component("singleton", "provider_context")
-        if provider_ctx_factory:
-            # Handle both factory functions and direct instances
-            provider_ctx = cast(
-                PyviderContext,
-                provider_ctx_factory() if callable(provider_ctx_factory) else provider_ctx_factory,
+            logger.debug(
+                "Provider setup started",
+                operation="setup",
+                provider_name=self.metadata.name,
+                provider_version=self.metadata.version,
+                protocol_version=self.metadata.protocol_version,
             )
-        else:
-            provider_ctx = None
-        provider_config = provider_ctx.config if provider_ctx else None
 
-        for name, cap_class in capability_classes.items():
-            cap_instance = cap_class(config=provider_config)
-            self.capabilities[name] = cap_instance
-            if hasattr(cap_instance, "get_schema_contribution"):
-                final_attributes.update(cap_instance.get_schema_contribution())
+            final_attributes: dict[str, Any] = {}
+            capability_classes = hub.get_components("capability")
 
-        self.capabilities["provider"] = self
-
-        # Build final provider schema
-        self._final_schema = s_provider(attributes=final_attributes)
-        self.config_class = create_attrs_class_from_schema(
-            "ProviderConfig", self._final_schema.block.attributes
-        )
-
-        # Validate component-capability associations
-        all_components = {
-            **hub.get_components("resource"),
-            **hub.get_components("data_source"),
-            **hub.get_components("function"),
-        }
-        for name, comp in all_components.items():
-            parent_cap_name = getattr(comp, "_parent_capability", "provider")
-            if parent_cap_name not in self.capabilities:
-                raise FrameworkConfigurationError(
-                    f"Component '{name}' is associated with capability '{parent_cap_name}', "
-                    f"but that capability is not registered."
+            provider_ctx_factory = hub.get_component("singleton", "provider_context")
+            if provider_ctx_factory:
+                provider_ctx = cast(
+                    PyviderContext,
+                    provider_ctx_factory() if callable(provider_ctx_factory) else provider_ctx_factory,
                 )
+            else:
+                provider_ctx = None
+            provider_config = provider_ctx.config if provider_ctx else None
 
-        logger.info(
-            "Provider setup completed",
-            operation="setup",
-            provider_name=self.metadata.name,
-            capabilities=list(self.capabilities.keys()),
-        )
+            new_capabilities: dict[str, Any] = {}
+            for name, cap_class in capability_classes.items():
+                cap_instance = cap_class(config=provider_config)
+                new_capabilities[name] = cap_instance
+                if hasattr(cap_instance, "get_schema_contribution"):
+                    final_attributes.update(cap_instance.get_schema_contribution())
+
+            new_capabilities["provider"] = self
+
+            self._final_schema = s_provider(attributes=final_attributes)
+            self.config_class = create_attrs_class_from_schema(
+                "ProviderConfig", self._final_schema.block.attributes
+            )
+
+            all_components = {
+                **hub.get_components("resource"),
+                **hub.get_components("data_source"),
+                **hub.get_components("function"),
+            }
+            for name, comp in all_components.items():
+                parent_cap_name = getattr(comp, "_parent_capability", "provider")
+                if parent_cap_name not in new_capabilities:
+                    raise FrameworkConfigurationError(
+                        f"Component '{name}' is associated with capability '{parent_cap_name}', "
+                        f"but that capability is not registered."
+                    )
+
+            # Atomic publish — capabilities is only observed in a completed state.
+            self.capabilities = new_capabilities
+            self._setup_done = True
+
+            logger.info(
+                "Provider setup completed",
+                operation="setup",
+                provider_name=self.metadata.name,
+                capabilities=list(self.capabilities.keys()),
+            )
 
     async def configure(self, config: dict[str, CtyType]) -> None:
         """Configure the provider with the given configuration."""

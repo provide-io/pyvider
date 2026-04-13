@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -162,7 +162,7 @@ class TestGetMetadataMetrics:
     async def test_handler_records_request_metric(self, sample_request: pb.GetMetadata.Request) -> None:
         """Test that handler increments request counter."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
             patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
@@ -175,7 +175,7 @@ class TestGetMetadataMetrics:
     async def test_handler_records_duration_metric(self, sample_request: pb.GetMetadata.Request) -> None:
         """Test that handler records duration metric."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
             patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
@@ -193,7 +193,7 @@ class TestGetMetadataMetrics:
     ) -> None:
         """Test that handler increments error counter on failure."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_metadata.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch("pyvider.protocols.tfprotov6.handlers.get_metadata._get_metadata_impl") as mock_impl,
         ):
             mock_impl.side_effect = RuntimeError("Test error")

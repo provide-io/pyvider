@@ -1,22 +1,16 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 
-import time
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
 from pyvider.conversion import unmarshal
 from pyvider.hub import hub
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
@@ -24,22 +18,12 @@ from pyvider.protocols.tfprotov6.protobuf import (
 from pyvider.resources.base import BaseResource
 
 
-@resilient()
+@rpc_handler("ValidateProviderConfig")
 async def ValidateProviderConfigHandler(
     request: pb.ValidateProviderConfig.Request, context: Any
 ) -> pb.ValidateProviderConfig.Response:
     """Handle ValidateProviderConfig requests."""
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="ValidateProviderConfig")
-
-    try:
-        return await _validate_provider_config_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="ValidateProviderConfig")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="ValidateProviderConfig")
+    return await _validate_provider_config_impl(request, context)
 
 
 async def _validate_provider_config_impl(

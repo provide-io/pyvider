@@ -1,39 +1,23 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
 
-import time
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
-@resilient()
+@rpc_handler("MoveResourceState")
 async def MoveResourceStateHandler(
     request: pb.MoveResourceState.Request, context: Any
 ) -> pb.MoveResourceState.Response:
     """Handle move resource state request."""
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="MoveResourceState")
-
-    try:
-        return await _move_resource_state_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="MoveResourceState")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="MoveResourceState")
+    return await _move_resource_state_impl(request, context)
 
 
 async def _move_resource_state_impl(

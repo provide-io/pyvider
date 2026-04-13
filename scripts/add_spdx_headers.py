@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 """Add SPDX copyright headers to Python files.
@@ -17,7 +17,7 @@ from pathlib import Path
 import sys
 
 HEADER_LINES = [
-    "# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.",
+    "# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.",
     "# SPDX-License-Identifier: Apache-2.0",
 ]
 

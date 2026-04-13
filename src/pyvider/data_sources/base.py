@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -17,6 +17,17 @@ ConfigType = TypeVar("ConfigType")
 
 
 class BaseDataSource(ABC, Generic[DataSourceType, StateType, ConfigType]):
+    """Base class for read-only data sources.
+
+    ``config_class`` and ``state_class`` must be ``attrs`` classes
+    (decorated with ``@attrs.define`` / ``@attrs.frozen``). The framework
+    introspects them via ``attrs.fields()`` during cty ↔ Python
+    conversion; plain ``dataclasses`` or other class flavors will not
+    round-trip correctly. See ``BaseResource`` for the full rationale.
+    The validator in ``cty_to_attrs_instance`` raises
+    ``FrameworkConfigurationError`` up front on misuse.
+    """
+
     config_class: type[ConfigType] | None = None
     state_class: type[StateType]
 

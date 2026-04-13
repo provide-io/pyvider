@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -23,10 +23,10 @@ class TestPyviderProviderInitialization:
         assert provider._configured is False
 
     def test_provider_has_empty_capabilities_initially(self) -> None:
-        """Test that provider starts with empty capabilities dict."""
-        PyviderProvider()
-        # The class-level capabilities dict is shared, but instance should have access
-        assert isinstance(PyviderProvider.capabilities, dict)
+        """Test that a fresh PyviderProvider starts with an empty, per-instance capabilities dict."""
+        provider = PyviderProvider()
+        assert isinstance(provider.capabilities, dict)
+        assert provider.capabilities == {}
 
 
 class TestPyviderProviderSetup:

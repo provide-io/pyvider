@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -184,7 +184,7 @@ class TestReadDataSourceMetrics:
     async def test_handler_records_request_metric(self, sample_request: pb.ReadDataSource.Request) -> None:
         """Test that handler increments request counter."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
             patch("pyvider.protocols.tfprotov6.handlers.read_data_source.hub") as mock_hub,
         ):
             mock_hub.get_component.return_value = None
@@ -199,7 +199,7 @@ class TestReadDataSourceMetrics:
     ) -> None:
         """Test that handler increments error counter on failure."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.read_data_source.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch("pyvider.protocols.tfprotov6.handlers.read_data_source._read_data_source_impl") as mock_impl,
         ):
             mock_impl.side_effect = RuntimeError("Test error")

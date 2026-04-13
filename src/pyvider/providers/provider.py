@@ -1,10 +1,8 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
-
-from typing import Any, ClassVar
 
 from provide.foundation import logger
 
@@ -18,8 +16,6 @@ from pyvider.schema import a_bool, s_provider
 
 @register_provider("pyvider")
 class PyviderProvider(BaseProvider):
-    capabilities: ClassVar[dict[str, Any]] = {}
-
     def __init__(self) -> None:
         provider_metadata = ProviderMetadata(name="pyvider", version="0.1.0")
         super().__init__(metadata=provider_metadata)

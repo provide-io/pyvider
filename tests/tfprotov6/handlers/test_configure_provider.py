@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -153,7 +153,7 @@ class TestConfigureProviderHandler:
         from provide.testkit.mocking import patch
 
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.configure_provider.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.configure_provider._configure_provider_impl"
             ) as mock_impl,

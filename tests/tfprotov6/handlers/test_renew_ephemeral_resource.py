@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -58,12 +58,8 @@ class TestRenewEphemeralResourceStructure:
     async def test_handler_records_metrics(self, sample_request: pb.RenewEphemeralResource.Request) -> None:
         """Test that handler records request and duration metrics."""
         with (
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_requests"
-            ) as mock_req,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
-            ) as mock_dur,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_req,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_dur,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
             mock_get.return_value = None
