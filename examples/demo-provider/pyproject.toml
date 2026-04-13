@@ -4,7 +4,7 @@ version = "1.0.0"
 description = "Demo Terraform Provider built with Pyvider - Testing s_function"
 requires-python = ">=3.11"
 dependencies = [
-    "pyvider>=0.0.1102",
+    "pyvider>=0.3.33",
 ]
 
 [project.scripts]

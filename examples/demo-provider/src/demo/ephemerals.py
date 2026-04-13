@@ -46,7 +46,7 @@ class SessionTokenPrivateState(PrivateState):
     ttl_seconds: int
 
 
-@register_ephemeral_resource("session_token")
+@register_ephemeral_resource("demo_session_token")
 class DemoSessionToken(BaseEphemeralResource):
     """
     Manages a temporary access token for a demo server.
@@ -79,19 +79,21 @@ class DemoSessionToken(BaseEphemeralResource):
         )
 
     async def validate(self, config: SessionTokenConfig) -> list[str]:
+        # config.server_id can be None at plan time if it references a
+        # not-yet-created resource's id. Defer existence checks to open();
+        # only validate static value constraints here.
         errors = []
-        if config.server_id not in DemoServer._servers:
-            errors.append(f"server {config.server_id!r} does not exist")
-        if config.ttl_seconds < 60:
+        if config.ttl_seconds is not None and int(config.ttl_seconds) < 60:
             errors.append("ttl_seconds must be at least 60")
         return errors
 
     async def open(
         self, ctx: EphemeralResourceContext[SessionTokenConfig, None]
     ) -> tuple[SessionTokenResult, SessionTokenPrivateState, datetime]:
+        ttl = int(ctx.config.ttl_seconds)
         token_id = f"tok-{secrets.token_hex(6)}"
         token = secrets.token_urlsafe(32)
-        expires_at = datetime.now(UTC) + timedelta(seconds=ctx.config.ttl_seconds)
+        expires_at = datetime.now(UTC) + timedelta(seconds=ttl)
 
         DemoSessionToken._tokens[token_id] = {
             "token": token,
@@ -109,7 +111,7 @@ class DemoSessionToken(BaseEphemeralResource):
             token=token,
             token_id=token_id,
             server_id=ctx.config.server_id,
-            ttl_seconds=ctx.config.ttl_seconds,
+            ttl_seconds=ttl,
         )
         return result, private, expires_at
 
