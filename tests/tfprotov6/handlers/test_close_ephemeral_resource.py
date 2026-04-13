@@ -57,7 +57,9 @@ class TestCloseEphemeralResourceStructure:
     ) -> None:
         """Test that handler increments request counter."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
+            ) as mock_requests,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
             mock_get.return_value = None
@@ -216,7 +218,9 @@ class TestCloseEphemeralResourceMetrics:
     async def test_handler_records_duration(self, sample_request: pb.CloseEphemeralResource.Request) -> None:
         """Test that handler records duration metric."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
+            ) as mock_duration,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
             mock_get.return_value = None
@@ -233,7 +237,9 @@ class TestCloseEphemeralResourceMetrics:
     ) -> None:
         """Test that handler increments error counter on exceptions."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_errors"
+            ) as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl"
             ) as mock_impl,
