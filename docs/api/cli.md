@@ -117,7 +117,7 @@ pyvider install
 
 **Requirements:**
 - Must be run from a directory containing `pyvider.toml` or `pyproject.toml` with `[tool.pyvider]` section
-- In development mode, requires a virtual environment with pyvider installed
+- In development mode, requires a virtual environment with Pyvider installed
 
 ---
 

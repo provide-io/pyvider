@@ -86,7 +86,7 @@ This project is part of a larger ecosystem of tools for Python and Terraform dev
 
 **[View Ecosystem Overview →](https://foundry.provide.io/provide-foundation/ecosystem/)**
 
-Understand how provide-foundation, pyvider, flavorpack, and other projects work together.
+Understand how provide-foundation, Pyvider, flavorpack, and other projects work together.
 
 ## Prerequisites
 

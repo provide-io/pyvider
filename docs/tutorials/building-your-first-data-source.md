@@ -5,7 +5,7 @@ Welcome! In this tutorial, you'll build your first Terraform data source using p
 **What You'll Learn:**
 
 - How data sources differ from resources
-- Creating a data source class with pyvider
+- Creating a data source class with Pyvider
 - Defining input/output schemas
 - Implementing read operations
 - Using data sources in Terraform
@@ -15,7 +15,7 @@ Welcome! In this tutorial, you'll build your first Terraform data source using p
 **Prerequisites:**
 
 - Python 3.11+ installed
-- pyvider installed ([installation guide](../getting-started/installation.md))
+- Pyvider installed ([installation guide](../getting-started/installation.md))
 - Basic Python knowledge
 - Basic Terraform knowledge
 
@@ -421,7 +421,7 @@ class APIQuery(BaseDataSource):
 
 ## What You've Learned
 
-Congratulations! You've built your first pyvider data source. You now understand:
+Congratulations! You've built your first Pyvider data source. You now understand:
 
 ✅ **Data Sources vs Resources** - Read-only queries vs managed infrastructure
 ✅ **Simple Read Pattern** - One method that returns data
