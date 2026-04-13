@@ -143,7 +143,7 @@ async def test_upgrade_resource_state_handler_records_error_metric() -> None:
     )
 
     with (
-        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_errors") as mock_errors,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
         patch(
             "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state._upgrade_resource_state_impl"
         ) as mock_impl,
@@ -165,8 +165,8 @@ async def test_upgrade_resource_state_records_metrics() -> None:
     )
 
     with (
-        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_requests") as mock_requests,
-        patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.handler_duration") as mock_duration,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
+        patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
     ):
         await UpgradeResourceStateHandler(request, context=None)
 

@@ -349,7 +349,7 @@ class TestReadResourceEdgeCases:
             )
 
             with (
-                patch("pyvider.protocols.tfprotov6.handlers.read_resource.handler_errors") as mock_errors,
+                patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
                 patch("pyvider.protocols.tfprotov6.handlers.read_resource._read_resource_impl") as mock_impl,
             ):
                 # Make implementation raise an exception

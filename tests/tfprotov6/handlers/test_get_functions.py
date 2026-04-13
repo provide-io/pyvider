@@ -336,7 +336,7 @@ class TestGetFunctionsMetrics:
     async def test_records_request_metric(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test request counter incremented."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
             patch("pyvider.hub.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
@@ -349,7 +349,7 @@ class TestGetFunctionsMetrics:
     async def test_records_duration_metric(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test duration observer called."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
             patch("pyvider.hub.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
@@ -365,7 +365,7 @@ class TestGetFunctionsMetrics:
     async def test_records_error_metric_on_exception(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test error counter incremented on exception."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_functions.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions._get_functions_impl") as mock_impl,
         ):
             mock_impl.side_effect = RuntimeError("Test error")

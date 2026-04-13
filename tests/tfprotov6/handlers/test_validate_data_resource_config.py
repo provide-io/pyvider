@@ -243,7 +243,7 @@ class TestValidateDataResourceConfigMetrics:
         """Test that handler increments request counter."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_requests"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
             ) as mock_requests,
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
         ):
@@ -260,7 +260,7 @@ class TestValidateDataResourceConfigMetrics:
         """Test that handler records duration metric."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_duration"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
             ) as mock_duration,
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
         ):
@@ -280,7 +280,7 @@ class TestValidateDataResourceConfigMetrics:
         """Test that handler increments error counter on failure."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.handler_errors"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_errors"
             ) as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config._validate_data_resource_config_impl"

@@ -4,13 +4,11 @@
 #
 
 
-import time
 from typing import Any
 
 import attrs
 import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
 from pyvider.common.encryption import decrypt, encrypt
 from pyvider.common.operation_context import OperationContext, operation_context
@@ -25,10 +23,9 @@ from pyvider.exceptions import (
 )
 from pyvider.hub import hub
 from pyvider.observability import (
-    handler_duration,
     handler_errors,
-    handler_requests,
 )
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     check_test_only_access,
@@ -235,22 +232,12 @@ def _handle_apply_result(
         logger.debug("Serialized private bytes", serialized_bytes=repr(serialized_bytes))
 
 
-@resilient()
+@rpc_handler("ApplyResourceChange")
 async def ApplyResourceChangeHandler(
     request: pb.ApplyResourceChange.Request, context: Any
 ) -> pb.ApplyResourceChange.Response:
     """Handle apply resource change request with metrics collection."""
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="ApplyResourceChange")
-
-    try:
-        return await _apply_resource_change_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="ApplyResourceChange")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="ApplyResourceChange")
+    return await _apply_resource_change_impl(request, context)
 
 
 async def _apply_resource_change_impl(

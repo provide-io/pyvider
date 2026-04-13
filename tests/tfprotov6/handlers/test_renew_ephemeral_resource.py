@@ -59,10 +59,10 @@ class TestRenewEphemeralResourceStructure:
         """Test that handler records request and duration metrics."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_requests"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
             ) as mock_req,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.handler_duration"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
             ) as mock_dur,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):

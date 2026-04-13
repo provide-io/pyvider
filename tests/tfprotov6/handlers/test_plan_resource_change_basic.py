@@ -66,7 +66,7 @@ class TestPlanResourceChangeHandlerStructure:
         """Test that handler increments request counter."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_requests"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
             ) as mock_requests,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
@@ -83,7 +83,7 @@ class TestPlanResourceChangeHandlerStructure:
         """Test that handler records duration metric."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_duration"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
             ) as mock_duration,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
@@ -256,7 +256,7 @@ class TestPlanResourceChangeMetrics:
     ) -> None:
         """Test that handler increments error counter on failure."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.handler_errors"),
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors"),
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
             # Make the handler fail

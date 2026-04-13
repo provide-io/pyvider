@@ -58,7 +58,7 @@ class TestCloseEphemeralResourceStructure:
         """Test that handler increments request counter."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_requests"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_requests"
             ) as mock_requests,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
@@ -219,7 +219,7 @@ class TestCloseEphemeralResourceMetrics:
         """Test that handler records duration metric."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_duration"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_duration"
             ) as mock_duration,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
@@ -238,7 +238,7 @@ class TestCloseEphemeralResourceMetrics:
         """Test that handler increments error counter on exceptions."""
         with (
             patch(
-                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.handler_errors"
+                "pyvider.protocols.tfprotov6.handlers._metrics.handler_errors"
             ) as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource._close_ephemeral_resource_impl"

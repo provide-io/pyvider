@@ -5,11 +5,9 @@
 
 
 import inspect
-import time
 from typing import Any
 
 from provide.foundation import logger
-from provide.foundation.errors import resilient
 
 from pyvider.conversion import marshal, unmarshal
 from pyvider.cty import CtyDynamic, CtyValue
@@ -17,11 +15,7 @@ from pyvider.cty.conversion import cty_to_native
 from pyvider.exceptions import FunctionError as PyviderFunctionError
 from pyvider.functions.adapters import function_to_dict
 from pyvider.hub import hub
-from pyvider.observability import (
-    handler_duration,
-    handler_errors,
-    handler_requests,
-)
+from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
@@ -182,22 +176,12 @@ async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], fun
         raise PyviderFunctionError(f"Function '{func_name}' execution failed: {func_err}") from func_err
 
 
-@resilient()
+@rpc_handler("CallFunction")
 async def CallFunctionHandler(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:
     """
     Handles the CallFunction RPC request, acting as a robust dispatcher.
     """
-    start_time = time.perf_counter()
-    handler_requests.inc(handler="CallFunction")
-
-    try:
-        return await _call_function_impl(request, context)
-    except Exception:
-        handler_errors.inc(handler="CallFunction")
-        raise
-    finally:
-        duration = time.perf_counter() - start_time
-        handler_duration.observe(duration, handler="CallFunction")
+    return await _call_function_impl(request, context)
 
 
 async def _call_function_impl(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:

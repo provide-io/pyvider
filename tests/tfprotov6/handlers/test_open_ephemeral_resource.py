@@ -61,8 +61,8 @@ class TestOpenEphemeralResourceStructure:
     async def test_handler_records_metrics(self, sample_request: pb.OpenEphemeralResource.Request) -> None:
         """Test that handler records request and duration metrics."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_requests") as mock_req,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.handler_duration") as mock_dur,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_req,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_dur,
             patch("pyvider.hub.hub.get_component") as mock_get,
         ):
             mock_get.return_value = None

@@ -95,7 +95,7 @@ class TestStopProviderMetrics:
         request = pb.StopProvider.Request()
 
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_requests") as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
             patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
         ):
             mock_server = AsyncMock()
@@ -110,7 +110,7 @@ class TestStopProviderMetrics:
         """Test that handler records duration metric."""
         request = pb.StopProvider.Request()
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
             patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
         ):
             mock_server = AsyncMock()
@@ -131,7 +131,7 @@ class TestStopProviderMetrics:
         request = pb.StopProvider.Request()
 
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
         ):
             mock_server = AsyncMock()
@@ -254,7 +254,7 @@ class TestStopProviderEdgeCases:
         request = pb.StopProvider.Request()
 
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_duration") as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
             patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
         ):
             mock_server = AsyncMock()
