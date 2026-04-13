@@ -324,9 +324,7 @@ async def _apply_resource_change_impl(
             error_message=str(e),
             exc_info=True,
         )
-        wrapped = ResourceError(
-            f"Unexpected error during apply of resource '{request.type_name}': {e}"
-        )
+        wrapped = ResourceError(f"Unexpected error during apply of resource '{request.type_name}': {e}")
         wrapped.add_context("resource.type_name", request.type_name)
         wrapped.add_context("error.origin_type", type(e).__name__)
         wrapped.__cause__ = e
