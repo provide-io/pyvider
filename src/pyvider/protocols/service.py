@@ -48,11 +48,7 @@ class ProtocolService:
         else:
             self._stream_stopped.set()
 
-    async def StreamStdio(
-        self,
-        request_iterator: AsyncIterator[Any],
-        context: Any,
-    ) -> AsyncGenerator[Any, None]:
+    async def StreamStdio(self, request_iterator: Any, context: Any) -> AsyncGenerator[Any, None]:
         """Handle streaming standard input/output.
 
         Reads from the inbound iterator and yields each message back to the caller.
@@ -60,31 +56,8 @@ class ProtocolService:
         """
         logger.debug("StreamStdio started")
         try:
-
-            async def process_messages() -> AsyncGenerator[Any, Any]:
-                try:
-                    async for message in request_iterator:
-                        if self._shutdown_event.is_set():
-                            break
-
-                        logger.debug("StreamStdio received message", message=str(message))
-
-                        # Don't terminate on empty messages
-                        if message is not None:  # Changed condition
-                            await self._message_queue.put(message)
-
-                        self._setup_complete.set()
-                        yield message
-
-                except Exception as e:
-                    logger.error("StreamStdio error", error=str(e))
-                    raise
-                finally:
-                    logger.debug("StreamStdio message processing complete")
-                    self._stream_active = False
-
-            async for response in process_messages():
-                if not self._stream_active:
+            async for message in request_iterator:
+                if self._shutdown_event.is_set() or self._stream_stopped.is_set():
                     break
 
                 logger.debug("StreamStdio received message", message=str(message))
@@ -95,7 +68,7 @@ class ProtocolService:
                 self._setup_complete.set()
                 yield message
         except Exception as e:
-            logger.error("StreamStdio outer error", error=str(e))
+            logger.error("StreamStdio error", error=str(e))
             raise
         finally:
             logger.debug("StreamStdio message processing complete")
@@ -111,13 +84,13 @@ class ProtocolService:
                     self._message_queue.get_nowait()
                 except asyncio.QueueEmpty:
                     break
-        await asyncio.sleep(SHUTDOWN_DRAIN_SECONDS)
+        await asyncio.sleep(0.1)
 
     async def StartStream(self, request: Any, context: Any) -> Empty:
         """Handle broker stream start."""
         logger.debug("StartStream called")
         try:
-            await asyncio.wait_for(self._setup_complete.wait(), timeout=STREAM_STARTUP_TIMEOUT_SECONDS)
+            await asyncio.wait_for(self._setup_complete.wait(), timeout=2.0)
             return Empty()
         except TimeoutError:
             logger.error("Timeout waiting for StreamStdio")
@@ -152,7 +125,7 @@ class ProtocolService:
     async def _heartbeat(self) -> None:
         while not self._stream_stopped.is_set():
             try:
-                await asyncio.sleep(STREAM_HEARTBEAT_INTERVAL_SECONDS)
+                await asyncio.sleep(5)
                 if not self._stream_stopped.is_set():
                     await self._message_queue.put(b"")
             except Exception as e:
