@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 """Regression tests for the high-severity review fixes (H1, H2, H3, H5)."""
