@@ -4,8 +4,6 @@
 #
 
 
-from typing import Any, ClassVar
-
 from provide.foundation import logger
 
 from pyvider.common.utils.attrs_factory import create_attrs_class_from_schema
@@ -18,8 +16,6 @@ from pyvider.schema import a_bool, s_provider
 
 @register_provider("pyvider")
 class PyviderProvider(BaseProvider):
-    capabilities: ClassVar[dict[str, Any]] = {}
-
     def __init__(self) -> None:
         provider_metadata = ProviderMetadata(name="pyvider", version="0.1.0")
         super().__init__(metadata=provider_metadata)
