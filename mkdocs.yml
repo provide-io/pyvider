@@ -24,6 +24,25 @@ docs_dir: docs
 theme:
   custom_dir: docs/overrides
   homepage: https://pyvider.com
+  # Override features to disable navigation.instant (causes layout shift when
+  # swapping tabs via AJAX — our book icon is re-injected each time)
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+    - content.action.view
   palette:
     # Dark mode default — matches pyvider.com marketing site
     - scheme: slate

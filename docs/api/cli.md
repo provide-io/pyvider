@@ -128,6 +128,8 @@ pyvider install
 - In **development mode**: Places a wrapper script that activates the venv and runs the provider
 
 **Requirements:**
+- Must be run from a directory containing `pyvider.toml` or `pyproject.toml` with `[tool.pyvider]` section
+- In development mode, requires a virtual environment with Pyvider installed
 
 - Must be run from a directory containing `pyvider.toml` or `pyproject.toml` with `[tool.pyvider]` section
 - In development mode, requires a virtual environment with Pyvider installed

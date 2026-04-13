@@ -84,6 +84,14 @@ Understand Pyvider's foundation:
 - [Contribution Guidelines](contributing/guidelines.md) - How to contribute
 - [Code of Conduct](contributing/code-of-conduct.md) - Community standards
 
+## Part of the provide.io Ecosystem
+
+This project is part of a larger ecosystem of tools for Python and Terraform development.
+
+**[View Ecosystem Overview →](https://foundry.provide.io/provide-foundation/ecosystem/)**
+
+Understand how provide-foundation, Pyvider, flavorpack, and other projects work together.
+
 ## Prerequisites
 
 - **Python 3.11+** installed

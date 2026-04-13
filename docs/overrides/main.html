@@ -4,8 +4,63 @@
 
 {% block extrahead %}
 {{ super() }}
-<!-- Seed dark mode as default before Material palette.js reads localStorage.
-     Index 0 = slate (dark), index 1 = default (light) in our palette list. -->
+<!-- Load Inter + JetBrains Mono so the nav font matches the Hugo site exactly
+     (Material defaults to Roboto which gives different character widths). -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Critical CSS inlined FIRST so scrollbar gutter applies before any layout pass.
+     Prevents horizontal layout shift. Keep overflow-x on html (not body) so sticky works. -->
+<style>
+  /* !important to beat Material's CSS which loads after via <link> */
+  html { scrollbar-gutter: stable !important; overflow-y: scroll !important; overflow-x: hidden !important; }
+  /* Reserve gutter on Material's internal scroll containers — prevents ToC/sidebar flash */
+  .md-sidebar__scrollwrap { scrollbar-gutter: stable !important; overflow-y: scroll !important; }
+</style>
+<!-- Load the same CSS as the main Hugo site for consistent nav -->
+<link rel="stylesheet" href="/css/site.css?v=48">
+<style>
+  /* Hide Material's header content — site nav replaces it on all sizes. Keep tabs. */
+  .md-header__inner { display: none !important; }
+  /* Make Material header (tabs) sticky below the site nav (56px tall) */
+  /* Override Material JS that hides header via transform on scroll */
+  .md-header {
+    position: sticky !important;
+    top: 56px !important;
+    box-shadow: none !important;
+    z-index: 99 !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  /* Site nav stays above */
+  .nav { z-index: 200; }
+  /* Docs sidebar toggle — book icon. Hidden on desktop (sidebar already visible inline).
+     Hide entire <li> to prevent it from taking horizontal space and misaligning tabs. */
+  .docs-sidebar-btn-item { display: none !important; }
+  .docs-sidebar-btn {
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    width: 28px; height: 28px;
+    border: 1px solid #1e293b; border-radius: 5px;
+    color: #94a3b8; cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .docs-sidebar-btn:hover { border-color: #3b82f6; color: #e2e8f0; }
+  @media (max-width: 1219px) { .docs-sidebar-btn-item { display: flex !important; } }
+  /* On mobile: collapse site nav links into hamburger, keep both rows */
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav.nav-open .nav-links {
+      display: flex; flex-direction: column;
+      position: absolute; top: 56px; left: 0; right: 0;
+      background: rgba(8,14,26,0.98); border-bottom: 1px solid #1e293b;
+      padding: 12px 32px; gap: 12px; z-index: 199;
+    }
+    .nav-source { display: none; }
+    .nav-menu-btn { display: block !important; }
+  }
+</style>
+<!-- Sync theme with main site's pyvider-theme localStorage key -->
 <script>
   (function() {
     var canonical = document.querySelector('link[rel="canonical"]');
@@ -28,5 +83,95 @@
       });
     });
   })();
+</script>
+{% endblock %}
+
+{% block header %}
+<!-- Site-wide nav (same HTML + CSS as Hugo main site) -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">py<span>vider</span></a>
+    <div class="nav-links">
+      <a href="/#features">Features</a>
+      <a href="/#components">Components</a>
+      <a href="/#packages">Packages</a>
+      <a href="/flavorpack/">Flavorpack</a>
+      <a href="/tofusoup/">TofuSoup</a>
+      <a href="/plating/">Plating</a>
+      <a href="/posts/">Blog</a>
+      <a href="/docs/" class="nav-active">Docs</a>
+    </div>
+    <div class="nav-controls">
+      <button class="theme-toggle" id="theme-toggle-docs" aria-label="Toggle light/dark mode">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </button>
+      <a href="https://github.com/provide-io/pyvider" target="_blank" rel="noopener" class="nav-source" title="Go to repository">
+        <svg class="nav-source__icon" viewBox="0 0 448 512" width="16" height="16"><path fill="currentColor" d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+        <span class="nav-source__repo">pyvider</span>
+        <span class="nav-source__facts" id="gh-facts"></span>
+      </a>
+      <button class="nav-menu-btn" aria-label="Menu" onclick="this.closest('nav').classList.toggle('nav-open')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
+    </div>
+  </div>
+</nav>
+<!-- Material header (inner hidden via CSS) -->
+{{ super() }}
+{% endblock %}
+
+{% block tabs %}
+{{ super() }}
+<!-- Inject docs sidebar toggle (book icon) SYNCHRONOUSLY right after tabs render
+     so it's in DOM before first paint. Only on mobile (desktop shows sidebar inline). -->
+<script>
+(function() {
+  if (window.innerWidth >= 1220) return;
+  var tabList = document.querySelector('.md-tabs__list');
+  if (!tabList || tabList.querySelector('.docs-sidebar-btn')) return;
+  var li = document.createElement('li');
+  li.className = 'md-tabs__item docs-sidebar-btn-item';
+  li.style.cssText = 'padding:0;display:flex;align-items:center;';
+  li.innerHTML = '<label for="__drawer" tabindex="0" aria-label="Open docs sidebar" title="Page navigation" class="docs-sidebar-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></label>';
+  tabList.insertBefore(li, tabList.firstChild);
+})();
+</script>
+<script>
+(function() {
+  // Theme toggle for docs nav — syncs both pyvider-theme and Material palette
+  var btn = document.getElementById('theme-toggle-docs');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      var isLight = document.documentElement.getAttribute('data-theme') === 'light';
+      if (!isLight) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('pyvider-theme', 'light');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('pyvider-theme');
+      }
+      // Reload to let Material pick up the new palette seed
+      location.reload();
+    });
+  }
+  // Fetch latest release tag
+  var factsEl = document.getElementById('gh-facts');
+  if (factsEl) {
+    var cached = sessionStorage.getItem('gh-pyvider-version');
+    if (cached) { factsEl.textContent = cached; }
+    else {
+      fetch('https://api.github.com/repos/provide-io/pyvider/releases/latest')
+        .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+        .then(function(d) { if (d.tag_name) { factsEl.textContent = d.tag_name; sessionStorage.setItem('gh-pyvider-version', d.tag_name); } })
+        .catch(function() {
+          fetch('https://api.github.com/repos/provide-io/pyvider/tags?per_page=1')
+            .then(function(r) { return r.json(); })
+            .then(function(tags) { if (tags.length && tags[0].name) { factsEl.textContent = tags[0].name; sessionStorage.setItem('gh-pyvider-version', tags[0].name); } })
+            .catch(function() {});
+        });
+    }
+  }
+})();
 </script>
 {% endblock %}
