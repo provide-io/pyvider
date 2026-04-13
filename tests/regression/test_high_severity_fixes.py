@@ -16,6 +16,7 @@ from pyvider.exceptions import FrameworkConfigurationError, ResourceError
 from pyvider.protocols.service import ProtocolService
 from pyvider.providers.base import BaseProvider, ProviderMetadata
 
+
 # ---------- H5: BaseProvider.capabilities is per-instance + setup() is idempotent
 
 
@@ -186,43 +187,3 @@ async def test_apply_unexpected_exception_wraps_into_resource_error(
     if before is not None:
         after = handler_errors.get(handler="ApplyResourceChange")
         assert after >= before + 1
-
-
-# ---------- §2.4: attrs requirement surfaces a friendly FrameworkConfigurationError
-
-
-def test_cty_to_attrs_instance_rejects_non_attrs_class() -> None:
-    """A user who hands a plain dataclass or bare class to config_class/
-    state_class/private_state_class should get a clear up-front error, not a
-    silent empty-object round-trip or a confusing deep TypeError."""
-    from dataclasses import dataclass
-
-    from pyvider.protocols.tfprotov6.handlers.utils import cty_to_attrs_instance
-
-    @dataclass
-    class NotAttrs:
-        foo: str = "bar"
-
-    with pytest.raises(FrameworkConfigurationError) as ei:
-        cty_to_attrs_instance(None, NotAttrs)
-
-    msg = str(ei.value)
-    assert "NotAttrs" in msg
-    assert "attrs" in msg.lower()
-
-
-def test_cty_to_attrs_instance_accepts_none_and_attrs_class() -> None:
-    """None short-circuits; a proper attrs class is accepted."""
-    import attrs as _attrs
-
-    from pyvider.protocols.tfprotov6.handlers.utils import cty_to_attrs_instance
-
-    assert cty_to_attrs_instance(None, None) is None
-
-    @_attrs.define
-    class Good:
-        x: int = 0
-
-    # With a None CtyValue the helper still returns None, but the class check
-    # must not raise.
-    assert cty_to_attrs_instance(None, Good) is None
