@@ -26,9 +26,7 @@ class TestGetProviderSchemaMetrics:
     ) -> None:
         """Test that handler increments request counter."""
         with (
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_requests"
-            ) as mock_requests,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
             ) as mock_compute,
@@ -45,9 +43,7 @@ class TestGetProviderSchemaMetrics:
     ) -> None:
         """Test that handler records duration metric."""
         with (
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_duration"
-            ) as mock_duration,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._compute_schema_once"
             ) as mock_compute,
@@ -67,7 +63,7 @@ class TestGetProviderSchemaMetrics:
     ) -> None:
         """Test that handler increments error counter on failure."""
         with (
-            patch("pyvider.protocols.tfprotov6.handlers.get_provider_schema.handler_errors") as mock_errors,
+            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_errors") as mock_errors,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_provider_schema._get_provider_schema_impl"
             ) as mock_impl,
