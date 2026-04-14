@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -134,8 +134,10 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         # --- LAZY INITIALIZATION STRATEGY ---
         # Create an event that will be set when discovery is complete
+        from pyvider.hub import DISCOVERY_READY_EVENT
+
         discovery_ready_event = asyncio.Event()
-        hub.register("singleton", "_discovery_ready_event", discovery_ready_event)
+        hub.register("singleton", DISCOVERY_READY_EVENT, discovery_ready_event)
 
         # Start component discovery immediately as a background task
         logger.debug(

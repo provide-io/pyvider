@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -28,6 +28,7 @@ from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
 from pyvider.cty.values.markers import UNREFINED_UNKNOWN
 from pyvider.exceptions import (
     DataSourceError,
+    FrameworkConfigurationError,
     FunctionError,
     PyviderError,
     ResourceError,
@@ -461,10 +462,32 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
 
 
 def cty_to_attrs_instance(cty_val: CtyValue | None, attrs_cls: type[Any] | None) -> Any | None:
+    """Convert a CtyValue into an instance of the given attrs-based class.
+
+    The framework converts Terraform configuration/state shapes into
+    Python objects by reading the target class's attrs field metadata.
+    Non-attrs classes (plain `dataclasses`, `pydantic` models, bare
+    `class` definitions) cannot be round-tripped and will silently
+    produce empty or malformed values — so we reject them up front with
+    a clear FrameworkConfigurationError, not a confusing failure later
+    in the conversion layer.
+    """
     if attrs_cls is None:
         return None
     if not inspect.isclass(attrs_cls):
         raise TypeError("Internal validation error: Passed object must be a class.")
+    if not attrs.has(attrs_cls):
+        err = FrameworkConfigurationError(
+            f"'{attrs_cls.__name__}' cannot be used as a config/state/private-state "
+            f"class because it is not an attrs class.\n\n"
+            f"Pyvider's cty ↔ Python conversion introspects fields via attrs.fields(); "
+            f"plain dataclasses, pydantic models, and bare classes cannot be "
+            f"converted and will silently round-trip to empty objects.\n\n"
+            f"Fix: decorate '{attrs_cls.__name__}' with @attrs.define or @attrs.frozen."
+        )
+        err.add_context("target_class", attrs_cls.__name__)
+        err.add_context("target_module", getattr(attrs_cls, "__module__", "unknown"))
+        raise err
 
     return BaseResource.from_cty(cty_val, attrs_cls)
 

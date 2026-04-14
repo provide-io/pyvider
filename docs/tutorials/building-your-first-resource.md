@@ -1,7 +1,7 @@
 # Building Your First Resource
 
 !!! info "Release Status"
-    pyvider is in pre-release. This tutorial covers **stable** functionality. Some APIs may change during the pre-release series.
+    Pyvider is in pre-release. This tutorial covers **stable** functionality. Some APIs may change during the pre-release series.
     See [project status](../index.md#-project-status) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform resource using pyvider. By the end, you'll have a working file resource that creates, reads, updates, and deletes local files through Terraform.
@@ -9,7 +9,7 @@ Welcome! In this tutorial, you'll build your first Terraform resource using pyvi
 **What You'll Learn:**
 
 - How resources work in Terraform
-- Creating a resource class with pyvider
+- Creating a resource class with Pyvider
 - Defining schemas for user configuration
 - Implementing lifecycle methods (CRUD operations)
 - Testing your resource with Terraform
@@ -19,7 +19,7 @@ Welcome! In this tutorial, you'll build your first Terraform resource using pyvi
 **Prerequisites:**
 
 - Python 3.11+ installed
-- pyvider installed ([installation guide](../getting-started/installation.md))
+- Pyvider installed ([installation guide](../getting-started/installation.md))
 - Basic Python knowledge
 - Basic Terraform knowledge
 
@@ -220,7 +220,7 @@ Try modifying the content and running `terraform apply` again to see updates!
 
 ## What You've Learned
 
-Congratulations! You've built your first pyvider resource. You now understand:
+Congratulations! You've built your first Pyvider resource. You now understand:
 
 ✅ **Resource Lifecycle** - Create, read, update, delete operations
 ✅ **Schema Definition** - Defining what users configure

@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -87,6 +87,12 @@ async def _collect_function_schemas(
     return await _collect_schemas("function", diagnostics)
 
 
+async def _collect_ephemeral_resource_schemas(
+    diagnostics: list[pb.Diagnostic],
+) -> dict[str, pb.Schema]:
+    return await _collect_schemas("ephemeral_resource", diagnostics)
+
+
 async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     """
     The core, expensive computation logic for building the provider schema.
@@ -101,7 +107,9 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
     try:
         # Wait for component discovery to complete before collecting schemas
         # Discovery runs in the background and signals via an event when done
-        discovery_ready_event = hub.get_component("singleton", "_discovery_ready_event")
+        from pyvider.hub import DISCOVERY_READY_EVENT
+
+        discovery_ready_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
         if discovery_ready_event is not None:
             logger.debug(
                 "Waiting for component discovery to complete",
@@ -159,12 +167,14 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
         resource_schemas = await _collect_resource_schemas(diagnostics)
         data_source_schemas = await _collect_data_source_schemas(diagnostics)
         functions = await _collect_function_schemas(diagnostics)
+        ephemeral_resource_schemas = await _collect_ephemeral_resource_schemas(diagnostics)
 
         response = pb.GetProviderSchema.Response(
             provider=provider_proto_schema,
             resource_schemas=resource_schemas,
             data_source_schemas=data_source_schemas,
             functions=functions,
+            ephemeral_resource_schemas=ephemeral_resource_schemas,
             diagnostics=diagnostics,
         )
 
@@ -175,6 +185,7 @@ async def _compute_schema_once() -> pb.GetProviderSchema.Response:
             resource_count=len(resource_schemas),
             data_source_count=len(data_source_schemas),
             function_count=len(functions),
+            ephemeral_resource_count=len(ephemeral_resource_schemas),
             warning_count=len([d for d in diagnostics if d.severity == pb.Diagnostic.WARNING]),
         )
 

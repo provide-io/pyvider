@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -96,10 +96,10 @@ class ProviderHandler(ProviderServicer):
             return self._provider
 
         # Fetch provider from hub
-        from pyvider.hub import hub
+        from pyvider.hub import DISCOVERY_READY_EVENT, hub
 
         # Wait for discovery to complete by waiting for the discovery ready event
-        discovery_event = hub.get_component("singleton", "_discovery_ready_event")
+        discovery_event = hub.get_component("singleton", DISCOVERY_READY_EVENT)
         if discovery_event is not None and not discovery_event.is_set():
             logger.debug(
                 "Waiting for component discovery to complete",

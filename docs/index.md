@@ -1,4 +1,11 @@
+---
+hide:
+  - navigation
+---
+
 # Welcome to Pyvider Documentation
+
+Build Terraform providers in Python — full Protocol v6, decorator-based API, async-first.
 
 !!! tip "Current Status"
     Pyvider is in active development. See the announcement banner above for current version status.
@@ -8,26 +15,26 @@
 ## Quick Start
 
 <div class="feature-grid">
-  <div class="feature-card">
+  <a class="feature-card" href="getting-started/installation/">
     <h3>📦 Install</h3>
     <p>Get Pyvider installed in minutes</p>
-    <p><a href="getting-started/installation/">Install Pyvider →</a></p>
-  </div>
-  <div class="feature-card">
+    <span class="card-link">Install Pyvider →</span>
+  </a>
+  <a class="feature-card" href="getting-started/quick-start/">
     <h3>🚀 5-Minute Tutorial</h3>
     <p>Build your first provider</p>
-    <p><a href="getting-started/quick-start/">Quick Start Guide →</a></p>
-  </div>
-  <div class="feature-card">
-    <h3>📚 100+ Examples</h3>
+    <span class="card-link">Quick Start Guide →</span>
+  </a>
+  <a class="feature-card" href="https://github.com/provide-io/pyvider-components">
+    <h3>📚 Components</h3>
     <p>Working code you can use today</p>
-    <p><a href="https://github.com/provide-io/pyvider-components">Browse Components →</a></p>
-  </div>
-  <div class="feature-card">
+    <span class="card-link">Browse Components →</span>
+  </a>
+  <a class="feature-card" href="explanation/design-philosophy/">
     <h3>🤔 Why Pyvider?</h3>
     <p>Understand the vision</p>
-    <p><a href="explanation/design-philosophy/">Design Philosophy →</a></p>
-  </div>
+    <span class="card-link">Design Philosophy →</span>
+  </a>
 </div>
 
 ## Documentation Structure
@@ -35,7 +42,7 @@
 ### 🚀 [Getting Started](getting-started/installation.md)
 - [Installation](getting-started/installation.md) - Set up Pyvider
 - [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
-- [Pyvider Components](https://github.com/provide-io/pyvider-components) - 100+ working examples
+- [Pyvider Components](https://github.com/provide-io/pyvider-components) - Ready-to-use working examples
 
 ### 📖 [Developer Guides](guides/building-components/creating-providers.md)
 
@@ -73,14 +80,6 @@ Understand Pyvider's foundation:
 - [Contribution Guidelines](contributing/guidelines.md) - How to contribute
 - [Code of Conduct](contributing/code-of-conduct.md) - Community standards
 
-## Part of the provide.io Ecosystem
-
-This project is part of a larger ecosystem of tools for Python and Terraform development.
-
-**[View Ecosystem Overview →](https://foundry.provide.io/provide-foundation/ecosystem/)**
-
-Understand how provide-foundation, pyvider, flavorpack, and other projects work together.
-
 ## Prerequisites
 
 - **Python 3.11+** installed
@@ -89,7 +88,7 @@ Understand how provide-foundation, pyvider, flavorpack, and other projects work 
 
 ## 📦 Ready-to-Use Components
 
-The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides 100+ production-focused components:
+The **[pyvider-components](https://github.com/provide-io/pyvider-components)** repository provides production-focused components:
 
 - **Resources**: file_content, local_directory, timed_token
 - **Data Sources**: env_variables, file_info, http_api, lens_jq
@@ -112,6 +111,3 @@ Install with: `uv add pyvider-components`
 
 ---
 
-<p align="center">
-  Made with ❤️ by the team at <a href="https://provide.io">Provide</a>
-</p>

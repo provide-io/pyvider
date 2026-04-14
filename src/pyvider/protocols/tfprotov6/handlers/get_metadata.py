@@ -1,5 +1,5 @@
 #
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 
@@ -64,12 +64,25 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
                 component_name=func_name,
             )
 
+        # Get ephemeral resources (all, including test-only)
+        all_ephemerals = get_all_components("ephemeral_resource")
+        ephemeral_resources = []
+        for name in all_ephemerals:
+            ephemeral_resources.append(pb.GetMetadata.EphemeralMetadata(type_name=name))
+            logger.debug(
+                "Ephemeral resource discovered during metadata collection",
+                operation="get_metadata",
+                component_type="ephemeral_resource",
+                component_name=name,
+            )
+
         logger.info(
             "GetMetadata completed successfully",
             operation="get_metadata",
             resource_count=len(resources),
             data_source_count=len(data_sources),
             function_count=len(functions),
+            ephemeral_resource_count=len(ephemeral_resources),
         )
 
         response = pb.GetMetadata.Response(
@@ -81,6 +94,7 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
             resources=resources,
             data_sources=data_sources,
             functions=functions,
+            ephemeral_resources=ephemeral_resources,
             diagnostics=[],
         )
 

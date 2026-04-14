@@ -5,11 +5,11 @@ INHERIT: .provide/foundry/base-mkdocs.yml
 site_name: pyvider
 site_description: 'Python framework for building Terraform providers'
 site_author: provide.io
-site_url: https://foundry.provide.io/pyvider/
+site_url: https://pyvider.com/docs/
 repo_url: https://github.com/provide-io/pyvider
-repo_name: provide-io/pyvider
+repo_name: pyvider
 edit_uri: edit/main/docs/
-copyright: ©2024-2025 provide.io llc<br/>🛠️ with 💚 and 🦝 on 🌎
+copyright: ©2024-2026 provide.io llc
 
 # Development server configuration
 dev_addr: 127.0.0.1:11004
@@ -19,23 +19,42 @@ docs_dir: docs
 
 # Project-specific theme overrides
 theme:
+  custom_dir: docs/overrides
+  homepage: https://pyvider.com
+  # Override features to disable navigation.instant (causes layout shift when
+  # swapping tabs via AJAX — our book icon is re-injected each time)
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.path
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+    - content.action.view
   palette:
-    # Light mode - custom colors for pyvider
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: indigo
-      accent: indigo
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
-    # Dark mode - custom colors for pyvider
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
+    # Dark mode default — matches pyvider.com marketing site
+    - scheme: slate
       primary: blue
       accent: blue
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
+    # Light mode alternate
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
 
 # Project-specific plugins (in addition to base plugins)
 plugins:
@@ -94,7 +113,7 @@ nav:
       - 'Using Data Sources': 'guides/usage/using-data-sources.md'
       - 'Using Functions': 'guides/usage/using-functions.md'
 
-  - 'Explanation':
+  - 'Concepts':
     - 'Architecture': 'explanation/architecture.md'
     - 'Component Model': 'explanation/component-model.md'
     - 'Schema System': 'explanation/schema-system.md'
@@ -103,53 +122,40 @@ nav:
   - 'Reference':
     - 'Resource Lifecycle': 'reference/resource-lifecycle.md'
     - 'Data Source API': 'reference/data-source-api.md'
+    - 'Schema':
+      - 'Overview': 'schema/overview.md'
+      - 'Types': 'schema/types.md'
+      - 'Attributes': 'schema/attributes.md'
+      - 'Blocks': 'schema/blocks.md'
+      - 'Validators': 'schema/validators.md'
+      - 'Computed Attributes': 'schema/computed-attributes.md'
+      - 'Sensitive Data': 'schema/sensitive-data.md'
+      - 'Schema by Example': 'schema/schema-by-example.md'
+      - 'Common Patterns': 'schema/common-patterns.md'
+      - 'Best Practices': 'schema/best-practices.md'
+    - 'API':
+      - 'Overview': 'api/index.md'
+      - 'CLI': 'api/cli.md'
+      - 'Common': 'api/common.md'
+      - 'Hub': 'api/hub.md'
+      - 'Providers': 'api/providers/index.md'
+      - 'Resources': 'api/resources.md'
+      - 'Data Sources': 'api/data_sources.md'
+      - 'Functions': 'api/functions.md'
+      - 'Ephemeral Resources': 'api/ephemerals.md'
+      - 'Exceptions': 'api/exceptions.md'
+      - 'Observability': 'api/observability.md'
+      - 'Schema Types': 'api/schema/index.md'
+      - 'Conversion': 'api/conversion/index.md'
+      - 'Protocols': 'api/protocols/index.md'
+    - 'Full API Reference': 'reference/'
+    - 'Quick Reference': 'quick-reference.md'
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
-  - 'Schema System':
-    - 'Overview': 'schema/overview.md'
-    - 'Types': 'schema/types.md'
-    - 'Attributes': 'schema/attributes.md'
-    - 'Blocks': 'schema/blocks.md'
-    - 'Validators': 'schema/validators.md'
-    - 'Computed Attributes': 'schema/computed-attributes.md'
-    - 'Sensitive Data': 'schema/sensitive-data.md'
-    - 'Schema by Example': 'schema/schema-by-example.md'
-    - 'Common Patterns': 'schema/common-patterns.md'
-    - 'Best Practices': 'schema/best-practices.md'
-
-  - '🔬 Capabilities (Experimental)':
-    - 'Overview': 'capabilities/overview.md'
-
-  - 'API Guide':
-    - 'Overview': 'api/index.md'
-    - 'CLI': 'api/cli.md'
-    - 'Common': 'api/common.md'
-    - 'Hub': 'api/hub.md'
-    - 'Providers':
-      - 'Overview': 'api/providers/index.md'
-    - 'Resources': 'api/resources.md'
-    - 'Data Sources': 'api/data_sources.md'
-    - 'Functions': 'api/functions.md'
-    - 'Ephemeral Resources': 'api/ephemerals.md'
-    - 'Exceptions': 'api/exceptions.md'
-    - 'Observability': 'api/observability.md'
-    - 'Schema':
-      - 'Overview': 'api/schema/index.md'
-      - 'Types': 'api/schema/types.md'
-    - 'Conversion': 'api/conversion/index.md'
-    - 'Protocols': 'api/protocols/index.md'
-
-  - 'Full API Reference': 'reference/'
-
-  - '⚡ Quick Reference': 'quick-reference.md'
-
-  - 'FAQ': 'faq.md'
-
-  - 'Troubleshooting': 'troubleshooting.md'
-
-  - 'Glossary': 'glossary.md'
-
-  - 'Contributing':
-    - 'Guidelines': 'contributing/guidelines.md'
+  - 'Resources':
+    - 'FAQ': 'faq.md'
+    - 'Troubleshooting': 'troubleshooting.md'
+    - 'Glossary': 'glossary.md'
+    - 'Contributing': 'contributing/guidelines.md'
     - 'Code of Conduct': 'contributing/code-of-conduct.md'
