@@ -16,7 +16,7 @@ from pyvider.resources import BaseResource, ResourceContext, register_resource
 from pyvider.schema import PvsSchema, a_bool, a_list, a_map, a_num, a_str, s_resource
 
 
-@register_resource("server")
+@register_resource("demo_server")
 class DemoServer(BaseResource):
     """
     Manages a virtual server resource.
@@ -59,6 +59,14 @@ class DemoServer(BaseResource):
         status: str
         created_at: str
 
+    # Wire the nested dataclasses into the BaseResource contract so the
+    # framework's cty <-> Python conversion can find them via attrs.fields().
+    config_class = Config
+    state_class = State
+
+    async def _validate_config(self, config: Any) -> list[str]:
+        return [] if config.name else ["name must not be empty"]
+
     @classmethod
     def get_schema(cls) -> PvsSchema:
         """Define resource schema"""
@@ -88,6 +96,25 @@ class DemoServer(BaseResource):
                 "created_at": a_str(computed=True, description="Creation timestamp"),
             }
         )
+
+    async def _create(
+        self, ctx: ResourceContext, base_plan: dict[str, Any]
+    ) -> tuple[dict[str, Any] | None, Any]:
+        """Plan hook: mark computed fields as known-after-apply."""
+        from pyvider.schema import a_unknown
+
+        for field in ("id", "public_ip", "private_ip", "status", "created_at"):
+            base_plan[field] = a_unknown(a_str())
+        return base_plan, None
+
+    async def _update(
+        self, ctx: ResourceContext, base_plan: dict[str, Any]
+    ) -> tuple[dict[str, Any] | None, Any]:
+        """Plan hook: status may change on update; id / ips / created_at stay."""
+        from pyvider.schema import a_unknown
+
+        base_plan["status"] = a_unknown(a_str())
+        return base_plan, None
 
     async def _create_apply(self, ctx: ResourceContext) -> tuple[Any, Any]:
         """Create a new server"""
@@ -164,7 +191,7 @@ class DemoServer(BaseResource):
             del DemoServer._servers[server_id]
 
 
-@register_resource("database")
+@register_resource("demo_database")
 class DemoDatabase(BaseResource):
     """
     Manages a database instance.
@@ -300,7 +327,7 @@ class DemoDatabase(BaseResource):
             del DemoDatabase._databases[db_id]
 
 
-@register_resource("network")
+@register_resource("demo_network")
 class DemoNetwork(BaseResource):
     """
     Manages a virtual private network (VPC).

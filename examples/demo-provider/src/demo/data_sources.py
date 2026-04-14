@@ -20,7 +20,29 @@ from pyvider.schema import PvsSchema, a_list, a_map, a_num, a_str, s_data_source
 from .resources import DemoServer
 
 
-@register_data_source("server_info")
+@define
+class DemoServerInfoConfig:
+    """demo_server_info data source configuration (query parameters)"""
+
+    server_id: str
+
+
+@define
+class DemoServerInfoState:
+    """demo_server_info data source state (query results)"""
+
+    server_id: str
+    id: str
+    name: str
+    instance_type: str
+    region: str
+    status: str
+    public_ip: str
+    private_ip: str
+    uptime_seconds: int  # Computed
+
+
+@register_data_source("demo_server_info")
 class DemoServerInfo(BaseDataSource):
     """
     Query information about existing servers.
@@ -31,24 +53,13 @@ class DemoServerInfo(BaseDataSource):
     - Computed values
     """
 
-    @define
-    class Config:
-        """Data source configuration (query parameters)"""
+    config_class = DemoServerInfoConfig
+    state_class = DemoServerInfoState
 
-        server_id: str
-
-    @define
-    class State:
-        """Data source state (query results)"""
-
-        id: str
-        name: str
-        instance_type: str
-        region: str
-        status: str
-        public_ip: str
-        private_ip: str
-        uptime_seconds: int  # Computed
+    async def _validate_config(self, config: DemoServerInfoConfig) -> list[str]:
+        # server_id may be unknown at plan time if it references a resource
+        # attribute computed during apply; defer existence checks to read().
+        return []
 
     @classmethod
     def get_schema(cls) -> PvsSchema:
@@ -72,19 +83,15 @@ class DemoServerInfo(BaseDataSource):
     async def read(self, ctx: ResourceContext) -> Any:
         """Read server information"""
         server_id = ctx.config.server_id
-
-        # Look up server
-        if server_id not in DemoServer._servers:
-            raise ValueError(f"Server {server_id} not found")
+        if not server_id or server_id not in DemoServer._servers:
+            return None
 
         server_data = DemoServer._servers[server_id]
-
-        # Calculate uptime (simulated)
         created_time = time.mktime(time.strptime(server_data["created_at"], "%Y-%m-%dT%H:%M:%SZ"))
         uptime = int(time.time() - created_time)
 
-        # Return state
-        return self.State(
+        return DemoServerInfoState(
+            server_id=server_id,
             id=server_data["id"],
             name=server_data["name"],
             instance_type=server_data["instance_type"],
@@ -96,7 +103,7 @@ class DemoServerInfo(BaseDataSource):
         )
 
 
-@register_data_source("regions")
+@register_data_source("demo_regions")
 class DemoRegions(BaseDataSource):
     """
     Query available cloud regions.
@@ -163,7 +170,7 @@ class DemoRegions(BaseDataSource):
         return []
 
 
-@register_data_source("instance_types")
+@register_data_source("demo_instance_types")
 class DemoInstanceTypes(BaseDataSource):
     """
     Query available instance types and their specifications.
