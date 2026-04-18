@@ -1,0 +1,82 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+# Comprehensive Default Configuration for a Pyvider Provider
+#
+# File: pyvider.toml
+# This file should be placed in the root of your provider project.
+# It is recommended to add this file to your .gitignore if it contains secrets.
+
+# [REQUIRED] Secret for Private State Encryption
+# -----------------------------------------------------------------------------
+# This is the most critical runtime setting. It is the shared secret used to
+# derive the encryption key for a resource's "private_state". This value MUST
+# be kept secret and should be a strong, randomly generated string.
+#
+# Environment Variable: PYVIDER_PRIVATE_STATE_SHARED_SECRET
+private_state_shared_secret = "test-secret-key-for-integrated-test-12345"
+
+
+# [logging] - Controls the provider's structured logging output.
+# -----------------------------------------------------------------------------
+[logging]
+
+# The minimum level of logs to emit.
+# Environment Variable: PYVIDER_LOG_LEVEL
+# Options: "DEBUG", "INFO", "WARN", "ERROR"
+level = "DEBUG"
+
+# The format for console logs.
+# - "emoji": (Default) Human-readable, emoji-prefixed logs.
+# - "key_value": Simple key=value formatted text logs.
+# - "json": Machine-readable JSON logs, ideal for production and log aggregation.
+# Environment Variable: PYVIDER_LOG_CONSOLE_FORMATTER
+format = "emoji"
+
+# If true, the timestamp will be omitted from log lines. Useful for environments
+# that automatically prepend their own timestamps.
+# Environment Variable: PYVIDER_LOG_OMIT_TIMESTAMP
+omit_timestamp = false
+
+# Fine-grained logging control for specific framework modules. This is useful
+# for deep debugging without enabling DEBUG level for the entire provider.
+# The keys are the module names, and values are the desired log level.
+# Environment Variable: PYVIDER_LOG_MODULE_LEVELS (e.g., "pyvider.hub=DEBUG,pyvider.rpcplugin=INFO")
+[logging.module_levels]
+# "pyvider.hub" = "DEBUG"
+# "pyvider.rpcplugin" = "INFO"
+# "pyvider.conversion" = "WARN"
+
+
+# [server] - Advanced configuration for the underlying gRPC server.
+# -----------------------------------------------------------------------------
+# These settings are inherited from the pyvider-rpcplugin library and control
+# the low-level behavior of the plugin server.
+[server]
+
+# The number of seconds the server will wait for active RPCs to complete
+# during a graceful shutdown before forcefully terminating.
+# Environment Variable: PYVIDER_PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN
+timeout_graceful_shutdown = 5
+
+# The maximum size (in bytes) of a gRPC message the server will accept.
+# This can be increased if you have resources with very large states.
+# Default is 4 MiB (4 * 1024 * 1024).
+# Environment Variable: PYVIDER_PLUGIN_MAX_MESSAGE_SIZE
+max_message_size = 4194304
+
+# The time (in seconds) the server will wait before sending a keepalive ping
+# to the client (Terraform) to ensure the connection is still active.
+# Environment Variable: PYVIDER_PLUGIN_KEEPALIVE_TIME
+keepalive_time = 60
+
+
+# [core] - Core framework settings.
+# -----------------------------------------------------------------------------
+[core]
+
+# Overrides the version used for constructing the Terraform plugin path.
+# This is primarily useful in complex development environments and should
+# typically not be needed.
+# Environment Variable: PYVIDER_VERSION
+# version = "0.1.0"
