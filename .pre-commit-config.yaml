@@ -34,3 +34,14 @@ repos:
         pass_filenames: false
         always_run: true
         types: [python]
+
+  - repo: https://github.com/hukkin/mdformat
+    rev: 0.7.22
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat-frontmatter
+          - mdformat-tables
+        args: [--wrap, 'no']
+        exclude: '\.tmpl\.md$'
