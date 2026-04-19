@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+version = 1
+
+# Covers files without inline SPDX headers (markdown, config, yaml, json, etc.).
+# Python sources in src/ and tests/ carry their own inline headers and take
+# precedence over this blanket declaration (default "aggregate" precedence).
+[[annotations]]
+path = "**"
+SPDX-FileCopyrightText = "Copyright (c) 2026 provide.io llc"
+SPDX-License-Identifier = "Apache-2.0"
+
