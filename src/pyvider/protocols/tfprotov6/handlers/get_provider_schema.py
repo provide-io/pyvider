@@ -56,7 +56,7 @@ async def _collect_schemas(
             else:
                 # Resources and data sources use schema conversion
                 schema_obj = component.get_schema()
-                schemas[name] = await pvs_schema_to_proto(schema_obj)  # type: ignore[assignment]
+                schemas[name] = await pvs_schema_to_proto(schema_obj)
         except Exception as e:
             diagnostics.append(
                 pb.Diagnostic(

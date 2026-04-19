@@ -179,6 +179,12 @@ module = ["pyvider.hcl.*", "hcl2", "hcl2.*"]
 ignore_missing_imports = true
 ignore_errors = true
 
+# Proto-generated bindings lack .pyi stubs; protobuf populates class attrs
+# dynamically at module-load time, so mypy cannot see them statically.
+[[tool.mypy.overrides]]
+module = ["pyvider.protocols.tfprotov6.protobuf.*"]
+ignore_errors = true
+
 [tool.mutmut]
 paths_to_mutate = ["src/pyvider/protocols/tfprotov6/handlers"]
 runner = "pytest tests/tfprotov6/handlers/ -x --tb=short"
