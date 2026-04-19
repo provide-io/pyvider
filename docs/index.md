@@ -7,8 +7,7 @@ hide:
 
 Build Terraform providers in Python — full Protocol v6, decorator-based API, async-first.
 
-!!! tip "Current Status"
-    Pyvider is in active development. See the announcement banner above for current version status.
+!!! tip "Current Status" Pyvider is in active development. See the announcement banner above for current version status.
 
 **Pyvider** is a Python framework that enables you to build Terraform providers using pure Python. By combining Python's expressiveness with Terraform's infrastructure management capabilities, Pyvider makes provider development accessible to the Python ecosystem while maintaining full compatibility with Terraform's Plugin Protocol v6.
 
@@ -40,6 +39,7 @@ Build Terraform providers in Python — full Protocol v6, decorator-based API, a
 ## Documentation Structure
 
 ### 🚀 [Getting Started](getting-started/installation.md)
+
 - [Installation](getting-started/installation.md) - Set up Pyvider
 - [Quick Start](getting-started/quick-start.md) - Build your first provider in 5 minutes
 - [Pyvider Components](https://github.com/provide-io/pyvider-components) - Ready-to-use working examples
@@ -65,6 +65,7 @@ Understand Pyvider's foundation:
 - [Schema System](explanation/schema-system.md) - Type-safe data modeling
 
 ### 📦 [Schema System](schema/overview.md)
+
 - [Overview](schema/overview.md) - Schema introduction
 - [Types](schema/types.md) - Available schema types
 - [Attributes](schema/attributes.md) - Attribute definitions
@@ -72,11 +73,13 @@ Understand Pyvider's foundation:
 - [Validators](schema/validators.md) - Input validation
 
 ### 📘 [API Reference](api/index.md)
+
 - [Schema API](api/schema/index.md) - Attributes, blocks, and validation
 - [CLI Commands](api/cli.md) - Command-line interface
 - [Common Types](api/common.md) - Type system reference
 
 ### 🤝 [Contributing](contributing/guidelines.md)
+
 - [Contribution Guidelines](contributing/guidelines.md) - How to contribute
 - [Code of Conduct](contributing/code-of-conduct.md) - Community standards
 
@@ -109,5 +112,4 @@ Install with: `uv add pyvider-components`
 - **License**: Apache 2.0
 - **Status**: Alpha - Under Active Development
 
----
-
+______________________________________________________________________

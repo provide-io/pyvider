@@ -28,6 +28,7 @@ make test            # unit + integration
 ```
 
 Requirements:
+
 - **100% branch coverage** on `src/pyvider/**` (enforced).
 - **mypy strict mode**. No `type: ignore` without an inline justification.
 - **ruff** lint + format must pass.
@@ -44,5 +45,5 @@ Requirements:
 ## Pull Requests
 
 1. Run `make quality` (must pass).
-2. For protocol / schema changes, run the tfprotov6 integration tests explicitly.
-3. PR description notes any breaking schema or resource-API changes.
+1. For protocol / schema changes, run the tfprotov6 integration tests explicitly.
+1. PR description notes any breaking schema or resource-API changes.

@@ -1,8 +1,6 @@
 # Building Your First Resource
 
-!!! info "Release Status"
-    Pyvider is in pre-release. This tutorial covers **stable** functionality. Some APIs may change during the pre-release series.
-    See [project status](../index.md#-project-status) for details.
+!!! info "Release Status" Pyvider is in pre-release. This tutorial covers **stable** functionality. Some APIs may change during the pre-release series. See [project status](../index.md#-project-status) for details.
 
 Welcome! In this tutorial, you'll build your first Terraform resource using pyvider. By the end, you'll have a working file resource that creates, reads, updates, and deletes local files through Terraform.
 
@@ -23,7 +21,7 @@ Welcome! In this tutorial, you'll build your first Terraform resource using pyvi
 - Basic Python knowledge
 - Basic Terraform knowledge
 
----
+______________________________________________________________________
 
 ## What is a Resource?
 
@@ -37,13 +35,13 @@ A resource in Terraform represents a piece of infrastructure that can be managed
 Resources have a **lifecycle**:
 
 1. **Create** - Make something new
-2. **Read** - Check current state
-3. **Update** - Modify existing thing
-4. **Delete** - Remove it
+1. **Read** - Check current state
+1. **Update** - Modify existing thing
+1. **Delete** - Remove it
 
 Terraform handles this lifecycle automatically. You just implement the operations!
 
----
+______________________________________________________________________
 
 ## Step 1: Create Your Provider Package
 
@@ -57,6 +55,7 @@ touch my_provider/resources/file.py
 ```
 
 Your structure should look like:
+
 ```
 my_provider/
 ├── __init__.py
@@ -65,7 +64,7 @@ my_provider/
     └── file.py      # We'll work in this file
 ```
 
----
+______________________________________________________________________
 
 ## Step 2: Define Runtime Types
 
@@ -88,7 +87,7 @@ Let's define these using attrs:
 - State = what currently exists
 - Terraform compares them to know when to update
 
----
+______________________________________________________________________
 
 ## Step 3: Create the Resource Class
 
@@ -104,7 +103,7 @@ Now let's create the resource class itself:
 - `config_class` / `state_class` - Links our attrs classes
 - `get_schema()` - Defines what users configure in Terraform HCL
 
----
+______________________________________________________________________
 
 ## Step 4: Implement Read (Check State)
 
@@ -119,7 +118,7 @@ The `read()` method checks if the resource still exists and returns its current 
 - `None` tells Terraform "this resource doesn't exist anymore"
 - Terraform will then know to recreate it
 
----
+______________________________________________________________________
 
 ## Step 5: Implement Create
 
@@ -134,7 +133,7 @@ The `_create_apply()` method creates a new file:
 - First element: New state to track
 - Second element: Private data (advanced, we don't need it)
 
----
+______________________________________________________________________
 
 ## Step 6: Implement Update
 
@@ -144,7 +143,7 @@ The `_update_apply()` method modifies an existing file:
 --8<-- "snippets/resources/file_complete.py:update"
 ```
 
----
+______________________________________________________________________
 
 ## Step 7: Implement Delete
 
@@ -154,7 +153,7 @@ The `_delete_apply()` method removes the file:
 --8<-- "snippets/resources/file_complete.py:delete"
 ```
 
----
+______________________________________________________________________
 
 ## Step 8: Add Validation (Optional but Recommended)
 
@@ -164,7 +163,7 @@ Let's add configuration validation to prevent bad inputs:
 --8<-- "snippets/resources/file_complete.py:validation"
 ```
 
----
+______________________________________________________________________
 
 ## Complete Code
 
@@ -174,7 +173,7 @@ Here's your complete `file.py`:
 --8<-- "snippets/resources/file_complete.py"
 ```
 
----
+______________________________________________________________________
 
 ## Step 9: Test with Terraform
 
@@ -216,19 +215,15 @@ You should see:
 
 Try modifying the content and running `terraform apply` again to see updates!
 
----
+______________________________________________________________________
 
 ## What You've Learned
 
 Congratulations! You've built your first Pyvider resource. You now understand:
 
-✅ **Resource Lifecycle** - Create, read, update, delete operations
-✅ **Schema Definition** - Defining what users configure
-✅ **Runtime Types** - Separating config from state
-✅ **Validation** - Preventing bad configurations
-✅ **Testing** - Using Terraform to test your resource
+✅ **Resource Lifecycle** - Create, read, update, delete operations ✅ **Schema Definition** - Defining what users configure ✅ **Runtime Types** - Separating config from state ✅ **Validation** - Preventing bad configurations ✅ **Testing** - Using Terraform to test your resource
 
----
+______________________________________________________________________
 
 ## Next Steps
 
@@ -240,7 +235,7 @@ Now that you understand the basics, explore:
 - **[Resource Lifecycle Reference](../reference/resource-lifecycle.md)** - Complete API documentation
 - **[Intermediate Provider Tutorial](intermediate-provider.md)** - Build a more complex HTTP API provider
 
----
+______________________________________________________________________
 
 ## Troubleshooting
 
