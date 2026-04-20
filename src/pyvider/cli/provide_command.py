@@ -216,7 +216,7 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             "Creating RPC handler with lazy provider initialization",
             operation="handler_creation",
         )
-        handler = ProviderHandler(_provider=provider_init_task)
+        handler = ProviderHandler(provider=provider_init_task)
 
         # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
@@ -254,11 +254,11 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             registration_task.cancel()
             raise
         finally:
-            # Clean up background initialization task if it's still running
-            if not background_init.done():
-                background_init.cancel()
+            # Clean up background registration task if it's still running
+            if not registration_task.done():
+                registration_task.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
-                    await background_init
+                    await registration_task
 
         logger.info(
             "Provider server has shut down gracefully",

@@ -67,7 +67,7 @@ def detect_launch_context() -> LaunchContext:
     """
     executable_path = sys.argv[0] if sys.argv else ""
     python_executable = sys.executable
-    working_directory = os.getcwd()
+    working_directory = str(Path.cwd())
     is_terraform_invoked = bool(os.environ.get("TF_PLUGIN_MAGIC_COOKIE"))
 
     # Gather environment information

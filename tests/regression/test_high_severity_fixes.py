@@ -16,7 +16,6 @@ from pyvider.exceptions import FrameworkConfigurationError, ResourceError
 from pyvider.protocols.service import ProtocolService
 from pyvider.providers.base import BaseProvider, ProviderMetadata
 
-
 # ---------- H5: BaseProvider.capabilities is per-instance + setup() is idempotent
 
 
