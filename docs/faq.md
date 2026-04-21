@@ -11,7 +11,6 @@ Pyvider is a Python framework for building Terraform providers. It implements th
 ### Why use Pyvider instead of the Go SDK?
 
 **Use Pyvider when:**
-
 - You're more comfortable with Python than Go
 - You want to leverage Python's rich ecosystem (httpx, pydantic, etc.)
 - Your team already has Python expertise
@@ -19,7 +18,6 @@ Pyvider is a Python framework for building Terraform providers. It implements th
 - You prefer Python's async/await over Go's goroutines
 
 **Use Go SDK when:**
-
 - You need absolute maximum performance
 - You're building a high-traffic public provider
 - Your team has Go expertise
@@ -39,7 +37,6 @@ Some APIs may change during the pre-release series.
 ### What Python version is required?
 
 Python **3.11 or higher** is required. Pyvider uses modern Python features like:
-
 - Native async/await
 - Type hints and `|` union syntax
 - Structured pattern matching (in some areas)
@@ -47,7 +44,6 @@ Python **3.11 or higher** is required. Pyvider uses modern Python features like:
 ### Can I use existing Python libraries?
 
 Yes! One of Pyvider's main benefits is access to Python's ecosystem:
-
 - **HTTP clients**: httpx, aiohttp
 - **Cloud SDKs**: boto3, azure-sdk, google-cloud
 - **Data**: pandas, polars
@@ -62,9 +58,9 @@ Just ensure they support async/await if you're using them in async contexts.
 Pyvider acts as a bridge between Terraform and your Python code:
 
 1. Terraform calls your provider via gRPC
-1. Pyvider handles the protocol communication
-1. Your Python code handles the business logic
-1. Pyvider translates responses back to Terraform
+2. Pyvider handles the protocol communication
+3. Your Python code handles the business logic
+4. Pyvider translates responses back to Terraform
 
 See [Architecture](explanation/architecture.md) for details.
 
@@ -77,7 +73,6 @@ See [Component Model](explanation/component-model.md).
 ### Do I need to understand the Terraform Plugin Protocol?
 
 No! Pyvider abstracts away the protocol details. You just implement:
-
 - Provider configuration
 - Resource CRUD operations
 - Data source reads
@@ -92,14 +87,13 @@ Pyvider handles all the gRPC, message serialization, and protocol compliance.
 Follow these steps:
 
 1. **Read the [Quick Start](getting-started/quick-start.md)** - Build your first provider in 5 minutes
-1. **Try the [Tutorial](tutorials/intermediate-provider.md)** - Build a real HTTP API provider
-1. **Study [Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
-1. **Read the Guides** - [Creating Providers](guides/building-components/creating-providers.md), [Creating Resources](guides/building-components/creating-resources.md)
+2. **Try the [Tutorial](tutorials/intermediate-provider.md)** - Build a real HTTP API provider
+3. **Study [Examples](https://github.com/provide-io/pyvider-components)** - 100+ working examples
+4. **Read the Guides** - [Creating Providers](guides/building-components/creating-providers.md), [Creating Resources](guides/building-components/creating-resources.md)
 
 ### What's the difference between a resource and a data source?
 
 **Resources** manage infrastructure lifecycle (create, update, delete):
-
 ```python
 @register_resource("server")
 class Server(BaseResource):
@@ -109,7 +103,6 @@ class Server(BaseResource):
 ```
 
 **Data Sources** fetch read-only data:
-
 ```python
 @register_data_source("user")
 class User(BaseDataSource):
@@ -123,20 +116,18 @@ See [Core Concepts](explanation/component-model.md).
 ### How do I handle secrets and credentials?
 
 1. **Mark as sensitive** in schema:
-
    ```python
    "api_key": a_str(required=True, sensitive=True)
    ```
 
-1. **Use private state** for encrypted storage:
-
+2. **Use private state** for encrypted storage:
    ```python
    return state, {"password": db.password}  # Encrypted
    ```
 
-1. **Never hardcode** secrets in code
+3. **Never hardcode** secrets in code
 
-1. **Never log** sensitive data
+4. **Never log** sensitive data
 
 See [Security Best Practices](guides/production/security-best-practices.md).
 
@@ -242,7 +233,6 @@ See [Schema Blocks](schema/blocks.md).
 Yes, for most use cases. Terraform providers are typically I/O bound (API calls, network), not CPU bound. Python's async/await handles I/O efficiently.
 
 **Tips for performance:**
-
 - Use async/await properly
 - Implement connection pooling
 - Cache expensive lookups
@@ -253,23 +243,21 @@ See [Performance Optimization](guides/production/performance-optimization.md).
 ### How do I make my provider faster?
 
 1. **Use async properly** - Never block the event loop
-1. **Cache data** - Cache expensive API calls
-1. **Batch operations** - Avoid N+1 queries
-1. **Connection pooling** - Reuse HTTP connections
-1. **Profile** - Use py-spy to find bottlenecks
+2. **Cache data** - Cache expensive API calls
+3. **Batch operations** - Avoid N+1 queries
+4. **Connection pooling** - Reuse HTTP connections
+5. **Profile** - Use py-spy to find bottlenecks
 
 See [Performance Optimization](guides/production/performance-optimization.md).
 
 ### Should I use caching?
 
 Cache data that:
-
 - Changes infrequently (region info, image catalogs)
 - Is expensive to fetch
 - Is accessed multiple times
 
 Don't cache:
-
 - Resource state (must be fresh)
 - User credentials
 - Frequently changing data
@@ -281,8 +269,8 @@ Don't cache:
 Options:
 
 1. **Development** - Use `pyvider install` for local testing
-1. **Internal** - Package with Flavor and distribute binary
-1. **Public** - Publish to Terraform Registry (after 1.0)
+2. **Internal** - Package with Flavor and distribute binary
+3. **Public** - Publish to Terraform Registry (after 1.0)
 
 See [Installation Guide](getting-started/installation.md).
 
@@ -293,7 +281,6 @@ No! Pyvider providers run as Python scripts. However, you can package them into 
 ### Can I publish to the Terraform Registry?
 
 Public registry support is not available yet. For now, use:
-
 - Local dev provider file
 - Private distribution
 - Internal package repository
@@ -303,11 +290,10 @@ Public registry support is not available yet. For now, use:
 ### Why isn't Terraform finding my provider?
 
 Check:
-
 1. Provider is installed (`pyvider install`)
-1. Terraform is initialized (`terraform init`)
-1. Provider name matches in Terraform config
-1. Provider is in the correct directory
+2. Terraform is initialized (`terraform init`)
+3. Provider name matches in Terraform config
+4. Provider is in the correct directory
 
 See [Troubleshooting](troubleshooting.md#provider-not-found-error).
 
@@ -340,11 +326,10 @@ See [Troubleshooting](troubleshooting.md#state-drift-not-detected).
 ### Why is my provider crashing?
 
 Common causes:
-
 1. Unhandled exceptions
-1. Blocking I/O in async code
-1. Missing await on async calls
-1. Type mismatches
+2. Blocking I/O in async code
+3. Missing await on async calls
+4. Type mismatches
 
 Enable debug logging and check for stack traces:
 
@@ -361,7 +346,6 @@ See [Troubleshooting](troubleshooting.md#provider-crashes-on-apply).
 ### Can I use capabilities?
 
 Capabilities are experimental. For production, use:
-
 - Inheritance (base classes)
 - Composition (helper classes)
 - Utility modules
@@ -461,7 +445,6 @@ async def _create_apply(self, ctx):
 ### How do I report a bug?
 
 [Open an issue](https://github.com/provide-io/pyvider/issues/new) with:
-
 - Clear description
 - Steps to reproduce
 - Environment details (Pyvider version, Python version, OS)
@@ -474,8 +457,8 @@ See [Contributing Guidelines](contributing/guidelines.md#reporting-bugs).
 We welcome contributions!
 
 1. Read [Contributing Guidelines](contributing/guidelines.md)
-1. Find a [good first issue](https://github.com/provide-io/pyvider/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
-1. Submit a pull request
+2. Find a [good first issue](https://github.com/provide-io/pyvider/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+3. Submit a pull request
 
 ## Additional Resources
 
@@ -485,6 +468,6 @@ We welcome contributions!
 - [Troubleshooting Guide](troubleshooting.md)
 - [API Reference](api/index.md)
 
-______________________________________________________________________
+---
 
 **Don't see your question?** Ask in [GitHub Discussions](https://github.com/provide-io/pyvider/discussions)!

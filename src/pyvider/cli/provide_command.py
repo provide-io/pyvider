@@ -167,10 +167,9 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         discovery_task = asyncio.create_task(discover_and_signal())
 
-        # Create a background task for provider initialization
-        # This runs AFTER discovery completes, but in parallel with server startup
-        async def initialize_providers_after_discovery() -> tuple[dict, Any]:
-            """Initialize providers after discovery completes."""
+        # Create a coroutine for provider initialization (don't schedule yet)
+        async def initialize_and_register_provider() -> None:
+            """Initialize and register provider after discovery."""
             logger.debug(
                 "Waiting for component discovery before provider instantiation",
                 operation="provider_init",
@@ -187,36 +186,22 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
                 operation="provider_init",
                 provider=next(iter(provider_instances.keys())),
             )
-            return provider_instances, primary_provider
-
-        provider_init_task = asyncio.create_task(initialize_providers_after_discovery())
-
-        # Async function to register provider once available
-        async def register_provider_when_ready() -> None:
-            """Wait for provider and register it in the hub."""
-            logger.debug(
-                "Waiting for provider initialization task",
-                operation="provider_registration",
-            )
-            provider_instances, primary_provider = await provider_init_task
             hub.register("singleton", "provider", primary_provider)
             logger.debug(
-                "Primary provider registered in hub (after initialization)",
+                "Primary provider registered in hub",
                 operation="hub_register",
                 provider=next(iter(provider_instances.keys())),
             )
 
-        registration_task = asyncio.create_task(register_provider_when_ready())
-
         # Create protocol immediately (doesn't need discovery or providers)
         protocol = PyviderProtocol()
 
-        # Create handler with provider_init_task - handler will wait for it when needed
+        # Create handler without a provider - it will fetch from hub on first use
         logger.debug(
-            "Creating RPC handler with lazy provider initialization",
+            "Creating RPC handler (will use lazy provider from hub)",
             operation="handler_creation",
         )
-        handler = ProviderHandler(provider=provider_init_task)
+        handler = ProviderHandler()
 
         # Configure the RPC plugin server with Terraform's magic cookie
         server_config = {
@@ -230,35 +215,42 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             operation="server_start",
             magic_cookie_present=bool(magic_cookie),
             graceful_shutdown_timeout=server_config["PLUGIN_TIMEOUT_GRACEFUL_SHUTDOWN"],
-            lazy_initialization="true (provider initializes in background)",
+            lazy_initialization="enabled (provider initializes in background)",
         )
 
         server: Any = RPCPluginServer(protocol=protocol, handler=handler, config=server_config)
         hub.register("singleton", "rpc_plugin_server", lambda: server)
 
-        # Run server and background initialization in parallel
-        # Server responds to Terraform's handshake immediately (<5 seconds)
-        # Provider initialization happens in background while server listens
-        server_task = asyncio.create_task(server.serve())
+        # Schedule provider initialization to run in background immediately
+        # Server will start listening while provider initializes
+        background_init = asyncio.create_task(initialize_and_register_provider())
+
+        # Yield control to let background tasks start before blocking on server.serve()
+        # This ensures provider initialization begins before the RPC server starts blocking
+        await asyncio.sleep(0)
+
         try:
-            # Wait for both server (blocks forever) and registration to complete
-            # The registration task ensures provider is available before first handler call
-            await asyncio.gather(server_task, registration_task)
+            logger.debug(
+                "Starting RPC server to listen for Terraform connections",
+                operation="server_startup",
+            )
+            # Start the server - it will respond to Terraform's handshake within seconds
+            # while provider initialization happens in the background
+            await server.serve()
         except asyncio.CancelledError:
-            # Server was cancelled (e.g., by Terraform closing connection)
+            # Server was cancelled
             logger.info(
                 "Provider server shutting down",
                 operation="server_shutdown",
             )
-            server_task.cancel()
-            registration_task.cancel()
+            background_init.cancel()
             raise
         finally:
-            # Clean up background registration task if it's still running
-            if not registration_task.done():
-                registration_task.cancel()
+            # Clean up background initialization task if it's still running
+            if not background_init.done():
+                background_init.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
-                    await registration_task
+                    await background_init
 
         logger.info(
             "Provider server has shut down gracefully",

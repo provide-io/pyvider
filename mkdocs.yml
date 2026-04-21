@@ -1,6 +1,3 @@
-# SPDX-FileCopyrightText: Copyright (c) 2026 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-
 # Inherit shared configuration from provide-foundry
 INHERIT: .provide/foundry/base-mkdocs.yml
 
@@ -12,7 +9,7 @@ site_url: https://pyvider.com/docs/
 repo_url: https://github.com/provide-io/pyvider
 repo_name: pyvider
 edit_uri: edit/main/docs/
-copyright: ©2024-2025 provide.io llc
+copyright: ©2024-2026 provide.io llc
 
 # Development server configuration
 dev_addr: 127.0.0.1:11004
@@ -156,47 +153,9 @@ nav:
     - 'Examples':
       - 'Pyvider Components': 'https://github.com/provide-io/pyvider-components'
 
-  - 'Schema System':
-    - 'Overview': 'schema/overview.md'
-    - 'Types': 'schema/types.md'
-    - 'Attributes': 'schema/attributes.md'
-    - 'Blocks': 'schema/blocks.md'
-    - 'Validators': 'schema/validators.md'
-    - 'Computed Attributes': 'schema/computed-attributes.md'
-    - 'Sensitive Data': 'schema/sensitive-data.md'
-    - 'Schema by Example': 'schema/schema-by-example.md'
-    - 'Common Patterns': 'schema/common-patterns.md'
-    - 'Best Practices': 'schema/best-practices.md'
-
-  - 'API Guide':
-    - 'Overview': 'api/index.md'
-    - 'CLI': 'api/cli.md'
-    - 'Common': 'api/common.md'
-    - 'Hub': 'api/hub.md'
-    - 'Providers':
-      - 'Overview': 'api/providers/index.md'
-    - 'Resources': 'api/resources.md'
-    - 'Data Sources': 'api/data_sources.md'
-    - 'Functions': 'api/functions.md'
-    - 'Ephemeral Resources': 'api/ephemerals.md'
-    - 'Exceptions': 'api/exceptions.md'
-    - 'Observability': 'api/observability.md'
-    - 'Schema':
-      - 'Overview': 'api/schema/index.md'
-      - 'Types': 'api/schema/types.md'
-    - 'Conversion': 'api/conversion/index.md'
-    - 'Protocols': 'api/protocols/index.md'
-
-  - 'Full API Reference': 'reference/'
-
-  - '⚡ Quick Reference': 'quick-reference.md'
-
-  - 'FAQ': 'faq.md'
-
-  - 'Troubleshooting': 'troubleshooting.md'
-
-  - 'Glossary': 'glossary.md'
-
-  - 'Contributing':
-    - 'Guidelines': 'contributing/guidelines.md'
+  - 'Resources':
+    - 'FAQ': 'faq.md'
+    - 'Troubleshooting': 'troubleshooting.md'
+    - 'Glossary': 'glossary.md'
+    - 'Contributing': 'contributing/guidelines.md'
     - 'Code of Conduct': 'contributing/code-of-conduct.md'

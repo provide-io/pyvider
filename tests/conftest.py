@@ -12,28 +12,28 @@ import sys
 
 import pytest
 
-# Reconfigure stdout/stderr to UTF-8 on Windows so that emoji and box-drawing
-# characters from structlog / rich don't raise UnicodeEncodeError (cp1252).
-# colorama wraps stdout as AnsiToWin32 with a .stream attribute; we must
-# reconfigure that underlying TextIOWrapper, not the wrapper itself.
+# On Windows, prevent UnicodeEncodeError from emoji/box-drawing characters in
+# provide.foundation's structured logger.  colorama wraps sys.stdout with an
+# AnsiToWin32 proxy whose .wrapped attribute is the real cp1252 TextIOWrapper.
+# That reference is saved in structlog's PrintLogger._file before pytest
+# replaces sys.stdout with its capture buffer.  Reconfiguring the underlying
+# streams (sys.__stdout__ / sys.__stderr__) to UTF-8 fixes all write paths.
 if sys.platform == "win32":
-    for _s in (sys.stdout, sys.stderr):
-        if _s is None:
+    for _real in (sys.__stdout__, sys.__stderr__, sys.stdout, sys.stderr):
+        if _real is None:
             continue
-        # Plain TextIOWrapper case
-        if hasattr(_s, "reconfigure"):
+        if hasattr(_real, "reconfigure"):
             try:
-                _s.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
-                continue
+                _real.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
             except Exception:
                 pass
-        # colorama AnsiToWin32 case: reconfigure the inner stream
-        _inner = getattr(_s, "stream", None)
-        if _inner is not None and hasattr(_inner, "reconfigure"):
-            try:
-                _inner.reconfigure(encoding="utf-8")
-            except Exception:
-                pass
+        for _attr in ("wrapped", "stream"):
+            _inner = getattr(_real, _attr, None)
+            if _inner is not None and hasattr(_inner, "reconfigure"):
+                try:
+                    _inner.reconfigure(encoding="utf-8", errors="replace")
+                except Exception:
+                    pass
 
 from pyvider.hub import hub
 from pyvider.hub.discovery import ComponentDiscovery
@@ -74,9 +74,7 @@ def discovered_components_session(event_loop: asyncio.BaseEventLoop) -> Generato
         # Silently skip discovery on:
         # - I/O errors (e.g., from mutmut redirecting stdio)
         # - UnicodeEncodeError (cp1252 terminal on Windows can't render emoji/box-drawing)
-        if isinstance(e, UnicodeEncodeError) or "I/O operation on closed file" in str(e):
-            pass
-        else:
+        if not isinstance(e, UnicodeEncodeError) and "I/O operation on closed file" not in str(e):
             raise
     yield
 

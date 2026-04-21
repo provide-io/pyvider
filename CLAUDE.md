@@ -5,7 +5,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Quick Commands
 
 ### Task Runner (wrknv)
-
 This project uses `wrknv` for task automation. All tasks can be run with `we run <task>`.
 
 ```bash
@@ -24,14 +23,12 @@ we run build         # Build distribution
 For complete task documentation, see [wrknv.toml](wrknv.toml) or run `we tasks`.
 
 ### Environment Setup
-
 ```bash
 # Install dependencies
 uv sync
 ```
 
 ### Pyvider CLI
-
 ```bash
 # Core commands
 pyvider --help                             # Show help
@@ -51,9 +48,7 @@ pyvider launch-context                     # Show how pyvider was launched
 ## Key Patterns
 
 ### Component Model
-
 Pyvider uses a hub-based discovery system where components self-register via decorators:
-
 - `@register_provider` - Provider configuration
 - `@register_resource` - CRUD resources
 - `@register_data_source` - Read-only data
@@ -61,7 +56,6 @@ Pyvider uses a hub-based discovery system where components self-register via dec
 - `@register_ephemeral_resource` - Short-lived resources
 
 ### Project Structure
-
 - `protocols/tfprotov6/` - Terraform Plugin Protocol v6 implementation
 - `schema/` - Type-safe data modeling
 - `conversion/` - Data transformation between Terraform and Python
@@ -70,7 +64,6 @@ Pyvider uses a hub-based discovery system where components self-register via dec
 For detailed architecture documentation, see `docs/core-concepts/`.
 
 ### Development Patterns
-
 - Components must use decorators to register with the hub
 - Schema definitions use attrs-based models with type annotations
 - Testing: Unit tests, integration tests, property-based testing (Hypothesis)

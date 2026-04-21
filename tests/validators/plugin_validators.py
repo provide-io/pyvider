@@ -37,7 +37,7 @@ def validate_plugin_output(plugin_path: str, expected_output: str) -> None:
     Raises:
         ValueError: If the plugin's output does not match the expected output.
     """
-    import subprocess
+    import subprocess  # nosec
 
     try:
         result = subprocess.run([plugin_path], capture_output=True, text=True, check=True)

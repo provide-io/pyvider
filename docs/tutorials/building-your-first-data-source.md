@@ -19,7 +19,7 @@ Welcome! In this tutorial, you'll build your first Terraform data source using p
 - Basic Python knowledge
 - Basic Terraform knowledge
 
-______________________________________________________________________
+---
 
 ## What is a Data Source?
 
@@ -34,14 +34,14 @@ A data source is a **read-only query** that fetches information from external sy
 
 **Key Differences from Resources:**
 
-| Data Source               | Resource               |
-| ------------------------- | ---------------------- |
-| Read-only                 | Read-write             |
-| No lifecycle (just query) | Full CRUD lifecycle    |
-| No state management       | Terraform tracks state |
-| Quick queries             | Manages infrastructure |
+| Data Source | Resource |
+|-------------|----------|
+| Read-only | Read-write |
+| No lifecycle (just query) | Full CRUD lifecycle |
+| No state management | Terraform tracks state |
+| Quick queries | Manages infrastructure |
 
-______________________________________________________________________
+---
 
 ## Step 1: Create Your Package Structure
 
@@ -53,7 +53,6 @@ touch my_provider/data_sources/file_info.py
 ```
 
 Your structure:
-
 ```
 my_provider/
 ├── __init__.py
@@ -62,7 +61,7 @@ my_provider/
     └── file_info.py    # We'll work here
 ```
 
-______________________________________________________________________
+---
 
 ## Step 2: Define Runtime Types
 
@@ -100,7 +99,7 @@ class FileInfoData:
 
 Simple and clean separation!
 
-______________________________________________________________________
+---
 
 ## Step 3: Create the Data Source Class
 
@@ -139,7 +138,7 @@ class FileInfo(BaseDataSource):
 - `config_class` / `data_class` - Links our attrs classes
 - All outputs are `computed=True` - We calculate them
 
-______________________________________________________________________
+---
 
 ## Step 4: Implement the Read Method
 
@@ -188,7 +187,7 @@ async def read(self, ctx: ResourceContext) -> FileInfoData | None:
 - Generate a stable, deterministic ID
 - Handle missing data gracefully
 
-______________________________________________________________________
+---
 
 ## Complete Code
 
@@ -263,7 +262,7 @@ class FileInfo(BaseDataSource):
             )
 ```
 
-______________________________________________________________________
+---
 
 ## Step 5: Test with Terraform
 
@@ -317,7 +316,7 @@ You should see:
 - Outputs show file existence and size
 - Resource uses the data
 
-______________________________________________________________________
+---
 
 ## Advanced Example: API Data Source
 
@@ -383,39 +382,34 @@ class APIQuery(BaseDataSource):
             )
 ```
 
-______________________________________________________________________
+---
 
 ## Best Practices
 
 1. **Generate Stable IDs** - Use deterministic ID generation so repeated queries return the same ID
-
    ```python
    id = f"{config.param1}:{config.param2}"
    ```
 
-1. **Handle Missing Data** - Return empty values instead of raising errors
-
+2. **Handle Missing Data** - Return empty values instead of raising errors
    ```python
    if not found:
        return Data(id=id, results=[], count=0)
    ```
 
-1. **Make Reads Idempotent** - Multiple reads should return the same result
-
+3. **Make Reads Idempotent** - Multiple reads should return the same result
    ```python
    # Good: Same query always returns same result
    async def read(self, config):
        return query_api(config.endpoint)  # Deterministic
    ```
 
-1. **Use Computed Outputs** - All outputs should be `computed=True`
-
+4. **Use Computed Outputs** - All outputs should be `computed=True`
    ```python
    "result": a_str(computed=True, description="Query result")
    ```
 
-1. **Add Error Handling** - Handle API failures gracefully
-
+5. **Add Error Handling** - Handle API failures gracefully
    ```python
    try:
        result = await api.query()
@@ -423,15 +417,19 @@ ______________________________________________________________________
        return Data(id=id, results=[], error="API unavailable")
    ```
 
-______________________________________________________________________
+---
 
 ## What You've Learned
 
 Congratulations! You've built your first Pyvider data source. You now understand:
 
-✅ **Data Sources vs Resources** - Read-only queries vs managed infrastructure ✅ **Simple Read Pattern** - One method that returns data ✅ **Input/Output Separation** - Config for inputs, Data for outputs ✅ **Deterministic IDs** - Stable identification for query results ✅ **Error Handling** - Graceful handling of missing data
+✅ **Data Sources vs Resources** - Read-only queries vs managed infrastructure
+✅ **Simple Read Pattern** - One method that returns data
+✅ **Input/Output Separation** - Config for inputs, Data for outputs
+✅ **Deterministic IDs** - Stable identification for query results
+✅ **Error Handling** - Graceful handling of missing data
 
-______________________________________________________________________
+---
 
 ## Next Steps
 
@@ -443,7 +441,7 @@ Now that you understand data sources, explore:
 - **[Data Source API Reference](../reference/data-source-api.md)** - Complete API documentation
 - **[Intermediate Provider Tutorial](intermediate-provider.md)** - Build a complete HTTP API provider
 
-______________________________________________________________________
+---
 
 ## Troubleshooting
 

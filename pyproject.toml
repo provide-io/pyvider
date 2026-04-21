@@ -42,9 +42,9 @@ dependencies = [
     "msgpack>=1.1.1",
     "google>=3.0.0",
     "cryptography>=45.0.7",
-    "provide-foundation>=0.3.29",
-    "pyvider-cty>=0.3.21",
-    "pyvider-rpcplugin>=0.3.21",
+    "provide-foundation>=0.4.0",
+    "pyvider-cty>=0.4.0",
+    "pyvider-rpcplugin>=0.4.0",
 ]
 
 [project.urls]
@@ -55,11 +55,10 @@ Issues = "https://github.com/provide-io/pyvider/issues"
 
 [dependency-groups]
 dev = [
-    "provide-testkit[pyvider-dev]",
-    "wrknv @ git+https://github.com/provide-io/wrknv.git@main",
+    "provide-testkit[pyvider-dev]>=0.4.0",
 ]
 docs = [
-    "provide-testkit[docs]",
+    "provide-testkit[docs]>=0.4.0",
 ]
 
 [project.scripts]

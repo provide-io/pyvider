@@ -1,6 +1,10 @@
 # 🐍🏗️ Pyvider
 
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/) [![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![CI](https://github.com/provide-io/pyvider/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/pyvider/actions)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![uv](https://img.shields.io/badge/uv-package_manager-FF6B35.svg)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![CI](https://github.com/provide-io/pyvider/actions/workflows/ci.yml/badge.svg)](https://github.com/provide-io/pyvider/actions)
 
 **Pyvider** is a Python framework for building Terraform providers. Write infrastructure providers using Python's elegance, type safety, and rich ecosystem while maintaining full compatibility with Terraform Plugin Protocol v6.
 
@@ -79,7 +83,6 @@ we tasks          # See all available commands
 This project uses `wrknv` for task automation. Run `we tasks` to see all available commands.
 
 **Common tasks:**
-
 - `we run test` - Run all tests
 - `we run test.coverage` - Run tests with coverage
 - `we run test.parallel` - Run tests in parallel
@@ -107,7 +110,9 @@ uv add pyvider
 
 ## 🚦 Project Status
 
-**Version**: 0.0.x (Alpha) **Protocol**: Terraform Plugin Protocol v6 **Python**: 3.11+
+**Version**: 0.0.x (Alpha)
+**Protocol**: Terraform Plugin Protocol v6
+**Python**: 3.11+
 
 ⚠️ **Pre-release** - APIs may change before 1.0 release. Best suited for internal tooling, experimentation, and learning.
 
