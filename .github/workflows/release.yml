@@ -1,39 +1,28 @@
 name: 🚀 Release
 
+# Release is driven by a user-created GitHub Release (or manual dispatch for dry runs).
+# Tag-push auto-release is deliberately not wired up yet — flip when ready.
 on:
-  push:
-    tags: ["v*"]
   release:
     types: [published]
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-24.04
+  # Delegate tests + build + (optional) GH release to the ci-tooling reusable.
+  # GH release creation is suppressed because `release: published` means one already exists.
+  release:
+    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@v0.4.2
     permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
-      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
-        with:
-          python-version: "3.11"
-      - run: uv sync --group dev
-      - run: uv run pytest --no-header -q
-      - run: uv build
-      - run: uvx twine check dist/*
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7
-        with:
-          name: dist
-          path: dist/*
-      - name: Generate Python SBOM
-        run: uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7
-        with:
-          name: sbom-python
-          path: sbom-python.cdx.json
+      contents: write
+    with:
+      create-github-release: false
+    secrets: inherit
 
+  # TestPyPI publish runs in the caller so PyPI Trusted Publishing matches the
+  # OIDC job_workflow_ref against this repo's release.yml (reusable workflows
+  # are not matched by PyPI's publisher config).
   publish-testpypi:
-    needs: build
+    needs: release
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
@@ -42,57 +31,47 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/pyvider
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
-          name: dist
+          name: release-artifacts
           path: dist
-      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
+      - name: 📤 Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
         with:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
+  # Install from TestPyPI and assert the installed version matches the release tag.
+  # Uses the helper scripts from ci-tooling/scripts/release/.
   verify-testpypi:
     needs: publish-testpypi
     runs-on: ubuntu-24.04
     steps:
-      - uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
+      - name: 📥 Checkout ci-tooling helpers
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: provide-io/ci-tooling
+          ref: v0.4.2
+          path: .ci-tooling
+      - name: 🐍 Setup Python
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
           python-version: "3.11"
           enable-cache: false
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-      - name: Install from TestPyPI and verify (with retry)
+      - name: 🔖 Resolve version
+        id: ver
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: .ci-tooling/scripts/release/resolve-tag-version.sh >> "$GITHUB_OUTPUT"
+      - name: ✅ Install from TestPyPI and verify
         run: |
-          PKG="pyvider==${{ steps.version.outputs.version }}"
-          for attempt in 1 2 3; do
-            echo "Attempt $attempt: installing $PKG from TestPyPI..."
-            if pip install \
-              --index-url https://test.pypi.org/simple/ \
-              --extra-index-url https://pypi.org/simple/ \
-              "$PKG"; then
-              echo "Install succeeded on attempt $attempt"
-              break
-            fi
-            if [ "$attempt" -lt 3 ]; then
-              echo "Install failed, waiting 30s for TestPyPI propagation..."
-              sleep 30
-            else
-              echo "All 3 attempts failed"
-              exit 1
-            fi
-          done
-          python -c "
-          import pyvider
-          installed = pyvider.__version__
-          expected = '${{ steps.version.outputs.version }}'
-          assert installed == expected, f'Version mismatch: {installed} != {expected}'
-          print(f'pyvider {installed} OK')
-          "
+          .ci-tooling/scripts/release/verify-testpypi.sh pyvider "${{ steps.ver.outputs.version }}" "import pyvider; v = pyvider.__version__"
 
+  # PyPI publish via trusted publisher bound to this repo's release.yml + env `pypi`.
   publish-pypi:
-    needs: [build, verify-testpypi]
-    if: github.event_name == 'release'
+    needs: verify-testpypi
     runs-on: ubuntu-24.04
     permissions:
       id-token: write
@@ -101,37 +80,45 @@ jobs:
       name: pypi
       url: https://pypi.org/p/pyvider
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
-          name: dist
+          name: release-artifacts
           path: dist
-      - uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
+      - name: 📤 Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
+        with:
+          skip-existing: true
 
+  # Generate SBOM, sign artifacts, attach everything to the GH release.
   sign-and-upload:
-    needs: build
+    needs: [publish-pypi]
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
+      - name: 📥 Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: 🐍 Setup uv
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
-          name: dist
+          python-version: "3.11"
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: release-artifacts
           path: dist
-      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8
-        with:
-          name: sbom-python
-          path: sbom
-      - uses: sigstore/gh-action-sigstore-python@04cffa1d795717b140764e8b640de88853c92acc  # v3.3.0
+      - name: 🧾 Generate Python SBOM
+        run: uvx cyclonedx-py environment --output-format json -o sbom-python.cdx.json
+      - name: 🔏 Sigstore sign artifacts
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46  # v3.0.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
-      - name: Upload artifacts and signatures to release
+      - name: ⬆️ Attach artifacts to release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
-          gh release upload "${{ github.event.release.tag_name }}" \
-            dist/*.whl dist/*.tar.gz dist/*.sigstore.json \
-            sbom/sbom-python.cdx.json \
-            --repo "$GITHUB_REPOSITORY" \
-            --clobber
+          gh release upload "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json --repo "$GITHUB_REPOSITORY" --clobber
