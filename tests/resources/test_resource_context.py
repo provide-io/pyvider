@@ -124,4 +124,46 @@ def test_is_field_unknown_returns_false_for_non_dict_value() -> None:
     assert ctx.is_field_unknown("name", source="config") is False
 
 
+def test_require_replace_starts_empty() -> None:
+    assert ResourceContext().requires_replace_paths == []
+
+
+def test_require_replace_records_paths_in_order() -> None:
+    ctx = ResourceContext()
+
+    ctx.require_replace("size_gb")
+    ctx.require_replace("disks[0].type")
+
+    assert ctx.requires_replace_paths == ["size_gb", "disks[0].type"]
+
+
+def test_require_replace_is_idempotent() -> None:
+    """A resource may hit the same condition from more than one branch."""
+    ctx = ResourceContext()
+
+    ctx.require_replace("size_gb")
+    ctx.require_replace("size_gb")
+
+    assert ctx.requires_replace_paths == ["size_gb"]
+
+
+def test_require_replace_ignores_empty_path() -> None:
+    """An empty path addresses nothing; Terraform would reject it."""
+    ctx = ResourceContext()
+
+    ctx.require_replace("")
+
+    assert ctx.requires_replace_paths == []
+
+
+def test_require_replace_is_per_instance() -> None:
+    """The list is a mutable default -- it must not be shared between contexts."""
+    first = ResourceContext()
+    second = ResourceContext()
+
+    first.require_replace("name")
+
+    assert second.requires_replace_paths == []
+
+
 # 🐍🏗️🔚

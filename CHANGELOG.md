@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Resources can force replacement instead of an in-place update.** `PlanResourceChange` never populated `requires_replace`, so an attribute the remote API cannot change (a region, an availability zone, an immutable name) was planned as an update, and the provider's `_update()` was asked to perform something it could not do. Two ways to say so: `requires_replace=True` on a schema attribute -- the equivalent of the SDK's `ForceNew` and the plugin framework's `RequiresReplace()` -- which compares the planned value against prior state, and `ctx.require_replace(path)` for replacement that depends on the values themselves rather than on the mere fact of a change. Neither reports anything on create or destroy, where Terraform rejects replacement paths, and a planned value that is still unknown counts as a change because the plan has to be decided before the value resolves.
+
 ## [0.5.3] - 2026-08-22
 
 ### Fixed

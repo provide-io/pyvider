@@ -33,6 +33,24 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
     capabilities: dict[str, BaseCapability] = field(factory=dict)
     test_mode_enabled: bool = field(default=False, kw_only=True)
     identity: dict[str, Any] | None = field(default=None, kw_only=True)
+    requires_replace_paths: list[str] = field(factory=list, init=False)
+
+    def require_replace(self, attribute_path: str) -> None:
+        """Force Terraform to replace this resource rather than update it in place.
+
+        This is the imperative counterpart to `requires_replace=True` on a schema
+        attribute: use it from `_update()` when replacement depends on the values
+        themselves (eg. shrinking disk) rather than on the mere fact that an attribute
+        changed.
+
+        Example:
+            async def _update(self, ctx, base_plan):
+                if ctx.config.size_gb < ctx.state.size_gb:
+                    ctx.require_replace("size_gb")  # volumes cannot shrink
+                return base_plan, None
+        """
+        if attribute_path and attribute_path not in self.requires_replace_paths:
+            self.requires_replace_paths.append(attribute_path)
 
     def get_private_state(self, private_state_class: type[PrivateStateType]) -> PrivateStateType | None:
         """

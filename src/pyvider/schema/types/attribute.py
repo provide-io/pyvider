@@ -25,6 +25,7 @@ class PvsAttribute:
     computed: bool = field(default=False)
     sensitive: bool = field(default=False)
     write_only: bool = field(default=False)
+    requires_replace: bool = field(default=False)
     deprecated: bool = field(default=False)
     default: Any = field(default=None)
     description_kind: StringKind = field(default=StringKind.PLAIN)  # Use Enum member
@@ -77,6 +78,20 @@ class PvsAttribute:
                 f"  - optional=True: For fields that users may provide (default)\n"
                 f"  - computed=True: For fields that the provider calculates\n\n"
                 f"Current configuration: required={self.required}, optional={self.optional}, computed={self.computed}"
+            )
+
+        # Rule 5: requires_replace is meaningless on a computed-only attribute.
+        if self.requires_replace and self.computed and not self.required and not self.optional:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"requires_replace cannot be set on a computed-only attribute.\n\n"
+                f"A computed-only attribute is never supplied by the practitioner, so "
+                f"replacement could only ever be triggered by the provider's own computed "
+                f"value changing -- which would force replacement on every plan where the "
+                f"value is not yet known.\n\n"
+                f"Suggestion: Set requires_replace on the required/optional attribute the "
+                f"practitioner actually changes, or add optional=True if this attribute is "
+                f"both practitioner-settable and provider-computed."
             )
 
 

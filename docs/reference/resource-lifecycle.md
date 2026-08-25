@@ -337,6 +337,34 @@ ctx.add_warning("This configuration is deprecated, use new_config instead")
 
 ---
 
+#### `require_replace()`
+
+```python
+ctx.require_replace(attribute_path: str) -> None
+```
+
+Force Terraform to destroy and recreate the resource instead of updating it in
+place. Use this from `_update()` when replacement depends on the values
+themselves; for "any change to this attribute forces replacement", prefer the
+declarative `requires_replace=True` schema flag below.
+
+**Parameters:**
+- `attribute_path`: Attribute path that forces replacement, e.g. `"size_gb"` or `"disks[0].type"`
+
+**Notes:**
+- Calling it during a create is a no-op: a resource with no prior state cannot be replaced.
+- Repeated calls with the same path are de-duplicated.
+
+**Example:**
+```python
+async def _update(self, ctx: ResourceContext, base_plan: dict) -> tuple[dict, None]:
+    if ctx.config.size_gb < ctx.state.size_gb:
+        ctx.require_replace("size_gb")  # volumes cannot shrink
+    return base_plan, None
+```
+
+---
+
 ## Schema Definition
 
 ### `get_schema()`
@@ -367,6 +395,41 @@ def get_schema(cls) -> PvsSchema:
         "created_at": a_num(computed=True, description="Creation timestamp"),
     })
 ```
+
+---
+
+### Forcing Replacement (`requires_replace`)
+
+Some attributes cannot be changed on an existing remote object. Mark them
+`requires_replace=True` and Terraform plans a destroy-and-create whenever the
+planned value differs from the value in state — the equivalent of the SDK's
+`ForceNew` and the plugin framework's `RequiresReplace()` plan modifier.
+
+```python
+@classmethod
+def get_schema(cls) -> PvsSchema:
+    return s_resource({
+        "region": a_str(required=True, requires_replace=True),  # servers can't move
+        "name": a_str(required=True),                           # renaming is in-place
+        "id": a_str(computed=True),
+    })
+```
+
+**Behaviour:**
+- Reported to Terraform in `PlanResourceChange.Response.requires_replace`; the
+  provider's own `_update()` is never called for a replacement.
+- Never reported on create (no prior state) or on destroy (no planned state).
+- A planned value that is still unknown counts as a change, since the plan has
+  to be decided before the value is resolved.
+- Not valid on a computed-only attribute — the practitioner cannot change what
+  they cannot set, so a schema that does this raises `ValueError`. Use
+  `optional=True, computed=True` if the attribute is both settable and computed.
+- Only top-level attributes are compared. For an attribute inside a nested
+  block, state the path with `ctx.require_replace("disks[0].type")`.
+
+For conditional replacement — replace only when a value shrinks, crosses a
+boundary, or the remote API cannot perform the update — use
+[`ctx.require_replace()`](#require_replace) from `_update()` instead.
 
 ---
 

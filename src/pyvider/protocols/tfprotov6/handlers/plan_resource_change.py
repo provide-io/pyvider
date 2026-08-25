@@ -15,6 +15,7 @@ from pyvider.common.operation_context import OperationContext, operation_context
 from pyvider.conversion import marshal, marshal_identity, unmarshal, unmarshal_identity
 from pyvider.conversion.marshaler import _apply_schema_marks_iterative
 from pyvider.cty import CtyObject, CtyValue
+from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import Deferral, PyviderError, ResourceError
 from pyvider.hub import hub
@@ -24,6 +25,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
     resolve_identity_schema,
+    str_path_to_proto_path,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
@@ -183,7 +185,7 @@ def _handle_planned_state_dict(
     *,
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
-) -> None:
+) -> CtyValue:
     logger.debug("_handle_planned_state_dict received", keys=list(planned_state_dict.keys()))
     logger.debug("Planned state dict values", planned_state_dict=planned_state_dict)
 
@@ -226,12 +228,97 @@ def _handle_planned_state_dict(
     check_required_attributes(resource_schema.block, raw_values_for_validation, is_state=True)
 
     # Validate the planned state - unknown values will be preserved by CTY
-    planned_state_cty_final = validator_type.validate(raw_values_for_validation)
+    planned_state_cty_final: CtyValue = validator_type.validate(raw_values_for_validation)
     marshalled_planned_state = marshal(planned_state_cty_final, schema=resource_schema.block)
     response.planned_state.msgpack = marshalled_planned_state.msgpack
 
     if identity_schema is not None and identity_values is not None:
         response.planned_identity.CopyFrom(marshal_identity(identity_values, identity_schema))
+
+    return planned_state_cty_final
+
+
+def _attribute_changed(prior_value: Any, planned_value: Any) -> bool:
+    """Decide whether an attribute's planned value differs from its prior value.
+
+    An unknown planned value counts as a change. It may well resolve to the
+    prior value at apply time, but the plan has to be decided now, and
+    Terraform's own plan modifiers treat unknown-vs-known as unequal for
+    exactly this reason: under-reporting replacement produces an in-place
+    update the provider cannot honour, while over-reporting is at worst a
+    conservative plan the practitioner sees before approving.
+
+    Comparison is on native Python values rather than CtyValues: prior state
+    arrives unmarshalled and unmarked, while planned values may still carry
+    schema marks (sensitive, write-only) picked up from the marked config, and
+    a mark difference does not mean the value changed.
+    """
+    if isinstance(planned_value, CtyValue) and planned_value.is_unknown:
+        return True
+    if isinstance(prior_value, CtyValue) and prior_value.is_unknown:
+        return True
+
+    prior_native = cty_to_native(prior_value) if isinstance(prior_value, CtyValue) else prior_value
+    planned_native = cty_to_native(planned_value) if isinstance(planned_value, CtyValue) else planned_value
+    return bool(prior_native != planned_native)
+
+
+def _collect_requires_replace_paths(
+    resource_schema: Any,
+    prior_state_cty: CtyValue | None,
+    planned_state_cty: CtyValue | None,
+    context_paths: list[str],
+    resource_type: str,
+) -> list[pb.AttributePath]:
+    """Build the attribute paths that force a destroy-and-create.
+
+    Two sources feed this: attributes declared `requires_replace=True` in the
+    schema, whose planned value is compared against prior state, and paths a
+    resource added imperatively via `ctx.require_replace()`.
+
+    Nothing is reported when there is no prior state (a resource being created
+    cannot be replaced) or no planned state (it is being destroyed); Terraform
+    rejects requires_replace paths in both cases.
+
+    Only top-level attributes are compared. An attribute inside a nested block
+    has no single path until the block's elements are matched up between prior
+    and planned state -- a correspondence Terraform itself establishes and this
+    layer cannot guess for list or set nesting -- so a resource that needs
+    replacement on a nested attribute states the path itself via
+    `ctx.require_replace()`.
+    """
+    if prior_state_cty is None or prior_state_cty.is_null or planned_state_cty is None:
+        return []
+
+    prior_values = prior_state_cty.value if isinstance(prior_state_cty.value, dict) else {}
+    planned_values = planned_state_cty.value if isinstance(planned_state_cty.value, dict) else {}
+
+    changed_names = [
+        name
+        for name, attr in resource_schema.block.attributes.items()
+        if attr.requires_replace and _attribute_changed(prior_values.get(name), planned_values.get(name))
+    ]
+
+    # Schema-declared names first, then context paths, de-duplicated while
+    # preserving order so the plan output is stable across runs.
+    ordered_paths: list[str] = list(changed_names)
+    ordered_paths.extend(path for path in context_paths if path not in ordered_paths)
+
+    proto_paths = []
+    for path in ordered_paths:
+        proto_path = str_path_to_proto_path(path)
+        if proto_path is not None:
+            proto_paths.append(proto_path)
+
+    if proto_paths:
+        logger.info(
+            "Planning resource replacement",
+            operation="plan_resource_change",
+            resource_type=resource_type,
+            requires_replace=ordered_paths,
+        )
+
+    return proto_paths
 
 
 def _derive_planned_identity_values(
@@ -363,12 +450,21 @@ async def _plan_resource_change_impl(
                 if identity_schema is not None
                 else None
             )
-            _handle_planned_state_dict(
+            planned_state_cty = _handle_planned_state_dict(
                 planned_state_dict,
                 resource_schema,
                 response,
                 identity_schema=identity_schema,
                 identity_values=identity_values,
+            )
+            response.requires_replace.extend(
+                _collect_requires_replace_paths(
+                    resource_schema,
+                    prior_state_cty,
+                    planned_state_cty,
+                    resource_context.requires_replace_paths,
+                    request.type_name,
+                )
             )
 
         if planned_private_state_attrs:
