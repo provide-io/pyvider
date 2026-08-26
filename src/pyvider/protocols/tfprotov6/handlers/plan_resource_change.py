@@ -286,6 +286,12 @@ def _collect_requires_replace_paths(
     layer cannot guess for list or set nesting -- so a resource that needs
     replacement on a nested attribute states the path itself via
     `ctx.require_replace()`.
+
+    Write-only attributes never reach the comparison below: their values are
+    nulled in both prior and planned state, so the diff would always be
+    empty. `PvsAttribute` rejects `write_only=True` combined with
+    `requires_replace=True` at schema-definition time rather than letting the
+    flag look effective while silently doing nothing.
     """
     if prior_state_cty is None or prior_state_cty.is_null or planned_state_cty is None:
         return []

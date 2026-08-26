@@ -177,6 +177,28 @@ class TestCollectRequiresReplacePaths:
 
         assert [step.attribute_name for p in paths for step in p.steps] == ["name", "size_gb"]
 
+    def test_write_only_attribute_can_never_produce_a_path(self) -> None:
+        """The reason PvsAttribute rejects write_only + requires_replace outright.
+
+        Write-only values are nulled in both prior and planned state, so the
+        comparison always sees null == null. This test forces the flag past
+        schema validation to demonstrate the silent no-op it would otherwise be.
+        """
+        schema = s_resource(
+            {
+                "name": a_str(required=True),
+                "password": a_str(optional=True, write_only=True),
+            }
+        )
+        password = schema.block.attributes["password"]
+        object.__setattr__(password, "requires_replace", True)
+
+        cty_type = schema.block.to_cty_type()
+        prior = cty_type.validate({"name": "a", "password": None})
+        planned = cty_type.validate({"name": "a", "password": None})
+
+        assert _collect_requires_replace_paths(schema, prior, planned, [], "demo") == []
+
 
 class TestPlanRequiresReplace:
     """Integration-level coverage through the real handler."""

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`requires_replace` no longer looks effective on a write-only attribute while doing nothing.** Terraform requires write-only values to be null in both prior and planned state, so the plan comparison always saw `null == null` and an attribute declared `write_only=True, requires_replace=True` never once produced a replacement path -- a silent no-op on exactly the attributes (secrets, credentials) whose rotation most needs one. The combination is now rejected at schema-definition time with a `ValueError` pointing at the alternatives, matching Terraform's own SDK, which errors with `WriteOnly cannot be set with ForceNew`. To rotate a write-only secret, pair it with a companion attribute the practitioner bumps -- conventionally `<name>_wo_version` -- and set `requires_replace=True` on that, or call `ctx.require_replace()` from the plan hook.
+
 ### Added
 
 - **Resources can force replacement instead of an in-place update.** `PlanResourceChange` never populated `requires_replace`, so an attribute the remote API cannot change (a region, an availability zone, an immutable name) was planned as an update, and the provider's `_update()` was asked to perform something it could not do. Two ways to say so: `requires_replace=True` on a schema attribute -- the equivalent of the SDK's `ForceNew` and the plugin framework's `RequiresReplace()` -- which compares the planned value against prior state, and `ctx.require_replace(path)` for replacement that depends on the values themselves rather than on the mere fact of a change. Neither reports anything on create or destroy, where Terraform rejects replacement paths, and a planned value that is still unknown counts as a change because the plan has to be decided before the value resolves.

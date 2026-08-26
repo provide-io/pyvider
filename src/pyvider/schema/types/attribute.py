@@ -94,5 +94,21 @@ class PvsAttribute:
                 f"both practitioner-settable and provider-computed."
             )
 
+        # Rule 6: requires_replace is unenforceable on a write-only attribute.
+        if self.requires_replace and self.write_only:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"requires_replace cannot be set on a write-only attribute.\n\n"
+                f"Terraform requires every write-only value to be null in both prior and "
+                f"planned state, so the plan can never observe a change to compare against "
+                f"and replacement would silently never trigger. Terraform's own SDK rejects "
+                f"the equivalent combination ('WriteOnly cannot be set with ForceNew').\n\n"
+                f"Suggestion: Pair the write-only attribute with a companion attribute the "
+                f"practitioner bumps when the secret rotates (commonly named "
+                f"'{self.name}_version' or '{self.name}_wo_version') and set requires_replace "
+                f"on that attribute instead, or trigger replacement imperatively from the "
+                f"resource's plan hook via ctx.require_replace()."
+            )
+
 
 # 🐍🏗️🔚

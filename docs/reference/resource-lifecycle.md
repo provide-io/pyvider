@@ -424,6 +424,14 @@ def get_schema(cls) -> PvsSchema:
 - Not valid on a computed-only attribute — the practitioner cannot change what
   they cannot set, so a schema that does this raises `ValueError`. Use
   `optional=True, computed=True` if the attribute is both settable and computed.
+- Not valid on a write-only attribute either. Terraform requires write-only
+  values to be null in both prior and planned state, so the comparison would
+  always see `null == null` and replacement would silently never fire;
+  a schema that combines the two raises `ValueError`. Terraform's own SDK
+  rejects the same pairing (`WriteOnly cannot be set with ForceNew`). To rotate
+  a write-only secret, pair it with a companion attribute the practitioner
+  bumps — conventionally `<name>_wo_version` — and put `requires_replace=True`
+  on that, or call `ctx.require_replace()` from the plan hook.
 - Only top-level attributes are compared. For an attribute inside a nested
   block, state the path with `ctx.require_replace("disks[0].type")`.
 

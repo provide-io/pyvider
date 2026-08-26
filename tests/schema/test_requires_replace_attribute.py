@@ -28,6 +28,22 @@ class TestRequiresReplaceFlag:
         with pytest.raises(ValueError, match="requires_replace cannot be set on a computed-only"):
             a_str(computed=True, requires_replace=True)
 
+    def test_rejected_on_a_write_only_attribute(self) -> None:
+        """Write-only values are null in prior and planned state, so a diff can never appear."""
+        with pytest.raises(ValueError, match="requires_replace cannot be set on a write-only"):
+            a_str(required=True, write_only=True, requires_replace=True)
+
+    def test_rejected_on_a_write_only_attribute_inside_a_schema(self) -> None:
+        """b_main re-creates attributes, so the rejection must also fire during schema build."""
+        with pytest.raises(ValueError, match="requires_replace cannot be set on a write-only"):
+            s_resource({"password": a_str(optional=True, write_only=True, requires_replace=True)})
+
+    def test_write_only_alone_is_allowed(self) -> None:
+        assert a_str(optional=True, write_only=True).write_only is True
+
+    def test_requires_replace_alone_is_allowed(self) -> None:
+        assert a_str(optional=True, requires_replace=True).requires_replace is True
+
     def test_survives_schema_construction(self) -> None:
         """b_main re-creates each attribute to stamp its name; the flag must ride along."""
         schema = s_resource({"name": a_str(required=True, requires_replace=True)})
