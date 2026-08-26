@@ -354,6 +354,9 @@ declarative `requires_replace=True` schema flag below.
 **Notes:**
 - Calling it during a create is a no-op: a resource with no prior state cannot be replaced.
 - Repeated calls with the same path are de-duplicated.
+- `_update()` is a plan-time hook, so it still runs on a plan that ends in
+  replacement; it is the apply-time `_update_apply()` that Terraform skips in
+  favour of `_delete_apply()` then `_create_apply()`.
 
 **Example:**
 ```python
@@ -416,8 +419,11 @@ def get_schema(cls) -> PvsSchema:
 ```
 
 **Behaviour:**
-- Reported to Terraform in `PlanResourceChange.Response.requires_replace`; the
-  provider's own `_update()` is never called for a replacement.
+- Reported to Terraform in `PlanResourceChange.Response.requires_replace`. The
+  plan-time `_update()` hook still runs — replacement paths are collected from
+  its result — but Terraform then applies the change as a destroy-and-create, so
+  the apply-time `_update_apply()` is never called; `_delete_apply()` and
+  `_create_apply()` run instead.
 - Never reported on create (no prior state) or on destroy (no planned state).
 - A planned value that is still unknown counts as a change, since the plan has
   to be decided before the value is resolved.
