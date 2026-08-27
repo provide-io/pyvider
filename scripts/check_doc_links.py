@@ -28,9 +28,23 @@ HEADING_PATTERN = re.compile(r"^#{1,6}\s+(.+)$", re.MULTILINE)
 
 
 def slugify(text: str) -> str:
-    """Convert heading text to anchor slug (GitHub/MkDocs style)."""
-    # Remove markdown formatting
-    text = re.sub(r"[`*_]", "", text)
+    r"""Convert heading text to anchor slug (GitHub/MkDocs style).
+
+    Underscores are kept. Python-Markdown's toc extension -- which is what
+    actually generates these anchors -- slugifies with `re.sub(r"[^\w\s-]", ...)`,
+    and `\w` includes the underscore, so `## \`require_replace()\`` renders an
+    anchor of `require_replace`. Stripping it here produced `requirereplace`,
+    which no link could ever match: every anchor into a heading naming a Python
+    identifier was reported broken, and correct links were the only ones that
+    failed.
+
+    Backticks and asterisks are removed because they are delimiters that
+    disappear when the heading renders. An underscore is only a delimiter when
+    it surrounds a word, which no heading in docs/ does, and Python-Markdown
+    does not treat an intra-word underscore as emphasis at all.
+    """
+    # Remove markdown formatting delimiters. Not underscores: see above.
+    text = re.sub(r"[`*]", "", text)
     # Convert to lowercase and replace spaces with hyphens
     slug = text.lower().strip()
     slug = re.sub(r"[^\w\s-]", "", slug)
