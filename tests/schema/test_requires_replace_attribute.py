@@ -8,7 +8,7 @@
 import pytest
 
 from pyvider.conversion.schema_adapter import _pvs_attribute_to_proto
-from pyvider.schema import a_str, s_resource
+from pyvider.schema import a_obj, a_str, b_list, b_set, b_single, s_resource
 
 
 class TestRequiresReplaceFlag:
@@ -55,6 +55,64 @@ class TestRequiresReplaceFlag:
         proto = _pvs_attribute_to_proto(a_str(name="name", required=True, requires_replace=True))
 
         assert not any(f.name == "requires_replace" for f, _ in proto.ListFields())
+
+
+class TestRequiresReplaceInsideNesting:
+    """Replacement paths are flat and top-level, so nesting makes the flag unreachable."""
+
+    def test_rejected_inside_a_list_block(self) -> None:
+        with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute inside"):
+            b_list("disk", attributes={"size": a_str(required=True, requires_replace=True)})
+
+    def test_rejected_inside_a_set_block(self) -> None:
+        with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute inside"):
+            b_set("disk", attributes={"size": a_str(required=True, requires_replace=True)})
+
+    def test_rejected_inside_a_single_block(self) -> None:
+        with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute inside"):
+            b_single("disk", attributes={"size": a_str(required=True, requires_replace=True)})
+
+    def test_rejected_inside_a_doubly_nested_block(self) -> None:
+        """The inner block validates itself before the outer one is built."""
+        with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute inside"):
+            b_list(
+                "outer",
+                attributes={"name": a_str(required=True)},
+                block_types=[
+                    b_list("inner", attributes={"size": a_str(required=True, requires_replace=True)})
+                ],
+            )
+
+    def test_error_names_the_offending_path(self) -> None:
+        with pytest.raises(ValueError) as excinfo:
+            b_list("disk", attributes={"size": a_str(required=True, requires_replace=True)})
+
+        message = str(excinfo.value)
+        assert "disk.size" in message
+        assert "ctx.require_replace('disk.size')" in message
+
+    def test_block_without_the_flag_is_allowed(self) -> None:
+        block = b_list("disk", attributes={"size": a_str(required=True)})
+
+        assert block.type_name == "disk"
+
+    def test_rejected_inside_an_object_attribute(self) -> None:
+        with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute nested inside"):
+            a_obj({"size": a_str(required=True, requires_replace=True)})
+
+    def test_object_attribute_may_itself_require_replace(self) -> None:
+        """The object is a top-level attribute, so its own path is addressable."""
+        attr = a_obj({"size": a_str(required=True)}, required=True, requires_replace=True)
+
+        assert attr.requires_replace is True
+
+    def test_schema_with_a_clean_block_still_builds(self) -> None:
+        schema = s_resource(
+            {"name": a_str(required=True, requires_replace=True)},
+            block_types=[b_list("disk", attributes={"size": a_str(required=True)})],
+        )
+
+        assert schema.block.attributes["name"].requires_replace is True
 
 
 # 🐍🏗️🔚

@@ -349,7 +349,7 @@ themselves; for "any change to this attribute forces replacement", prefer the
 declarative `requires_replace=True` schema flag below.
 
 **Parameters:**
-- `attribute_path`: Attribute path that forces replacement, e.g. `"size_gb"` or `"disks[0].type"`
+- `attribute_path`: Attribute path that forces replacement, e.g. `"size_gb"` or `"disks[0].type"`. An empty or whitespace-only path raises `ValueError`, so a typo cannot masquerade as a working call.
 
 **Notes:**
 - Calling it during a create is a no-op: a resource with no prior state cannot be replaced.
@@ -438,8 +438,18 @@ def get_schema(cls) -> PvsSchema:
   a write-only secret, pair it with a companion attribute the practitioner
   bumps — conventionally `<name>_wo_version` — and put `requires_replace=True`
   on that, or call `ctx.require_replace()` from the plan hook.
-- Only top-level attributes are compared. For an attribute inside a nested
-  block, state the path with `ctx.require_replace("disks[0].type")`.
+- Only top-level attributes are compared. Inside a nested block or an
+  object-typed attribute the flag is unreachable — an attribute inside a block
+  has no stable path until Terraform matches the block's elements between prior
+  and planned state — so a schema that sets it there raises `ValueError`.
+  Promote the attribute to the top level, or state the path with
+  `ctx.require_replace("disks[0].type")` from the plan hook, which knows which
+  element changed.
+- On `optional=True, computed=True`, replacement fires if the planned value is
+  unknown. The normal path carries prior state forward, so the value stays known
+  and nothing happens; but a plan hook that deliberately leaves the attribute
+  unknown gets a replacement on every plan. Leave it unknown only when the
+  attribute genuinely may change, or set it to the prior value when it will not.
 
 For conditional replacement — replace only when a value shrinks, crosses a
 boundary, or the remote API cannot perform the update — use

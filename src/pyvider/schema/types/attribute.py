@@ -110,5 +110,28 @@ class PvsAttribute:
                 f"resource's plan hook via ctx.require_replace()."
             )
 
+        # Rule 7: requires_replace is unreachable on an attribute nested inside
+        # an object-typed attribute.
+        if self.object_type is not None:
+            nested = [
+                nested_name
+                for nested_name, nested_attr in self.object_type.attributes.items()
+                if nested_attr.requires_replace
+            ]
+            if nested:
+                raise ValueError(
+                    f"Invalid schema attribute configuration for '{self.name}': "
+                    f"requires_replace cannot be set on an attribute nested inside an "
+                    f"object-typed attribute ({', '.join(f'{self.name}.{n}' for n in nested)}).\n\n"
+                    f"Replacement is decided per-plan from a flat list of attribute paths, "
+                    f"and the plan handler only compares top-level attributes -- so the flag "
+                    f"would look effective while silently doing nothing, and the practitioner "
+                    f"would see an in-place update that the remote API cannot honour.\n\n"
+                    f"Suggestion: Declare requires_replace on '{self.name}' itself if any change "
+                    f"to the object should force replacement, or trigger replacement "
+                    f"imperatively from the resource's plan hook via "
+                    f"ctx.require_replace('{self.name}.{nested[0]}')."
+                )
+
 
 # 🐍🏗️🔚

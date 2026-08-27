@@ -6,6 +6,7 @@
 """Tests for ResourceContext convenience helpers."""
 
 import attrs
+import pytest
 
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
@@ -147,11 +148,21 @@ def test_require_replace_is_idempotent() -> None:
     assert ctx.requires_replace_paths == ["size_gb"]
 
 
-def test_require_replace_ignores_empty_path() -> None:
-    """An empty path addresses nothing; Terraform would reject it."""
+def test_require_replace_rejects_empty_path() -> None:
+    """An empty path addresses nothing; a typo must not look like a working call."""
     ctx = ResourceContext()
 
-    ctx.require_replace("")
+    with pytest.raises(ValueError, match="non-empty attribute path"):
+        ctx.require_replace("")
+
+    assert ctx.requires_replace_paths == []
+
+
+def test_require_replace_rejects_whitespace_path() -> None:
+    ctx = ResourceContext()
+
+    with pytest.raises(ValueError, match="non-empty attribute path"):
+        ctx.require_replace("   ")
 
     assert ctx.requires_replace_paths == []
 

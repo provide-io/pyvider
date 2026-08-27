@@ -48,8 +48,22 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
                 if ctx.config.size_gb < ctx.state.size_gb:
                     ctx.require_replace("size_gb")  # volumes cannot shrink
                 return base_plan, None
+
+        Raises:
+            ValueError: If `attribute_path` is empty or whitespace. An empty path is
+                a programming error, not meaningful input -- silently dropping it
+                would make a typo'd path indistinguishable from a working one, and
+                the resource would plan an in-place update it cannot honour.
         """
-        if attribute_path and attribute_path not in self.requires_replace_paths:
+        if not attribute_path or not attribute_path.strip():
+            raise ValueError(
+                "require_replace() requires a non-empty attribute path.\n\n"
+                "The path names the attribute whose change forces replacement, and "
+                "Terraform reports it to the practitioner as the reason the resource "
+                "is being destroyed and recreated.\n\n"
+                'Suggestion: Pass the attribute name, eg. ctx.require_replace("size_gb").'
+            )
+        if attribute_path not in self.requires_replace_paths:
             self.requires_replace_paths.append(attribute_path)
 
     def get_private_state(self, private_state_class: type[PrivateStateType]) -> PrivateStateType | None:

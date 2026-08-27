@@ -285,13 +285,24 @@ def _collect_requires_replace_paths(
     and planned state -- a correspondence Terraform itself establishes and this
     layer cannot guess for list or set nesting -- so a resource that needs
     replacement on a nested attribute states the path itself via
-    `ctx.require_replace()`.
+    `ctx.require_replace()`. `PvsNestedBlock` and `PvsAttribute` reject
+    `requires_replace` inside a block or an object-typed attribute at
+    schema-definition time rather than letting the flag look effective here
+    while silently doing nothing.
 
     Write-only attributes never reach the comparison below: their values are
     nulled in both prior and planned state, so the diff would always be
     empty. `PvsAttribute` rejects `write_only=True` combined with
     `requires_replace=True` at schema-definition time rather than letting the
     flag look effective while silently doing nothing.
+
+    On an `optional=True, computed=True` attribute the unknown-counts-as-changed
+    rule above is reachable in one narrow case: the normal path carries prior
+    state forward, so the planned value stays known and nothing fires, but a
+    plan hook that deliberately leaves the attribute unknown will force
+    replacement on every plan. That is the conservative half of the trade-off,
+    not a defect -- an unknown value may still resolve to something the remote
+    API cannot change in place.
     """
     if prior_state_cty is None or prior_state_cty.is_null or planned_state_cty is None:
         return []
