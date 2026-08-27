@@ -69,6 +69,7 @@ import re
 import sys
 import zipfile
 
+from packaging.markers import UndefinedComparison, UndefinedEnvironmentName
 from packaging.requirements import InvalidRequirement, Requirement
 
 dist, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
@@ -91,6 +92,26 @@ if wheel is None:
 raw_name, version = wheel.name.split("-")[:2]
 expected = normalize(raw_name)
 
+
+def installed_here(marker):
+    """True if a dependency carrying this marker is installed in this venv.
+
+    The wheel above was installed without extras, so anything gated behind one
+    is legitimately absent. Two probes decide that: if the marker's answer
+    changes with `extra`, it is extra-gated whatever the operator. Markers
+    raise at evaluate time, not parse time, so both probes are guarded.
+    """
+    if marker is None:
+        return True
+    results = set()
+    for probe in ("", "\x00no-such-extra"):
+        try:
+            results.add(marker.evaluate({"extra": probe}))
+        except (UndefinedComparison, UndefinedEnvironmentName) as exc:
+            fail(f"cannot evaluate the environment marker {str(marker)!r}: {exc}")
+    return False if len(results) > 1 else results.pop()
+
+
 # Requires-Dist from the wheel's own metadata, narrowed to what this
 # environment should actually hold. A marker decides that, so a marker is what
 # has to be evaluated -- not a substring of one.
@@ -104,8 +125,11 @@ expected = normalize(raw_name)
 # dependency today; the check is fixed here so that the first one added does not
 # break a release to discover it.
 #
-# An empty `extra` is what makes `extra == "cli"` false: no extra was requested
-# when the wheel was installed above.
+# Extras are decided by whether the marker's answer depends on `extra` at all,
+# not by evaluating it against an empty one. `extra == "cli"` is false for an
+# empty extra, but `extra in "cli"` is *true* -- "" is a substring of every
+# string -- so the sentinel alone would demand an extra-gated dependency that
+# was correctly never installed, and abort the release blaming the venv.
 requires = set()
 with zipfile.ZipFile(wheel) as zf:
     metadata_name = next((n for n in zf.namelist() if n.endswith(".dist-info/METADATA")), None)
@@ -119,7 +143,7 @@ with zipfile.ZipFile(wheel) as zf:
             req = Requirement(spec)
         except InvalidRequirement as exc:
             fail(f"{wheel.name} has an unparsable Requires-Dist {spec!r}: {exc}")
-        if req.marker is not None and not req.marker.evaluate({"extra": ""}):
+        if not installed_here(req.marker):
             continue
         requires.add(normalize(req.name))
 
