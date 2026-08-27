@@ -166,8 +166,14 @@ jobs:
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
           name: sbom
+      # Pinned at v3.5.0 deliberately. The previous v3.0.0 pin installed
+      # sigstore-python 3.x, whose bundled TUF root can no longer verify
+      # Sigstore's production root -- signing aborted with
+      # "root was signed by 0/3 keys". v3.1.0 moved the action to
+      # sigstore-python 4.x; do not pin back below it. The bundle format is
+      # unchanged: rekor-version still defaults to 1 in the action's 3.x line.
       - name: 🔏 Sigstore sign artifacts
-        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46  # v3.0.0
+        uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.0.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
       - name: ⬆️ Attach artifacts to release
@@ -210,8 +216,14 @@ jobs:
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: python3 scripts/fetch_pypi_artifacts.py pyvider "$RELEASE_TAG" dist
+      # Pinned at v3.5.0 deliberately. The previous v3.0.0 pin installed
+      # sigstore-python 3.x, whose bundled TUF root can no longer verify
+      # Sigstore's production root -- signing aborted with
+      # "root was signed by 0/3 keys". v3.1.0 moved the action to
+      # sigstore-python 4.x; do not pin back below it. The bundle format is
+      # unchanged: rekor-version still defaults to 1 in the action's 3.x line.
       - name: 🔏 Sigstore sign artifacts
-        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46  # v3.0.0
+        uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.0.0
         with:
           inputs: dist/*.whl dist/*.tar.gz
       - name: ⬆️ Attach artifacts to release
