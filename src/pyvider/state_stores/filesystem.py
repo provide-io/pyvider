@@ -69,7 +69,16 @@ def _encode_segment(value: str) -> str:
     the mapping reversible (``list_states`` decodes it back) while confining
     every state to exactly one file inside the store root.
     """
-    return urllib.parse.quote(value, safe="")
+    encoded = urllib.parse.quote(value, safe="")
+    # `quote` does not escape `.` -- it is in the always-safe set, whatever
+    # `safe=""` says -- so `..` came through intact and walked out of the root
+    # this function's docstring promises to confine it to. Only an all-dots
+    # segment can traverse, since `/` is escaped and `..foo` is an ordinary
+    # filename, so escaping just those leaves every other name on disk
+    # byte-identical and needs no migration. `unquote` reverses it unchanged.
+    if encoded and set(encoded) == {"."}:
+        encoded = encoded.replace(".", "%2E")
+    return encoded
 
 
 def _decode_segment(value: str) -> str:

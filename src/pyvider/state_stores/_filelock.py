@@ -15,6 +15,15 @@ instead of a race between concurrent providers.
 POSIX record locks (``fcntl.lockf``) are used rather than ``flock`` because they
 are the variant NFS implements; state directories on a network share are a
 normal deployment for remote state.
+
+Record locks are owned by the *process*, not by the thread or the descriptor, so
+they do not separate two threads of one provider at all: a second ``lockf`` from
+the same process replaces the first rather than waiting for it, and releasing
+any descriptor drops the process's lock on that inode -- unlocking a peer thread
+mid-section. Every handler here reaches the mutex through ``asyncio.to_thread``,
+so that is the ordinary case, not an exotic one. An in-process ``threading.Lock``
+per path is therefore taken first, and the record lock guards the remaining
+case of a second process.
 """
 
 from __future__ import annotations
@@ -24,6 +33,7 @@ from contextlib import contextmanager
 import errno
 import os
 from pathlib import Path
+import threading
 import time
 from typing import IO
 
@@ -61,6 +71,19 @@ class FileMutexTimeoutError(TimeoutError):
     """Raised when the cross-process mutex could not be acquired in time."""
 
 
+# One lock per lock-file path, shared by every thread in this process. Keyed on
+# the resolved path so two spellings of the same file cannot take two locks.
+# Bounded by the number of distinct states this provider touches.
+_THREAD_MUTEXES: dict[str, threading.Lock] = {}
+_THREAD_MUTEX_REGISTRY = threading.Lock()
+
+
+def _thread_mutex(path: Path) -> threading.Lock:
+    key = os.path.realpath(path)
+    with _THREAD_MUTEX_REGISTRY:
+        return _THREAD_MUTEXES.setdefault(key, threading.Lock())
+
+
 @contextmanager
 def exclusive_file_mutex(
     path: Path,
@@ -74,19 +97,28 @@ def exclusive_file_mutex(
     without reopening it, which would reintroduce the race the mutex closes.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    # Opened r+b-style via os.open so the file is created if absent without
-    # truncating an existing lease record.
-    fd = os.open(path, os.O_RDWR | os.O_CREAT, file_mode)
-    handle: IO[bytes] = os.fdopen(fd, "r+b")
-    acquired = False
+    # Taken before the record lock, and required: `lockf` cannot tell two
+    # threads of this process apart, so without this both would enter the
+    # critical section and both would write a lease.
+    thread_mutex = _thread_mutex(path)
+    if not thread_mutex.acquire(timeout=timeout):
+        raise FileMutexTimeoutError(f"Timed out waiting {timeout}s for the in-process mutex on {path}")
     try:
-        _acquire(handle, path, timeout)
-        acquired = True
-        yield handle
+        # Opened r+b-style via os.open so the file is created if absent without
+        # truncating an existing lease record.
+        fd = os.open(path, os.O_RDWR | os.O_CREAT, file_mode)
+        handle: IO[bytes] = os.fdopen(fd, "r+b")
+        acquired = False
+        try:
+            _acquire(handle, path, timeout)
+            acquired = True
+            yield handle
+        finally:
+            if acquired:
+                _release(handle, path)
+            handle.close()
     finally:
-        if acquired:
-            _release(handle, path)
-        handle.close()
+        thread_mutex.release()
 
 
 def _acquire(handle: IO[bytes], path: Path, timeout: float) -> None:

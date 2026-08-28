@@ -23,7 +23,6 @@ from pyvider.protocols.tfprotov6.handlers.state_store_handlers import (
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import ProviderServicer
 from pyvider.providers.base import BaseProvider
-from pyvider.state_stores import StateStoreError
 
 
 @define
@@ -333,7 +332,11 @@ class ProviderHandler(ProviderServicer):
         try:
             try:
                 state_bytes = await read_state_bytes(request.type_name, request.state_id) or b""
-            except StateStoreError as exc:
+            # Not just StateStoreError: a backend can raise anything -- OSError
+            # from an unreadable directory, a driver error from a remote store --
+            # and an exception that escapes here reaches Terraform as a bare gRPC
+            # status instead of the diagnostic built below.
+            except Exception as exc:
                 logger.error(
                     "ReadStateBytes failed to load state",
                     operation="read_state_bytes",
@@ -343,6 +346,13 @@ class ProviderHandler(ProviderServicer):
                 )
                 yield pb.ReadStateBytes.Response(
                     total_length=0,
+                    # A range is sent on the error path for the same reason the
+                    # empty-state path below sends one: Core reads
+                    # `chunk.Range.End` on every chunk it receives without
+                    # checking for nil, so omitting it dereferences a nil
+                    # *StateRange and panics the Terraform process -- taking
+                    # down the diagnostic built one line above it.
+                    range=pb.StateRange(start=0, end=0),
                     diagnostics=[
                         pb.Diagnostic(
                             severity=pb.Diagnostic.ERROR,
@@ -433,9 +443,41 @@ class ProviderHandler(ProviderServicer):
                 )
 
             state = bytes(state_chunks)
+
+            # Checked before the write, and that order is the whole point. A
+            # stream that ends short of its declared total_length -- an aborted
+            # apply, a half-closed connection, a dropped chunk -- carries a
+            # truncated state, and storing it destroys the good state already
+            # there. This used to write first and report the mismatch as a
+            # WARNING; Terraform does not fail an apply on a warning, so the
+            # apply reported success over a truncated state file.
+            if expected_total_length and expected_total_length != len(state):
+                logger.error(
+                    "WriteStateBytes refused a truncated stream",
+                    operation="write_state_bytes",
+                    state_store_type=state_store_type,
+                    state_id=state_id,
+                    declared_length=expected_total_length,
+                    received_length=len(state),
+                )
+                return pb.WriteStateBytes.Response(
+                    diagnostics=[
+                        pb.Diagnostic(
+                            severity=pb.Diagnostic.ERROR,
+                            summary="WriteStateBytes received a truncated stream",
+                            detail=(
+                                f"The stream declared {expected_total_length} bytes and delivered "
+                                f"{len(state)}. Nothing was written: storing a partial state would "
+                                "destroy the state already stored."
+                            ),
+                        )
+                    ]
+                )
+
             try:
                 await write_state_bytes(state_store_type, state_id, state)
-            except StateStoreError as exc:
+            # Not just StateStoreError, for the reason ReadStateBytes gives.
+            except Exception as exc:
                 logger.error(
                     "WriteStateBytes failed to persist state",
                     operation="write_state_bytes",
@@ -453,21 +495,8 @@ class ProviderHandler(ProviderServicer):
                     ]
                 )
 
-            diagnostics: list[pb.Diagnostic] = []
-            if expected_total_length and expected_total_length != len(state):
-                diagnostics = [
-                    pb.Diagnostic(
-                        severity=pb.Diagnostic.WARNING,
-                        summary="WriteStateBytes length mismatch",
-                        detail=(
-                            "The declared total_length does not match total bytes received. "
-                            "Provider stored only the received bytes."
-                        ),
-                    )
-                ]
-
             return pb.WriteStateBytes.Response(
-                diagnostics=diagnostics,
+                diagnostics=[],
             )
         except Exception:
             handler_errors.inc(handler="WriteStateBytes")
