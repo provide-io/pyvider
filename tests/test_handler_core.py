@@ -107,56 +107,41 @@ async def test_delegate_success(mock_provider: MagicMock) -> None:
 
 @pytest.mark.asyncio
 async def test_delegate_no_handler(mock_provider: MagicMock) -> None:
+    """An RPC with no handler is reported through the response it does have.
+
+    This used to patch `pyvider.handler.getattr` and assert it was called with
+    "UnknownMethod.Response" -- asserting the expression rather than the result,
+    with a mock standing in for the None that expression always returned. The
+    dead branch looked alive for as long as the mock was there.
+    """
     handler = ProviderHandler(provider=mock_provider)
 
     handler._handlers = {}  # empty handlers
 
-    request = MagicMock()
+    response = await handler._delegate("ReadResource", MagicMock(), MagicMock())
 
-    context = MagicMock()
-
-    # Mock getattr to return a mock response class
-
-    with patch("pyvider.handler.getattr", return_value=MagicMock()) as mock_getattr:
-        response = await handler._delegate("UnknownMethod", request, context)
-
-        mock_getattr.assert_called_once_with(pb, "UnknownMethod.Response", None)
-
-        assert response is not None
+    assert isinstance(response, pb.ReadResource.Response)
+    assert [d for d in response.diagnostics if d.severity == pb.Diagnostic.ERROR]
 
 
 @pytest.mark.asyncio
 async def test_delegate_unhandled_exception(mock_provider: MagicMock) -> None:
+    """An exception escaping a handler becomes a diagnostic on that RPC's response.
+
+    Same rewrite as test_delegate_no_handler above: the patched `getattr` was
+    supplying a response class the real code could never obtain, so this asserted
+    that a branch was reachable when it was not.
+    """
     handler = ProviderHandler(provider=mock_provider)
 
-    mock_handler = AsyncMock(side_effect=Exception("test error"))
+    handler._handlers = {"ReadResource": AsyncMock(side_effect=Exception("test error"))}
 
-    handler._handlers = {"TestMethod": mock_handler}
+    response = await handler._delegate("ReadResource", MagicMock(), MagicMock())
 
-    request = MagicMock()
-
-    context = MagicMock()
-
-    response_class_mock = MagicMock()
-
-    response_instance_mock = MagicMock()
-
-    response_class_mock.return_value = response_instance_mock
-
-    with patch("pyvider.handler.getattr", return_value=response_class_mock) as mock_getattr:
-        response = await handler._delegate("TestMethod", request, context)
-
-        mock_getattr.assert_called_with(pb, "TestMethod.Response", None)
-
-        response_class_mock.assert_called_once()
-
-        _, kwargs = response_class_mock.call_args
-
-        assert "diagnostics" in kwargs
-
-        assert "Internal provider error" in kwargs["diagnostics"][0].summary
-
-        assert response == response_instance_mock
+    assert isinstance(response, pb.ReadResource.Response)
+    errors = [d for d in response.diagnostics if d.severity == pb.Diagnostic.ERROR]
+    assert len(errors) == 1
+    assert "ReadResource" in errors[0].summary
 
 
 @pytest.mark.asyncio

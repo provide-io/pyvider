@@ -25,6 +25,70 @@ from pyvider.protocols.tfprotov6.protobuf import ProviderServicer
 from pyvider.providers.base import BaseProvider
 
 
+def _build_response_classes() -> dict[str, type[Any]]:
+    """Map every Provider RPC to its response message, from the service descriptor.
+
+    The method name is not enough to find it: `ValidateStateStoreConfig` returns a
+    `ValidateStateStore.Response`, and no lookup derived from the name reaches
+    that. The descriptor knows, and stays right when the proto changes.
+    """
+    service = pb.tfplugin6_pb2.DESCRIPTOR.services_by_name["Provider"]
+    classes: dict[str, type[Any]] = {}
+    for method in service.methods:
+        # A streaming RPC answers with events rather than one response, and none
+        # of them is delegated through _delegate.
+        if method.server_streaming:
+            continue
+        # Every Provider RPC answers with a `<Message>.Response` nested inside the
+        # message that names the call; a top-level output type has no containing
+        # type and is not one of ours.
+        container = method.output_type.containing_type
+        if container is None:
+            continue
+        response = getattr(getattr(pb, container.name, None), "Response", None)
+        if response is not None:
+            classes[method.name] = response
+    return classes
+
+
+_RESPONSE_CLASSES: dict[str, type[Any]] = _build_response_classes()
+
+
+def _response_class(method: str) -> type[Any] | None:
+    """The response message for an RPC, or None for anything that is not one.
+
+    `StreamStdio` and `StartStream` belong to go-plugin's stdio service rather
+    than to Provider, so they have no response here and never had one.
+    """
+    return _RESPONSE_CLASSES.get(method)
+
+
+def _error_response(method: str, summary: str, detail: str) -> Any | None:
+    """Report an error in whichever field this RPC's response has for one.
+
+    Most responses carry `diagnostics`. `CallFunction` carries a `FunctionError`
+    instead, and `StopProvider` a bare `Error` string; a response constructed
+    with a field it does not have raises, so those two are built by shape rather
+    than by assumption. Returns None when the method has no response message,
+    which leaves the caller to re-raise -- the only honest answer, since there is
+    nothing to send.
+    """
+    response_class = _response_class(method)
+    if response_class is None:
+        return None
+
+    fields = response_class.DESCRIPTOR.fields_by_name
+    if "diagnostics" in fields:
+        return response_class(
+            diagnostics=[pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary=summary, detail=detail)]
+        )
+    if "error" in fields:
+        return response_class(error=pb.FunctionError(text=f"{summary}: {detail}"))
+    if "Error" in fields:
+        return response_class(Error=f"{summary}: {detail}")
+    return response_class()
+
+
 @define
 class ProviderHandler(ProviderServicer):
     """Handler for provider operations that delegates to individual operation handlers.
@@ -171,9 +235,14 @@ class ProviderHandler(ProviderServicer):
         handler = self._handlers.get(method)
         if not handler:
             logger.warning("No handler found for RPC method", method=method)
-            # Return a default empty response if the method is unknown.
-            response_class = getattr(pb, f"{method}.Response", None)
-            return response_class() if response_class else None
+            # An empty response reads as "nothing to report", which is the opposite
+            # of what an unroutable RPC means. Report it, or let gRPC report it.
+            return _error_response(
+                method,
+                f"Unimplemented RPC {method}",
+                f"This provider has no handler registered for '{method}'. "
+                f"Suggestion: this is a bug in the provider, not in the configuration.",
+            )
 
         # The individual handlers are now responsible for their own robust
         # try/except blocks. This top-level block is a final safety net.
@@ -185,17 +254,13 @@ class ProviderHandler(ProviderServicer):
                 exc_info=True,
             )
             # This indicates a bug in an individual handler's error management.
-            response_class = getattr(pb, f"{method}.Response", None)
-            if response_class:
-                return response_class(
-                    diagnostics=[
-                        pb.Diagnostic(
-                            severity=pb.Diagnostic.ERROR,
-                            summary=f"Internal provider error during {method}",
-                            detail="An unhandled exception occurred. This is a bug in the provider.",
-                        )
-                    ]
-                )
+            response = _error_response(
+                method,
+                f"Internal provider error during {method}",
+                "An unhandled exception occurred. This is a bug in the provider.",
+            )
+            if response is not None:
+                return response
             raise
 
     # Example: trivial “do nothing” stubs
