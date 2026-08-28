@@ -54,8 +54,14 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
                 a programming error, not meaningful input -- silently dropping it
                 would make a typo'd path indistinguishable from a working one, and
                 the resource would plan an in-place update it cannot honour.
+
+        Note:
+            Surrounding whitespace is stripped before the path is recorded, so a
+            stray `" size_gb "` still names the attribute it was meant to name
+            rather than being recorded as a path that matches nothing.
         """
-        if not attribute_path or not attribute_path.strip():
+        path = attribute_path.strip() if attribute_path else ""
+        if not path:
             raise ValueError(
                 "require_replace() requires a non-empty attribute path.\n\n"
                 "The path names the attribute whose change forces replacement, and "
@@ -63,8 +69,8 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
                 "is being destroyed and recreated.\n\n"
                 'Suggestion: Pass the attribute name, eg. ctx.require_replace("size_gb").'
             )
-        if attribute_path not in self.requires_replace_paths:
-            self.requires_replace_paths.append(attribute_path)
+        if path not in self.requires_replace_paths:
+            self.requires_replace_paths.append(path)
 
     def get_private_state(self, private_state_class: type[PrivateStateType]) -> PrivateStateType | None:
         """

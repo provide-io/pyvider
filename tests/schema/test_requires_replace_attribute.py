@@ -100,6 +100,26 @@ class TestRequiresReplaceInsideNesting:
         with pytest.raises(ValueError, match="requires_replace cannot be set on an attribute nested inside"):
             a_obj({"size": a_str(required=True, requires_replace=True)})
 
+    def test_object_error_reads_correctly_without_an_outer_name(self) -> None:
+        """`a_obj()` is built before the builder that names it, so `name` is still empty."""
+        with pytest.raises(ValueError) as excinfo:
+            a_obj({"size": a_str(required=True, requires_replace=True)})
+
+        message = str(excinfo.value)
+        assert "nested attribute 'size'" in message
+        assert "for '':" not in message
+        assert "'.size'" not in message
+        assert "ctx.require_replace('.size')" not in message
+        assert "ctx.require_replace('<object>.size')" in message
+
+    def test_object_error_uses_the_outer_name_when_it_is_known(self) -> None:
+        with pytest.raises(ValueError) as excinfo:
+            a_obj({"size": a_str(required=True, requires_replace=True)}, name="cfg")
+
+        message = str(excinfo.value)
+        assert "nested attribute 'cfg.size'" in message
+        assert "ctx.require_replace('cfg.size')." in message
+
     def test_object_attribute_may_itself_require_replace(self) -> None:
         """The object is a top-level attribute, so its own path is addressable."""
         attr = a_obj({"size": a_str(required=True)}, required=True, requires_replace=True)

@@ -119,18 +119,35 @@ class PvsAttribute:
                 if nested_attr.requires_replace
             ]
             if nested:
+                # An object-typed attribute is constructed as an argument to the
+                # schema builder that names it, so `self.name` is still empty in the
+                # case a practitioner will actually hit. The message must therefore
+                # identify the offender by the nested name and describe the enclosing
+                # object rather than trying to print a name it does not yet have.
+                prefix = f"{self.name}." if self.name else ""
+                offenders = ", ".join(f"{prefix}{n}" for n in nested)
+                if self.name:
+                    enclosing = f"the object-typed attribute '{self.name}'"
+                    declare_on = f"'{self.name}'"
+                    call = f"ctx.require_replace('{self.name}.{nested[0]}')."
+                else:
+                    enclosing = "an object-typed attribute"
+                    declare_on = "the object-typed attribute"
+                    call = (
+                        f"ctx.require_replace('<object>.{nested[0]}'), substituting the "
+                        f"object attribute's own name for '<object>'."
+                    )
                 raise ValueError(
-                    f"Invalid schema attribute configuration for '{self.name}': "
-                    f"requires_replace cannot be set on an attribute nested inside an "
-                    f"object-typed attribute ({', '.join(f'{self.name}.{n}' for n in nested)}).\n\n"
+                    f"Invalid schema attribute configuration for nested attribute "
+                    f"'{offenders}': requires_replace cannot be set on an attribute "
+                    f"nested inside {enclosing}.\n\n"
                     f"Replacement is decided per-plan from a flat list of attribute paths, "
                     f"and the plan handler only compares top-level attributes -- so the flag "
                     f"would look effective while silently doing nothing, and the practitioner "
                     f"would see an in-place update that the remote API cannot honour.\n\n"
-                    f"Suggestion: Declare requires_replace on '{self.name}' itself if any change "
+                    f"Suggestion: Declare requires_replace on {declare_on} itself if any change "
                     f"to the object should force replacement, or trigger replacement "
-                    f"imperatively from the resource's plan hook via "
-                    f"ctx.require_replace('{self.name}.{nested[0]}')."
+                    f"imperatively from the resource's plan hook via {call}"
                 )
 
 

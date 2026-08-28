@@ -349,7 +349,7 @@ themselves; for "any change to this attribute forces replacement", prefer the
 declarative `requires_replace=True` schema flag below.
 
 **Parameters:**
-- `attribute_path`: Attribute path that forces replacement, e.g. `"size_gb"` or `"disks[0].type"`. An empty or whitespace-only path raises `ValueError`, so a typo cannot masquerade as a working call.
+- `attribute_path`: Attribute path that forces replacement, e.g. `"size_gb"` or `"disks[0].type"`. An empty or whitespace-only path raises `ValueError`, so a typo cannot masquerade as a working call. Surrounding whitespace is stripped, so `"  size_gb  "` records `"size_gb"` rather than a path that matches nothing.
 
 **Notes:**
 - Calling it during a create is a no-op: a resource with no prior state cannot be replaced.

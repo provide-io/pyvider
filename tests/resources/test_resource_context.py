@@ -167,6 +167,24 @@ def test_require_replace_rejects_whitespace_path() -> None:
     assert ctx.requires_replace_paths == []
 
 
+def test_require_replace_strips_surrounding_whitespace() -> None:
+    """A padded path must name the attribute it meant to name, not one that matches nothing."""
+    ctx = ResourceContext()
+
+    ctx.require_replace("  size_gb  ")
+
+    assert ctx.requires_replace_paths == ["size_gb"]
+
+
+def test_require_replace_dedupes_after_stripping() -> None:
+    ctx = ResourceContext()
+
+    ctx.require_replace("size_gb")
+    ctx.require_replace(" size_gb ")
+
+    assert ctx.requires_replace_paths == ["size_gb"]
+
+
 def test_require_replace_is_per_instance() -> None:
     """The list is a mutable default -- it must not be shared between contexts."""
     first = ResourceContext()
