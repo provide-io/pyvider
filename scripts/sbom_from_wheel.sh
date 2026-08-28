@@ -46,15 +46,16 @@ uvx --from "cyclonedx-bom==${CYCLONEDX_BOM_VERSION}" cyclonedx-py environment "$
   --mc-type "$MC_TYPE" \
   --output-format json -o "$OUT"
 
-# Installed *after* the SBOM is generated, and that order is load-bearing: this
-# venv is the environment the document describes, so anything added to it before
-# the previous step would be published as a component of the release.
-uv pip install --quiet --python "$VENV/bin/python" "packaging==${PACKAGING_VERSION}"
-
-# Run under the venv's interpreter rather than the runner's. The check below
-# evaluates environment markers, and the only environment whose answers mean
-# anything here is the one the SBOM describes.
-"$VENV/bin/python" - "$DIST_DIR" "$OUT" <<'PYEOF'
+# Overlaid, not installed. This venv is the environment the document describes,
+# so installing into it would publish packaging as a component of the release --
+# and where packaging is already in the closure, would silently replace a
+# version the document has just recorded. `--with` layers it onto the
+# interpreter for this one call and leaves the venv byte-identical, while the
+# check still sees the venv's own site-packages: the only environment whose
+# marker answers mean anything here.
+uv run --no-project --python "$VENV/bin/python" \
+  --with "packaging==${PACKAGING_VERSION}" \
+  python - "$DIST_DIR" "$OUT" <<'PYEOF'
 """Complete the root component from the wheel, then verify the SBOM.
 
 Every project here declares `dynamic = ["version"]`, so cyclonedx-py reads the
