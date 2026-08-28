@@ -4,6 +4,7 @@
 #
 
 
+from collections.abc import Iterable, Mapping
 import inspect
 import re
 from typing import Any
@@ -13,7 +14,7 @@ from provide.foundation import logger
 from provide.foundation.errors import FoundationError
 
 from pyvider.conversion.marshaler import _unmark_deep
-from pyvider.cty import CtyList, CtyObject, CtyTuple, CtyValue
+from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet, CtyTuple, CtyValue
 from pyvider.cty.exceptions import (
     CtyAttributeValidationError,
     CtyBoolValidationError,
@@ -26,7 +27,6 @@ from pyvider.cty.exceptions import (
     CtyValidationError,
 )
 from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
-from pyvider.cty.values.markers import UNREFINED_UNKNOWN
 from pyvider.exceptions import (
     DataSourceError,
     FrameworkConfigurationError,
@@ -318,34 +318,33 @@ def attrs_to_dict_for_cty(instance: Any, _visited: set[int] | None = None) -> An
     return _process_instance(instance, _visited)
 
 
-def _check_type_and_unknown(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
-    if not plan.type.equal(result.type):
-        return (
-            False,
-            f"Type mismatch: plan was {plan.type}, but result was {result.type}.",
-        )
+def _decide_unknown_or_null(plan: CtyValue, result: CtyValue) -> tuple[bool, str] | None:
+    """Settle the unknown and null cases, or None when the values must be compared.
 
-    # If the plan is UNREFINED_UNKNOWN, it can be refined to any concrete value.
-    if plan.value is UNREFINED_UNKNOWN:
-        return True, ""
+    The order is load-bearing, and getting it wrong is what this function exists
+    to prevent:
 
+    * `plan.is_unknown` comes first because an unknown may become *anything* of
+      its type, null included. An unknown is not null, so asking `result.is_null`
+      first reports "non-null in plan but became null in result" for the ordinary
+      case of an optional+computed attribute resolving to null.
+    * Both come before the structural branches in the caller, because an unknown
+      container has no dict or tuple payload to walk -- the walk would reject it
+      for the shape of its emptiness rather than for anything about its value.
+    """
     if plan.is_unknown:
         return True, ""
 
     if result.is_unknown:
         return False, "Value was known in plan but became unknown in result."
 
-    return True, ""
-
-
-def _check_null_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
     if plan.is_null:
         return True, ""
 
     if result.is_null:
         return False, "Value was non-null in plan but became null in result."
 
-    return True, ""
+    return None
 
 
 def _check_object_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
@@ -383,23 +382,67 @@ def _check_collection_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool
     return True, ""
 
 
-def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
-    """
-    Checks if the `result` state is a valid refinement of the `plan` state.
-    A value can be refined from unknown to null/concrete, or from null to concrete.
-    It cannot be refined from a concrete value to a different value, null, or unknown.
-    """
-    is_valid, reason = _check_type_and_unknown(plan, result)
-    if not is_valid:
-        return False, reason
+def _check_map_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
+    """A known map keeps its keys; each value refines on its own.
 
-    is_valid, reason = _check_null_refinement(plan, result)
-    if not is_valid:
-        return False, reason
+    Without this a map is compared whole, so `tags = { name = random_pet.x.id }`
+    -- a *known* map holding one unknown -- fails the moment the unknown resolves.
+    """
+    if not isinstance(plan.value, Mapping) or not isinstance(result.value, Mapping):
+        return False, "Map refinement check requires mapping values"
 
-    # If plan is null, refinement to any concrete value is valid
-    if plan.is_null:
+    if plan.value.keys() != result.value.keys():
+        return (
+            False,
+            f"Map key mismatch. Plan keys: {sorted(plan.value)}, Result keys: {sorted(result.value)}",
+        )
+
+    for key in plan.value:
+        is_valid, reason = is_valid_refinement(plan.value[key], result.value[key])
+        if not is_valid:
+            return False, f"Key '{key}': {reason}"
+    return True, ""
+
+
+def _check_set_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
+    """A set whose elements are all known compares whole; one holding an unknown cannot.
+
+    A set element is identified by its own value, so an unknown element names no
+    particular result element and there is nothing to line up pairwise -- the
+    resolved value legitimately lands anywhere in the set, and may even collapse
+    into an element already there. Terraform Core does not correlate them either.
+    """
+    if not isinstance(plan.value, Iterable) or not isinstance(result.value, Iterable):
+        return False, "Set refinement check requires iterable values"
+
+    if any(isinstance(element, CtyValue) and element.is_unknown for element in plan.value):
         return True, ""
+
+    if _unmark_deep(plan.value) != _unmark_deep(result.value):
+        return (
+            False,
+            f"Value mismatch: the result differs from the planned value (type {plan.type}). "
+            "Values are omitted here because this message is returned to Terraform.",
+        )
+    return True, ""
+
+
+def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
+    """Is `result` a valid refinement of `plan`?
+
+    A value may be refined from unknown to null or to a concrete value, and from
+    null to a concrete value. It may not change from one concrete value to
+    another, nor become unknown.
+    """
+    if not plan.type.equal(result.type):
+        return (
+            False,
+            f"Type mismatch: plan was {plan.type}, but result was {result.type}.",
+        )
+
+    decided = _decide_unknown_or_null(plan, result)
+    if decided is not None:
+        return decided
 
     if isinstance(plan.type, CtyObject):
         return _check_object_refinement(plan, result)
@@ -407,8 +450,11 @@ def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
     if isinstance(plan.type, CtyList | CtyTuple):
         return _check_collection_refinement(plan, result)
 
-    if plan.is_unknown:
-        return True, ""
+    if isinstance(plan.type, CtyMap):
+        return _check_map_refinement(plan, result)
+
+    if isinstance(plan.type, CtySet):
+        return _check_set_refinement(plan, result)
 
     # Compared unmarked. Marks are metadata about a value, not part of it, and
     # the inbound path deliberately marks config from the schema -- so a

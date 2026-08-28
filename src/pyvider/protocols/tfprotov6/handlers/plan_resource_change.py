@@ -193,23 +193,26 @@ def _handle_planned_state_dict(
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
 
-    # Mark unset computed fields as unknown when there are unknown values in the plan
-    # This allows resources to skip setting computed fields when dependencies are unknown
-    has_unknown_values = any(isinstance(v, CtyValue) and v.is_unknown for v in planned_state_dict.values())
-
-    if has_unknown_values:
-        # Get computed attributes from schema
-        computed_attrs = set()
-        for attr in resource_schema.block.attributes.values():
-            if attr.computed and not attr.required:
-                computed_attrs.add(attr.name)
-
-        # Mark unset computed fields as unknown
-        for attr_name in computed_attrs:
-            if attr_name not in planned_state_dict or planned_state_dict[attr_name] is None:
-                attr_type = validator_type.attribute_types.get(attr_name)
-                if attr_type:
-                    planned_state_dict[attr_name] = CtyValue.unknown(attr_type)
+    # A computed attribute that neither the practitioner nor the plan hook set is
+    # unknown -- what Terraform shows as "known after apply". Planning it null
+    # instead promises Core a null that apply then contradicts, and Core rejects
+    # the whole apply with "Provider produced inconsistent result after apply:
+    # .id: was null, but now cty.StringVal(...)".
+    #
+    # This used to run only when some *other* top-level attribute already
+    # happened to be unknown, which made it look like it worked: any config with
+    # an interpolation marked its computed attributes, and a wholly known config
+    # planned every one of them null. The gate was top-level only as well, so an
+    # unknown nested inside a list or object attribute did not trip it either --
+    # which is why the failure read as intermittent rather than as always.
+    for attr in resource_schema.block.attributes.values():
+        if not attr.computed or attr.required:
+            continue
+        if planned_state_dict.get(attr.name) is not None:
+            continue
+        attr_type = validator_type.attribute_types.get(attr.name)
+        if attr_type:
+            planned_state_dict[attr.name] = CtyValue.unknown(attr_type)
 
     # Pass unknown CtyValues directly to validation - CTY knows how to handle them
     # Don't convert to None, as that creates null CtyValues which fail validation for required fields
