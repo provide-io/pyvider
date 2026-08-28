@@ -332,8 +332,16 @@ async def _get_provider_schema_impl(
             global _task
             _task = asyncio.create_task(_set_future_result(_schema_future))
 
-    # All concurrent callers will await the same Future object.
-    return await _schema_future
+    # Shielded, because cancelling a *caller* must not cancel the shared Future.
+    # `Task.cancel()` cancels whatever the task is suspended on, so one
+    # cancelled GetProviderSchema -- Ctrl-C, a client disconnect, a short
+    # `terraform providers schema` run -- used to leave `_schema_future`
+    # CANCELLED for the life of the plugin process. `_set_future_result` then
+    # raised InvalidStateError on both set_result and set_exception, nothing
+    # reset the cache, and every later call re-raised CancelledError: a provider
+    # that could no longer serve its own schema. The shield gives each caller
+    # its own cancellable wrapper and leaves the shared Future alone.
+    return await asyncio.shield(_schema_future)
 
 
 async def _set_future_result(future: asyncio.Future) -> None:
@@ -341,12 +349,27 @@ async def _set_future_result(future: asyncio.Future) -> None:
     A helper coroutine that runs the computation and sets the result
     on the shared Future object, unblocking all awaiters.
     """
+    global _schema_future
     try:
         result = await _compute_schema_once()
         future.set_result(result)
     except Exception as e:
         logger.critical("Catastrophic failure during schema computation task.", exc_info=True)
         future.set_exception(e)
+        # Not kept. The cache is process-lifetime, so caching a failure makes a
+        # transient one permanent -- a hub that was not yet populated when the
+        # first call arrived would answer "no schema" for the rest of the run,
+        # even though registration succeeded a moment later.
+        _schema_future = None
+        return
+
+    if any(diagnostic.severity == pb.Diagnostic.ERROR for diagnostic in result.diagnostics):
+        logger.warning(
+            "Schema computation produced errors; not caching the result",
+            operation="get_provider_schema",
+            diagnostic_count=len(result.diagnostics),
+        )
+        _schema_future = None
 
 
 # 🐍🏗️🔚

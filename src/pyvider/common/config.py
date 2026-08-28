@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from attrs import define, field as attrs_field
+from attrs import define, field as attrs_field, fields
 from provide.foundation import logger
 from provide.foundation.config import (
     BaseConfig,
@@ -20,6 +20,12 @@ from provide.foundation.config import (
     validate_positive,
 )
 from provide.foundation.file import read_toml
+
+#: Config-file spellings for typed fields whose documented key is nested. The
+#: shipped pyvider.toml writes `[logging] level`, not `log_level`.
+_TOML_ALIASES: dict[str, tuple[str, ...]] = {
+    "log_level": ("logging", "level"),
+}
 
 _DEFAULT_CONFIG_FILENAME = "pyvider.toml"
 _DEFAULT_CONFIG_FILE = Path.cwd() / _DEFAULT_CONFIG_FILENAME
@@ -85,7 +91,10 @@ class PyviderConfig(BaseConfig):
 
         try:
             config_data = read_toml(config_path)
-            if config_data:  # Only set if file exists and has content
+            # `else` used to hang off the `try`, so a successful load logged
+            # "loaded successfully" and "No configuration file found" on the
+            # same run. It belongs to the emptiness of the document.
+            if config_data:
                 object.__setattr__(self, "_config_data", config_data)
                 object.__setattr__(self, "_loaded_from_path", config_path)
                 logger.info(
@@ -95,6 +104,12 @@ class PyviderConfig(BaseConfig):
                     config_keys=list(config_data.keys()),
                     key_count=len(config_data),
                 )
+            else:
+                logger.debug(
+                    "No configuration file found, using defaults",
+                    operation="config_load",
+                    searched_path=str(config_path),
+                )
         except Exception as e:
             logger.warning(
                 "Failed to load configuration file, using defaults",
@@ -103,12 +118,10 @@ class PyviderConfig(BaseConfig):
                 error_type=type(e).__name__,
                 error_message=str(e),
             )
-        else:
-            logger.debug(
-                "No configuration file found, using defaults",
-                operation="config_load",
-                searched_path=str(config_path),
-            )
+
+        # File before environment: the class contract is
+        # "Environment Variable > Config File > Default".
+        self._load_file_overrides()
 
         # Override typed fields with environment variables if present
         logger.debug(
@@ -161,6 +174,89 @@ class PyviderConfig(BaseConfig):
     @property
     def loaded_file_path(self) -> Path | None:
         return self._loaded_from_path
+
+    def _file_value(self, field_name: str) -> Any:
+        """The config-file value for a typed field, by its own name or its documented spelling."""
+        if field_name in self._config_data:
+            return self._config_data[field_name]
+
+        path = _TOML_ALIASES.get(field_name)
+        if path is None:
+            return None
+        value: Any = self._config_data
+        for part in path:
+            if not isinstance(value, dict):
+                return None
+            value = value.get(part)
+        return value
+
+    def _load_file_overrides(self) -> None:
+        """Apply config-file values to the typed fields.
+
+        The class contract is "Environment Variable > Config File > Default" and
+        the middle term was never implemented: the parsed document was kept in
+        `_config_data`, and `_config_data` is only ever consulted by `get()`,
+        which returns a typed field before it looks there. So every documented
+        setting that maps onto one of these fields was read, logged as loaded,
+        and then ignored -- `private_state_shared_secret` in `pyvider.toml`
+        raised "set PYVIDER_PRIVATE_STATE_SHARED_SECRET ... or define
+        private_state_shared_secret in your config file" at the operator who
+        had just done exactly that.
+        """
+        if not self._config_data:
+            return
+
+        for fld in fields(type(self)):
+            if fld.name.startswith("_"):
+                continue
+            raw = self._file_value(fld.name)
+            if raw is None:
+                continue
+            coerced = self._coerce_and_validate(fld, raw)
+            if coerced is not None:
+                object.__setattr__(self, fld.name, coerced)
+
+    def _coerce_and_validate(self, fld: Any, raw: Any) -> Any:
+        """Coerce `raw` to the field's type and run its validator, or None if it will not do.
+
+        A typo in a config file should not stop a provider from starting, so a
+        value that does not fit is logged and dropped rather than raised: the
+        field keeps the default it already had.
+        """
+        current = getattr(self, fld.name)
+        value = raw
+        if isinstance(current, str) and not isinstance(raw, str):
+            value = str(raw)
+        elif isinstance(current, bool) or not isinstance(current, int | float | str):
+            pass
+        elif not isinstance(raw, type(current)):
+            try:
+                value = type(current)(raw)
+            except (TypeError, ValueError):
+                logger.warning(
+                    "Ignoring a config-file value of the wrong type",
+                    operation="config_file_override",
+                    key=fld.name,
+                    expected_type=type(current).__name__,
+                )
+                return None
+
+        if isinstance(value, str) and fld.name == "log_level":
+            value = value.upper()
+
+        validator = getattr(fld, "validator", None)
+        if validator is not None:
+            try:
+                validator(self, fld, value)
+            except Exception as exc:
+                logger.warning(
+                    "Ignoring an invalid config-file value",
+                    operation="config_file_override",
+                    key=fld.name,
+                    error_message=str(exc),
+                )
+                return None
+        return value
 
     def _load_env_overrides(self) -> None:
         """Load environment variable overrides for typed fields using foundation's get_env."""

@@ -162,4 +162,21 @@ def encryption_key_env(monkeypatch: pytest.MonkeyPatch) -> Generator[None, None,
     encryption._ENCRYPTION_KEY = None
 
 
+@pytest.fixture(autouse=True)
+def _isolate_config_file(monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory) -> None:
+    """Keep the repository's own pyvider.toml out of every test's configuration.
+
+    Config-file values now reach the typed fields, as the class has always
+    documented ("Environment Variable > Config File > Default"). That makes the
+    suite sensitive to a file it never intended to read: run from the repository
+    root and `log_level` is DEBUG and `private_state_shared_secret` is set, so a
+    test asserting a default or expecting a missing-secret error passes or fails
+    on the working directory rather than on the code.
+
+    Points the loader at a path that does not exist. A test that wants a config
+    file sets PYVIDER_CONFIG_FILE itself; its own monkeypatch runs after this one.
+    """
+    monkeypatch.setenv("PYVIDER_CONFIG_FILE", str(tmp_path_factory.mktemp("no-config") / "absent.toml"))
+
+
 # 🐍🏗️🔚

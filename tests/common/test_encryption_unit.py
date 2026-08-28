@@ -188,9 +188,14 @@ class TestKeyDerivation:
 
             assert decrypted == test_data
 
-    def test_encrypt_no_secret_fails(self) -> None:
+    def test_encrypt_no_secret_fails(self, tmp_path: Path) -> None:
         """Test that missing shared secret raises proper error"""
-        with patch.dict(os.environ, {}, clear=True), patch.object(PyviderConfig, "get") as mock_get:
+        # `clear=True` wipes PYVIDER_CONFIG_FILE along with everything else, so
+        # the loader falls back to ./pyvider.toml -- the repository's own file,
+        # which does set a secret. Config-file values reach the typed fields
+        # now, so "no secret anywhere" has to say so about the file as well.
+        absent_config = {"PYVIDER_CONFIG_FILE": str(tmp_path / "absent.toml")}
+        with patch.dict(os.environ, absent_config, clear=True), patch.object(PyviderConfig, "get") as mock_get:
             mock_get.return_value = None
 
             reset_encryption_manager()
