@@ -72,12 +72,26 @@ def _encode_segment(value: str) -> str:
     encoded = urllib.parse.quote(value, safe="")
     # `quote` does not escape `.` -- it is in the always-safe set, whatever
     # `safe=""` says -- so `..` came through intact and walked out of the root
-    # this function's docstring promises to confine it to. Only an all-dots
-    # segment can traverse, since `/` is escaped and `..foo` is an ordinary
-    # filename, so escaping just those leaves every other name on disk
-    # byte-identical and needs no migration. `unquote` reverses it unchanged.
-    if encoded and set(encoded) == {"."}:
-        encoded = encoded.replace(".", "%2E")
+    # this function's docstring promises to confine it to.
+    #
+    # Trailing dots are escaped as well, not only an all-dots segment. Windows
+    # drops trailing dots and spaces from a path component, so a name encoding to
+    # one ending in a dot names a *different* directory on disk than the encoder
+    # meant, and the mapping `list_states` reverses stops being reversible --
+    # silently, since nothing errors at encode time. `../..` encodes to `..%2F..`,
+    # which Windows resolved against `..%2F`:
+    #
+    #     [WinError 3] The system cannot find the path specified:
+    #     '...\\store\\state\\..%2F\\tmphiaxm3tu.tmp' ->
+    #     '...\\store\\state\\..%2F..\\victim.tfstate'
+    #
+    # `quote` already escapes a space, so only dots can reach the strip; the
+    # space is kept in the set because what is being ruled out is the class of
+    # characters Windows discards, not the two that happen to occur today.
+    # `unquote` reverses the escapes unchanged, so the mapping stays exact.
+    kept = encoded.rstrip(". ")
+    if len(kept) != len(encoded):
+        encoded = kept + "".join(f"%{ord(c):02X}" for c in encoded[len(kept) :])
     return encoded
 
 
