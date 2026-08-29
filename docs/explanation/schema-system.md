@@ -94,10 +94,12 @@ Four things follow from how Terraform validates plans, and are worth knowing:
 - Defaults fill values inside the objects and block elements the configuration
   *contains*. An object attribute or a block the practitioner did not write stays absent;
   materialising one would add configuration that was never requested.
-- An `a_obj()` attribute holding a default is sent to Terraform as a **nested type**
-  rather than as an opaque object type, so that Terraform sees the members' own
-  required/optional/computed flags and validates the plan per member. The configuration
-  syntax and the cty type are unchanged.
+- Every direct `a_obj()` attribute is sent to Terraform as a **nested type**, whether or
+  not the object or its members declare defaults. Terraform therefore sees each member's
+  required/optional/computed flags. Compared with the former opaque `cty.Object`
+  encoding, members marked optional can be omitted individually instead of every member
+  having to appear in configuration. The configuration syntax and resulting cty object
+  shape are unchanged.
 - A value that is not yet known ("known after apply") is never replaced by a default.
 
 Deleting an argument reverts it to its default rather than keeping the value the resource
