@@ -226,6 +226,14 @@ class TestNestedPlanMerge:
 
         assert plan == {"size": None}
 
+    def test_resolved_default_replaces_cty_null_in_the_plan(self) -> None:
+        config = resolve_schema_defaults(_config(), SCHEMA.block)
+        plan = {"size": CtyValue.null(CtyString())}
+
+        merge_schema_defaults_into_plan(plan, config, SCHEMA.block)
+
+        assert plan["size"] == "small"
+
     def test_blocks_nested_inside_blocks_are_corrected(self) -> None:
         plan = {"options": {"mode": "fast", "label": "primary", "tuning": {"level": "high"}}}
 
