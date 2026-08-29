@@ -235,6 +235,16 @@ class PvsAttribute:
         # `default=None` is indistinguishable from declaring no default; there is
         # no way to express "defaults to null", which is what a null already is.
         if self.default is not None:
+            try:
+                self.type.validate(self.default)
+            except Exception as exc:
+                raise ValueError(
+                    f"Invalid schema attribute configuration for '{self.name}': "
+                    f"the declared default {self.default!r} is not a valid "
+                    f"{type(self.type).__name__} value.\n\n"
+                    f"Underlying error: {exc}\n\n"
+                    f"Suggestion: give the default the same type as the attribute."
+                ) from exc
             object.__setattr__(self, "computed", True)
 
 

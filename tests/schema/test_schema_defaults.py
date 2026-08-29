@@ -535,5 +535,9 @@ class TestComputedOnlyDefaults:
         assert attribute.default is None
         assert resolves_from_configuration(attribute) is False
 
+    def test_default_of_the_wrong_type_is_rejected_when_declared(self) -> None:
+        with pytest.raises(ValueError, match="not a valid CtyNumber value"):
+            a_num(default="not-a-number")
+
 
 # 🐍🏗️🔚
