@@ -16,6 +16,7 @@ Terraform planned.
 
 from __future__ import annotations
 
+from collections import Counter
 from collections.abc import Mapping
 from typing import Any
 
@@ -217,16 +218,77 @@ def _merge_nested_into_plan(plan_value: Any, config_value: Any, nested: PvsNeste
         # the counts differ, so Terraform's proposal is left alone.
         return plan_value
     if nested.nesting is NestingMode.SET and len(plan_value) > 1:
-        # Set elements have no stable order to pair on -- a default that differs
-        # from prior state is itself what reorders them -- so only the
-        # unambiguous single-element case is merged.
-        return plan_value
+        return _merge_set_into_plan(plan_value, config_value.value, nested)
 
     merged = [
         _merge_block_into_plan(element, config_element, nested.block)
         for element, config_element in zip(plan_value, config_value.value, strict=True)
     ]
     return merged if isinstance(plan_value, list) else tuple(merged)
+
+
+def _merge_set_into_plan(
+    plan_values: list[Any] | tuple[Any, ...],
+    config_values: tuple[Any, ...],
+    nested: PvsNestedBlock,
+) -> list[Any] | tuple[Any, ...]:
+    """Merge set elements that can be paired without relying on their order."""
+    merged = list(plan_values)
+    unmatched_plans = set(range(len(plan_values)))
+    unmatched_configs = set(range(len(config_values)))
+
+    while unmatched_plans:
+        candidates = {
+            plan_index: [
+                config_index
+                for config_index in unmatched_configs
+                if _set_elements_match(plan_values[plan_index], config_values[config_index], nested.block)
+            ]
+            for plan_index in unmatched_plans
+        }
+        candidate_counts = Counter(config_index for matches in candidates.values() for config_index in matches)
+        unique_pairs = [
+            (plan_index, matches[0])
+            for plan_index, matches in candidates.items()
+            if len(matches) == 1 and candidate_counts[matches[0]] == 1
+        ]
+        if not unique_pairs:
+            break
+
+        for plan_index, config_index in unique_pairs:
+            merged[plan_index] = _merge_block_into_plan(
+                plan_values[plan_index], config_values[config_index], nested.block
+            )
+            unmatched_plans.remove(plan_index)
+            unmatched_configs.remove(config_index)
+
+    return merged if isinstance(plan_values, list) else tuple(merged)
+
+
+def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType) -> bool:
+    """Match set elements by configured attributes whose values are not defaults."""
+    if not isinstance(plan_value, Mapping):
+        return False
+    if not isinstance(config_value, CtyValue) or not isinstance(config_value.value, Mapping):
+        return False
+
+    for name, attribute in block.attributes.items():
+        configured = config_value.value.get(name)
+        if attribute.write_only or attribute.default is not None or _is_null_or_unknown(configured):
+            continue
+
+        planned = plan_value.get(name)
+        if attribute.object_type is not None:
+            if not _set_elements_match(planned, configured, attribute.object_type):
+                return False
+        elif planned != cty_to_native(configured):
+            return False
+
+    return True
+
+
+def _is_null_or_unknown(value: Any) -> bool:
+    return _is_null(value) or (isinstance(value, CtyValue) and value.is_unknown)
 
 
 def _is_null(value: Any) -> bool:

@@ -258,9 +258,9 @@ class TestNestedPlanMerge:
 
         assert plan["tag"][0]["enabled"] is True
 
-    def test_multi_element_set_is_left_alone(self) -> None:
-        # Set elements have no stable order to pair on -- a default that differs
-        # from prior state is itself what reorders them.
+    def test_ambiguous_multi_element_set_is_left_alone(self) -> None:
+        # With no non-default attribute to identify an element, choosing either
+        # configuration entry would depend on unstable set ordering.
         config = _merge_config(tag=[{"enabled": True}, {"enabled": False}])
         plan = {"tag": [{"enabled": False}, {"enabled": False}]}
 
@@ -290,6 +290,42 @@ class TestNestedPlanMerge:
         merge_schema_defaults_into_plan(plan, _merge_config(), MERGE_SCHEMA.block)
 
         assert plan == {"name": "example"}
+
+
+NAMED_SET_SCHEMA = s_resource(
+    block_types=[
+        b_set(
+            "tag",
+            attributes={"name": a_str(required=True), "scope": a_str(default="local")},
+        )
+    ]
+)
+NAMED_SET_TYPE = NAMED_SET_SCHEMA.block.to_cty_type()
+
+
+def test_multi_element_set_defaults_are_matched_by_configured_values() -> None:
+    config = NAMED_SET_TYPE.validate(
+        {
+            "tag": [
+                {"name": "alpha", "scope": "local"},
+                {"name": "beta", "scope": "shared"},
+            ]
+        }
+    )
+    # Set order is deliberately different from configuration order.
+    plan = {
+        "tag": [
+            {"name": "beta", "scope": "shared"},
+            {"name": "alpha", "scope": None},
+        ]
+    }
+
+    merge_schema_defaults_into_plan(plan, config, NAMED_SET_SCHEMA.block)
+
+    assert plan["tag"] == [
+        {"name": "beta", "scope": "shared"},
+        {"name": "alpha", "scope": "local"},
+    ]
 
 
 OBJECT_SCHEMA = s_resource(
