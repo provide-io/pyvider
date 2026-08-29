@@ -394,8 +394,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             )
             return cty_to_native(cty_value) if cty_value else {}
 
-        result = {}
-        unknown_count = 0
         # Type guard: ensure value is a dict for object types
         if not isinstance(cty_value.value, dict):
             logger.warning(
@@ -404,39 +402,12 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 actual_type=type(cty_value.value).__name__,
             )
             return {}
-        for key, value_cty in cty_value.value.items():
-            if isinstance(value_cty, CtyValue):
-                # Preserve unknown values as CtyValue objects
-                if value_cty.is_unknown:
-                    result[key] = value_cty
-                    unknown_count += 1
-                    logger.debug(
-                        "Preserving unknown CTY value in conversion",
-                        operation="cty_to_dict_preserving_unknown",
-                        field_name=key,
-                        reason="value_is_unknown",
-                    )
-                else:
-                    result[key] = cls._cty_to_native_preserving_unknown(value_cty)
-                    logger.debug(
-                        "Converted known CTY value to native type",
-                        operation="cty_to_dict_preserving_unknown",
-                        field_name=key,
-                        converted_value=str(result[key])[:100],  # Truncate for safety
-                    )
-            else:
-                result[key] = value_cty
-                logger.debug(
-                    "Non-CTY value passed through unchanged",
-                    operation="cty_to_dict_preserving_unknown",
-                    field_name=key,
-                )
+        result = {key: cls._cty_to_native_preserving_unknown(v) for key, v in cty_value.value.items()}
 
         logger.debug(
             "CTY to dict conversion completed",
             operation="cty_to_dict_preserving_unknown",
             total_fields=len(result),
-            unknown_fields=unknown_count,
             field_names=list(result.keys()),
         )
         return result
