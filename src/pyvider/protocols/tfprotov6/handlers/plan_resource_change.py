@@ -29,7 +29,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
-from pyvider.schema import PvsSchema
+from pyvider.schema import PvsSchema, merge_schema_defaults_into_plan
 from pyvider.schema.required import check_required_attributes
 
 
@@ -468,7 +468,20 @@ async def _plan_resource_change_impl(
             if any(d.severity == pb.Diagnostic.ERROR for d in resource_context.diagnostics):
                 return response
 
-        if planned_state_dict:
+        if planned_state_dict is not None:
+            # Defaults are a framework invariant, not an implementation detail
+            # of BaseResource.plan().  A resource may override that documented
+            # extension point (or implement ResourceProtocol directly), but its
+            # returned plan must still agree with the effective configuration
+            # the apply hook receives.  Reconcile at the protocol boundary,
+            # after the hook has made its changes and before identity,
+            # replacement paths, validation, and marshaling inspect the plan.
+            merge_schema_defaults_into_plan(
+                planned_state_dict,
+                config_cty,
+                resource_schema.block,
+            )
+
             identity_values = (
                 _derive_planned_identity_values(
                     resource_class, resource_schema, planned_state_dict, request.type_name
