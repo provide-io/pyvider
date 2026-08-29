@@ -22,7 +22,7 @@ from pyvider.cty import (
 from pyvider.cty.conversion import cty_to_native
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
-from pyvider.schema import PvsSchema, merge_schema_defaults_into_plan
+from pyvider.schema import PvsSchema
 
 ResourceType = TypeVar("ResourceType")
 StateType = TypeVar("StateType")
@@ -477,13 +477,6 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                             base_plan[key] = cty_to_native(value)
                         else:
                             base_plan[key] = value
-
-                # Terraform resolves nothing about defaults, so an attribute the
-                # practitioner omitted comes back carrying the prior value --
-                # at the top level and inside nested blocks alike. The loop
-                # above cannot correct either: the key is already present in
-                # the plan, so the configured value is skipped.
-                merge_schema_defaults_into_plan(base_plan, ctx.config_cty, schema.block)
 
     async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         validation_errors = await self.validate(ctx.config)

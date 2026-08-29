@@ -198,33 +198,6 @@ class TestPlanning:
         assert planned_state["size"] == "large"
 
     @pytest.mark.asyncio
-    async def test_stale_state_value_loses_to_the_default_once_the_config_omits_it(self) -> None:
-        """An omitted attribute plans the default, even when state holds another value.
-
-        This mirrors the real pipeline: the configuration reaching `plan()` has
-        already had its defaults resolved, and Terraform's proposed new state
-        carries the prior value forward. If the plan kept that prior value while
-        `ctx.config` reported the default, apply would return a state the plan
-        did not contain and fail the refinement check.
-        """
-        config_cty = resolve_schema_defaults(
-            _config_cty(CtyValue.null(CtyString())), Widget.get_schema().block
-        )
-        assert config_cty is not None
-        ctx = ResourceContext(
-            config=Widget.from_cty(config_cty, WidgetConfig, apply_defaults=True),
-            state=WidgetState(name="example", size="large", id="w-1"),
-            planned_state=WidgetState(name="example", size="large", id="w-1"),
-            planned_state_cty=CONFIG_TYPE.validate({"name": "example", "size": "large", "id": "w-1"}),
-            config_cty=config_cty,
-        )
-
-        planned_state, _ = await Widget().plan(ctx)
-
-        assert planned_state is not None
-        assert planned_state["size"] == DEFAULT_SIZE
-
-    @pytest.mark.asyncio
     async def test_unknown_value_stays_unknown_in_the_plan(self) -> None:
         config_cty = _config_cty(CtyValue.unknown(CtyString()))
         ctx = ResourceContext(
@@ -331,34 +304,6 @@ class TestNestedBlockDefaults:
         assert config is not None
         assert config.settings is not None
         assert config.settings.size == DEFAULT_SIZE
-
-    @pytest.mark.asyncio
-    async def test_retained_nested_state_loses_to_the_default_on_update(self) -> None:
-        config_cty = resolve_schema_defaults(
-            _gadget_cty(CtyValue.null(CtyString())), Gadget.get_schema().block
-        )
-        assert config_cty is not None
-        prior = GadgetState(
-            name="example",
-            settings=GadgetSettings(label="primary", size="large"),
-            tier=[GadgetSettings(label="hot", size="large")],
-            id="g-1",
-        )
-        ctx = ResourceContext(
-            config=Gadget.from_cty(config_cty, GadgetConfig, apply_defaults=True),
-            state=prior,
-            planned_state=prior,
-            # Terraform's proposed new state: the block is still configured, so
-            # the value it held in prior state is carried forward.
-            planned_state_cty=_gadget_cty("large"),
-            config_cty=config_cty,
-        )
-
-        planned_state, _ = await Gadget().plan(ctx)
-
-        assert planned_state is not None
-        assert planned_state["settings"]["size"] == DEFAULT_SIZE
-        assert planned_state["tier"][0]["size"] == DEFAULT_SIZE
 
     @pytest.mark.asyncio
     async def test_configured_nested_value_survives_the_merge(self) -> None:
@@ -490,53 +435,6 @@ class TestObjectAttributeDefaults:
         assert config is not None
         assert config.config is not None
         assert config.config.size == DEFAULT_SIZE
-
-    @pytest.mark.asyncio
-    async def test_retained_object_loses_to_the_whole_object_default_on_update(self) -> None:
-        raw_config = DIAL_TYPE.validate(
-            {
-                "name": "example",
-                "id": CtyValue.unknown(CtyString()),
-                "config": CtyValue.null(Dial.get_schema().block.attributes["config"].type),
-            }
-        )
-        config_cty = resolve_schema_defaults(raw_config, Dial.get_schema().block)
-        assert config_cty is not None
-        prior = DialState(name="example", config=DialSettings(label="prior-label", size="large"), id="d-1")
-        ctx = ResourceContext(
-            config=Dial.from_cty(config_cty, DialConfig, apply_defaults=True),
-            state=prior,
-            planned_state=prior,
-            planned_state_cty=_dial_cty("large"),
-            config_cty=config_cty,
-        )
-
-        planned_state, _ = await Dial().plan(ctx)
-
-        assert planned_state is not None
-        assert planned_state["config"] == {
-            "label": "default-label",
-            "size": DEFAULT_SIZE,
-        }
-
-    @pytest.mark.asyncio
-    async def test_retained_object_member_loses_to_the_default_on_update(self) -> None:
-        config_cty = resolve_schema_defaults(_dial_cty(CtyValue.null(CtyString())), Dial.get_schema().block)
-        assert config_cty is not None
-        prior = DialState(name="example", config=DialSettings(label="primary", size="large"), id="d-1")
-        ctx = ResourceContext(
-            config=Dial.from_cty(config_cty, DialConfig, apply_defaults=True),
-            state=prior,
-            planned_state=prior,
-            planned_state_cty=_dial_cty("large"),
-            config_cty=config_cty,
-        )
-
-        planned_state, _ = await Dial().plan(ctx)
-
-        assert planned_state is not None
-        assert planned_state["config"]["size"] == DEFAULT_SIZE
-        assert planned_state["config"]["label"] == "primary"
 
     @pytest.mark.asyncio
     async def test_configured_object_member_survives_the_merge(self) -> None:
