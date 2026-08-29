@@ -303,12 +303,19 @@ class TestUnmarshalRequestData:
         mock_schema = MagicMock()
         mock_schema.block = CtyObject(attribute_types={"name": CtyString()})
 
-        with patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.unmarshal_config"
+            ) as mock_unmarshal_config,
+        ):
             mock_unmarshal.return_value = CtyValue.null(CtyString())
+            mock_unmarshal_config.return_value = CtyValue.null(CtyString())
 
             _config, _prior, _proposed = await _unmarshal_request_data(request, mock_schema)
 
-            assert mock_unmarshal.call_count == 3
+            assert mock_unmarshal_config.call_count == 1
+            assert mock_unmarshal.call_count == 2
 
 
 # 🐍🏗️🔚

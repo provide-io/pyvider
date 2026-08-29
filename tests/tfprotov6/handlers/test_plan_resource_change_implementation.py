@@ -63,10 +63,16 @@ class TestCreateResourceContext:
         proposed_state_cty = CtyValue.null(CtyString())
         private_state = None
 
-        with patch(
-            "pyvider.protocols.tfprotov6.handlers.plan_resource_change.cty_to_attrs_instance"
-        ) as mock_cty_to_attrs:
+        with (
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.cty_to_attrs_instance"
+            ) as mock_cty_to_attrs,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.plan_resource_change.config_to_attrs_instance"
+            ) as mock_config_to_attrs,
+        ):
             mock_cty_to_attrs.return_value = None
+            mock_config_to_attrs.return_value = None
 
             context = _create_resource_context(
                 config_cty,
@@ -78,7 +84,8 @@ class TestCreateResourceContext:
             )
 
             assert context is not None
-            assert mock_cty_to_attrs.call_count == 3
+            assert mock_config_to_attrs.call_count == 1
+            assert mock_cty_to_attrs.call_count == 2
 
 
 class TestHandlePlannedStateDict:
