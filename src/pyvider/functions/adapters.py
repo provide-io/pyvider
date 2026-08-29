@@ -105,14 +105,51 @@ def _is_optional_type_hint(annotation: Any) -> bool:
     return _is_union_type(annotation) and type(None) in get_args(annotation)
 
 
+def _defaults_fill_the_variadic_slot(func_obj: Callable[..., Any], sig: inspect.Signature) -> bool:
+    """
+    Whether a defaulted parameter may take Terraform's one variadic slot.
+
+    It may when it is the only one and no `*args` is already claiming the slot.
+    Several defaults cannot share it, and the old rule tried: it promoted the
+    *first* defaulted parameter to variadic and pushed the rest onto the required
+    list, which moved them ahead of it in the wire order while the signature kept
+    them behind it. `def f(a, b=1, c=2)` called as `f("x", 9, 7)` bound a="x",
+    c=9, b=7 -- the practitioner's last two arguments silently swapped, with no
+    error at any layer. Returning False here declares them all required instead,
+    in signature order, which costs the optionality and keeps the meaning.
+    Declare `*args`, or give exactly one trailing parameter a default, to get an
+    omittable argument back.
+    """
+    defaulted = [
+        p.name
+        for p in sig.parameters.values()
+        if p.default is not inspect.Parameter.empty
+        and p.kind not in (inspect.Parameter.KEYWORD_ONLY, inspect.Parameter.VAR_KEYWORD)
+        and p.name != "self"
+    ]
+    if any(p.kind == inspect.Parameter.VAR_POSITIONAL for p in sig.parameters.values()):
+        return False
+    if len(defaulted) > 1:
+        logger.warning(
+            f"Function {func_obj.__name__} has {len(defaulted)} parameters with defaults "
+            f"({', '.join(defaulted)}). Terraform has one variadic slot, so all of them "
+            f"are required for callers. Use *args, or give one trailing parameter a "
+            f"default, for an omittable argument."
+        )
+        return False
+    return True
+
+
 def _extract_parameters_meta(
     func_obj: Callable[..., Any], sig: inspect.Signature, type_hints: dict[str, Any]
 ) -> dict[str, Any]:
     """
     Extract parameter metadata, separating required and variadic parameters.
 
-    Parameters with default values become variadic (optional) parameters in Terraform.
-    This enables true optional parameters with excellent DX.
+    A parameter with a default becomes Terraform's variadic parameter, which is
+    the only trailing thing tfproto v6 lets a caller omit -- it has no notion of
+    an optional positional parameter. That works for exactly one such parameter,
+    because there is exactly one variadic slot.
 
     Returns:
         dict with "parameters" (required) and "variadic_parameter" (optional) keys
@@ -120,6 +157,8 @@ def _extract_parameters_meta(
     required_params = []
     variadic_param = None
     param_descriptions = getattr(func_obj, "_function_metadata", {}).get("param_descriptions", {})
+
+    defaults_are_variadic = _defaults_fill_the_variadic_slot(func_obj, sig)
 
     for name, param in sig.parameters.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY or name == "self":
@@ -148,20 +187,12 @@ def _extract_parameters_meta(
             "allow_null": _is_optional_type_hint(param_hint),
         }
 
-        # Parameters with defaults become variadic (but we only support ONE variadic param)
-        # So if we find a default, convert it to variadic and stop processing params
-        if param.default is not inspect.Parameter.empty:
-            if variadic_param is None:
-                # Parameters with defaults are always nullable (can be omitted)
-                param_meta["allow_null"] = True
-                variadic_param = param_meta
-            else:
-                # Multiple defaults - add as required param with a warning
-                logger.warning(
-                    f"Function {func_obj.__name__} has multiple parameters with defaults. "
-                    f"Only the first will be variadic. Parameter '{name}' will be required."
-                )
-                required_params.append(param_meta)
+        # A single trailing default fills the one variadic slot; see above for why
+        # several cannot share it.
+        if param.default is not inspect.Parameter.empty and defaults_are_variadic:
+            # Parameters with defaults are always nullable (can be omitted)
+            param_meta["allow_null"] = True
+            variadic_param = param_meta
         else:
             required_params.append(param_meta)
 

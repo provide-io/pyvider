@@ -17,9 +17,16 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 @pytest.mark.asyncio
 async def test_move_resource_state_carries_state_private_identity() -> None:
+    """State, private state and identity survive a move that changed no type.
+
+    This used to assert the same pass-through for `source_resource` ->
+    `target_resource`, which is what the handler did for every pair of names.
+    That is the defect, not the contract: see test_move_state_support.py. The
+    pass-through itself is right when the type did not change.
+    """
     request = pb.MoveResourceState.Request(
-        source_type_name="source_resource",
-        target_type_name="target_resource",
+        source_type_name="same_resource",
+        target_type_name="same_resource",
         source_state=pb.RawState(json=b'{"status":"old"}'),
         source_private=b"private-state",
         source_identity=pb.RawState(json=b'{"id":"abc"}'),

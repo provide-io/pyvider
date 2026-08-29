@@ -269,13 +269,22 @@ class TestUnimplementedHandlerMessages:
         assert "Suggestion:" in diag.detail
 
     @pytest.mark.asyncio
-    async def test_move_resource_state_returns_no_workaround_diags(self) -> None:
-        """Move operation is implemented as an in-memory identity pass-through."""
+    async def test_move_resource_state_refusal_names_the_target(self) -> None:
+        """An unsupported move is refused, and the diagnostic says whose refusal it was.
+
+        This test previously asserted no diagnostics for `source` -> `target`,
+        recording the handler's blind copy across unrelated types as intended
+        behaviour. It is a refusal now; the message still has to be actionable.
+        """
         request = pb.MoveResourceState.Request(source_type_name="source", target_type_name="target")
 
         response = await _move_resource_state_impl(request, context=None)
 
-        assert len(response.diagnostics) == 0
+        assert len(response.diagnostics) == 1
+        diag = response.diagnostics[0]
+        assert diag.severity == pb.Diagnostic.ERROR
+        assert "target" in diag.summary
+        assert "Suggestion:" in diag.detail
 
 
 class TestErrorMessageConsistency:

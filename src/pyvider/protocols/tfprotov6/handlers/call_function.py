@@ -29,6 +29,7 @@ def _process_function_arguments(
     params_meta: list[dict[str, Any]],
     variadic_meta: dict[str, Any] | None,
     func_sig: inspect.Signature,
+    func_name: str = "",
 ) -> tuple[dict[str, Any], bool]:
     """
     Process function arguments including variadic parameters.
@@ -69,7 +70,6 @@ def _process_function_arguments(
 
     # Process variadic parameters (extra arguments beyond required)
     if variadic_meta and len(request_arguments) > len(params_meta):
-        # variadic_param_name = variadic_meta.get("name", "options")  # Reserved for future use
         variadic_cty_type = variadic_meta.get("cty_type", CtyDynamic())
         variadic_args = []
 
@@ -83,13 +83,75 @@ def _process_function_arguments(
 
             variadic_args.append(cty_to_native(decoded_cty_val))
 
-        # Find the variadic parameter in the function signature
-        for param_name, param in func_sig.parameters.items():
-            if param.kind == inspect.Parameter.VAR_POSITIONAL:
-                native_kwargs[param_name] = tuple(variadic_args)
-                break
+        if not has_unknown:
+            _bind_variadic_arguments(
+                native_kwargs, func_sig, variadic_meta.get("name"), variadic_args, func_name
+            )
 
     return native_kwargs, has_unknown
+
+
+def _bind_variadic_arguments(
+    native_kwargs: dict[str, Any],
+    func_sig: inspect.Signature,
+    variadic_param_name: str | None,
+    variadic_args: list[Any],
+    func_name: str,
+) -> None:
+    """
+    Bind the trailing arguments to the parameter the schema's variadic slot came from.
+
+    `_extract_parameters_meta` fills `variadic_parameter` from two very different
+    signature shapes, because tfproto v6 has no optional positional parameter and
+    the variadic slot is the only trailing thing a caller may omit: a genuine
+    `*args`, which takes every trailing argument, and a plain parameter carrying a
+    default, which has exactly one.
+
+    This used to search the signature for a VAR_POSITIONAL and bind nothing when it
+    found none -- so `def repeat(text, count=2)` decoded the `count` Terraform sent,
+    converted it, and dropped it on the floor. `repeat("ab", 5)` returned "abab"
+    with no error and no diagnostic: a silently wrong answer, which is worse than a
+    failed apply because nothing reports it. The parameter is now looked up by the
+    name the adapter recorded, so both shapes bind.
+    """
+    param = func_sig.parameters.get(variadic_param_name) if variadic_param_name else None
+    if param is None:
+        # A signature whose variadic name the adapter could not record still has
+        # its *args; fall back to it rather than dropping the arguments.
+        param = next(
+            (p for p in func_sig.parameters.values() if p.kind == inspect.Parameter.VAR_POSITIONAL),
+            None,
+        )
+    if param is None:
+        raise PyviderFunctionError(
+            f"Function '{func_name}' declares a variadic parameter "
+            f"{variadic_param_name!r} that its signature does not have.\n\n"
+            f"Suggestion: this is a bug in the provider, not in the configuration."
+        )
+
+    if param.kind == inspect.Parameter.VAR_POSITIONAL:
+        native_kwargs[param.name] = tuple(variadic_args)
+        return
+
+    # Terraform sends an explicit null for an argument the practitioner left out,
+    # so a null here means "omitted" and Python's default stands. Same rule the
+    # required-parameter loop above applies, and keyed on the same condition. A
+    # null reaching a genuine *args is a real element and is kept.
+    if len(variadic_args) == 1 and variadic_args[0] is None:
+        return
+
+    # A defaulted parameter is one slot. Terraform will happily send more, because
+    # the schema advertises a variadic; refuse rather than bind the first and
+    # discard the rest.
+    if len(variadic_args) > 1:
+        raise PyviderFunctionError(
+            f"Incorrect number of arguments for function '{func_name}'.\n\n"
+            f"Expected: at most {len(func_sig.parameters)} arguments "
+            f"('{param.name}' is optional, not variadic)\n"
+            f"Received: {len(variadic_args)} arguments beyond the required ones\n\n"
+            f"Suggestion: provide at most one value for '{param.name}'."
+        )
+    native_kwargs[param.name] = variadic_args[0]
 
 
 def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any], func_name: str) -> None:
@@ -301,7 +363,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             )
 
         native_kwargs, has_unknown = _process_function_arguments(
-            list(request.arguments), params_meta, variadic_meta, func_sig
+            list(request.arguments), params_meta, variadic_meta, func_sig, func_name
         )
 
         declared_return_cty_type = func_meta.get("return", {}).get("cty_type", CtyDynamic())
