@@ -13,6 +13,7 @@ from pytest import LogCaptureFixture
 
 from pyvider.cty import (
     CtyBool,
+    CtyList,
     CtyNumber,
     CtyObject,
     CtyString,
@@ -246,6 +247,26 @@ class TestCtyToDictPreservingUnknown:
         assert "value" in result
         assert isinstance(result["value"], CtyValue)
         assert result["value"].is_unknown
+
+    def test_preserves_unknown_values_nested_in_objects_and_lists(self) -> None:
+        nested_type = CtyObject({"value": CtyString()})
+        cty_type = CtyObject(
+            {
+                "object_value": nested_type,
+                "block_values": CtyList(element_type=nested_type),
+            }
+        )
+        cty_value = cty_type.validate(
+            {
+                "object_value": {"value": CtyValue.unknown(CtyString())},
+                "block_values": [{"value": CtyValue.unknown(CtyString())}],
+            }
+        )
+
+        result = SampleResource._cty_to_dict_preserving_unknown(cty_value)
+
+        assert result["object_value"]["value"].is_unknown
+        assert result["block_values"][0]["value"].is_unknown
 
     def test_converts_known_values(self) -> None:
         """Test that known values are converted to native types."""

@@ -347,6 +347,26 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             return cty_to_native(data)
         return data
 
+    @classmethod
+    def _cty_to_native_preserving_unknown(cls, value: Any) -> Any:
+        """Convert CTY recursively while retaining unknown values as CtyValue objects."""
+        if not isinstance(value, CtyValue):
+            return value
+        if value.is_unknown:
+            return value
+        if value.is_null:
+            return None
+        if value.is_wholly_known():
+            return cty_to_native(value)
+
+        payload = value.value
+        if isinstance(payload, dict):
+            return {key: cls._cty_to_native_preserving_unknown(item) for key, item in payload.items()}
+        if isinstance(payload, (list, tuple)):
+            converted = [cls._cty_to_native_preserving_unknown(item) for item in payload]
+            return tuple(converted) if isinstance(value.type, CtyTuple) else converted
+        return cty_to_native(value)
+
     async def validate(self, config: ConfigType | None) -> list[str]:
         if config is None:
             return []
@@ -397,7 +417,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                         reason="value_is_unknown",
                     )
                 else:
-                    result[key] = cty_to_native(value_cty)
+                    result[key] = cls._cty_to_native_preserving_unknown(value_cty)
                     logger.debug(
                         "Converted known CTY value to native type",
                         operation="cty_to_dict_preserving_unknown",
