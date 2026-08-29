@@ -165,67 +165,41 @@ class PvsAttribute:
 
     def _apply_default_rules(self, is_req: bool, is_opt: bool, is_comp: bool) -> None:
         """Validates and normalizes the interaction between `default` and the flags."""
-        # Rule 8: A computed-only attribute cannot have a default. A default is
-        # the value used when the practitioner omits something they *could* have
-        # written, and `computed=True` without `optional=True` means they cannot
-        # write it at all -- so there is nothing to default from. The provider's
-        # own fallback for a value it computes belongs in the resource, not the
-        # schema.
-        if self.default is not None and is_comp and not is_opt and not is_req:
-            raise ValueError(
-                f"Invalid schema attribute configuration for '{self.name}': "
-                f"A computed-only attribute cannot declare a default.\n\n"
-                f"A default applies to an attribute the practitioner omitted, and a "
-                f"computed-only attribute cannot be set in configuration at all.\n\n"
-                f"Suggestion: Choose one of the following:\n"
-                f"  - optional=True, default=...: The practitioner may set it, and the "
-                f"provider uses the default otherwise\n"
-                f"  - computed=True, no default: The provider calculates the value; set "
-                f"your fallback in the resource's own create/read logic\n\n"
-                f"Current configuration: required={is_req}, optional={is_opt}, "
-                f"computed={is_comp}, default={self.default!r}"
-            )
+        if self.default is None:
+            return
 
-        # Rule 9: A required attribute cannot have a default. A default is the
-        # value used when the practitioner omits the attribute, and `required`
-        # means they cannot omit it -- so the default could never be reached, and
-        # filling one in would mask the missing value from the required-attribute
-        # check.
-        if self.default is not None and self.required:
-            raise ValueError(
-                f"Invalid schema attribute configuration for '{self.name}': "
-                f"A required attribute cannot declare a default.\n\n"
-                f"A default applies to an attribute the practitioner omitted, and a "
-                f"required attribute must always be set -- so the default would never "
-                f"be used, and filling one in would hide a missing required value.\n\n"
-                f"Suggestion: Choose one of the following:\n"
-                f"  - optional=True, default=...: The practitioner may set it, and the "
-                f"provider uses the default otherwise\n"
-                f"  - required=True, no default: The practitioner must always supply a "
-                f"value\n\n"
-                f"Current configuration: required={is_req}, optional={is_opt}, "
-                f"computed={is_comp}, default={self.default!r}"
-            )
-
-        # Rule 10: A write-only attribute cannot have a default. Terraform
-        # requires every write-only value to be null in both prior and planned
-        # state, so a default would put into the plan what must show null -- and
-        # a write-only attribute cannot be computed, which a default requires.
-        if self.default is not None and self.write_only:
-            raise ValueError(
-                f"Invalid schema attribute configuration for '{self.name}': "
-                f"A write-only attribute cannot declare a default.\n\n"
-                f"Terraform requires every write-only value to be null in both prior "
-                f"and planned state, so a provider-supplied default would put into the "
-                f"plan the very value that must show null.\n\n"
-                f"Suggestion: Choose one of the following:\n"
-                f"  - write_only=True, no default: Apply the fallback inside the "
-                f"resource's own create/update logic, where the value is never stored\n"
-                f"  - default=..., write_only=False: The value is defaulted and stored "
-                f"in state like any other attribute\n\n"
-                f"Current configuration: required={is_req}, optional={is_opt}, "
-                f"computed={is_comp}, write_only={self.write_only}, default={self.default!r}"
-            )
+        rules = (
+            (
+                is_comp and not is_opt and not is_req,
+                "A computed-only attribute cannot declare a default.",
+                "Defaults fill omitted configuration, but a computed-only attribute cannot be configured.",
+                (
+                    "optional=True, default=...: Allow configuration and default it when omitted",
+                    "computed=True, no default: Calculate the fallback in create/read logic",
+                ),
+            ),
+            (
+                is_req,
+                "A required attribute cannot declare a default.",
+                "A required attribute cannot be omitted, so its default would be unreachable.",
+                (
+                    "optional=True, default=...: Allow omission and supply the default",
+                    "required=True, no default: Require the practitioner to supply a value",
+                ),
+            ),
+            (
+                self.write_only,
+                "A write-only attribute cannot declare a default.",
+                "Terraform requires write-only values to remain null in prior and planned state.",
+                (
+                    "write_only=True, no default: Apply the fallback in create/update logic",
+                    "default=..., write_only=False: Default and store the value in state",
+                ),
+            ),
+        )
+        for condition, headline, why, options in rules:
+            if condition:
+                self._reject_default(headline, why, options)
 
         # Rule 11: An attribute with a default is Optional *and* Computed -- the
         # practitioner may set it, and the provider fills it in otherwise.
@@ -234,18 +208,32 @@ class PvsAttribute:
         #
         # `default=None` is indistinguishable from declaring no default; there is
         # no way to express "defaults to null", which is what a null already is.
-        if self.default is not None:
-            try:
-                self.type.validate(self.default)
-            except Exception as exc:
-                raise ValueError(
-                    f"Invalid schema attribute configuration for '{self.name}': "
-                    f"the declared default {self.default!r} is not a valid "
-                    f"{type(self.type).__name__} value.\n\n"
-                    f"Underlying error: {exc}\n\n"
-                    f"Suggestion: give the default the same type as the attribute."
-                ) from exc
-            object.__setattr__(self, "computed", True)
+        try:
+            self.type.validate(self.default)
+        except Exception as exc:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"the declared default {self.default!r} is not a valid "
+                f"{type(self.type).__name__} value.\n\n"
+                f"Underlying error: {exc}\n\n"
+                f"Suggestion: give the default the same type as the attribute."
+            ) from exc
+        object.__setattr__(self, "computed", True)
+
+    def _reject_default(
+        self,
+        headline: str,
+        why: str,
+        options: tuple[str, str],
+    ) -> None:
+        suggestions = "\n".join(f"  - {option}" for option in options)
+        raise ValueError(
+            f"Invalid schema attribute configuration for '{self.name}': {headline}\n\n"
+            f"{why}\n\n"
+            f"Suggestion: Choose one of the following:\n{suggestions}\n\n"
+            f"Current configuration: required={self.required}, optional={self.optional}, "
+            f"computed={self.computed}, write_only={self.write_only}, default={self.default!r}"
+        )
 
 
 # 🐍🏗️🔚
