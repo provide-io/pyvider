@@ -219,6 +219,13 @@ class TestNestedPlanMerge:
 
         assert plan["options"]["label"] == "stale"
 
+    def test_unresolved_null_does_not_copy_a_raw_schema_default(self) -> None:
+        plan = {"size": None}
+
+        merge_schema_defaults_into_plan(plan, _config(), SCHEMA.block)
+
+        assert plan == {"size": None}
+
     def test_blocks_nested_inside_blocks_are_corrected(self) -> None:
         plan = {"options": {"mode": "fast", "label": "primary", "tuning": {"level": "high"}}}
 

@@ -200,13 +200,12 @@ def _merge_attribute_default(
             merged[name] = _merge_block_into_plan(current, resolved, attribute.object_type)
         return
 
-    if attribute.default is None:
-        return
-    if _is_null(resolved):
-        # No resolved configuration to follow -- fall back to the declared
-        # default, but never over a value the plan already holds.
-        if merged.get(name) is None:
-            merged[name] = attribute.default
+    if attribute.default is None or _is_null(resolved):
+        # This merge follows the effective configuration produced by
+        # resolve_schema_defaults. If a caller supplies an unresolved null,
+        # there is no normalized value to copy into the plan; resolving again
+        # here would duplicate that earlier phase and risk the two paths
+        # disagreeing about validation or nested-object normalization.
         return
     merged[name] = cty_to_native(resolved) if isinstance(resolved, CtyValue) else resolved
 

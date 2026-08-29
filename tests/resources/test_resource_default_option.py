@@ -151,7 +151,10 @@ class TestConfigDecoding:
 class TestPlanning:
     @pytest.mark.asyncio
     async def test_create_plan_contains_the_default(self) -> None:
-        config_cty = _config_cty(CtyValue.null(CtyString()))
+        config_cty = resolve_schema_defaults(
+            _config_cty(CtyValue.null(CtyString())), Widget.get_schema().block
+        )
+        assert config_cty is not None
         ctx = ResourceContext(
             config=Widget.from_cty(config_cty, WidgetConfig, apply_defaults=True),
             state=None,
@@ -165,7 +168,10 @@ class TestPlanning:
 
     @pytest.mark.asyncio
     async def test_update_plan_contains_the_default(self) -> None:
-        config_cty = _config_cty(CtyValue.null(CtyString()))
+        config_cty = resolve_schema_defaults(
+            _config_cty(CtyValue.null(CtyString())), Widget.get_schema().block
+        )
+        assert config_cty is not None
         ctx = ResourceContext(
             config=Widget.from_cty(config_cty, WidgetConfig, apply_defaults=True),
             state=WidgetState(name="example", size="large", id="w-1"),
