@@ -7,7 +7,6 @@
 from pyvider.schema.defaults import (
     merge_schema_defaults_into_plan,
     resolve_schema_defaults,
-    resolves_from_configuration,
 )
 from pyvider.schema.factory import (
     a_bool,
@@ -68,7 +67,6 @@ __all__ = [
     "b_single",
     "merge_schema_defaults_into_plan",
     "resolve_schema_defaults",
-    "resolves_from_configuration",
     "s_data_source",
     "s_function",
     "s_identity",

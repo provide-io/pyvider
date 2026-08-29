@@ -28,7 +28,6 @@ from pyvider.schema import (
     b_single,
     merge_schema_defaults_into_plan,
     resolve_schema_defaults,
-    resolves_from_configuration,
     s_resource,
 )
 
@@ -626,7 +625,6 @@ class TestComputedOnlyDefaults:
         attribute = a_str(computed=True, default=None)
 
         assert attribute.default is None
-        assert resolves_from_configuration(attribute) is False
 
     def test_default_of_the_wrong_type_is_rejected_when_declared(self) -> None:
         with pytest.raises(ValueError, match="not a valid CtyNumber value"):

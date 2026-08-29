@@ -30,20 +30,6 @@ from pyvider.schema.types.enums import NestingMode
 from pyvider.schema.types.object import PvsObjectType
 
 
-def resolves_from_configuration(attribute: PvsAttribute) -> bool:
-    """True when a null value for `attribute` means "the practitioner omitted it".
-
-    Only then is there an omission for a default to fill -- and declaring a
-    default is the only way to say so. The combinations where a default would
-    have to be ignored are refused at schema construction rather than silently
-    dropped here: `PvsAttribute` rejects a default on a required attribute
-    (Rule 9), on a write-only one (Rule 10) and on a computed-only one (Rule 8),
-    so an attribute that carries a default is always one the practitioner could
-    have written and left out.
-    """
-    return attribute.default is not None
-
-
 def resolve_schema_defaults(value: CtyValue | None, block: PvsObjectType) -> CtyValue | None:
     """Return `value` with every null attribute replaced by its schema default.
 
@@ -53,7 +39,7 @@ def resolve_schema_defaults(value: CtyValue | None, block: PvsObjectType) -> Cty
 
     Nulls only: an unknown attribute is one whose value is not yet known, not an
     absent one, and replacing it would plan a value Terraform is about to
-    compute. Which attributes are eligible at all is `resolves_from_configuration`.
+    compute. Only attributes that declare a non-null default are eligible.
 
     The value is returned unchanged when nothing needed resolving, so callers
     can pass anything through this without paying for a rebuild.
@@ -94,7 +80,7 @@ def _resolve_attribute(value: Any, attribute: PvsAttribute) -> Any:
         return value
 
     resolved = value
-    if resolves_from_configuration(attribute) and _is_null(resolved):
+    if attribute.default is not None and _is_null(resolved):
         resolved = attribute.type.validate(attribute.default)
 
     if attribute.object_type is not None:
