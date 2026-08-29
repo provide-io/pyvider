@@ -6,6 +6,7 @@
 """Tests for handlers/utils.py utility functions."""
 
 import attrs
+import pytest
 
 from pyvider.cty import CtyList, CtyNumber, CtyObject, CtySet, CtyString
 from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
@@ -287,6 +288,35 @@ class TestStrPathToProtoPath:
         """Test that empty path returns None."""
         assert str_path_to_proto_path("") is None
         assert str_path_to_proto_path(None) is None
+
+    def test_attribute_name_containing_a_dash_stays_one_step(self) -> None:
+        """go-cty allows a dash in an attribute name; the old `\\w+` regex did not.
+
+        It matched either side of the dash separately, so a single attribute
+        became a two-step path naming two attributes that do not exist.
+        """
+        result = str_path_to_proto_path("retention-days")
+
+        assert [step.attribute_name for step in result.steps] == ["retention-days"]
+
+    def test_nested_attribute_name_containing_a_dash(self) -> None:
+        result = str_path_to_proto_path("config.retention-days")
+
+        assert [step.attribute_name for step in result.steps] == ["config", "retention-days"]
+
+    @pytest.mark.parametrize(
+        "malformed",
+        ["tags[0", "tags[]", "tags['a", "items[0]extra"],
+    )
+    def test_a_malformed_path_yields_no_path_rather_than_a_wrong_one(self, malformed: str) -> None:
+        """A path that cannot be read points at nothing, not at the wrong attribute.
+
+        The old regex used `finditer`, which skips what it cannot match, so
+        `tags[0` silently became `tags[0]`-looking steps and `items[0]extra`
+        grew a third step. A diagnostic aimed at the wrong attribute is worse
+        than one aimed at nothing.
+        """
+        assert str_path_to_proto_path(malformed) is None
 
 
 class TestCtyPathToProtoPath:

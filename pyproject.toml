@@ -49,7 +49,7 @@ dependencies = [
     "google>=3.0.0",
     "cryptography>=45.0.7",
     "provide-foundation>=0.4.0",
-    "pyvider-cty>=0.5.0",
+    "pyvider-cty>=0.5.2",
     # 0.4.2 raises the gRPC server's message limits from the 4 MB default to
     # Terraform's 256 MB. A state store negotiates 8 MB chunks, so on anything
     # older every chunk of a multi-chunk write is refused before it arrives.

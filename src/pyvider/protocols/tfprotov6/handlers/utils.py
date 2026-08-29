@@ -6,7 +6,6 @@
 
 from collections.abc import Iterable, Mapping
 import inspect
-import re
 from typing import Any
 
 import attrs
@@ -41,7 +40,6 @@ from pyvider.resources.base import BaseResource
 from pyvider.schema import PvsSchema
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
-PATH_STEP_REGEX = re.compile(r"(\.?)(\w+)|\[(\d+)\]|\[['\"]([^'\"]+)['\"]\]")
 
 
 def derive_identity_values(
@@ -483,33 +481,38 @@ def str_path_to_proto_path(path_str: str | None) -> pb.AttributePath | None:
     This is the string-literal counterpart to `cty_path_to_proto_path` and is
     meant for path strings a caller types out directly (e.g.
     `ctx.add_attribute_error("tags[0]", ...)`), not for `str(cty_path)` /
-    `CtyPath.string()` output. That distinction matters for sets: `KeyStep`'s
-    `__str__` renders a set element's *value* (e.g. `[3]` or `['a']`) once it
-    no longer has the CtyValue to tell "this is a set element" apart from a
-    genuine int/string key -- the regex below has no way to recover that once
-    it is text, and would silently emit a plausible-but-wrong
-    element_key_int/element_key_string step, same as the bug this module's
-    `cty_path_to_proto_path` had. There is no fix at this layer because the
-    information is already gone by the time a string reaches here; a `CtyPath`
-    that might contain a set-element step should go through
-    `cty_path_to_proto_path` directly instead of being stringified first.
+    `CtyPath.string()` output. That distinction still matters for sets:
+    `KeyStep`'s `__str__` renders a set element's *value* (e.g. `[3]` or
+    `['a']`) once it no longer has the CtyValue to tell "this is a set element"
+    apart from a genuine int/string key. Read as text alone the two are the
+    same syntax, so a `CtyPath` that might contain a set-element step should go
+    through `cty_path_to_proto_path` directly rather than being stringified
+    first. (`CtyPath.parse` resolves that ambiguity when handed the type the
+    path is relative to; neither caller here has one to give.)
+
+    A path that cannot be read yields *no* path rather than a wrong one. The
+    regex this replaces matched with `finditer`, which skips what it cannot
+    match: `tags[0` silently became two attribute steps, `items[0]extra` grew a
+    third, and `\\w+` could not express an attribute name containing a dash --
+    which go-cty allows -- so `retention-days` named two attributes that do not
+    exist. A diagnostic aimed at the wrong attribute is worse than one aimed at
+    nothing, and a wrong `requires_replace` path is worse than a missing one.
     """
     if not path_str:
         return None
 
-    proto_steps = []
-    normalized_path = path_str.replace("].", "][")
+    try:
+        cty_path = CtyPath.parse(path_str)
+    except Exception as exc:
+        logger.warning(
+            "Ignoring an unparsable attribute path",
+            operation="str_path_to_proto_path",
+            path=path_str,
+            error=str(exc),
+        )
+        return None
 
-    for match in PATH_STEP_REGEX.finditer(normalized_path):
-        _dot, attr, index, key = match.groups()
-        if attr:
-            proto_steps.append(pb.AttributePath.Step(attribute_name=attr))
-        elif index:
-            proto_steps.append(pb.AttributePath.Step(element_key_int=int(index)))
-        elif key:
-            proto_steps.append(pb.AttributePath.Step(element_key_string=key))
-
-    return pb.AttributePath(steps=proto_steps)
+    return cty_path_to_proto_path(cty_path)
 
 
 def cty_path_to_proto_path(cty_path: CtyPath | None) -> pb.AttributePath | None:
