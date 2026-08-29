@@ -40,6 +40,13 @@ class PvsAttribute:
         - Computed
         This hook enforces that logic.
         """
+        is_req, is_opt, is_comp = self._normalize_flags()
+        self._validate_flag_combinations(is_req, is_opt, is_comp)
+        self._validate_requires_replace()
+        self._apply_default_rules(is_req, is_opt, is_comp)
+
+    def _normalize_flags(self) -> tuple[bool, bool, bool]:
+        """Applies the Required/Optional/Computed defaulting rules."""
         # Use object.__setattr__ because the instance is frozen.
         is_req = self.required
         is_opt = self.optional
@@ -54,6 +61,10 @@ class PvsAttribute:
         if is_req and is_opt:
             object.__setattr__(self, "optional", False)
 
+        return is_req, is_opt, is_comp
+
+    def _validate_flag_combinations(self, is_req: bool, is_opt: bool, is_comp: bool) -> None:
+        """Rejects Required/Optional/Computed combinations Terraform cannot express."""
         # Rule 3: An attribute can't be both Required and Computed.
         if is_req and is_comp:
             raise ValueError(
@@ -80,6 +91,8 @@ class PvsAttribute:
                 f"Current configuration: required={self.required}, optional={self.optional}, computed={self.computed}"
             )
 
+    def _validate_requires_replace(self) -> None:
+        """Rejects requires_replace placements that could never take effect."""
         # Rule 5: requires_replace is meaningless on a computed-only attribute.
         if self.requires_replace and self.computed and not self.required and not self.optional:
             raise ValueError(
@@ -149,6 +162,80 @@ class PvsAttribute:
                     f"to the object should force replacement, or trigger replacement "
                     f"imperatively from the resource's plan hook via {call}"
                 )
+
+    def _apply_default_rules(self, is_req: bool, is_opt: bool, is_comp: bool) -> None:
+        """Validates and normalizes the interaction between `default` and the flags."""
+        # Rule 8: A computed-only attribute cannot have a default. A default is
+        # the value used when the practitioner omits something they *could* have
+        # written, and `computed=True` without `optional=True` means they cannot
+        # write it at all -- so there is nothing to default from. The provider's
+        # own fallback for a value it computes belongs in the resource, not the
+        # schema.
+        if self.default is not None and is_comp and not is_opt and not is_req:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"A computed-only attribute cannot declare a default.\n\n"
+                f"A default applies to an attribute the practitioner omitted, and a "
+                f"computed-only attribute cannot be set in configuration at all.\n\n"
+                f"Suggestion: Choose one of the following:\n"
+                f"  - optional=True, default=...: The practitioner may set it, and the "
+                f"provider uses the default otherwise\n"
+                f"  - computed=True, no default: The provider calculates the value; set "
+                f"your fallback in the resource's own create/read logic\n\n"
+                f"Current configuration: required={is_req}, optional={is_opt}, "
+                f"computed={is_comp}, default={self.default!r}"
+            )
+
+        # Rule 9: A required attribute cannot have a default. A default is the
+        # value used when the practitioner omits the attribute, and `required`
+        # means they cannot omit it -- so the default could never be reached, and
+        # filling one in would mask the missing value from the required-attribute
+        # check.
+        if self.default is not None and self.required:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"A required attribute cannot declare a default.\n\n"
+                f"A default applies to an attribute the practitioner omitted, and a "
+                f"required attribute must always be set -- so the default would never "
+                f"be used, and filling one in would hide a missing required value.\n\n"
+                f"Suggestion: Choose one of the following:\n"
+                f"  - optional=True, default=...: The practitioner may set it, and the "
+                f"provider uses the default otherwise\n"
+                f"  - required=True, no default: The practitioner must always supply a "
+                f"value\n\n"
+                f"Current configuration: required={is_req}, optional={is_opt}, "
+                f"computed={is_comp}, default={self.default!r}"
+            )
+
+        # Rule 10: A write-only attribute cannot have a default. Terraform
+        # requires every write-only value to be null in both prior and planned
+        # state, so a default would put into the plan what must show null -- and
+        # a write-only attribute cannot be computed, which a default requires.
+        if self.default is not None and self.write_only:
+            raise ValueError(
+                f"Invalid schema attribute configuration for '{self.name}': "
+                f"A write-only attribute cannot declare a default.\n\n"
+                f"Terraform requires every write-only value to be null in both prior "
+                f"and planned state, so a provider-supplied default would put into the "
+                f"plan the very value that must show null.\n\n"
+                f"Suggestion: Choose one of the following:\n"
+                f"  - write_only=True, no default: Apply the fallback inside the "
+                f"resource's own create/update logic, where the value is never stored\n"
+                f"  - default=..., write_only=False: The value is defaulted and stored "
+                f"in state like any other attribute\n\n"
+                f"Current configuration: required={is_req}, optional={is_opt}, "
+                f"computed={is_comp}, write_only={self.write_only}, default={self.default!r}"
+            )
+
+        # Rule 11: An attribute with a default is Optional *and* Computed -- the
+        # practitioner may set it, and the provider fills it in otherwise.
+        # Terraform rejects a provider-supplied value on an attribute that is not
+        # computed, so a default is unusable without the flag.
+        #
+        # `default=None` is indistinguishable from declaring no default; there is
+        # no way to express "defaults to null", which is what a null already is.
+        if self.default is not None:
+            object.__setattr__(self, "computed", True)
 
 
 # 🐍🏗️🔚

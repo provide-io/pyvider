@@ -67,11 +67,18 @@ def _pvs_object_type_to_proto(block: PvsObjectType) -> pb.Schema.Block:
     return result
 
 
-def _pvs_attribute_to_proto(attr: PvsAttribute) -> pb.Schema.Attribute:
-    """Converts a PvsAttribute to a protobuf Attribute message."""
-    return pb.Schema.Attribute(
-        name=attr.name,
-        type=_encode_cty_type_bytes(attr.type),
+def _pvs_attribute_to_proto(attr: PvsAttribute, name: str | None = None) -> pb.Schema.Attribute:
+    """Converts a PvsAttribute to a protobuf Attribute message.
+
+    An object-typed attribute (`a_obj`) is sent as a `nested_type` rather than a
+    flat object type. Terraform treats a flat object attribute as a single
+    opaque value -- the planned value must equal the configured one exactly, so
+    a member's Optional+Computed flags, and therefore any default the provider
+    resolves for it, could never take effect. `nested_type` is what carries the
+    per-member flags across the wire; the configuration syntax is unchanged.
+    """
+    attribute = pb.Schema.Attribute(
+        name=name if name is not None else attr.name,
         description=attr.description,
         required=attr.required,
         optional=attr.optional,
@@ -79,6 +86,21 @@ def _pvs_attribute_to_proto(attr: PvsAttribute) -> pb.Schema.Attribute:
         sensitive=attr.sensitive,
         deprecated=attr.deprecated,
         write_only=attr.write_only,
+    )
+    if attr.object_type is not None:
+        # `type` and `nested_type` are mutually exclusive; Terraform reads the
+        # implied type off the nested schema.
+        attribute.nested_type.CopyFrom(_pvs_object_type_to_proto_object(attr.object_type))
+    else:
+        attribute.type = _encode_cty_type_bytes(attr.type)
+    return attribute
+
+
+def _pvs_object_type_to_proto_object(obj: PvsObjectType) -> pb.Schema.Object:
+    """Converts the `PvsObjectType` behind an `a_obj()` attribute to a nested type."""
+    return pb.Schema.Object(
+        attributes=[_pvs_attribute_to_proto(attr, name) for name, attr in obj.attributes.items()],
+        nesting=pb.Schema.Object.NestingMode.SINGLE,
     )
 
 

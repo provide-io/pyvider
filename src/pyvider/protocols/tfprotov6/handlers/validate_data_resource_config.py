@@ -65,14 +65,14 @@ async def _validate_data_resource_config_impl(
             return response
 
         ds_schema = ds_class.get_schema()
-        config_cty = unmarshal(request.config, schema=ds_schema.block)
+        config_cty = unmarshal(request.config, schema=ds_schema.block, apply_defaults=True)
 
         # See validate_resource_config.py: cty 0.5 no longer refuses a
         # present-but-null value for a required attribute, so the schema
         # layer's own check has to be called explicitly here.
         check_required_attributes(ds_schema.block, config_cty.value)
 
-        config_instance = cty_to_attrs_instance(config_cty, ds_class.config_class)
+        config_instance = cty_to_attrs_instance(config_cty, ds_class.config_class, apply_defaults=True)
 
         data_source_instance = ds_class()
         validation_errors = await data_source_instance.validate(config_instance)

@@ -36,10 +36,10 @@ def decode_component_config(component_class: Any, config: pb.DynamicValue) -> An
     if schema is None or not config.ByteSize():
         return None
 
-    config_cty = unmarshal(config, schema=schema.block)
+    config_cty = unmarshal(config, schema=schema.block, apply_defaults=True)
     if component_class.config_class is None:
         return config_cty
-    return cty_to_attrs_instance(config_cty, component_class.config_class)
+    return cty_to_attrs_instance(config_cty, component_class.config_class, apply_defaults=True)
 
 
 # 🐍🏗️🔚

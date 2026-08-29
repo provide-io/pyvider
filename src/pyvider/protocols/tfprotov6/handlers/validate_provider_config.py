@@ -52,7 +52,7 @@ async def _validate_provider_config_impl(
             provider_schema = provider_instance.schema
             config_cty = None
             try:
-                config_cty = unmarshal(request.config, schema=provider_schema.block)
+                config_cty = unmarshal(request.config, schema=provider_schema.block, apply_defaults=True)
             except Exception as e:
                 # Don't fail validation if we can't parse config for logging
                 logger.debug(
@@ -78,7 +78,11 @@ async def _validate_provider_config_impl(
 
                 try:
                     if not config_cty.is_unknown:
-                        config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)  # type: ignore[arg-type]
+                        config_instance = BaseResource.from_cty(
+                            config_cty,
+                            provider_instance.config_class,  # type: ignore[arg-type]
+                            apply_defaults=True,
+                        )
                         if config_instance:
                             test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)
 

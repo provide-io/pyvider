@@ -638,7 +638,11 @@ async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
 
 
 def cty_to_attrs_instance(
-    cty_val: CtyValue | None, attrs_cls: type[Any] | None, *, allow_unknown: bool = False
+    cty_val: CtyValue | None,
+    attrs_cls: type[Any] | None,
+    *,
+    allow_unknown: bool = False,
+    apply_defaults: bool = False,
 ) -> Any | None:
     """Convert a CtyValue into an instance of the given attrs-based class.
 
@@ -656,6 +660,12 @@ def cty_to_attrs_instance(
     something else. Pass ``allow_unknown=True`` there: ``from_cty`` handles
     unknowns per attribute, yielding an instance whose not-yet-known fields are
     None rather than collapsing the whole object.
+
+    Pass ``apply_defaults=True`` when decoding a *configuration*, where a null
+    attribute is one the practitioner omitted and the target class's own field
+    default is the right fallback. State is decoded without it: a null there is
+    a recorded absence, and replacing it would rewrite history. See
+    ``BaseResource.from_cty``.
     """
     if attrs_cls is None:
         return None
@@ -676,7 +686,7 @@ def cty_to_attrs_instance(
         err.add_context("target_module", getattr(attrs_cls, "__module__", "unknown"))
         raise err
 
-    return BaseResource.from_cty(cty_val, attrs_cls)
+    return BaseResource.from_cty(cty_val, attrs_cls, apply_defaults=apply_defaults)
 
 
 # 🐍🏗️🔚

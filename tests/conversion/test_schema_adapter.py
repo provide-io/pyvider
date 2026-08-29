@@ -16,7 +16,7 @@ from pyvider.conversion.schema_adapter import (
     pvs_schema_to_proto,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema import a_bool, a_num, a_str, b_list, b_single, s_data_source, s_resource
+from pyvider.schema import a_bool, a_num, a_obj, a_str, b_list, b_single, s_data_source, s_resource
 
 
 class TestPvsAttributeToProto:
@@ -75,6 +75,64 @@ class TestPvsAttributeToProto:
         # Should be valid JSON
         type_data = json.loads(proto.type)
         assert isinstance(type_data, (dict, str))
+
+
+class TestObjectAttributesBecomeNestedTypes:
+    """`a_obj()` crosses the wire as a `nested_type`, not a flat object type.
+
+    Terraform treats a flat object attribute as one opaque value: the planned
+    value must equal the configured one exactly, so a member's Optional +
+    Computed flags -- and therefore any default the provider resolves for it --
+    could never take effect. `terraform plan` rejects the attempt outright with
+    "planned value ... does not match config value". `nested_type` is what
+    carries the per-member flags; the configuration syntax is unchanged.
+    """
+
+    def test_object_attribute_emits_a_nested_type(self) -> None:
+        attr = a_obj({"timeout": a_num(default=30), "label": a_str()})
+
+        proto = _pvs_attribute_to_proto(attr, "config")
+
+        assert proto.HasField("nested_type")
+        assert proto.nested_type.nesting == pb.Schema.Object.NestingMode.SINGLE
+        assert [a.name for a in proto.nested_type.attributes] == ["timeout", "label"]
+
+    def test_member_flags_cross_the_wire(self) -> None:
+        attr = a_obj({"timeout": a_num(default=30), "host": a_str(required=True), "label": a_str()})
+
+        members = {a.name: a for a in _pvs_attribute_to_proto(attr, "config").nested_type.attributes}
+
+        # A default makes the member Optional + Computed, which is exactly what
+        # lets Terraform accept a provider-planned value for it.
+        assert (members["timeout"].optional, members["timeout"].computed) == (True, True)
+        assert (members["host"].required, members["host"].computed) == (True, False)
+        assert (members["label"].optional, members["label"].computed) == (True, False)
+
+    def test_objects_nested_inside_objects_nest_too(self) -> None:
+        attr = a_obj({"tls": a_obj({"enabled": a_bool(default=True)})})
+
+        tls = _pvs_attribute_to_proto(attr, "config").nested_type.attributes[0]
+
+        assert tls.HasField("nested_type")
+        assert tls.nested_type.attributes[0].name == "enabled"
+
+    def test_non_object_attributes_still_carry_a_type(self) -> None:
+        proto = _pvs_attribute_to_proto(a_str(required=True), "name")
+
+        assert not proto.HasField("nested_type")
+        assert proto.type, "a non-object attribute must still send its cty type"
+
+    def test_object_inside_a_block_nests_as_well(self) -> None:
+        schema = s_resource(
+            attributes={"name": a_str(required=True)},
+            block_types=[b_single("options", attributes={"limits": a_obj({"max": a_num(default=5)})})],
+        )
+
+        block = _pvs_object_type_to_proto(schema.block)
+        options = block.block_types[0].block
+
+        assert options.attributes[0].name == "limits"
+        assert options.attributes[0].HasField("nested_type")
 
 
 class TestPvsNestedBlockToProto:

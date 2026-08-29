@@ -12,6 +12,7 @@ from pyvider.cty import CtyObject, CtyType, CtyValue
 from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
 from pyvider.cty.marks import CtyMark
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema.defaults import resolve_schema_defaults
 from pyvider.schema.types import PvsAttribute, PvsObjectType, PvsType
 
 
@@ -225,7 +226,7 @@ def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicVa
     return pb.DynamicValue(msgpack=msgpack_data)
 
 
-def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType) -> CtyValue:
+def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType, apply_defaults: bool = False) -> CtyValue:
     """
     Unmarshals a DynamicValue from the wire protocol into a CtyValue.
     """
@@ -235,12 +236,15 @@ def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType) -> CtyValue:
     root_cty_type = schema.to_cty_type() if hasattr(schema, "to_cty_type") else schema
 
     if dv.msgpack:
-        return cty_from_msgpack(dv.msgpack, root_cty_type)
-
-    if dv.json:
+        value = cty_from_msgpack(dv.msgpack, root_cty_type)
+    elif dv.json:
         raise NotImplementedError("JSON unmarshalling is not yet implemented.")
+    else:
+        value = CtyValue.null(root_cty_type)
 
-    return CtyValue.null(root_cty_type)
+    if apply_defaults and isinstance(schema, PvsObjectType):
+        return cast(CtyValue, resolve_schema_defaults(value, schema))
+    return value
 
 
 def marshal_value(value: CtyValue, declared_return_type: CtyType) -> pb.DynamicValue:

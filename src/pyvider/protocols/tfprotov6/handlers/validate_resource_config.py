@@ -66,7 +66,7 @@ async def _validate_resource_config_impl(
 
         resource_schema = resource_class.get_schema()
 
-        config_cty = unmarshal(request.config, schema=resource_schema.block)
+        config_cty = unmarshal(request.config, schema=resource_schema.block, apply_defaults=True)
 
         # cty 0.5 stopped rejecting a null for a non-optional attribute (see
         # pyvider.schema.required) -- Terraform sends a present null for every
@@ -80,7 +80,7 @@ async def _validate_resource_config_impl(
 
         # Try to create typed attrs instance from CTY config
         # If values are unknown/computed, this will return None (expected during planning)
-        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class)
+        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class, apply_defaults=True)
 
         # If config_instance is None, skip custom validation
         # Resources should use ctx.is_field_unknown() to handle unknown values properly

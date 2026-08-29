@@ -98,7 +98,7 @@ async def _configure_provider_impl(
         )
 
         provider_schema = provider_instance.schema
-        config_cty = unmarshal(request.config, schema=provider_schema.block)
+        config_cty = unmarshal(request.config, schema=provider_schema.block, apply_defaults=True)
 
         if config_cty.is_unknown:
             logger.warning(
@@ -114,7 +114,11 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        config_instance = BaseResource.from_cty(config_cty, provider_instance.config_class)  # type: ignore[arg-type]
+        config_instance = BaseResource.from_cty(
+            config_cty,
+            provider_instance.config_class,  # type: ignore[arg-type]
+            apply_defaults=True,
+        )
 
         if config_instance is None:
             logger.error(

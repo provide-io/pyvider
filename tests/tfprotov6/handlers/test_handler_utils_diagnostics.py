@@ -169,7 +169,7 @@ class TestCtyToAttrsInstance:
 
             result = cty_to_attrs_instance(cty_val, TestConfig)
 
-            mock_from_cty.assert_called_once_with(cty_val, TestConfig)
+            mock_from_cty.assert_called_once_with(cty_val, TestConfig, apply_defaults=False)
             assert result.name == "test"
 
 
