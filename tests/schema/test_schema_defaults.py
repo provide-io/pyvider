@@ -518,9 +518,7 @@ class TestObjectPlanMerge:
                 )
             }
         )
-        config = schema.block.to_cty_type().validate(
-            {"opts": {"mode": CtyValue.unknown(CtyString())}}
-        )
+        config = schema.block.to_cty_type().validate({"opts": {"mode": CtyValue.unknown(CtyString())}})
         resolved = resolve_schema_defaults(config, schema.block)
         assert resolved is not None
         plan = {"opts": {"mode": "slow"}}

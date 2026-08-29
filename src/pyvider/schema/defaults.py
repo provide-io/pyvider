@@ -169,11 +169,7 @@ def _merge_attribute_default(
         # Keep partially unknown objects on the member-wise path: converting
         # one with cty_to_native would flatten nested unknowns to None and let
         # a default overwrite a value Terraform is still computing.
-        if (
-            attribute.default is not None
-            and isinstance(resolved, CtyValue)
-            and resolved.is_wholly_known()
-        ):
+        if attribute.default is not None and isinstance(resolved, CtyValue) and resolved.is_wholly_known():
             merged[name] = cty_to_native(resolved)
             return
 
