@@ -6,7 +6,7 @@
 
 from abc import ABC, abstractmethod
 from types import UnionType
-from typing import Any, Generic, TypeVar, cast, get_args, get_origin
+from typing import Any, Generic, TypeVar, Union, cast, get_args, get_origin
 
 import attrs
 from provide.foundation import logger
@@ -320,31 +320,21 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
             return None
 
         origin = get_origin(target_cls)
-        is_union = origin is UnionType
-        try:
-            from typing import Union
-
-            is_union = is_union or origin is Union
-        except ImportError:
-            pass
-
-        if is_union:
+        if origin in (UnionType, Union):
             non_none_args = [arg for arg in get_args(target_cls) if arg is not type(None)]
             if len(non_none_args) == 1:
                 target_cls = non_none_args[0]
                 origin = get_origin(target_cls)
 
-        if origin in (list, list):
+        if origin is list:
             return cls._handle_list_conversion(data, target_cls, apply_defaults=apply_defaults)
 
-        if origin in (dict, dict):
+        if origin is dict:
             return cls._handle_dict_conversion(data, target_cls, apply_defaults=apply_defaults)
 
         if attrs.has(target_cls):
             return cls._handle_attrs_conversion(data, target_cls, apply_defaults=apply_defaults)
 
-        if isinstance(data, CtyValue):
-            return cty_to_native(data)
         return data
 
     @classmethod
