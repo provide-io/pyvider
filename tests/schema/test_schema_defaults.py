@@ -247,14 +247,16 @@ class TestNestedPlanMerge:
 
         assert plan["port"][0]["enabled"] is True
 
-    def test_list_of_a_different_length_is_left_alone(self) -> None:
-        # Nothing pairs a planned element with the configuration it came from
-        # once the counts differ.
+    def test_list_of_a_different_length_still_corrects_shared_positions(self) -> None:
+        # A list keeps its order, so position pairs an element with the
+        # configuration it came from even when the counts differ. Element 0 has
+        # a configuration and is corrected; element 1 is past the end of it,
+        # belongs to the provider, and has nothing to take a default from.
         plan = {"port": [{"enabled": False}, {"enabled": False}]}
 
         merge_schema_defaults_into_plan(plan, _merge_config(), MERGE_SCHEMA.block)
 
-        assert [element["enabled"] for element in plan["port"]] == [False, False]
+        assert [element["enabled"] for element in plan["port"]] == [True, False]
 
     def test_map_elements_are_corrected_by_key(self) -> None:
         plan = {"zone": {"a": {"enabled": False}, "b": {"enabled": False}}}
@@ -315,6 +317,16 @@ NAMED_SET_SCHEMA = s_resource(
     ]
 )
 NAMED_SET_TYPE = NAMED_SET_SCHEMA.block.to_cty_type()
+
+LIST_SCHEMA = s_resource(
+    block_types=[
+        b_list(
+            "tier",
+            attributes={"label": a_str(required=True), "scope": a_str(default="local")},
+        )
+    ]
+)
+LIST_TYPE = LIST_SCHEMA.block.to_cty_type()
 
 
 def test_multi_element_set_defaults_are_matched_by_configured_values() -> None:
@@ -627,6 +639,76 @@ class TestComputedOnlyDefaults:
     def test_default_of_the_wrong_type_is_rejected_when_declared(self) -> None:
         with pytest.raises(ValueError, match="not a valid CtyNumber value"):
             a_num(default="not-a-number")
+
+
+class TestUnpairableElements:
+    """A set or list element the merge cannot pair must still get its defaults.
+
+    Leaving one alone means the plan carries a value the effective configuration
+    does not, and apply then returns a state Terraform did not plan.
+    """
+
+    def test_set_elements_are_distinguished_by_a_defaulted_attribute(self) -> None:
+        """The pairing is what makes the default reachable, so it has to use it.
+
+        Both elements share `name`, and `scope` is the only thing telling them
+        apart -- so skipping defaulted attributes leaves nothing to pair on.
+        """
+        config = NAMED_SET_TYPE.validate(
+            {
+                "tag": [
+                    {"name": "x", "scope": CtyValue.null(CtyString())},
+                    {"name": "x", "scope": "shared"},
+                ]
+            }
+        )
+        resolved = resolve_schema_defaults(config, NAMED_SET_SCHEMA.block)
+        plan = {"tag": [{"name": "x", "scope": None}, {"name": "x", "scope": "shared"}]}
+
+        merge_schema_defaults_into_plan(plan, resolved, NAMED_SET_SCHEMA.block)
+
+        assert sorted(str(element["scope"]) for element in plan["tag"]) == ["local", "shared"]
+
+    def test_a_genuinely_ambiguous_set_is_still_left_alone(self) -> None:
+        """Two elements that differ in nothing the plan can see stay untouched.
+
+        Both plan elements carry the same value, so either pairing is as good as
+        the other and choosing one would depend on set ordering.
+        """
+        config = NAMED_SET_TYPE.validate({"tag": [{"name": "x", "scope": "a"}, {"name": "x", "scope": "b"}]})
+        plan = {"tag": [{"name": "x", "scope": "same"}, {"name": "x", "scope": "same"}]}
+
+        merge_schema_defaults_into_plan(plan, config, NAMED_SET_SCHEMA.block)
+
+        assert [element["scope"] for element in plan["tag"]] == ["same", "same"]
+
+    def test_a_longer_plan_still_defaults_the_elements_it_shares(self) -> None:
+        """A plan hook appending an element must not cost the others their defaults."""
+        config = LIST_TYPE.validate({"tier": [{"label": "hot", "scope": CtyValue.null(CtyString())}]})
+        resolved = resolve_schema_defaults(config, LIST_SCHEMA.block)
+        plan = {"tier": [{"label": "hot", "scope": None}, {"label": "cold", "scope": "shared"}]}
+
+        merge_schema_defaults_into_plan(plan, resolved, LIST_SCHEMA.block)
+
+        assert plan["tier"][0]["scope"] == "local"
+        # The appended element is the provider's own and has no configuration.
+        assert plan["tier"][1]["scope"] == "shared"
+
+    def test_a_shorter_plan_defaults_the_elements_it_has(self) -> None:
+        config = LIST_TYPE.validate(
+            {
+                "tier": [
+                    {"label": "hot", "scope": CtyValue.null(CtyString())},
+                    {"label": "cold", "scope": CtyValue.null(CtyString())},
+                ]
+            }
+        )
+        resolved = resolve_schema_defaults(config, LIST_SCHEMA.block)
+        plan = {"tier": [{"label": "hot", "scope": None}]}
+
+        merge_schema_defaults_into_plan(plan, resolved, LIST_SCHEMA.block)
+
+        assert [element["scope"] for element in plan["tier"]] == ["local"]
 
 
 # 🐍🏗️🔚

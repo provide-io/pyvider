@@ -211,17 +211,22 @@ def _merge_nested_into_plan(plan_value: Any, config_value: Any, nested: PvsNeste
     # LIST and SET are both carried as an ordered collection of elements.
     if not isinstance(plan_value, list | tuple) or not isinstance(config_value.value, tuple):
         return plan_value
-    if len(plan_value) != len(config_value.value):
-        # Nothing pairs an element up with the configuration it came from once
-        # the counts differ, so Terraform's proposal is left alone.
-        return plan_value
+
     if nested.nesting is NestingMode.SET and len(plan_value) > 1:
+        # A set has no order, so an element is paired with the configuration it
+        # came from by value rather than by position -- including when the
+        # counts differ, which pairs what it can and leaves the rest.
         return _merge_set_into_plan(plan_value, config_value.value, nested)
 
-    merged = [
-        _merge_block_into_plan(element, config_element, nested.block)
-        for element, config_element in zip(plan_value, config_value.value, strict=True)
-    ]
+    # A list keeps its order, so position is what pairs an element with its
+    # configuration. The counts can still differ -- a plan hook may add or drop
+    # elements -- and the ones both sides have are merged regardless: an
+    # element that pairs exactly should not lose its defaults because some
+    # other element does not exist. An element past the end of the
+    # configuration is the provider's own and has nothing to take defaults from.
+    merged = list(plan_value)
+    for index, (element, config_element) in enumerate(zip(plan_value, config_value.value, strict=False)):
+        merged[index] = _merge_block_into_plan(element, config_element, nested.block)
     return merged if isinstance(plan_value, list) else tuple(merged)
 
 
@@ -272,10 +277,15 @@ def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType
 
     for name, attribute in block.attributes.items():
         configured = config_value.value.get(name)
-        if attribute.write_only or attribute.default is not None or not _is_resolvable(configured):
+        if attribute.write_only or not _is_resolvable(configured):
             continue
 
         planned = plan_value.get(name)
+        if attribute.default is not None:
+            if not _defaulted_attribute_matches(planned, configured, attribute):
+                return False
+            continue
+
         if attribute.object_type is not None:
             if not _set_elements_match(planned, configured, attribute.object_type):
                 return False
@@ -283,6 +293,27 @@ def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType
             return False
 
     return True
+
+
+def _defaulted_attribute_matches(planned: Any, configured: Any, attribute: PvsAttribute) -> bool:
+    """Whether a defaulted attribute is consistent with the configuration it may pair with.
+
+    A defaulted attribute is often the only thing telling two set elements
+    apart, so skipping it leaves nothing to pair on and the default never
+    reaches the plan. Comparing it needs one allowance: the plan has not been
+    given the default yet, so a null there is consistent with a configuration
+    that resolved *to* the default -- and with nothing else, since an
+    explicitly configured value would already be in the plan.
+    """
+    if attribute.object_type is not None:
+        # A defaulted object member is compared member-wise elsewhere; matching
+        # on the object as a whole would need the same allowance per member.
+        return True
+
+    expected = cty_to_native(configured)
+    if planned is None:
+        return bool(expected == attribute.default)
+    return bool(planned == expected)
 
 
 def _is_resolvable(value: Any) -> TypeGuard[CtyValue]:
