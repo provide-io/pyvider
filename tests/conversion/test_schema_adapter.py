@@ -13,10 +13,13 @@ from pyvider.conversion.schema_adapter import (
     _pvs_attribute_to_proto,
     _pvs_nested_block_to_proto,
     _pvs_object_type_to_proto,
+    _pvs_object_type_to_proto_object,
     pvs_schema_to_proto,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema import a_bool, a_num, a_obj, a_str, b_list, b_single, s_data_source, s_resource
+from pyvider.schema.exceptions import PvsSchemaDefinitionError
+from pyvider.schema.types import PvsObjectType
 
 
 class TestPvsAttributeToProto:
@@ -133,6 +136,18 @@ class TestObjectAttributesBecomeNestedTypes:
 
         assert options.attributes[0].name == "limits"
         assert options.attributes[0].HasField("nested_type")
+
+    def test_nested_type_rejects_blocks_the_protocol_cannot_encode(self) -> None:
+        obj = PvsObjectType(
+            attributes={"name": a_str()},
+            block_types=(b_single("child", attributes={"value": a_str()}),),
+        )
+
+        with pytest.raises(
+            PvsSchemaDefinitionError,
+            match=r"a_obj\(\) nested type cannot contain nested blocks.*'child'",
+        ):
+            _pvs_object_type_to_proto_object(obj)
 
 
 class TestPvsNestedBlockToProto:

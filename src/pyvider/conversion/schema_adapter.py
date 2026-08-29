@@ -98,6 +98,13 @@ def _pvs_attribute_to_proto(attr: PvsAttribute, name: str | None = None) -> pb.S
 
 def _pvs_object_type_to_proto_object(obj: PvsObjectType) -> pb.Schema.Object:
     """Converts the `PvsObjectType` behind an `a_obj()` attribute to a nested type."""
+    if obj.block_types:
+        names = ", ".join(repr(block.type_name) for block in obj.block_types)
+        raise PvsSchemaDefinitionError(
+            "An a_obj() nested type cannot contain nested blocks because the "
+            f"Terraform protocol cannot encode them in Schema.Object: {names}. "
+            "Declare the blocks on a Schema.Block with the b_* factories instead."
+        )
     return pb.Schema.Object(
         attributes=[_pvs_attribute_to_proto(attr, name) for name, attr in obj.attributes.items()],
         nesting=pb.Schema.Object.NestingMode.SINGLE,
