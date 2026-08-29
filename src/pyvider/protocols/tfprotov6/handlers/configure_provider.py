@@ -9,18 +9,20 @@ from typing import Any
 from provide.foundation import logger
 from provide.foundation.config import get_env, parse_bool_extended
 
-from pyvider.conversion import unmarshal
 from pyvider.exceptions import (
     ProviderAlreadyConfiguredError,
     ProviderConfigurationError,
     PyviderError,
 )
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import (
+    config_to_attrs_instance,
+    unmarshal_config,
+)
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.providers.context import ProviderContext
-from pyvider.resources.base import BaseResource
 
 
 @rpc_handler("ConfigureProvider")
@@ -98,7 +100,7 @@ async def _configure_provider_impl(
         )
 
         provider_schema = provider_instance.schema
-        config_cty = unmarshal(request.config, schema=provider_schema.block, apply_defaults=True)
+        config_cty = unmarshal_config(request.config, provider_schema.block)
 
         if config_cty.is_unknown:
             logger.warning(
@@ -114,11 +116,7 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        config_instance = BaseResource.from_cty(
-            config_cty,
-            provider_instance.config_class,  # type: ignore[arg-type]
-            apply_defaults=True,
-        )
+        config_instance = config_to_attrs_instance(config_cty, provider_instance.config_class)
 
         if config_instance is None:
             logger.error(

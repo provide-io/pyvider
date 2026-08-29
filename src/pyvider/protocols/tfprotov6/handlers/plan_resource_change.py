@@ -19,6 +19,10 @@ from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import Deferral, PyviderError, ResourceError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import (
+    config_to_attrs_instance,
+    unmarshal_config,
+)
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
@@ -92,7 +96,7 @@ async def _unmarshal_request_data(
     request: pb.PlanResourceChange.Request, resource_schema: Any
 ) -> tuple[Any, Any, Any]:
     with operation_context(OperationContext.PLAN):
-        config_cty = unmarshal(request.config, schema=resource_schema.block, apply_defaults=True)
+        config_cty = unmarshal_config(request.config, resource_schema.block)
         prior_state_cty = unmarshal(request.prior_state, schema=resource_schema.block)
         proposed_new_state_cty = unmarshal(request.proposed_new_state, schema=resource_schema.block)
     return config_cty, prior_state_cty, proposed_new_state_cty
@@ -152,9 +156,7 @@ def _create_resource_context(
     # Only the configuration is decoded with `apply_defaults`: a null there is
     # an attribute the practitioner omitted, whereas a null in prior state is a
     # recorded absence that must survive the round trip unchanged.
-    config_instance = cty_to_attrs_instance(
-        config_cty_marked, resource_class.config_class, apply_defaults=True
-    )
+    config_instance = config_to_attrs_instance(config_cty_marked, resource_class.config_class)
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
     # The proposed new state must NOT collapse. `BaseResource.plan` reads "no
     # config and no planned state" as a delete, so a config carrying an unknown

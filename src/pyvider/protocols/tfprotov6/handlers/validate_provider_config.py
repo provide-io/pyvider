@@ -8,17 +8,19 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import (
+    config_to_attrs_instance,
+    unmarshal_config,
+)
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
 )
-from pyvider.resources.base import BaseResource
 from pyvider.schema.required import check_required_attributes
 
 
@@ -52,7 +54,7 @@ async def _validate_provider_config_impl(
             provider_schema = provider_instance.schema
             config_cty = None
             try:
-                config_cty = unmarshal(request.config, schema=provider_schema.block, apply_defaults=True)
+                config_cty = unmarshal_config(request.config, provider_schema.block)
             except Exception as e:
                 # Don't fail validation if we can't parse config for logging
                 logger.debug(
@@ -78,10 +80,8 @@ async def _validate_provider_config_impl(
 
                 try:
                     if not config_cty.is_unknown:
-                        config_instance = BaseResource.from_cty(
-                            config_cty,
-                            provider_instance.config_class,  # type: ignore[arg-type]
-                            apply_defaults=True,
+                        config_instance = config_to_attrs_instance(
+                            config_cty, provider_instance.config_class
                         )
                         if config_instance:
                             test_mode_enabled = getattr(config_instance, "pyvider_testmode", False)

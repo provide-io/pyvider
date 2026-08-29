@@ -187,11 +187,11 @@ class TestConfigureProviderHandler:
 
         request = pb.ConfigureProvider.Request(config=config_dv)
 
-        # Mock from_cty to return None
+        # Mock the shared configuration conversion to return None.
         with patch(
-            "pyvider.protocols.tfprotov6.handlers.configure_provider.BaseResource.from_cty"
-        ) as mock_from_cty:
-            mock_from_cty.return_value = None
+            "pyvider.protocols.tfprotov6.handlers.configure_provider.config_to_attrs_instance"
+        ) as mock_config_to_attrs:
+            mock_config_to_attrs.return_value = None
 
             response = await _configure_provider_impl(request, context=None)
 
@@ -206,7 +206,7 @@ class TestConfigureProviderHandler:
 
         hub.get_component("singleton", "provider")
 
-        # Create request and mock unmarshal to return unknown CtyValue
+        # Create request and mock config decoding to return unknown CtyValue
         request = pb.ConfigureProvider.Request()
         request.config.msgpack = b"\x80"  # Empty dict in msgpack
 
@@ -214,12 +214,14 @@ class TestConfigureProviderHandler:
 
         unknown_config = CtyValue.unknown(CtyObject(attribute_types={}))
 
-        # Patch logger and unmarshal
+        # Patch logger and the shared wire-config decoder.
         with (
             patch("pyvider.protocols.tfprotov6.handlers.configure_provider.logger") as mock_logger,
-            patch("pyvider.protocols.tfprotov6.handlers.configure_provider.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.configure_provider.unmarshal_config"
+            ) as mock_unmarshal_config,
         ):
-            mock_unmarshal.return_value = unknown_config
+            mock_unmarshal_config.return_value = unknown_config
 
             response = await _configure_provider_impl(request, context=None)
 

@@ -119,7 +119,9 @@ class TestValidateProviderConfigTestModeDetection:
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal_config"
+            ) as mock_unmarshal_config,
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
             mock_provider = MagicMock()
@@ -137,18 +139,18 @@ class TestValidateProviderConfigTestModeDetection:
 
             mock_hub.get_component.return_value = mock_provider
 
-            # Mock unmarshal to return a non-unknown value
+            # Mock config decoding to return a non-unknown value
             mock_cty_value = CtyValue(True, CtyBool())
-            mock_unmarshal.return_value = mock_cty_value
+            mock_unmarshal_config.return_value = mock_cty_value
 
             # Create request with config
             request = pb.ValidateProviderConfig.Request()
             request.config.msgpack = b"\xc3"  # True in msgpack
 
             with patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
-            ) as mock_from_cty:
-                mock_from_cty.return_value = mock_config_instance
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.config_to_attrs_instance"
+            ) as mock_config_to_attrs:
+                mock_config_to_attrs.return_value = mock_config_instance
 
                 response = await _validate_provider_config_impl(request, context=None)
 
@@ -163,7 +165,9 @@ class TestValidateProviderConfigTestModeDetection:
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal_config"
+            ) as mock_unmarshal_config,
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
             mock_provider = MagicMock()
@@ -180,15 +184,15 @@ class TestValidateProviderConfigTestModeDetection:
             mock_hub.get_component.return_value = mock_provider
 
             mock_cty_value = CtyValue(False, CtyBool())
-            mock_unmarshal.return_value = mock_cty_value
+            mock_unmarshal_config.return_value = mock_cty_value
 
             request = pb.ValidateProviderConfig.Request()
             request.config.msgpack = b"\xc2"  # False in msgpack
 
             with patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.BaseResource.from_cty"
-            ) as mock_from_cty:
-                mock_from_cty.return_value = mock_config_instance
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.config_to_attrs_instance"
+            ) as mock_config_to_attrs:
+                mock_config_to_attrs.return_value = mock_config_instance
 
                 response = await _validate_provider_config_impl(request, context=None)
 
@@ -201,14 +205,16 @@ class TestValidateProviderConfigTestModeDetection:
         """Test that config parsing errors don't fail validation."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.hub") as mock_hub,
-            patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.validate_provider_config.unmarshal_config"
+            ) as mock_unmarshal_config,
             patch("pyvider.protocols.tfprotov6.handlers.validate_provider_config.logger") as mock_logger,
         ):
             mock_provider = MagicMock()
             mock_hub.get_component.return_value = mock_provider
 
-            # Make unmarshal raise an exception
-            mock_unmarshal.side_effect = ValueError("Invalid config format")
+            # Make config decoding raise an exception
+            mock_unmarshal_config.side_effect = ValueError("Invalid config format")
 
             request = pb.ValidateProviderConfig.Request()
             request.config.msgpack = b"\x00"

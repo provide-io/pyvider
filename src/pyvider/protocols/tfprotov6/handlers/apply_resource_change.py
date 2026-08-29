@@ -25,6 +25,10 @@ from pyvider.hub import hub
 from pyvider.observability import (
     handler_errors,
 )
+from pyvider.protocols.tfprotov6.handlers._component_config import (
+    config_to_attrs_instance,
+    unmarshal_config,
+)
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
@@ -107,7 +111,7 @@ async def _unmarshal_request_data(
 ) -> tuple[Any, Any, Any]:
     with operation_context(OperationContext.APPLY):
         prior_state_cty = unmarshal(request.prior_state, schema=resource_schema.block)
-        config_cty_unmarked = unmarshal(request.config, schema=resource_schema.block, apply_defaults=True)
+        config_cty_unmarked = unmarshal_config(request.config, resource_schema.block)
         planned_state_cty = unmarshal(request.planned_state, schema=resource_schema.block)
     return prior_state_cty, config_cty_unmarked, planned_state_cty
 
@@ -176,7 +180,7 @@ def _create_resource_context(
     identity_schema: PvsSchema | None = None,
     planned_identity: pb.ResourceIdentityData | None = None,
 ) -> ResourceContext:
-    config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class, apply_defaults=True)
+    config_instance = config_to_attrs_instance(config_cty, resource_class.config_class)
     prior_state_instance = cty_to_attrs_instance(prior_state_cty, resource_class.state_class)
     # allow_unknown: during apply the planned state legitimately carries
     # unknowns for computed attributes the provider is about to fill in.

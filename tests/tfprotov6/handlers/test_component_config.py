@@ -6,9 +6,13 @@
 import attrs
 import pytest
 
-from pyvider.conversion import marshal
+from pyvider.conversion import marshal, unmarshal
 from pyvider.cty.exceptions import CtyValidationError
-from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
+from pyvider.protocols.tfprotov6.handlers._component_config import (
+    config_to_attrs_instance,
+    decode_config,
+    unmarshal_config,
+)
 from pyvider.schema import PvsSchema, a_str, s_resource
 
 
@@ -32,6 +36,25 @@ def test_decode_config_resolves_schema_and_class_defaults_together() -> None:
     config = decode_config(Component, wire_config)
 
     assert config == Config(value="schema-default")
+
+
+def test_unmarshal_config_applies_schema_defaults() -> None:
+    schema = Component.get_schema()
+    wire_config = marshal({"value": None}, schema=schema.block)
+
+    config = unmarshal_config(wire_config, schema.block)
+
+    assert config.value["value"].value == "schema-default"
+
+
+def test_config_to_attrs_instance_applies_class_defaults() -> None:
+    schema = Component.get_schema()
+    wire_config = marshal({"value": None}, schema=schema.block)
+    unresolved_config = unmarshal(wire_config, schema=schema.block)
+
+    config = config_to_attrs_instance(unresolved_config, Config)
+
+    assert config == Config(value="class-default")
 
 
 def test_decode_config_can_enforce_schema_validation() -> None:
