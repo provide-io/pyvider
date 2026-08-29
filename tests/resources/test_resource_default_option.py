@@ -437,7 +437,10 @@ class Dial(BaseResource[Any, DialState, DialConfig]):
         return s_resource(
             attributes={
                 "name": a_str(required=True),
-                "config": a_obj({"label": a_str(), "size": a_str(default=DEFAULT_SIZE)}),
+                "config": a_obj(
+                    {"label": a_str(), "size": a_str(default=DEFAULT_SIZE)},
+                    default={"label": "default-label", "size": None},
+                ),
                 "id": a_str(computed=True),
             }
         )
@@ -481,6 +484,34 @@ class TestObjectAttributeDefaults:
         assert config is not None
         assert config.config is not None
         assert config.config.size == DEFAULT_SIZE
+
+    @pytest.mark.asyncio
+    async def test_retained_object_loses_to_the_whole_object_default_on_update(self) -> None:
+        raw_config = DIAL_TYPE.validate(
+            {
+                "name": "example",
+                "id": CtyValue.unknown(CtyString()),
+                "config": CtyValue.null(Dial.get_schema().block.attributes["config"].type),
+            }
+        )
+        config_cty = resolve_schema_defaults(raw_config, Dial.get_schema().block)
+        assert config_cty is not None
+        prior = DialState(name="example", config=DialSettings(label="prior-label", size="large"), id="d-1")
+        ctx = ResourceContext(
+            config=Dial.from_cty(config_cty, DialConfig, apply_defaults=True),
+            state=prior,
+            planned_state=prior,
+            planned_state_cty=_dial_cty("large"),
+            config_cty=config_cty,
+        )
+
+        planned_state, _ = await Dial().plan(ctx)
+
+        assert planned_state is not None
+        assert planned_state["config"] == {
+            "label": "default-label",
+            "size": DEFAULT_SIZE,
+        }
 
     @pytest.mark.asyncio
     async def test_retained_object_member_loses_to_the_default_on_update(self) -> None:

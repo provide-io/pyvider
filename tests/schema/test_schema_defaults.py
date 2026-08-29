@@ -473,6 +473,48 @@ class TestObjectPlanMerge:
 
         assert plan["config"]["timeout"] == 30
 
+    def test_retained_object_loses_to_the_whole_object_default(self) -> None:
+        schema = s_resource(
+            attributes={
+                "opts": a_obj(
+                    {"mode": a_str(optional=True)},
+                    optional=True,
+                    default={"mode": "fast"},
+                )
+            }
+        )
+        config = schema.block.to_cty_type().validate(
+            {"opts": CtyValue.null(schema.block.attributes["opts"].type)}
+        )
+        resolved = resolve_schema_defaults(config, schema.block)
+        assert resolved is not None
+        plan = {"opts": {"mode": "slow"}}
+
+        merge_schema_defaults_into_plan(plan, resolved, schema.block)
+
+        assert plan["opts"] == {"mode": "fast"}
+
+    def test_unknown_member_of_defaulted_object_keeps_the_proposed_value(self) -> None:
+        schema = s_resource(
+            attributes={
+                "opts": a_obj(
+                    {"mode": a_str(optional=True)},
+                    optional=True,
+                    default={"mode": "fast"},
+                )
+            }
+        )
+        config = schema.block.to_cty_type().validate(
+            {"opts": {"mode": CtyValue.unknown(CtyString())}}
+        )
+        resolved = resolve_schema_defaults(config, schema.block)
+        assert resolved is not None
+        plan = {"opts": {"mode": "slow"}}
+
+        merge_schema_defaults_into_plan(plan, resolved, schema.block)
+
+        assert plan["opts"] == {"mode": "slow"}
+
     def test_member_without_a_default_keeps_the_proposed_value(self) -> None:
         plan = {"config": {"timeout": 30, "retries": 3, "label": "stale", "tls": {"enabled": True}}}
 

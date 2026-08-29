@@ -175,9 +175,26 @@ def _merge_attribute_default(
         return
 
     if attribute.object_type is not None and not _is_null(resolved):
+        # A default on the object attribute supplies the whole effective
+        # object, not merely defaults for selected members.  When that value
+        # is wholly known it must therefore replace Terraform's retained prior
+        # object outright, just like a scalar attribute default does below.
+        #
+        # Keep partially unknown objects on the member-wise path: converting
+        # one with cty_to_native would flatten nested unknowns to None and let
+        # a default overwrite a value Terraform is still computing.
+        if (
+            attribute.default is not None
+            and isinstance(resolved, CtyValue)
+            and resolved.is_wholly_known()
+        ):
+            merged[name] = cty_to_native(resolved)
+            return
+
         # An object-typed attribute is a block written as a value: its members
         # take their defaults the same way, and only they are corrected -- the
-        # object as a whole is Terraform's proposal.
+        # object as a whole is Terraform's proposal unless the attribute itself
+        # declared the whole-object default handled above.
         current = merged.get(name)
         if isinstance(current, dict):
             merged[name] = _merge_block_into_plan(current, resolved, attribute.object_type)
