@@ -276,7 +276,7 @@ def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType
 
     for name, attribute in block.attributes.items():
         configured = config_value.value.get(name)
-        if attribute.write_only or attribute.default is not None or _is_null_or_unknown(configured):
+        if attribute.write_only or attribute.default is not None or not _is_resolvable(configured):
             continue
 
         planned = plan_value.get(name)
@@ -287,10 +287,6 @@ def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType
             return False
 
     return True
-
-
-def _is_null_or_unknown(value: Any) -> bool:
-    return _is_null(value) or (isinstance(value, CtyValue) and value.is_unknown)
 
 
 def _is_resolvable(value: Any) -> TypeGuard[CtyValue]:
