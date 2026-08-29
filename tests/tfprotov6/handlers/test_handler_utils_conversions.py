@@ -8,7 +8,7 @@
 import attrs
 import pytest
 
-from pyvider.cty import CtyList, CtyNumber, CtyObject, CtySet, CtyString
+from pyvider.cty import CtyList, CtyMap, CtyNumber, CtyObject, CtySet, CtyString
 from pyvider.cty.path import CtyPath, GetAttrStep, IndexStep, KeyStep
 from pyvider.cty.values import CtyValue
 from pyvider.cty.values.markers import UNREFINED_UNKNOWN
@@ -303,6 +303,37 @@ class TestStrPathToProtoPath:
         result = str_path_to_proto_path("config.retention-days")
 
         assert [step.attribute_name for step in result.steps] == ["config", "retention-days"]
+
+    def test_within_resolves_a_bracket_by_what_the_type_accepts(self) -> None:
+        """`['a']` is both a set element and a map key; only the type can say which."""
+        within = CtyObject(
+            {
+                "items": CtyList(element_type=CtyString()),
+                "meta": CtyMap(element_type=CtyString()),
+            }
+        )
+
+        indexed = str_path_to_proto_path("items[0]", within=within)
+        keyed = str_path_to_proto_path("meta['k']", within=within)
+
+        assert indexed.steps[1].element_key_int == 0
+        assert keyed.steps[1].element_key_string == "k"
+
+    @pytest.mark.parametrize(
+        "unresolvable",
+        ["nope", "items['a']", "name.deeper"],
+    )
+    def test_within_drops_a_path_the_type_cannot_answer(self, unresolvable: str) -> None:
+        """A misspelt attribute, a list keyed by string, a scalar descended into."""
+        within = CtyObject({"name": CtyString(), "items": CtyList(element_type=CtyString())})
+
+        assert str_path_to_proto_path(unresolvable, within=within) is None
+
+    def test_without_within_an_unknown_attribute_is_still_accepted(self) -> None:
+        """Only the syntax is checked when there is no type to resolve against."""
+        result = str_path_to_proto_path("nope")
+
+        assert [step.attribute_name for step in result.steps] == ["nope"]
 
     @pytest.mark.parametrize(
         "malformed",

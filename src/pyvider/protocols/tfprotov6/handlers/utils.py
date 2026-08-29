@@ -13,7 +13,7 @@ from provide.foundation import logger
 from provide.foundation.errors import FoundationError
 
 from pyvider.conversion.marshaler import _unmark_deep
-from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet, CtyTuple, CtyValue
+from pyvider.cty import CtyList, CtyMap, CtyObject, CtySet, CtyTuple, CtyType, CtyValue
 from pyvider.cty.exceptions import (
     CtyAttributeValidationError,
     CtyBoolValidationError,
@@ -475,7 +475,9 @@ def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
     return True, ""
 
 
-def str_path_to_proto_path(path_str: str | None) -> pb.AttributePath | None:
+def str_path_to_proto_path(
+    path_str: str | None, *, within: CtyType[Any] | None = None
+) -> pb.AttributePath | None:
     """Parse a hand-authored path string like `attr[0]["key"]` into proto steps.
 
     This is the string-literal counterpart to `cty_path_to_proto_path` and is
@@ -487,8 +489,13 @@ def str_path_to_proto_path(path_str: str | None) -> pb.AttributePath | None:
     apart from a genuine int/string key. Read as text alone the two are the
     same syntax, so a `CtyPath` that might contain a set-element step should go
     through `cty_path_to_proto_path` directly rather than being stringified
-    first. (`CtyPath.parse` resolves that ambiguity when handed the type the
-    path is relative to; neither caller here has one to give.)
+    first.
+
+    Pass `within` -- the type the path is relative to -- and each step is
+    resolved as it is built, which settles that ambiguity and rejects a path
+    the type cannot answer: a misspelt attribute, a list subscripted by a
+    string, a scalar descended into. Without it the bracket is read
+    syntactically and only the syntax is checked.
 
     A path that cannot be read yields *no* path rather than a wrong one. The
     regex this replaces matched with `finditer`, which skips what it cannot
@@ -502,7 +509,7 @@ def str_path_to_proto_path(path_str: str | None) -> pb.AttributePath | None:
         return None
 
     try:
-        cty_path = CtyPath.parse(path_str)
+        cty_path = CtyPath.parse(path_str, within=within)
     except Exception as exc:
         logger.warning(
             "Ignoring an unparsable attribute path",

@@ -177,6 +177,33 @@ class TestCollectRequiresReplacePaths:
 
         assert [step.attribute_name for p in paths for step in p.steps] == ["name", "size_gb"]
 
+    def test_a_path_the_schema_does_not_have_is_dropped(self) -> None:
+        """A misspelt `ctx.require_replace()` must not become a path Terraform trusts.
+
+        Resolving against the schema is the only thing that can tell a real
+        attribute from a misspelt one; without it the path is well-formed and
+        simply names something that does not exist.
+        """
+        # `name` unchanged, so nothing is contributed by the schema and only
+        # the context path is under test.
+        prior = RESOURCE_SCHEMA.block.to_cty_type().validate({"name": "a", "size_gb": 1})
+        planned = RESOURCE_SCHEMA.block.to_cty_type().validate({"name": "a", "size_gb": 2})
+
+        paths = _collect_requires_replace_paths(RESOURCE_SCHEMA, prior, planned, ["size_gib"], "demo")
+
+        assert paths == []
+
+    def test_a_real_path_alongside_a_bad_one_still_survives(self) -> None:
+        prior = RESOURCE_SCHEMA.block.to_cty_type().validate({"name": "a", "size_gb": 1})
+        planned = RESOURCE_SCHEMA.block.to_cty_type().validate({"name": "b", "size_gb": 1})
+
+        paths = _collect_requires_replace_paths(
+            RESOURCE_SCHEMA, prior, planned, ["size_gib", "size_gb"], "demo"
+        )
+
+        # `name` is schema-declared and changed; `size_gib` resolves against nothing.
+        assert [step.attribute_name for p in paths for step in p.steps] == ["name", "size_gb"]
+
     def test_write_only_attribute_can_never_produce_a_path(self) -> None:
         """The reason PvsAttribute rejects write_only + requires_replace outright.
 

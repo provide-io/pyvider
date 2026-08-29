@@ -332,9 +332,15 @@ def _collect_requires_replace_paths(
     ordered_paths: list[str] = list(changed_names)
     ordered_paths.extend(path for path in context_paths if path not in ordered_paths)
 
+    # Resolved against the schema: a path Terraform is asked to replace on must
+    # name something that exists. `changed_names` always does, but a context
+    # path comes from a `ctx.require_replace()` call and can be misspelt, and a
+    # well-formed path naming nothing is indistinguishable from a real one until
+    # it is resolved.
+    within = resource_schema.block.to_cty_type()
     proto_paths = []
     for path in ordered_paths:
-        proto_path = str_path_to_proto_path(path)
+        proto_path = str_path_to_proto_path(path, within=within)
         if proto_path is not None:
             proto_paths.append(proto_path)
 
