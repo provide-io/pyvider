@@ -19,7 +19,7 @@ from typing import Any
 from provide.foundation import logger
 
 from pyvider.conversion import marshal, unmarshal
-from pyvider.protocols.tfprotov6.handlers._component_config import decode_component_config
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
     unknown_type_diagnostic,
@@ -170,7 +170,7 @@ async def ValidateListResourceConfigHandler(
         )
 
     try:
-        config = decode_component_config(list_resource_class, request.config)
+        config = decode_config(list_resource_class, request.config)
         errors = await list_resource_class().validate(config)
     except Exception as exc:
         logger.error(

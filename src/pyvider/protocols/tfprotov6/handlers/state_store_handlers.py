@@ -17,7 +17,7 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.protocols.tfprotov6.handlers._component_config import decode_component_config
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import error_diagnostic
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -72,7 +72,7 @@ async def ValidateStateStoreConfigHandler(
     """Validate a state-store configuration against its backend."""
     try:
         backend = _backend(request.type_name)
-        config = decode_component_config(backend, request.config)
+        config = decode_config(backend, request.config)
         errors = await backend.validate(config)
     except Exception as exc:
         logger.error(
@@ -103,7 +103,7 @@ async def ConfigureStateStoreHandler(
     chunk_size = state_store_manager.set_chunk_size(request.type_name, request.capabilities.chunk_size)
     try:
         backend = _backend(request.type_name)
-        config = decode_component_config(backend, request.config)
+        config = decode_config(backend, request.config)
         await backend.configure(config, chunk_size)
     except Exception as exc:
         logger.error(

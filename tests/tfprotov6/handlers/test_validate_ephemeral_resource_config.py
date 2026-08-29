@@ -85,15 +85,11 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
-            ) as mock_cty,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.return_value = MagicMock()
-            mock_cty.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
@@ -120,18 +116,15 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
-            ),
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
-            mock_unmarshal.assert_called_once()
+            mock_decode_config.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_converts_cty_to_attrs(
@@ -141,18 +134,15 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
-            ) as mock_cty,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
-            mock_cty.assert_called_once()
+            mock_decode_config.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_handles_validation_errors(
@@ -162,11 +152,11 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.side_effect = CtyValidationError("Invalid config")
+            mock_decode_config.side_effect = CtyValidationError("Invalid config")
 
             response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
@@ -182,11 +172,11 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.side_effect = ResourceError("Validation failed")
+            mock_decode_config.side_effect = ResourceError("Validation failed")
 
             response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
@@ -200,11 +190,11 @@ class TestValidateEphemeralResourceConfigImpl:
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
-            mock_unmarshal.side_effect = RuntimeError("Unexpected error")
+            mock_decode_config.side_effect = RuntimeError("Unexpected error")
 
             response = await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
@@ -221,14 +211,13 @@ class TestValidateEphemeralResourceConfigImpl:
 
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"),
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
-            ) as mock_cty,
+                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_resource_class
             mock_config = MagicMock()
-            mock_cty.return_value = mock_config
+            mock_decode_config.return_value = mock_config
 
             await _validate_ephemeral_resource_config_impl(sample_request, context=None)
 
@@ -253,10 +242,7 @@ class TestValidateEphemeralResourceConfigEdgeCases:
 
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.unmarshal"),
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.cty_to_attrs_instance"
-            ),
+            patch("pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config.decode_config"),
         ):
             mock_get.return_value = mock_resource_class
 

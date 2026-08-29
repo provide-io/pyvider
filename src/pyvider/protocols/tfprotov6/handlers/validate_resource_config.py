@@ -8,14 +8,13 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
-from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema.required import check_required_attributes
 
 
 @rpc_handler("ValidateResourceConfig")
@@ -64,23 +63,10 @@ async def _validate_resource_config_impl(
             err.add_context("resource.type_name", request.type_name)
             raise err
 
-        resource_schema = resource_class.get_schema()
-
-        config_cty = unmarshal(request.config, schema=resource_schema.block, apply_defaults=True)
-
-        # cty 0.5 stopped rejecting a null for a non-optional attribute (see
-        # pyvider.schema.required) -- Terraform sends a present null for every
-        # unset argument via ImpliedType(), so this is the only remaining
-        # check that a required argument was actually supplied. Raises
-        # CtyAttributeValidationError, caught below like any other validation
-        # failure. Safe against an unknown/absent top-level config: it walks
-        # off `.value`, which is only ever a real mapping once the config is
-        # a known object.
-        check_required_attributes(resource_schema.block, config_cty.value)
-
-        # Try to create typed attrs instance from CTY config
+        # Decode defaults and run built-in schema validation before invoking
+        # the component's custom validator.
         # If values are unknown/computed, this will return None (expected during planning)
-        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class, apply_defaults=True)
+        config_instance = decode_config(resource_class, request.config, validate=True)
 
         # If config_instance is None, skip custom validation
         # Resources should use ctx.is_field_unknown() to handle unknown values properly

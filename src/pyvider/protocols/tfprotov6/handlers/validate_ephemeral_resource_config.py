@@ -8,12 +8,12 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
-from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 
@@ -57,14 +57,7 @@ async def _validate_ephemeral_resource_config_impl(
                 f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
             )
 
-        schema = resource_class.get_schema()
-        config_cty = unmarshal(request.config, schema=schema.block, apply_defaults=True)
-
-        # Perform built-in CTY validation first. This will raise on failure.
-        schema.validate_config(config_cty.value)
-
-        # Perform custom provider-defined validation.
-        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class, apply_defaults=True)
+        config_instance = decode_config(resource_class, request.config, validate=True)
         resource_instance = resource_class()
         validation_errors = await resource_instance.validate(config_instance)
 

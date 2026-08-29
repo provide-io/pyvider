@@ -10,13 +10,14 @@ import attrs
 import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
 
-from pyvider.conversion import marshal, unmarshal
+from pyvider.conversion import marshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.ephemerals import EphemeralResourceContext
 from pyvider.exceptions import Deferral, PyviderError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
-from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.utils import datetime_to_proto
 
@@ -64,8 +65,7 @@ async def _open_ephemeral_resource_impl(
             )
 
         schema = resource_class.get_schema()
-        config_cty = unmarshal(request.config, schema=schema.block, apply_defaults=True)
-        config_instance = cty_to_attrs_instance(config_cty, resource_class.config_class, apply_defaults=True)
+        config_instance = decode_config(resource_class, request.config)
 
         provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)

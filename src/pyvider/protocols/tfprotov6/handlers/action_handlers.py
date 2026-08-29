@@ -13,7 +13,7 @@ from typing import Any
 from provide.foundation import logger
 
 from pyvider.actions import ActionContext, BaseAction
-from pyvider.protocols.tfprotov6.handlers._component_config import decode_component_config
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
     unknown_type_diagnostic,
@@ -45,7 +45,7 @@ async def ValidateActionConfigHandler(
         return pb.ValidateActionConfig.Response(diagnostics=[_unknown_action_diagnostic(request.type_name)])
 
     try:
-        config = decode_component_config(action_class, request.config)
+        config = decode_config(action_class, request.config)
         errors = await action_class().validate(config)
     except Exception as exc:
         logger.error(
@@ -70,7 +70,7 @@ async def PlanActionHandler(request: pb.PlanAction.Request, context: Any) -> pb.
         return pb.PlanAction.Response(diagnostics=[_unknown_action_diagnostic(request.action_type)])
 
     try:
-        config = decode_component_config(action_class, request.config)
+        config = decode_config(action_class, request.config)
         ctx: ActionContext[Any] = ActionContext(
             action_type=request.action_type,
             config=config,
@@ -136,7 +136,7 @@ async def stream_invoke_action(
         return
 
     try:
-        config = decode_component_config(action_class, request.config)
+        config = decode_config(action_class, request.config)
         instance = action_class()
     except Exception as exc:
         logger.error(

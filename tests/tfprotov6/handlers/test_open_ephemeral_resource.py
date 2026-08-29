@@ -83,13 +83,14 @@ class TestOpenEphemeralResourceImpl:
         """Test successful ephemeral resource open."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"
+            ) as mock_decode_config,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal") as mock_marshal,
         ):
             mock_get.return_value = mock_ephemeral_class
-            mock_unmarshal.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
             mock_asdict.return_value = {"key": "value"}
             mock_marshal.return_value = pb.DynamicValue()
 
@@ -117,15 +118,16 @@ class TestOpenEphemeralResourceImpl:
         """Test that config is unmarshaled."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_ephemeral_class
-            mock_unmarshal.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             await _open_ephemeral_resource_impl(sample_request, context=None)
 
-            mock_unmarshal.assert_called_once()
+            mock_decode_config.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_impl_marshals_result_when_present(
@@ -134,8 +136,7 @@ class TestOpenEphemeralResourceImpl:
         """Test that result is marshaled when returned."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal") as mock_marshal,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict,
         ):
@@ -156,8 +157,7 @@ class TestOpenEphemeralResourceImpl:
         """Test that private state is packed to msgpack."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.msgpack.packb") as mock_pack,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict"),
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal") as mock_marshal,
@@ -183,8 +183,7 @@ class TestOpenEphemeralResourceImpl:
 
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.attrs.asdict") as mock_asdict,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.datetime_to_proto") as mock_dt,
             patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.marshal") as mock_marshal,
@@ -211,8 +210,7 @@ class TestOpenEphemeralResourceImpl:
         mock_instance.open.return_value = (None, None, None)
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
         ):
             mock_get.return_value = mock_ephemeral_class
 
@@ -230,10 +228,12 @@ class TestOpenEphemeralResourceImpl:
 
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal") as mock_unmarshal,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"
+            ) as mock_decode_config,
         ):
             mock_get.return_value = mock_ephemeral_class
-            mock_unmarshal.side_effect = CtyValidationError("Invalid config")
+            mock_decode_config.side_effect = CtyValidationError("Invalid config")
 
             response = await _open_ephemeral_resource_impl(sample_request, context=None)
 
@@ -246,8 +246,7 @@ class TestOpenEphemeralResourceImpl:
         """Test that PyviderError exceptions are converted to diagnostics."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
         ):
             mock_get.return_value = mock_ephemeral_class
 
@@ -265,8 +264,7 @@ class TestOpenEphemeralResourceImpl:
 
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.unmarshal"),
-            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.cty_to_attrs_instance"),
+            patch("pyvider.protocols.tfprotov6.handlers.open_ephemeral_resource.decode_config"),
         ):
             mock_get.return_value = mock_ephemeral_class
 

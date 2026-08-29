@@ -96,15 +96,11 @@ class TestValidateDataResourceConfigImpl:
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance"
-            ) as mock_cty_to_attrs,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.return_value = MagicMock()
-            mock_cty_to_attrs.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             response = await _validate_data_resource_config_impl(sample_request, context=None)
 
@@ -125,15 +121,11 @@ class TestValidateDataResourceConfigImpl:
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.cty_to_attrs_instance"
-            ) as mock_cty_to_attrs,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.return_value = MagicMock()
-            mock_cty_to_attrs.return_value = MagicMock()
+            mock_decode_config.return_value = MagicMock()
 
             response = await _validate_data_resource_config_impl(sample_request, context=None)
 
@@ -172,14 +164,14 @@ class TestValidateDataResourceConfigImpl:
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
             ) as mock_create_diag,
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.side_effect = CtyValidationError("Invalid type")
+            mock_decode_config.side_effect = CtyValidationError("Invalid type")
             mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Invalid type")
             mock_create_diag.return_value = mock_diag
 
@@ -198,14 +190,14 @@ class TestValidateDataResourceConfigImpl:
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
             ) as mock_create_diag,
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.side_effect = PyviderError("Pyvider error")
+            mock_decode_config.side_effect = PyviderError("Pyvider error")
             mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Pyvider error")
             mock_create_diag.return_value = mock_diag
 
@@ -223,15 +215,15 @@ class TestValidateDataResourceConfigImpl:
         with (
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
             ) as mock_create_diag,
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger"),
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.side_effect = RuntimeError("Unexpected error")
+            mock_decode_config.side_effect = RuntimeError("Unexpected error")
             mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Unexpected error")
             mock_create_diag.return_value = mock_diag
 
@@ -309,14 +301,14 @@ class TestValidateDataResourceConfigLogging:
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.logger") as mock_logger,
             patch("pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.hub") as mock_hub,
             patch(
-                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.unmarshal"
-            ) as mock_unmarshal,
+                "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.decode_config"
+            ) as mock_decode_config,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.validate_data_resource_config.create_diagnostic_from_exception"
             ) as mock_create_diag,
         ):
             mock_hub.get_component.return_value = mock_data_source_class
-            mock_unmarshal.side_effect = RuntimeError("Test error")
+            mock_decode_config.side_effect = RuntimeError("Test error")
             mock_diag = pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary="Test error")
             mock_create_diag.return_value = mock_diag
 

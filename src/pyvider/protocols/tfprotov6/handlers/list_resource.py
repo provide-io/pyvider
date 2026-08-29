@@ -19,7 +19,7 @@ from provide.foundation import logger
 
 from pyvider.conversion import marshal, marshal_identity
 from pyvider.list_resources import ListResourceContext, ListResult
-from pyvider.protocols.tfprotov6.handlers._component_config import decode_component_config
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
     unknown_type_diagnostic,
@@ -99,7 +99,7 @@ async def stream_list_resource(
         return
 
     try:
-        config = decode_component_config(list_resource_class, request.config)
+        config = decode_config(list_resource_class, request.config)
         instance = list_resource_class()
         errors = await instance.validate(config)
     except Exception as exc:

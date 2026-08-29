@@ -8,15 +8,14 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.conversion import unmarshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import unknown_type_diagnostic
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
-from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception, cty_to_attrs_instance
+from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema.required import check_required_attributes
 
 
 @rpc_handler("ValidateDataResourceConfig")
@@ -64,15 +63,7 @@ async def _validate_data_resource_config_impl(
             )
             return response
 
-        ds_schema = ds_class.get_schema()
-        config_cty = unmarshal(request.config, schema=ds_schema.block, apply_defaults=True)
-
-        # See validate_resource_config.py: cty 0.5 no longer refuses a
-        # present-but-null value for a required attribute, so the schema
-        # layer's own check has to be called explicitly here.
-        check_required_attributes(ds_schema.block, config_cty.value)
-
-        config_instance = cty_to_attrs_instance(config_cty, ds_class.config_class, apply_defaults=True)
+        config_instance = decode_config(ds_class, request.config, validate=True)
 
         data_source_instance = ds_class()
         validation_errors = await data_source_instance.validate(config_instance)

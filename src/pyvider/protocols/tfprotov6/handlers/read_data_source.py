@@ -8,16 +8,16 @@ from typing import Any
 
 from provide.foundation import logger
 
-from pyvider.conversion import marshal, unmarshal
+from pyvider.conversion import marshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import DataSourceError, Deferral, PyviderError
 from pyvider.hub import hub
+from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     check_test_only_access,
     create_diagnostic_from_exception,
-    cty_to_attrs_instance,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.context import ResourceContext
@@ -78,8 +78,7 @@ async def _read_data_source_impl(
         check_test_only_access(ds_class, request.type_name, "data_source")
 
         ds_schema = ds_class.get_schema()
-        config_cty = unmarshal(request.config, schema=ds_schema.block, apply_defaults=True)
-        config_instance = cty_to_attrs_instance(config_cty, ds_class.config_class, apply_defaults=True)
+        config_instance = decode_config(ds_class, request.config)
 
         data_source = ds_class()
 
