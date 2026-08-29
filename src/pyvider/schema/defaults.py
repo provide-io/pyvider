@@ -18,7 +18,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Mapping
-from typing import Any
+from typing import Any, TypeGuard
 
 import attrs
 
@@ -58,7 +58,7 @@ def resolve_schema_defaults(value: CtyValue | None, block: PvsObjectType) -> Cty
     The value is returned unchanged when nothing needed resolving, so callers
     can pass anything through this without paying for a rebuild.
     """
-    if not isinstance(value, CtyValue) or value.is_null or value.is_unknown:
+    if not _is_resolvable(value):
         return value
     if not isinstance(value.value, Mapping):
         return value
@@ -139,7 +139,7 @@ def _merge_block_into_plan(plan_value: Any, config_value: Any, block: PvsObjectT
     if not isinstance(plan_value, dict):
         # An absent or not-yet-known block has nothing to merge into.
         return plan_value
-    if not isinstance(config_value, CtyValue) or config_value.is_null or config_value.is_unknown:
+    if not _is_resolvable(config_value):
         return plan_value
     if not isinstance(config_value.value, Mapping):
         return plan_value
@@ -212,7 +212,7 @@ def _merge_attribute_default(
 
 def _merge_nested_into_plan(plan_value: Any, config_value: Any, nested: PvsNestedBlock) -> Any:
     """Correct the defaults in a planned nested block, whatever its nesting mode."""
-    if not isinstance(config_value, CtyValue) or config_value.is_null or config_value.is_unknown:
+    if not _is_resolvable(config_value):
         return plan_value
 
     if nested.nesting in (NestingMode.SINGLE, NestingMode.GROUP):
@@ -307,6 +307,10 @@ def _is_null_or_unknown(value: Any) -> bool:
     return _is_null(value) or (isinstance(value, CtyValue) and value.is_unknown)
 
 
+def _is_resolvable(value: Any) -> TypeGuard[CtyValue]:
+    return isinstance(value, CtyValue) and not value.is_null and not value.is_unknown
+
+
 def _is_null(value: Any) -> bool:
     if isinstance(value, CtyValue):
         return bool(value.is_null)
@@ -315,7 +319,7 @@ def _is_null(value: Any) -> bool:
 
 def _resolve_nested(value: Any, nested: PvsNestedBlock) -> Any:
     """Resolve defaults inside a nested block, whatever its nesting mode."""
-    if not isinstance(value, CtyValue) or value.is_null or value.is_unknown:
+    if not _is_resolvable(value):
         return value
 
     if nested.nesting in (NestingMode.SINGLE, NestingMode.GROUP):
