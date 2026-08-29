@@ -157,6 +157,19 @@ def pvs_identity_schema_to_proto(schema: PvsSchema) -> pb.ResourceIdentitySchema
                 f"Identity attribute '{name}' has type {type(attr.type).__name__}; "
                 "identity attributes must be scalar (string, number, or bool)."
             )
+        if attr.default is not None:
+            # Checked before `computed`, which a default implies: reporting the
+            # implied flag would name something the practitioner never wrote.
+            raise PvsSchemaDefinitionError(
+                f"Identity attribute '{name}' declares a default, which is not "
+                "meaningful for identity. Identity is assigned by the provider "
+                "when a resource is created and read back verbatim on import; it "
+                "is never filled in from configuration, so a default could never "
+                "apply.\n\n"
+                "Suggestion: drop `default=` and set the value in the resource's "
+                "create or import logic."
+            )
+
         if attr.computed:
             raise PvsSchemaDefinitionError(
                 f"Identity attribute '{name}' is marked computed, which is not "

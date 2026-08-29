@@ -83,6 +83,21 @@ def test_rejects_sensitive_attribute() -> None:
         pvs_identity_schema_to_proto(schema)
 
 
+def test_rejects_defaulted_attribute_by_name() -> None:
+    """A default implies computed, so the refusal must name what was written.
+
+    `PvsAttribute` marks any defaulted attribute Computed, which the computed
+    refusal above would otherwise report -- naming a flag that never appears in
+    the practitioner's source.
+    """
+    schema = s_identity(attributes={"region": a_str(default="us-east-1")})
+
+    with pytest.raises(PvsSchemaDefinitionError, match="default") as excinfo:
+        pvs_identity_schema_to_proto(schema)
+
+    assert "computed" not in str(excinfo.value)
+
+
 def test_preserves_attribute_order() -> None:
     schema = s_identity(
         attributes={
