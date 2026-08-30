@@ -147,6 +147,24 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         return raw_identity
 
     @classmethod
+    async def upgrade_state(cls, version: int, raw_state: dict[str, Any]) -> dict[str, Any]:
+        """Upgrade state written under an older schema version.
+
+        Only called when the version recorded in state differs from the one
+        `get_schema()` now advertises, so the default passes data through
+        unchanged and costs a resource that has never bumped its version
+        nothing.
+
+        `version` is the version the state was written under, not the current
+        one, so a resource that has migrated more than once can branch on it and
+        apply each step in turn. `raw_state` is the stored JSON decoded to plain
+        Python, and the return value must satisfy the *current* schema -- the
+        framework validates it before it reaches Terraform, and a result the
+        schema rejects fails the RPC rather than being written to state.
+        """
+        return raw_state
+
+    @classmethod
     def from_cty(
         cls, cty_value: CtyValue | None, target_cls: type, *, apply_defaults: bool = False
     ) -> Any | None:

@@ -43,6 +43,18 @@ from pyvider.protocols.tfprotov6.handlers.validate_ephemeral_resource_config imp
     _validate_ephemeral_resource_config_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema import a_str, s_resource
+
+
+def _upgradable_resource() -> MagicMock:
+    """UpgradeResourceState resolves the resource to learn the version to compare against.
+
+    Registered at version 0 to match the requests below, so these exercise the
+    pass-through rather than an upgrade.
+    """
+    resource = MagicMock()
+    resource.get_schema.return_value = s_resource(attributes={"name": a_str(optional=True)}, version=0)
+    return resource
 
 
 class TestOperationFieldPresence:
@@ -110,7 +122,13 @@ class TestOperationFieldPresence:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.hub.get_component",
+                return_value=_upgradable_resource(),
+            ),
+        ):
             await _upgrade_resource_state_impl(request, context=None)
 
             assert mock_logger.debug.called
@@ -203,7 +221,13 @@ class TestSuccessLogging:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.hub.get_component",
+                return_value=_upgradable_resource(),
+            ),
+        ):
             await _upgrade_resource_state_impl(request, context=None)
 
             # Should log info on success
@@ -276,7 +300,13 @@ class TestLogLevelConsistency:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.hub.get_component",
+                return_value=_upgradable_resource(),
+            ),
+        ):
             await _upgrade_resource_state_impl(request, context=None)
 
             # Success should be logged with info
@@ -328,7 +358,13 @@ class TestContextualInformation:
         request = pb.UpgradeResourceState.Request(type_name="test_resource", version=0)
         request.raw_state.CopyFrom(pb.RawState(json=b"{}"))
 
-        with patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger:
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.logger") as mock_logger,
+            patch(
+                "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state.hub.get_component",
+                return_value=_upgradable_resource(),
+            ),
+        ):
             await _upgrade_resource_state_impl(request, context=None)
 
             call_kwargs = mock_logger.debug.call_args[1]

@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import sys
 
+from provide.testkit.mocking import MagicMock, patch
 import pytest
 
 # Add src to path
@@ -18,6 +19,22 @@ from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     UpgradeResourceStateHandler,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema import a_str, s_resource
+
+MODULE = "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state"
+
+
+@pytest.fixture(autouse=True)
+def _registered_resource():
+    """The handler resolves the resource to learn the version to compare against.
+
+    Registered at version 0 so the version-0 requests below take the
+    pass-through path these tests are about.
+    """
+    resource = MagicMock()
+    resource.get_schema.return_value = s_resource(attributes={"name": a_str(optional=True)}, version=0)
+    with patch(f"{MODULE}.hub.get_component", return_value=resource):
+        yield resource
 
 
 @pytest.mark.asyncio

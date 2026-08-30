@@ -7,7 +7,7 @@
 
 import json
 
-from provide.testkit.mocking import patch
+from provide.testkit.mocking import MagicMock, patch
 import pytest
 
 from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
@@ -15,6 +15,23 @@ from pyvider.protocols.tfprotov6.handlers.upgrade_resource_state import (
     _upgrade_resource_state_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+from pyvider.schema import a_str, s_resource
+
+MODULE = "pyvider.protocols.tfprotov6.handlers.upgrade_resource_state"
+
+# These exercise the pass-through, which is what happens when the stored version
+# matches the schema's. The resource is registered at version 0 so the requests
+# below -- all of which send version 0 -- take that path.
+PASSTHROUGH_SCHEMA = s_resource(attributes={"name": a_str(optional=True)}, version=0)
+
+
+@pytest.fixture(autouse=True)
+def _registered_resource():
+    """UpgradeResourceState now resolves the resource to learn its schema version."""
+    resource = MagicMock()
+    resource.get_schema.return_value = PASSTHROUGH_SCHEMA
+    with patch(f"{MODULE}.hub.get_component", return_value=resource):
+        yield resource
 
 
 @pytest.mark.asyncio

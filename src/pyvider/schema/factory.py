@@ -152,8 +152,26 @@ def _create_schema(
 def s_resource(
     attributes: dict[str, PvsAttribute] | None = None,
     block_types: list[PvsNestedBlock] | None = None,
+    version: int = 1,
 ) -> PvsSchema:
-    return _create_schema(1, attributes=attributes, block_types=block_types)
+    """Create a managed resource schema.
+
+    Bump `version` whenever a change to this schema makes state written under
+    the old one unreadable -- an attribute renamed, a type changed, one
+    attribute split into two -- and implement `upgrade_state` on the resource to
+    perform the migration. Terraform records the version in state alongside the
+    instance and calls `UpgradeResourceState` when it differs from the one the
+    provider now advertises; without a bump it has no signal that anything
+    changed and hands the old state to the new schema.
+
+    The default of 1 is load-bearing rather than arbitrary. Every pyvider
+    resource has advertised 1 since the framework began, so that is what is
+    recorded in the state of every provider built on it. Defaulting to anything
+    else would make existing state disagree with the schema on the next plan --
+    and defaulting to 0 would make it a *downgrade*, which Terraform refuses
+    outright rather than upgrading.
+    """
+    return _create_schema(version, attributes=attributes, block_types=block_types)
 
 
 def s_data_source(

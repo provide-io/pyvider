@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Resources can version their state schema and migrate it.** `UpgradeResourceState` was a documented pass-through, and correct only because `s_resource` accepted no version: the stored version could never differ from the advertised one, so the RPC was never asked to do anything. That held right up until a provider author changed a resource's state shape — a renamed attribute, a changed type, one attribute split into two — at which point they had no way to signal it, Terraform handed the old state to the new schema, and the result was a decode error at best and a silent mis-read at worst. The workaround was to tell practitioners to `terraform state rm` and re-import, which is the migration the provider was supposed to perform for them. Now `s_resource(..., version=N)` declares the version, and `BaseResource.upgrade_state(version, raw_state)` migrates data written under an older one, mirroring the `s_identity` / `upgrade_identity` pair that already existed for identity. `version` is the version the state was *written* under, so a resource that has migrated more than once can branch on it. The default stays 1, which is what every pyvider resource has advertised since the framework began, so existing providers are unchanged and the hook costs a resource that never bumps its version nothing.
+- **An upgrade the current schema rejects fails the RPC instead of being written to state.** The hook returns plain Python and nothing else checked it, so a migration that dropped a required attribute or changed a type would have persisted state the provider cannot read back — the very failure the version bump exists to prevent. The result is now validated against the current schema, and a failure returns a diagnostic naming the resource and both versions with no `upgraded_state`, leaving the stored state alone.
+
+### Changed
+
+- **`UpgradeResourceState` now resolves the resource it was asked about**, and reports an unregistered type as an error rather than passing the state through. It has to: the resource is what knows the version to compare against. This matches `UpgradeResourceIdentity` and terraform-plugin-framework, and Terraform only calls this RPC for types the provider advertised, so an unresolvable one is a provider bug.
+
 ## [0.6.0] - 2026-08-29
 
 A release of defect fixes, most of them found by a full-codebase audit and
