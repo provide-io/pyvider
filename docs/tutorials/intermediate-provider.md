@@ -74,7 +74,7 @@ requires = ["setuptools>=65", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.pyvider]
-provider_name = "jsonplaceholder"
+name = "jsonplaceholder"
 ```
 
 ### 3. Install Dependencies

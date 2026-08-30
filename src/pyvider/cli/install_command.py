@@ -201,6 +201,16 @@ def install_command(
 
     # Show provider information
     pout(f"📦 Installing provider: {pyvider_ctx.provider_name}", fg="cyan", bold=True)
+    pout(f"  Name from: {pyvider_ctx.provider_name_source}")
+    # The name picks the plugin directory Terraform searches. Falling back to
+    # the default installs a perfectly working provider under a name nothing
+    # asks for, so say it here rather than only in a debug log.
+    if pyvider_ctx.provider_name_source == "default":
+        pout(
+            '  ⚠️  No provider name configured; set name = "<provider>" under '
+            "[tool.pyvider] in pyproject.toml.",
+            fg="yellow",
+        )
     pout(f"  Version: {pyvider_ctx.pyvider_version}")
     pout(f"  Platform: {pyvider_ctx.tf_os}_{pyvider_ctx.tf_arch}")
     pout(f"  Target: {pyvider_ctx.tf_plugin_dir}")
