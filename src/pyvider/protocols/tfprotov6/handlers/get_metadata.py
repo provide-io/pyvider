@@ -126,7 +126,7 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
             action_count=len(actions),
         )
 
-        response = pb.GetMetadata.Response(
+        return pb.GetMetadata.Response(
             server_capabilities=pb.ServerCapabilities(
                 plan_destroy=True,
                 get_provider_schema_optional=True,
@@ -142,8 +142,6 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
             actions=actions,
             diagnostics=[],
         )
-
-        return response
 
     except Exception as e:
         logger.error(

@@ -12,7 +12,9 @@ class CapabilityError(PyviderError):
     pass
 
 
-class ValueError(PyviderError):
+# Legacy name, kept for the public `pyvider.exceptions.foundation` surface.
+# `pyvider.exceptions` itself exports the unshadowed `PyviderValueError`.
+class ValueError(PyviderError):  # noqa: A001
     pass
 
 

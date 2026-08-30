@@ -117,16 +117,15 @@ class FileSystemStateStore(BaseStateStore):
         root = _config_root(config)
         if root is None:
             return []
-        errors: list[str] = []
-        candidate = Path(root).expanduser()
-        if candidate.exists() and not candidate.is_dir():
-            errors.append(f"State store path '{candidate}' exists and is not a directory.")
-        return errors
+        candidate, occupied = await asyncio.to_thread(_probe_root, root)
+        if occupied:
+            return [f"State store path '{candidate}' exists and is not a directory."]
+        return []
 
     async def configure(self, config: Any, chunk_size: int) -> None:
         root = _config_root(config)
         if root is not None:
-            self._root = Path(root).expanduser()
+            self._root = await asyncio.to_thread(_expand_root, root)
         await asyncio.to_thread(self._ensure_root)
         logger.debug(
             "Filesystem state store configured",
@@ -284,6 +283,17 @@ class FileSystemStateStore(BaseStateStore):
         if existing is None or existing.is_expired():
             return None
         return existing
+
+
+def _expand_root(root: str) -> Path:
+    """Expand a configured root. Touches the filesystem, so callers use a thread."""
+    return Path(root).expanduser()
+
+
+def _probe_root(root: str) -> tuple[Path, bool]:
+    """Expand a candidate root and report whether something else already occupies it."""
+    candidate = _expand_root(root)
+    return candidate, candidate.exists() and not candidate.is_dir()
 
 
 def _config_root(config: Any) -> str | None:

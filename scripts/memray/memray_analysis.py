@@ -21,6 +21,7 @@ def parse_memray_stats(binfile: Path) -> dict[str, Any]:
             capture_output=True,
             text=True,
             timeout=30,
+            check=False,
         )
         if result.returncode != 0:
             return {"error": f"memray stats failed: {result.stderr}"}
@@ -52,13 +53,13 @@ def generate_flamegraph(binfile: Path, output_html: Path | None = None) -> bool:
             capture_output=True,
             text=True,
             timeout=60,
+            check=False,
         )
         if result.returncode == 0:
             print(f"  Generated: {output_html.name}")
             return True
-        else:
-            print(f"  Failed: {result.stderr[:200]}")
-            return False
+        print(f"  Failed: {result.stderr[:200]}")
+        return False
     except subprocess.TimeoutExpired:
         print("  Flamegraph generation timed out")
         return False

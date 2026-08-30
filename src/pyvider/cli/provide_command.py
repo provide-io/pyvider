@@ -262,9 +262,8 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         logging.basicConfig()
         local_logger = logging.getLogger("pyvider.critical")
-        local_logger.error(
+        local_logger.exception(
             "Provider server failed to start or crashed",
-            exc_info=True,
             extra={
                 "error_type": type(e).__name__,
                 "error_message": str(e),

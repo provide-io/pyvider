@@ -95,7 +95,7 @@ class ResourceContext(BaseContext, Generic[ConfigType, StateType, PrivateStateTy
             if isinstance(self.private_state, dict):
                 # Direct dict unpacking
                 return private_state_class(**self.private_state)
-            elif hasattr(self.private_state, "__dict__"):
+            if hasattr(self.private_state, "__dict__"):
                 # Convert attrs object to dict first
                 state_dict = attrs.asdict(self.private_state)
                 return private_state_class(**state_dict)

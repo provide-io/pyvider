@@ -132,8 +132,57 @@ target-version = "py311"
 exclude = ["**/*pb2*.py", "**/*pb2*.pyi", "**/*.md", "mutants", ".ci-tooling"]
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "UP", "ANN", "B", "BLE", "C90", "PIE", "PLR", "S", "SIM", "PTH", "RUF"]
+# Gates, not style. `select = ["ALL"]` was considered (#28) and rejected: it
+# reports ~1900 findings here, most of them docstring and annotation policy that
+# would have to be ignored wholesale, which buys nothing and hides the rules
+# below. These families each catch a class of defect instead.
+select = [
+    "A",      # builtins shadowed by our own names
+    "ANN",    # missing annotations
+    "ASYNC",  # blocking calls on the event loop -- this is a gRPC server
+    "B",      # bugbear
+    "BLE",    # blind except
+    "C4",     # comprehensions
+    "C90",    # mccabe complexity
+    "DTZ",    # naive datetimes
+    "E",      # pycodestyle errors
+    "EXE",    # shebang/executable-bit mismatches
+    "F",      # pyflakes
+    "FLY",    # static str.join
+    "FURB",   # refurb modernisations
+    "G",      # logging call correctness
+    "I",      # import sorting
+    "ICN",    # import naming conventions
+    "INP",    # implicit namespace packages -- a missing __init__.py ships broken
+    "INT",    # gettext
+    "ISC",    # implicit string concatenation, i.e. the missing-comma bug
+    "LOG",    # logging module misuse
+    "PERF",   # obvious performance traps
+    "PGH",    # blanket noqa / blanket type: ignore
+    "PIE",    # misc lints
+    "PLC",    # pylint conventions
+    "PLE",    # pylint errors
+    "PLR",    # pylint refactor, incl. the complexity ceilings
+    "PLW",    # pylint warnings
+    "PTH",    # os.path -> pathlib
+    "PYI",    # stub correctness
+    "Q",      # quote consistency
+    "RET",    # return-path simplification
+    "RSE",    # raise Foo() -> raise Foo
+    "RUF",    # ruff-specific
+    "S",      # bandit
+    "SIM",    # simplifications
+    "SLF",    # reaching into another object's privates
+    "SLOT",   # __slots__ correctness
+    "T10",    # leftover debugger calls
+    "T20",    # print() instead of the logger
+    "TID",    # banned/relative imports
+    "UP",     # pyupgrade
+    "W",      # pycodestyle warnings
+    "YTT",    # sys.version checks
+]
 ignore = [
+    "A003",     # builtin-attribute-shadowing (`type` is the domain word on a function parameter)
     "ANN401",   # any-type (too restrictive)
     "BLE001",   # blind-except (too restrictive for cleanup patterns)
     "B008",     # function-call-in-default-argument (Click uses this pattern)
@@ -153,15 +202,30 @@ ignore = [
     "PLR0917",  # too-many-positional-arguments (same rationale as PLR0913)
     "PLR0915",  # too-many-statements (refactor later)
     "PLR2004",  # magic-value-comparison (too noisy)
+    "PLC0415",  # import-outside-top-level (deliberate: breaks hub import cycles and keeps CLI startup cheap)
+    "PLW0603",  # global-statement (module-level singletons and caches, each guarded by a lock)
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "B017", "C901", "E402", "PLR0124", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117"]
-"docs/snippets/**/*.py" = ["E402", "ANN001", "ANN002", "ANN003", "ANN201", "ANN202"]
+# A test suite reaches into what it is testing (SLF001), is laid out as
+# directories rather than packages (INP001), and prints and sleeps and stats
+# without an event loop to protect (T201, ASYNC240, PERF401).
+"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ASYNC240", "B017", "C901", "E402", "INP001", "PERF401", "PGH003", "PLR0124", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117", "SLF001", "T201"]
+# Snippets teach one idea each. The file examples would have to wrap every
+# read and stat in asyncio.to_thread to satisfy ASYNC240, which is a lesson
+# about thread pools rather than about the resource lifecycle they exist to show.
+"docs/snippets/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ASYNC240", "E402", "INP001"]
+# Developer and CI scripts are console programs; stdout is their interface.
+"scripts/**" = ["PERF401", "T201"]
 # Complex protocol handlers - inherently complex due to Terraform protocol requirements
 "src/pyvider/cli/launch_context_command.py" = ["C901"]
 "src/pyvider/protocols/tfprotov6/handlers/utils.py" = ["C901"]
 "src/pyvider/protocols/tfprotov6/handlers/read_data_source.py" = ["C901"]
+# SLF001 sees module-private access; these three reach into names their own
+# package owns, which is a distinction ruff cannot draw.
+"src/pyvider/cli/components_commands.py" = ["SLF001"]
+"src/pyvider/functions/decorators.py" = ["SLF001"]
+"src/pyvider/protocols/tfprotov6/handlers/configure_provider.py" = ["SLF001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["pyvider", "tests"]

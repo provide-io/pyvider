@@ -17,6 +17,7 @@ from pyvider.common.launch_context import LaunchMethod
 @cli.command("launch-context")
 @click.option(
     "--format",
+    "output_format",
     type=click.Choice(["human", "json"], case_sensitive=False),
     default="human",
     help="Output format for launch context information.",
@@ -26,7 +27,7 @@ from pyvider.common.launch_context import LaunchMethod
     is_flag=True,
     help="Show detailed information including environment variables.",
 )
-def launch_context_cmd(format: str, verbose: bool) -> None:
+def launch_context_cmd(output_format: str, verbose: bool) -> None:
     """
     Display detailed information about how Pyvider was launched.
 
@@ -40,7 +41,7 @@ def launch_context_cmd(format: str, verbose: bool) -> None:
 
     launch_context = detect_launch_context()
 
-    if format.lower() == "json":
+    if output_format.lower() == "json":
         # Convert to JSON-serializable format
         data = {
             "method": launch_context.method.value,

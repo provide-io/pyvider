@@ -109,7 +109,7 @@ class AddNumbersFunction(BaseFunction):
 
         return FunctionReturnType(type=CtyNumber())
 
-    async def call(self, a: int | float, b: int | float) -> int | float:
+    async def call(self, a: float, b: float) -> int | float:
         """Execute the function."""
         return a + b
 

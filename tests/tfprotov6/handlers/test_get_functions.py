@@ -460,8 +460,7 @@ class TestGetFunctionsEdgeCases:
                     to_dict_side_effect.count += 1
                     if to_dict_side_effect.count == 1:
                         return sample_function_dict
-                    else:
-                        raise ValueError("Conversion failed")
+                    raise ValueError("Conversion failed")
                 return None
 
             mock_to_dict.side_effect = to_dict_side_effect

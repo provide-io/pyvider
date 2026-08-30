@@ -177,7 +177,7 @@ class TestProvideForceMode:
                 coro.close()
             call_count[0] += 1
             if call_count[0] >= 1:
-                raise KeyboardInterrupt()
+                raise KeyboardInterrupt
 
         mock_run.side_effect = consume_then_interrupt
         runner = CliRunner()

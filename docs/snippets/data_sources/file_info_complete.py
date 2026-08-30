@@ -90,14 +90,13 @@ class FileInfo(BaseDataSource):
                 exists=True,
                 content=content,
             )
-        else:
-            # File doesn't exist - return empty data
-            return FileInfoData(
-                id=str(file_path.absolute()),
-                path=str(file_path),
-                size=0,
-                exists=False,
-                content="",
-            )
+        # File doesn't exist - return empty data
+        return FileInfoData(
+            id=str(file_path.absolute()),
+            path=str(file_path),
+            size=0,
+            exists=False,
+            content="",
+        )
 
     # --8<-- [end:read]

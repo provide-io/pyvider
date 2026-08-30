@@ -14,8 +14,7 @@ import pyvider.protocols.tfprotov6.protobuf as pb
 
 def simulate_unmarshal_and_convert(arg_proto: pb.DynamicValue, param_cty_type: "CtyType") -> Any:
     decoded_cty_val = unmarshal(arg_proto, schema=param_cty_type)
-    native_arg = cty_to_native(decoded_cty_val)
-    return native_arg
+    return cty_to_native(decoded_cty_val)
 
 
 class TestFunctionArgumentConversion:

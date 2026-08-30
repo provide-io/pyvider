@@ -34,8 +34,7 @@ def _import_with(monkeypatch: pytest.MonkeyPatch, *, spec_result: object | None,
     monkeypatch.setattr(importlib.util, "find_spec", _find_spec)
     foundation_logger_core = importlib.import_module("provide.foundation.logger.core")
     monkeypatch.setattr(foundation_logger_core, "get_global_logger", lambda: logger)
-    module = importlib.import_module("pyvider.common.utils.availability")
-    return module
+    return importlib.import_module("pyvider.common.utils.availability")
 
 
 def test_has_msgpack_when_library_present(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -28,12 +28,11 @@ async def handle_http_errors_basic(ctx: ResourceContext, url: str) -> dict | Non
             if e.response.status_code == 404:
                 ctx.add_warning(f"Resource not found: {url}")
                 return None
-            elif e.response.status_code >= 500:
+            if e.response.status_code >= 500:
                 ctx.add_error(f"Server error: {e.response.status_code}")
                 raise
-            else:
-                ctx.add_error(f"HTTP error: {e.response.status_code}")
-                raise
+            ctx.add_error(f"HTTP error: {e.response.status_code}")
+            raise
 
         except httpx.RequestError as e:
             ctx.add_error(f"Request failed: {e!s}")

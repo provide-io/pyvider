@@ -244,7 +244,7 @@ class TestReadDataSourceCapabilityInjection:
             def get_component_side_effect(component_type: str, name: str) -> MagicMock | type | None:
                 if component_type == "data_source" and name == "test_data_source":
                     return mock_ds_class
-                elif component_type == "capability" and name == "test_capability":
+                if component_type == "capability" and name == "test_capability":
                     return mock_capability_class
                 return None
 

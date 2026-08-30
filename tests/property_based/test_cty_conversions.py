@@ -87,7 +87,7 @@ class TestCtyStringValidation:
 
     @given(value=st.one_of(st.integers(), st.floats(), st.booleans()))
     @settings(max_examples=30)
-    def test_string_rejects_non_string_primitives(self, value: int | float | bool) -> None:
+    def test_string_rejects_non_string_primitives(self, value: float | bool) -> None:
         """Property: CtyString should reject non-string primitive types."""
         from pyvider.cty.exceptions.validation import CtyStringValidationError
 
@@ -111,7 +111,7 @@ class TestCtyNumberValidation:
         )
     )
     @settings(max_examples=50)
-    def test_number_accepts_numeric_values(self, num: int | float) -> None:
+    def test_number_accepts_numeric_values(self, num: float) -> None:
         """Property: CtyNumber should accept integers and floats."""
         from decimal import Decimal
 

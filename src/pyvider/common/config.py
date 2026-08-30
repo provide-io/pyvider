@@ -138,8 +138,7 @@ class PyviderConfig(BaseConfig):
 
         for fld in fields(type(self)):
             if fld.name == key and not fld.name.startswith("_"):
-                value = getattr(self, key)
-                return value
+                return getattr(self, key)
 
         # Fallback to legacy behavior for dynamic keys
         env_var_name = f"PYVIDER_{key.upper()}"
@@ -153,7 +152,8 @@ class PyviderConfig(BaseConfig):
 
         # TOML config keys are nested (e.g., logging.level). We need to handle this.
         key_parts = key.split(".")
-        value = self._config_data
+        # Narrows to whatever the nested lookup lands on, which may be a scalar.
+        value: Any = self._config_data
         for part in key_parts:
             if isinstance(value, dict):
                 value = value.get(part)

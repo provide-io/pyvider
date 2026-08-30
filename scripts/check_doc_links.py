@@ -48,8 +48,7 @@ def slugify(text: str) -> str:
     # Convert to lowercase and replace spaces with hyphens
     slug = text.lower().strip()
     slug = re.sub(r"[^\w\s-]", "", slug)
-    slug = re.sub(r"[-\s]+", "-", slug)
-    return slug
+    return re.sub(r"[-\s]+", "-", slug)
 
 
 def find_markdown_files() -> list[Path]:
@@ -95,16 +94,14 @@ def extract_headings(file_path: Path) -> set[str]:
 def resolve_link_path(source_file: Path, link_url: str) -> Path:
     """Resolve a relative link to an absolute path."""
     # Remove anchor if present
-    link_path = link_url.split("#")[0]
+    link_path = link_url.split("#", maxsplit=1)[0]
 
     if not link_path:  # Just an anchor
         return source_file
 
     # Resolve relative to source file's directory
     source_dir = source_file.parent
-    resolved = (source_dir / link_path).resolve()
-
-    return resolved
+    return (source_dir / link_path).resolve()
 
 
 def _is_external_or_special_link(link_url: str) -> bool:
@@ -208,8 +205,7 @@ def main() -> int:
         print()
         print(f"Total: {len(all_errors)} broken link(s)")
         return 1
-    else:
-        return 0
+    return 0
 
 
 if __name__ == "__main__":

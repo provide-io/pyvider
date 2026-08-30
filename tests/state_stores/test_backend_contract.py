@@ -9,6 +9,7 @@ Both backends are driven through the same cases so a durable backend cannot
 quietly diverge from the in-memory one the tests were written against.
 """
 
+import asyncio
 from collections.abc import Iterator
 from pathlib import Path
 import time
@@ -114,7 +115,7 @@ async def test_locks_on_distinct_states_do_not_conflict(backend: BaseStateStore)
 @pytest.mark.asyncio
 async def test_expired_lease_is_reclaimable(backend: BaseStateStore) -> None:
     stale = await backend.lock_state(TYPE_NAME, "main", "plan", ttl_seconds=0.01)
-    time.sleep(0.05)
+    await asyncio.sleep(0.05)
 
     fresh = await backend.lock_state(TYPE_NAME, "main", "apply", ttl_seconds=60)
 
@@ -148,7 +149,7 @@ async def test_unlock_when_unlocked_is_refused(backend: BaseStateStore) -> None:
 @pytest.mark.asyncio
 async def test_get_lock_reports_expired_lease_as_unlocked(backend: BaseStateStore) -> None:
     await backend.lock_state(TYPE_NAME, "main", "plan", ttl_seconds=0.01)
-    time.sleep(0.05)
+    await asyncio.sleep(0.05)
 
     assert await backend.get_lock(TYPE_NAME, "main") is None
 

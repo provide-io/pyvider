@@ -167,12 +167,11 @@ def get_filtered_components(component_type: str) -> dict[str, Any]:
             total_count=len(all_components),
         )
         return all_components
-    else:
-        logger.debug(
-            "Filtering components for production mode",
-            component_type=component_type,
-            total=len(all_components),
-        )
+    logger.debug(
+        "Filtering components for production mode",
+        component_type=component_type,
+        total=len(all_components),
+    )
 
     production_components = {
         name: comp for name, comp in all_components.items() if not getattr(comp, "_is_test_only", False)
@@ -233,7 +232,7 @@ def check_test_only_access(
     )
 
     # Choose appropriate exception type
-    error_class: type[DataSourceError] | type[ResourceError] | type[FunctionError]
+    error_class: type[DataSourceError | ResourceError | FunctionError]
     if component_type == "data_source":
         error_class = DataSourceError
         type_label = "Data source"
@@ -274,8 +273,7 @@ def _process_instance(instance: Any, _visited: set[int]) -> Any:
     if obj_id in _visited:
         if attrs.has(type(instance)):
             return {"__circular_ref__": type(instance).__name__}
-        else:
-            return f"<circular_ref:{type(instance).__name__}>"
+        return f"<circular_ref:{type(instance).__name__}>"
 
     if not isinstance(instance, str | int | float | bool | type(None)):
         _visited.add(obj_id)
@@ -287,14 +285,13 @@ def _process_instance(instance: Any, _visited: set[int]) -> Any:
                 value = getattr(instance, a.name)
                 res[a.name] = attrs_to_dict_for_cty(value, _visited)
             return res
-        elif isinstance(instance, tuple):
+        if isinstance(instance, tuple):
             return tuple(attrs_to_dict_for_cty(item, _visited) for item in instance)
-        elif isinstance(instance, list):
+        if isinstance(instance, list):
             return [attrs_to_dict_for_cty(item, _visited) for item in instance]
-        elif isinstance(instance, dict):
+        if isinstance(instance, dict):
             return {k: attrs_to_dict_for_cty(v, _visited) for k, v in instance.items()}
-        else:
-            return instance
+        return instance
     finally:
         if not isinstance(instance, str | int | float | bool | type(None)) and obj_id in _visited:
             _visited.remove(obj_id)
@@ -419,8 +416,10 @@ def _check_set_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
     if _unmark_deep(plan.value) != _unmark_deep(result.value):
         return (
             False,
-            f"Value mismatch: the result differs from the planned value (type {plan.type}). "
-            "Values are omitted here because this message is returned to Terraform.",
+            (
+                f"Value mismatch: the result differs from the planned value (type {plan.type}). "
+                "Values are omitted here because this message is returned to Terraform."
+            ),
         )
     return True, ""
 
@@ -468,8 +467,10 @@ def is_valid_refinement(plan: CtyValue, result: CtyValue) -> tuple[bool, str]:
         # in plaintext -- and any mismatch would disclose whatever the value is.
         return (
             False,
-            f"Value mismatch: the result differs from the planned value (type {plan.type}). "
-            "Values are omitted here because this message is returned to Terraform.",
+            (
+                f"Value mismatch: the result differs from the planned value (type {plan.type}). "
+                "Values are omitted here because this message is returned to Terraform."
+            ),
         )
 
     return True, ""

@@ -39,7 +39,7 @@ class ComponentRegistry:
         if existing is component:
             logger.debug("Skipping redundant registration", component_type=component_type, name=name)
             return
-        elif existing is not None:
+        if existing is not None:
             logger.warning("Component is being replaced", component_type=component_type, name=name)
 
         # Register with replace=True to allow overwrites

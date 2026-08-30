@@ -56,9 +56,8 @@ class FileInfo(BaseDataSource):
                 size=file_path.stat().st_size,
                 exists=True,
             )
-        else:
-            return FileInfoData(
-                id=str(file_path.absolute()),
-                size=0,
-                exists=False,
-            )
+        return FileInfoData(
+            id=str(file_path.absolute()),
+            size=0,
+            exists=False,
+        )

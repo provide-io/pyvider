@@ -57,7 +57,7 @@ class BaseStateStore(ABC):
         ``chunk_size`` is the value negotiated with Terraform, already
         normalized by the manager.
         """
-        return None
+        return
 
     @abstractmethod
     async def read_state(self, type_name: str, state_id: str) -> bytes | None:

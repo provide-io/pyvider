@@ -167,7 +167,7 @@ class FunctionAdapter:
             if args and isinstance(args[0], type) and issubclass(args[0], CtyType):
                 element_cty = args[0]()
             return CtyList(element_type=element_cty)  # type: ignore[return-value]
-        elif origin_type in (dict, dict):
+        if origin_type in (dict, dict):
             value_cty: CtyType[object] = CtyDynamic()
             if args and len(args) > 1 and isinstance(args[1], type) and issubclass(args[1], CtyType):
                 value_cty = args[1]()
@@ -179,7 +179,7 @@ class FunctionAdapter:
         types_in_union = [t for t in args if t is not type(None)]
         if all(t in (int, float) for t in types_in_union):
             return CtyNumber()  # type: ignore[return-value]
-        elif len(types_in_union) == 1 and types_in_union[0] is str:
+        if len(types_in_union) == 1 and types_in_union[0] is str:
             return CtyString()  # type: ignore[return-value]
         return CtyDynamic()
 
@@ -216,7 +216,7 @@ class FunctionAdapter:
         allow_unknown: bool | list[str],
     ) -> list[FunctionParameter]:
         parameters: list[FunctionParameter] = []
-        for param_name, _param_obj in sig.parameters.items():
+        for param_name in sig.parameters:
             if param_name == "self":
                 continue
 

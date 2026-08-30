@@ -491,16 +491,15 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 planned_fields=list(planned_state.keys()) if planned_state else [],
             )
             return planned_state, private_state
-        else:
-            planned_state, private_state = await self._update(ctx, base_plan)
-            logger.debug(
-                "Resource update plan completed",
-                operation="plan_update",
-                resource_type=self.__class__.__name__,
-                has_private_state=private_state is not None,
-                planned_fields=list(planned_state.keys()) if planned_state else [],
-            )
-            return planned_state, private_state
+        planned_state, private_state = await self._update(ctx, base_plan)
+        logger.debug(
+            "Resource update plan completed",
+            operation="plan_update",
+            resource_type=self.__class__.__name__,
+            has_private_state=private_state is not None,
+            planned_fields=list(planned_state.keys()) if planned_state else [],
+        )
+        return planned_state, private_state
 
     async def apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         is_create = ctx.state is None
@@ -531,15 +530,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
                 has_private_state=result[1] is not None,
             )
             return result
-        else:
-            result = await self._update_apply(ctx)
-            logger.info(
-                "Resource updated successfully",
-                operation="apply_update",
-                resource_type=self.__class__.__name__,
-                has_private_state=result[1] is not None,
-            )
-            return result
+        result = await self._update_apply(ctx)
+        logger.info(
+            "Resource updated successfully",
+            operation="apply_update",
+            resource_type=self.__class__.__name__,
+            has_private_state=result[1] is not None,
+        )
+        return result
 
     @abstractmethod
     async def read(self, ctx: ResourceContext) -> StateType | None: ...

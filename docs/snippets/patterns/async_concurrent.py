@@ -188,9 +188,7 @@ async def fetch_with_rate_limit(
                 return response.json()
 
         # Fetch all (but only max_concurrent at a time)
-        results = await asyncio.gather(*[fetch_one(rid) for rid in resource_ids])
-
-        return results
+        return await asyncio.gather(*[fetch_one(rid) for rid in resource_ids])
 
 
 # --8<-- [end:semaphore_rate_limiting]

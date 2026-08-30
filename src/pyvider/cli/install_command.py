@@ -77,7 +77,7 @@ def _uninstall_provider(ctx: PyviderContext, quiet: bool = False) -> None:
 
     except Exception as e:
         pout(f"❌ Failed to uninstall provider: {e}", fg="red", bold=True)
-        raise click.Abort() from e
+        raise click.Abort from e
 
 
 def _is_pyvider_project() -> bool:
@@ -85,7 +85,7 @@ def _is_pyvider_project() -> bool:
     pyvider_toml_path = Path.cwd() / "pyvider.toml"
     if pyvider_toml_path.exists():
         return True
-    elif pyproject_path.exists():
+    if pyproject_path.exists():
         try:
             content = safe_read_text(pyproject_path)
             if "[tool.pyvider]" in content or "[pyvider]" in content:
@@ -124,7 +124,7 @@ def _install_binary_provider(pyvider_ctx: PyviderContext) -> None:
 
     except Exception as e:
         pout(f"\n❌ Failed to install provider binary: {e}", fg="red", bold=True)
-        raise click.Abort() from e
+        raise click.Abort from e
 
 
 def _install_dev_provider(pyvider_ctx: PyviderContext) -> None:
@@ -139,7 +139,7 @@ def _install_dev_provider(pyvider_ctx: PyviderContext) -> None:
             fg="red",
             bold=True,
         )
-        raise click.Abort() from e
+        raise click.Abort from e
 
 
 @click.command(name="install")
@@ -176,7 +176,7 @@ def install_command(
             fg="red",
             bold=True,
         )
-        raise click.Abort()
+        raise click.Abort
 
     # Guard: Check for pyvider.toml or pyproject.toml with [tool.pyvider]
     if not _is_pyvider_project():
@@ -185,7 +185,7 @@ def install_command(
             fg="red",
             bold=True,
         )
-        raise click.Abort()
+        raise click.Abort
 
     # Handle uninstall (after validation)
     if uninstall:

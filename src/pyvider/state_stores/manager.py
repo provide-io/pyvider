@@ -170,9 +170,9 @@ class StateStoreManager:
         return component
 
     @staticmethod
-    def _instantiate(cls: type[BaseStateStore], type_name: str) -> BaseStateStore:
+    def _instantiate(store_cls: type[BaseStateStore], type_name: str) -> BaseStateStore:
         try:
-            return cls()
+            return store_cls()
         except Exception as exc:
             raise StateStoreConfigurationError(
                 f"Failed to instantiate state store '{type_name}': {exc}"
