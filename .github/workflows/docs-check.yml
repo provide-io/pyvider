@@ -12,6 +12,11 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+      # The pull_request filter already watches this file. Without it here too,
+      # a change to the workflow is verified on the branch and then never re-run
+      # on main -- which is how a deploy step that failed on every push to main
+      # stayed broken while every pull request went green.
+      - '.github/workflows/docs-check.yml'
 
 # The repository default for GITHUB_TOKEN is read-only, so any job that writes
 # has to ask for it explicitly. Only build-and-deploy does; see below.
