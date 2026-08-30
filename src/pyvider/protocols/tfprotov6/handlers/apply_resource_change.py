@@ -352,7 +352,11 @@ async def _apply_resource_change_impl(
             ),
         )
 
-    except (CtyValidationError, PyviderError) as e:
+    # ResourceLifecycleContractError is a foundation StateError rather than a
+    # PyviderError, so without naming it here it fell to the generic handler
+    # below, which rebuilds the message from str(e) and drops the `detail`
+    # carrying the attribute that broke the contract.
+    except (CtyValidationError, PyviderError, ResourceLifecycleContractError) as e:
         logger.error(
             "ApplyResourceChange failed with framework error",
             operation="apply_resource_change",
