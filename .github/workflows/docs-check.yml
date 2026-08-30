@@ -13,6 +13,11 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
 
+# The repository default for GITHUB_TOKEN is read-only, so any job that writes
+# has to ask for it explicitly. Only build-and-deploy does; see below.
+permissions:
+  contents: read
+
 jobs:
   check-docs:
     name: Check Documentation
@@ -61,6 +66,12 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: check-docs
 
+    # Pushing the built site to gh-pages is a write to this repository. Without
+    # this the deploy step fails with "Permission to provide-io/pyvider.git
+    # denied to github-actions[bot]", which it did on every push to main.
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -93,4 +104,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           publish_branch: gh-pages
-          cname: pyvider.readthedocs.io
