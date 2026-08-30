@@ -119,6 +119,29 @@ pyvider install
 - Must be run from a directory containing `pyvider.toml` or `pyproject.toml` with `[tool.pyvider]` section
 - In development mode, requires a virtual environment with Pyvider installed
 
+**Provider name:**
+
+The provider name selects the plugin directory Terraform searches
+(`~/.terraform.d/plugins/local/providers/<name>/<version>/<os>_<arch>`), so a name
+that does not apply installs a working provider somewhere nothing looks for it.
+`pyvider install` prints which source it came from.
+
+```toml
+[tool.pyvider]
+name = "myprovider"
+```
+
+It is resolved from the first of these that supplies one, and either `name` or
+`provider_name` is accepted as the key in any of them:
+
+1. `PYVIDER_PROVIDER_NAME`
+2. the file named by `PYVIDER_CONFIG_FILE`, `[pyvider]`
+3. `./pyvider.toml`, `[pyvider]`
+4. `./pyproject.toml`, `[tool.pyvider]`
+5. `./pyproject.toml`, `[pyvider]`
+
+If none does, the name falls back to `pyvider` and `install` warns.
+
 ---
 
 ### `pyvider launch-context`

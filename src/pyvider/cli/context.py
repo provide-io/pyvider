@@ -4,6 +4,7 @@
 #
 
 
+from collections.abc import Iterator
 import os
 from pathlib import Path
 from typing import Any
@@ -13,41 +14,62 @@ from provide.foundation import logger
 from provide.foundation.context import CLIContext
 from provide.foundation.platform import get_arch_name, get_os_name
 
-from pyvider.common.config import PyviderConfig
+from pyvider.common.config import _DEFAULT_CONFIG_FILENAME, PyviderConfig
+
+#: Accepted spellings for the provider-name key, canonical first. The table is
+#: already scoped to pyvider, so `name` says everything `provider_name` does;
+#: the alias is still read because the docs and one shipped provider spell it
+#: that way, and a name that silently does not apply is the worst outcome here.
+_PROVIDER_NAME_KEYS = ("name", "provider_name")
+
+#: Used when nothing configures a name. Only correct for one repository in the
+#: world, which is why `install` says out loud when it had to fall back.
+_DEFAULT_PROVIDER_NAME = "pyvider"
+
+
+def _load_toml(path: Path) -> dict[str, Any]:
+    """Parse a TOML file, returning an empty mapping if it is absent or broken.
+
+    A malformed pyproject.toml must not take the whole CLI down; the caller
+    falls through to the next candidate location instead.
+    """
+    if not path.is_file():
+        return {}
+    try:
+        import tomllib
+
+        with path.open("rb") as f:
+            data = tomllib.load(f)
+    except Exception:
+        return {}  # nosec B110 - unreadable config falls through to the next source
+    return data if isinstance(data, dict) else {}
+
+
+def _name_from_section(section: Any) -> str | None:
+    """Pull a provider name out of one config table, canonical key first."""
+    if not isinstance(section, dict):
+        return None
+    for key in _PROVIDER_NAME_KEYS:
+        value = section.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
 
 
 def _read_provider_name_from_pyproject() -> str | None:
     """
-    Read provider_name from pyproject.toml's [tool.pyvider] section.
+    Read the provider name from pyproject.toml.
+
+    Checks `[tool.pyvider]` -- the PEP 518 location -- before the top-level
+    `[pyvider]` table that plating also reads.
 
     Returns:
         Provider name string if found, None otherwise
     """
-    pyproject_path = Path.cwd() / "pyproject.toml"
-    if not pyproject_path.exists():
-        return None
-
-    try:
-        # Use tomllib (Python 3.11+) for TOML parsing
-        import tomllib
-
-        with pyproject_path.open("rb") as f:
-            data = tomllib.load(f)
-
-        # Check [tool.pyvider].provider_name
-        tool_pyvider = data.get("tool", {}).get("pyvider", {})
-        if "provider_name" in tool_pyvider:
-            return str(tool_pyvider["provider_name"])
-
-        # Also check [pyvider].provider_name for consistency
-        pyvider_section = data.get("pyvider", {})
-        if "provider_name" in pyvider_section:
-            return str(pyvider_section["provider_name"])
-
-    except Exception:
-        pass  # nosec B110 - intentionally silencing parse errors
-
-    return None
+    data = _load_toml(Path.cwd() / "pyproject.toml")
+    tool_section = data.get("tool")
+    scoped = tool_section.get("pyvider") if isinstance(tool_section, dict) else None
+    return _name_from_section(scoped) or _name_from_section(data.get("pyvider"))
 
 
 def _read_version_from_file() -> str:
@@ -82,8 +104,8 @@ class PyviderContext(CLIContext):
         self.tf_os = get_os_name()
         self.tf_arch = get_arch_name()
         self.pyvider_version = _read_version_from_file()
-        # Read provider name with priority: env var > pyproject.toml > default
-        self.provider_name = self._resolve_provider_name()
+        # Read provider name with priority: env var > pyvider.toml > pyproject.toml
+        self.provider_name, self.provider_name_source = self._resolve_provider_name()
         self.tf_plugin_dir = (
             self.home
             / ".terraform.d"
@@ -97,78 +119,73 @@ class PyviderContext(CLIContext):
         self.components_discovered = False
         self.discovery_errors: list[tuple[str, Exception]] = []
 
-    def _resolve_provider_name(self) -> str:
+    def _provider_name_candidates(self) -> Iterator[tuple[str | None, str]]:
         """
-        Resolve provider name with priority chain.
+        Yield (name, source) pairs in resolution order, highest priority first.
+
+        A pair whose name is None or empty means "this location did not
+        configure a name"; the caller moves on to the next one.
+        """
+        yield os.environ.get("PYVIDER_PROVIDER_NAME"), "PYVIDER_PROVIDER_NAME"
+
+        # An explicitly pointed-at config file outranks project metadata.
+        config_file_path = os.environ.get("PYVIDER_CONFIG_FILE")
+        if config_file_path:
+            yield (
+                self._read_provider_name_from_config_file(config_file_path),
+                f"{config_file_path} [pyvider]",
+            )
+
+        # PyviderConfig already loads pyvider.toml from the cwd by default, so
+        # the name in it must be honoured there too -- requiring
+        # PYVIDER_CONFIG_FILE to see it made the file's own `[pyvider] name`
+        # inert in every normal checkout.
+        yield (
+            self._read_provider_name_from_config_file(_DEFAULT_CONFIG_FILENAME),
+            f"{_DEFAULT_CONFIG_FILENAME} [pyvider]",
+        )
+
+        pyproject = _load_toml(Path.cwd() / "pyproject.toml")
+        tool_section = pyproject.get("tool")
+        scoped = tool_section.get("pyvider") if isinstance(tool_section, dict) else None
+        yield _name_from_section(scoped), "pyproject.toml [tool.pyvider]"
+        # Top-level `[pyvider]` is not a PEP 518 location, but plating reads it
+        # and providers in the wild write it, so it is accepted last.
+        yield _name_from_section(pyproject.get("pyvider")), "pyproject.toml [pyvider]"
+
+    def _resolve_provider_name(self) -> tuple[str, str]:
+        """
+        Resolve the provider name and record where it came from.
 
         Priority:
         1. Environment variable PYVIDER_PROVIDER_NAME
-        2. PYVIDER_CONFIG_FILE (pyvider.toml) [pyvider].name
-        3. pyproject.toml [tool.pyvider].provider_name
-        4. Default "pyvider" (with warning)
+        2. PYVIDER_CONFIG_FILE, `[pyvider]`
+        3. ./pyvider.toml, `[pyvider]`
+        4. ./pyproject.toml, `[tool.pyvider]`
+        5. ./pyproject.toml, `[pyvider]`
+        6. Default "pyvider" (with a warning)
+
+        Either `name` or `provider_name` is accepted as the key in any of them.
 
         Returns:
-            Resolved provider name
+            (resolved name, human-readable description of its source)
         """
-        # 1. Check environment variable first (highest priority)
-        env_name = os.environ.get("PYVIDER_PROVIDER_NAME")
-        if env_name:
-            logger.debug(
-                "Provider name from environment variable",
-                provider_name=env_name,
-                source="PYVIDER_PROVIDER_NAME",
-            )
-            return env_name
+        for name, source in self._provider_name_candidates():
+            if name:
+                logger.debug("Provider name resolved", provider_name=name, source=source)
+                return name, source
 
-        # 2. Check PYVIDER_CONFIG_FILE (pyvider.toml)
-        config_file_path = os.environ.get("PYVIDER_CONFIG_FILE")
-        if config_file_path:
-            config_name = self._read_provider_name_from_config_file(config_file_path)
-            if config_name:
-                logger.debug(
-                    "Provider name from config file",
-                    provider_name=config_name,
-                    source=config_file_path,
-                )
-                return config_name
-
-        # 3. Check pyproject.toml [tool.pyvider].provider_name
-        pyproject_name = _read_provider_name_from_pyproject()
-        if pyproject_name:
-            logger.debug(
-                "Provider name from pyproject.toml",
-                provider_name=pyproject_name,
-                source="pyproject.toml",
-            )
-            return pyproject_name
-
-        # 4. Fall back to default with warning
-        default_name = "pyvider"
         logger.warning(
-            "No provider_name configured, using default",
-            provider_name=default_name,
-            hint="Set provider_name in pyproject.toml under [tool.pyvider] section",
+            "No provider name configured, using default",
+            provider_name=_DEFAULT_PROVIDER_NAME,
+            hint='Set name = "<provider>" in pyproject.toml under [tool.pyvider]',
         )
-        return default_name
+        return _DEFAULT_PROVIDER_NAME, "default"
 
     def _read_provider_name_from_config_file(self, config_file_path: str) -> str | None:
-        """Read provider name from a TOML config file (pyvider.toml)."""
-        try:
-            config_path = Path(config_file_path)
-            if not config_path.exists():
-                return None
-            with config_path.open("rb") as f:
-                import tomllib
-
-                data = tomllib.load(f)
-            pyvider_section = data.get("pyvider", {})
-            if isinstance(pyvider_section, dict):
-                name = pyvider_section.get("name")
-                if isinstance(name, str):
-                    return name
-            return None
-        except Exception:
-            return None
+        """Read the provider name from a TOML config file (pyvider.toml)."""
+        data = _load_toml(Path(config_file_path))
+        return _name_from_section(data.get("pyvider"))
 
     async def _ensure_components_discovered(
         self,
