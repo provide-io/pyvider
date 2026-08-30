@@ -30,6 +30,50 @@ async def OpenEphemeralResourceHandler(
     return await _open_ephemeral_resource_impl(request, context)
 
 
+def _registered_ephemeral(type_name: str) -> Any:
+    """The registered ephemeral resource class, or an error naming what to check."""
+    resource_class = hub.get_component("ephemeral_resource", type_name)
+    if resource_class:
+        return resource_class
+
+    registered = hub.get_components("ephemeral_resource")
+    logger.error(
+        "Ephemeral resource type not found during open operation",
+        operation="open_ephemeral_resource",
+        resource_type=type_name,
+        registered_ephemeral_resources=list(registered.keys()) if registered else [],
+    )
+    raise ValueError(
+        f"Ephemeral resource type '{type_name}' not found.\n\n"
+        f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator "
+        f"and that component discovery has completed successfully.\n\n"
+        f"Troubleshooting:\n"
+        f"  1. Check that the ephemeral resource class has the @ephemeral decorator\n"
+        f"  2. Verify the ephemeral resource module is imported by the provider\n"
+        f"  3. Run 'pyvider components list' to see registered ephemeral resources\n"
+        f"  4. Review provider logs for component registration errors\n"
+        f"  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+    )
+
+
+def _populate_open_response(
+    response: pb.OpenEphemeralResource.Response,
+    schema: Any,
+    result_obj: Any,
+    private_state_obj: Any,
+    renew_at: Any,
+) -> None:
+    """Marshal whatever open() returned back to the wire format, field by field."""
+    if result_obj:
+        response.result.CopyFrom(marshal(attrs.asdict(result_obj), schema=schema.block))
+
+    if private_state_obj:
+        response.private = msgpack.packb(attrs.asdict(private_state_obj), use_bin_type=True)
+
+    if renew_at:
+        response.renew_at.CopyFrom(datetime_to_proto(renew_at))
+
+
 async def _open_ephemeral_resource_impl(
     request: pb.OpenEphemeralResource.Request, context: Any
 ) -> pb.OpenEphemeralResource.Response:
@@ -42,28 +86,7 @@ async def _open_ephemeral_resource_impl(
 
     response = pb.OpenEphemeralResource.Response()
     try:
-        resource_class = hub.get_component("ephemeral_resource", request.type_name)
-        if not resource_class:
-            logger.error(
-                "Ephemeral resource type not found during open operation",
-                operation="open_ephemeral_resource",
-                resource_type=request.type_name,
-                registered_ephemeral_resources=list(hub.get_components("ephemeral_resource").keys())
-                if hub.get_components("ephemeral_resource")
-                else [],
-            )
-            raise ValueError(
-                f"Ephemeral resource type '{request.type_name}' not found.\n\n"
-                f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator "
-                f"and that component discovery has completed successfully.\n\n"
-                f"Troubleshooting:\n"
-                f"  1. Check that the ephemeral resource class has the @ephemeral decorator\n"
-                f"  2. Verify the ephemeral resource module is imported by the provider\n"
-                f"  3. Run 'pyvider components list' to see registered ephemeral resources\n"
-                f"  4. Review provider logs for component registration errors\n"
-                f"  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
-            )
-
+        resource_class = _registered_ephemeral(request.type_name)
         schema = resource_class.get_schema()
         config_instance = decode_config(resource_class, request.config)
 
@@ -75,16 +98,7 @@ async def _open_ephemeral_resource_impl(
 
         result_obj, private_state_obj, renew_at = await resource_instance.open(ctx)
 
-        # Marshal the results back to the wire format
-        if result_obj:
-            raw_result = attrs.asdict(result_obj)
-            response.result.CopyFrom(marshal(raw_result, schema=schema.block))
-
-        if private_state_obj:
-            response.private = msgpack.packb(attrs.asdict(private_state_obj), use_bin_type=True)
-
-        if renew_at:
-            response.renew_at.CopyFrom(datetime_to_proto(renew_at))
+        _populate_open_response(response, schema, result_obj, private_state_obj, renew_at)
 
         logger.info(
             "Ephemeral resource open completed successfully",

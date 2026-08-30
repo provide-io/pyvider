@@ -411,6 +411,67 @@ async def PlanResourceChangeHandler(
     return await _plan_resource_change_impl(request, context)
 
 
+def _finalize_planned_state(
+    response: pb.PlanResourceChange.Response,
+    planned_state_dict: dict[str, Any],
+    config_cty: CtyValue,
+    prior_state_cty: CtyValue,
+    resource_class: Any,
+    resource_schema: Any,
+    resource_context: Any,
+    identity_schema: Any,
+    type_name: str,
+) -> None:
+    """Reconcile, marshal and annotate the plan a resource returned."""
+    # Defaults are a framework invariant, not an implementation detail of
+    # BaseResource.plan().  A resource may override that documented extension
+    # point (or implement ResourceProtocol directly), but its returned plan must
+    # still agree with the effective configuration the apply hook receives.
+    # Reconcile at the protocol boundary, after the hook has made its changes and
+    # before identity, replacement paths, validation, and marshaling inspect the plan.
+    merge_schema_defaults_into_plan(planned_state_dict, config_cty, resource_schema.block)
+
+    identity_values = (
+        _derive_planned_identity_values(resource_class, resource_schema, planned_state_dict, type_name)
+        if identity_schema is not None
+        else None
+    )
+    planned_state_cty = _handle_planned_state_dict(
+        planned_state_dict,
+        resource_schema,
+        response,
+        identity_schema=identity_schema,
+        identity_values=identity_values,
+    )
+    response.requires_replace.extend(
+        _collect_requires_replace_paths(
+            resource_schema,
+            prior_state_cty,
+            planned_state_cty,
+            resource_context.requires_replace_paths,
+            type_name,
+        )
+    )
+
+
+def _store_planned_private_state(
+    response: pb.PlanResourceChange.Response, planned_private_state_attrs: Any, type_name: str
+) -> None:
+    """Encrypt whatever private state the plan produced. A resource that keeps none stores none."""
+    if not planned_private_state_attrs:
+        return
+
+    serialized_private_bytes = msgpack.packb(attrs.asdict(planned_private_state_attrs), use_bin_type=True)
+    response.planned_private = encrypt(serialized_private_bytes)
+
+    logger.debug(
+        "Encrypted planned private state",
+        operation="plan_resource_change",
+        resource_type=type_name,
+        private_state_size=len(response.planned_private),
+    )
+
+
 async def _plan_resource_change_impl(
     request: pb.PlanResourceChange.Request, context: Any
 ) -> pb.PlanResourceChange.Response:
@@ -477,55 +538,19 @@ async def _plan_resource_change_impl(
                 return response
 
         if planned_state_dict is not None:
-            # Defaults are a framework invariant, not an implementation detail
-            # of BaseResource.plan().  A resource may override that documented
-            # extension point (or implement ResourceProtocol directly), but its
-            # returned plan must still agree with the effective configuration
-            # the apply hook receives.  Reconcile at the protocol boundary,
-            # after the hook has made its changes and before identity,
-            # replacement paths, validation, and marshaling inspect the plan.
-            merge_schema_defaults_into_plan(
+            _finalize_planned_state(
+                response,
                 planned_state_dict,
                 config_cty,
-                resource_schema.block,
-            )
-
-            identity_values = (
-                _derive_planned_identity_values(
-                    resource_class, resource_schema, planned_state_dict, request.type_name
-                )
-                if identity_schema is not None
-                else None
-            )
-            planned_state_cty = _handle_planned_state_dict(
-                planned_state_dict,
+                prior_state_cty,
+                resource_class,
                 resource_schema,
-                response,
-                identity_schema=identity_schema,
-                identity_values=identity_values,
-            )
-            response.requires_replace.extend(
-                _collect_requires_replace_paths(
-                    resource_schema,
-                    prior_state_cty,
-                    planned_state_cty,
-                    resource_context.requires_replace_paths,
-                    request.type_name,
-                )
+                resource_context,
+                identity_schema,
+                request.type_name,
             )
 
-        if planned_private_state_attrs:
-            serialized_private_bytes = msgpack.packb(
-                attrs.asdict(planned_private_state_attrs), use_bin_type=True
-            )
-            response.planned_private = encrypt(serialized_private_bytes)
-
-            logger.debug(
-                "Encrypted planned private state",
-                operation="plan_resource_change",
-                resource_type=request.type_name,
-                private_state_size=len(response.planned_private),
-            )
+        _store_planned_private_state(response, planned_private_state_attrs, request.type_name)
 
         logger.info(
             "Resource plan completed successfully",

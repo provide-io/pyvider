@@ -19,6 +19,24 @@ async def GetMetadataHandler(request: pb.GetMetadata.Request, context: Any) -> p
     return await _get_metadata_impl(request, context)
 
 
+def _advertise(component_type: str, metadata_class: Any, name_field: str = "type_name") -> list[Any]:
+    """Advertise every production component of one kind.
+
+    Terraform routes an RPC only to a type name it was told about here, so the
+    same production/test filter has to apply to all of them alike.
+    """
+    entries = []
+    for name in get_filtered_components(component_type):
+        entries.append(metadata_class(**{name_field: name}))
+        logger.debug(
+            "Component discovered during metadata collection",
+            operation="get_metadata",
+            component_type=component_type,
+            component_name=name,
+        )
+    return entries
+
+
 async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> pb.GetMetadata.Response:
     """Implementation of GetMetadata handler."""
     logger.debug(
@@ -28,91 +46,15 @@ async def _get_metadata_impl(request: pb.GetMetadata.Request, context: Any) -> p
     )
 
     try:
-        # Discover production-usable resources, filtering test-only components when needed.
-        all_resources = get_filtered_components("resource")
-        resources = []
-        for resource_name in all_resources:
-            resources.append(pb.GetMetadata.ResourceMetadata(type_name=resource_name))
-            logger.debug(
-                "Resource discovered during metadata collection",
-                operation="get_metadata",
-                component_type="resource",
-                component_name=resource_name,
-            )
-
-        # Data sources should respect the same production/test-mode filter behavior.
-        all_data_sources = get_filtered_components("data_source")
-        data_sources = []
-        for ds_name in all_data_sources:
-            data_sources.append(pb.GetMetadata.DataSourceMetadata(type_name=ds_name))
-            logger.debug(
-                "Data source discovered during metadata collection",
-                operation="get_metadata",
-                component_type="data_source",
-                component_name=ds_name,
-            )
-
-        # Functions should respect the same production/test-mode filter behavior.
-        all_functions = get_filtered_components("function")
-        functions = []
-        for func_name in all_functions:
-            functions.append(pb.GetMetadata.FunctionMetadata(name=func_name))
-            logger.debug(
-                "Function discovered during metadata collection",
-                operation="get_metadata",
-                component_type="function",
-                component_name=func_name,
-            )
-
-        # Ephemerals should respect production/test-mode filtering.
-        all_ephemerals = get_filtered_components("ephemeral_resource")
-        ephemeral_resources = []
-        for name in all_ephemerals:
-            ephemeral_resources.append(pb.GetMetadata.EphemeralMetadata(type_name=name))
-            logger.debug(
-                "Ephemeral resource discovered during metadata collection",
-                operation="get_metadata",
-                component_type="ephemeral_resource",
-                component_name=name,
-            )
-
-        # State stores registered via @register_state_store back the pluggable
-        # remote-state RPCs; Terraform needs them advertised to route those calls.
-        all_state_stores = get_filtered_components("state_store")
-        state_stores = []
-        for name in all_state_stores:
-            state_stores.append(pb.GetMetadata.StateStoreMetadata(type_name=name))
-            logger.debug(
-                "State store discovered during metadata collection",
-                operation="get_metadata",
-                component_type="state_store",
-                component_name=name,
-            )
-
-        # List resources registered via @register_list_resource answer the
-        # ListResource RPC; Terraform only calls it for advertised type names.
-        all_list_resources = get_filtered_components("list_resource")
-        list_resources = []
-        for name in all_list_resources:
-            list_resources.append(pb.GetMetadata.ListResourceMetadata(type_name=name))
-            logger.debug(
-                "List resource discovered during metadata collection",
-                operation="get_metadata",
-                component_type="list_resource",
-                component_name=name,
-            )
-
-        # Actions registered via @register_action back the action RPCs.
-        all_actions = get_filtered_components("action")
-        actions = []
-        for name in all_actions:
-            actions.append(pb.GetMetadata.ActionMetadata(type_name=name))
-            logger.debug(
-                "Action discovered during metadata collection",
-                operation="get_metadata",
-                component_type="action",
-                component_name=name,
-            )
+        resources = _advertise("resource", pb.GetMetadata.ResourceMetadata)
+        data_sources = _advertise("data_source", pb.GetMetadata.DataSourceMetadata)
+        functions = _advertise("function", pb.GetMetadata.FunctionMetadata, name_field="name")
+        ephemeral_resources = _advertise("ephemeral_resource", pb.GetMetadata.EphemeralMetadata)
+        # State stores back the pluggable remote-state RPCs, list resources back
+        # ListResource, and actions back the action RPCs.
+        state_stores = _advertise("state_store", pb.GetMetadata.StateStoreMetadata)
+        list_resources = _advertise("list_resource", pb.GetMetadata.ListResourceMetadata)
+        actions = _advertise("action", pb.GetMetadata.ActionMetadata)
 
         logger.info(
             "GetMetadata completed successfully",

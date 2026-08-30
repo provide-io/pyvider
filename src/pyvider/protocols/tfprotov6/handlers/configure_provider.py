@@ -52,6 +52,128 @@ def _resolve_test_mode(config_instance: Any) -> tuple[bool, str]:
     return False, "default"
 
 
+def _require_provider_instance() -> Any:
+    """The registered provider, or a framework error: nothing can be configured without it."""
+    provider_instance = hub.get_component("singleton", "provider")
+    if provider_instance:
+        return provider_instance
+
+    logger.error(
+        "Provider instance not found in hub during configuration",
+        operation="configure_provider",
+    )
+    err = ProviderConfigurationError(
+        "Provider instance not found in hub.\n\n"
+        "This is an internal framework error. The provider should be registered "
+        "during server initialization before ConfigureProvider is called.\n\n"
+        "Suggestion: Report this issue - it indicates a provider initialization problem.\n\n"
+        "Troubleshooting:\n"
+        "  1. Ensure the provider class has the @provider decorator\n"
+        "  2. Verify the provider's setup() method completed successfully\n"
+        "  3. Check provider logs for initialization errors\n"
+        "  4. Verify component discovery completed without errors"
+    )
+    err.add_context("hub.dimension", "singleton")
+    err.add_context("hub.component_type", "provider")
+    err.add_context("terraform.summary", "Provider not registered")
+    err.add_context("terraform.detail", "The provider has not been properly registered with the framework.")
+    raise err
+
+
+def _require_config_instance(config_cty: Any, provider_instance: Any, provider_schema: Any) -> Any:
+    """The configuration as the provider's own config class, or a diagnostic-bearing error."""
+    config_instance = config_to_attrs_instance(config_cty, provider_instance.config_class)
+    if config_instance is not None:
+        return config_instance
+
+    logger.error(
+        "Failed to parse provider configuration into attrs instance",
+        operation="configure_provider",
+        provider_name=provider_instance.metadata.name,
+    )
+    err = ProviderConfigurationError(
+        f"Failed to instantiate provider configuration for '{provider_instance.metadata.name}'.\n\n"
+        f"Suggestion: Ensure all required provider configuration fields are provided with valid types.\n\n"
+        f"Troubleshooting:\n"
+        f"  1. Review the provider schema for required vs optional fields\n"
+        f"  2. Check that all field values have the correct type\n"
+        f"  3. Ensure no required fields are unknown/computed during configuration\n"
+        f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
+    )
+    err.add_context("config.schema", str(provider_schema.block) if provider_schema else "None")
+    err.add_context("provider.name", provider_instance.metadata.name)
+    err.add_context("terraform.summary", "Invalid provider configuration")
+    err.add_context(
+        "terraform.detail", "The provider configuration could not be parsed into the expected format."
+    )
+    raise err
+
+
+async def _run_configure_hook(
+    provider_instance: Any, config_instance: Any, test_mode_enabled: bool
+) -> pb.Diagnostic | None:
+    """Run the provider's own configure() hook. Returns a diagnostic if it failed.
+
+    This is where a provider turns configuration into whatever it needs to serve
+    requests -- an API client, credentials, a working directory. Registering the
+    context only after the hook fully succeeds keeps the published context in
+    step with the live provider object, and stops a failed hook from leaving
+    `_configured` stuck True with no client behind it.
+    """
+    try:
+        await provider_instance.configure(config_instance)
+    except ProviderAlreadyConfiguredError:
+        # A repeated ConfigureProvider RPC, which is normal and must succeed:
+        # the "configure once" rule concerns multiple provider BLOCKS, not
+        # repeated RPCs against the same object. The context published by the
+        # first call still describes the live provider, so it is left alone.
+        #
+        # This is matched on the exception TYPE deliberately. Checking
+        # provider_instance._configured instead cannot distinguish the two
+        # cases: BaseProvider.configure() sets that flag before a subclass's
+        # own body has run, so the ordinary `await super().configure(...)`
+        # then build-a-client shape reports a failed hook as success.
+        logger.debug(
+            "Provider was already configured",
+            operation="configure_provider",
+            provider_name=provider_instance.metadata.name,
+        )
+        return None
+    except Exception as e:
+        logger.error(
+            "Provider configure() hook failed",
+            operation="configure_provider",
+            provider_name=provider_instance.metadata.name,
+            error_type=type(e).__name__,
+            error_message=str(e),
+            exc_info=True,
+        )
+        return await create_diagnostic_from_exception(e)
+
+    # Hook succeeded — now safe to mark configured and publish context.
+    provider_instance._configured = True
+    provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
+    hub.register("singleton", "provider_context", provider_context)
+    return None
+
+
+def _log_test_mode(provider_instance: Any, test_mode_enabled: bool, test_mode_source: str) -> None:
+    """Say plainly whether test-only components are reachable, and on whose say-so."""
+    if test_mode_enabled:
+        logger.warning(
+            "⚠️  Provider test mode enabled - test-only components are now accessible",
+            operation="configure_provider",
+            provider_name=provider_instance.metadata.name,
+            source=test_mode_source,
+        )
+    else:
+        logger.debug(
+            "Test mode is not enabled - test-only components will be filtered out",
+            operation="configure_provider",
+            provider_name=provider_instance.metadata.name,
+        )
+
+
 async def _configure_provider_impl(
     request: pb.ConfigureProvider.Request, context: Any
 ) -> pb.ConfigureProvider.Response:
@@ -66,31 +188,7 @@ async def _configure_provider_impl(
     )
 
     try:
-        provider_instance = hub.get_component("singleton", "provider")
-        if not provider_instance:
-            logger.error(
-                "Provider instance not found in hub during configuration",
-                operation="configure_provider",
-            )
-
-            err = ProviderConfigurationError(
-                "Provider instance not found in hub.\n\n"
-                "This is an internal framework error. The provider should be registered "
-                "during server initialization before ConfigureProvider is called.\n\n"
-                "Suggestion: Report this issue - it indicates a provider initialization problem.\n\n"
-                "Troubleshooting:\n"
-                "  1. Ensure the provider class has the @provider decorator\n"
-                "  2. Verify the provider's setup() method completed successfully\n"
-                "  3. Check provider logs for initialization errors\n"
-                "  4. Verify component discovery completed without errors"
-            )
-            err.add_context("hub.dimension", "singleton")
-            err.add_context("hub.component_type", "provider")
-            err.add_context("terraform.summary", "Provider not registered")
-            err.add_context(
-                "terraform.detail", "The provider has not been properly registered with the framework."
-            )
-            raise err
+        provider_instance = _require_provider_instance()
 
         logger.debug(
             "Provider instance retrieved for configuration",
@@ -116,31 +214,7 @@ async def _configure_provider_impl(
             provider_name=provider_instance.metadata.name,
         )
 
-        config_instance = config_to_attrs_instance(config_cty, provider_instance.config_class)
-
-        if config_instance is None:
-            logger.error(
-                "Failed to parse provider configuration into attrs instance",
-                operation="configure_provider",
-                provider_name=provider_instance.metadata.name,
-            )
-
-            err = ProviderConfigurationError(
-                f"Failed to instantiate provider configuration for '{provider_instance.metadata.name}'.\n\n"
-                f"Suggestion: Ensure all required provider configuration fields are provided with valid types.\n\n"
-                f"Troubleshooting:\n"
-                f"  1. Review the provider schema for required vs optional fields\n"
-                f"  2. Check that all field values have the correct type\n"
-                f"  3. Ensure no required fields are unknown/computed during configuration\n"
-                f"  4. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
-            )
-            err.add_context("config.schema", str(provider_schema.block) if provider_schema else "None")
-            err.add_context("provider.name", provider_instance.metadata.name)
-            err.add_context("terraform.summary", "Invalid provider configuration")
-            err.add_context(
-                "terraform.detail", "The provider configuration could not be parsed into the expected format."
-            )
-            raise err
+        config_instance = _require_config_instance(config_cty, provider_instance, provider_schema)
 
         logger.debug(
             "Creating provider context",
@@ -164,53 +238,12 @@ async def _configure_provider_impl(
         # working directory. Registering the context after the hook fully succeeds
         # ensures the published context always matches the live provider object's
         # state, and a failed hook does not leave _configured stuck True with no client.
-        try:
-            await provider_instance.configure(config_instance)
-            # Hook succeeded — now safe to mark configured and publish context.
-            provider_instance._configured = True
-            provider_context = ProviderContext(config=config_instance, test_mode_enabled=test_mode_enabled)
-            hub.register("singleton", "provider_context", provider_context)
-        except ProviderAlreadyConfiguredError:
-            # A repeated ConfigureProvider RPC, which is normal and must succeed:
-            # the "configure once" rule concerns multiple provider BLOCKS, not
-            # repeated RPCs against the same object. The context published by the
-            # first call still describes the live provider, so it is left alone.
-            #
-            # This is matched on the exception TYPE deliberately. Checking
-            # provider_instance._configured instead cannot distinguish the two
-            # cases: BaseProvider.configure() sets that flag before a subclass's
-            # own body has run, so the ordinary `await super().configure(...)`
-            # then build-a-client shape reports a failed hook as success.
-            logger.debug(
-                "Provider was already configured",
-                operation="configure_provider",
-                provider_name=provider_instance.metadata.name,
-            )
-        except Exception as e:
-            logger.error(
-                "Provider configure() hook failed",
-                operation="configure_provider",
-                provider_name=provider_instance.metadata.name,
-                error_type=type(e).__name__,
-                error_message=str(e),
-                exc_info=True,
-            )
-            response.diagnostics.append(await create_diagnostic_from_exception(e))
+        hook_failure = await _run_configure_hook(provider_instance, config_instance, test_mode_enabled)
+        if hook_failure is not None:
+            response.diagnostics.append(hook_failure)
             return response
 
-        if test_mode_enabled:
-            logger.warning(
-                "⚠️  Provider test mode enabled - test-only components are now accessible",
-                operation="configure_provider",
-                provider_name=provider_instance.metadata.name,
-                source=test_mode_source,
-            )
-        else:
-            logger.debug(
-                "Test mode is not enabled - test-only components will be filtered out",
-                operation="configure_provider",
-                provider_name=provider_instance.metadata.name,
-            )
+        _log_test_mode(provider_instance, test_mode_enabled, test_mode_source)
 
         logger.info(
             "Provider configured successfully",

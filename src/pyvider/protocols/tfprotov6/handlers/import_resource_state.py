@@ -35,6 +35,64 @@ async def ImportResourceStateHandler(
     return await _import_resource_state_impl(request, context)
 
 
+def _registered_resource(type_name: str) -> Any:
+    """The registered resource class for a type name, or an error naming what to check."""
+    resource_class = hub.get_component("resource", type_name)
+    if not resource_class:
+        err = ResourceError(
+            f"Resource type '{type_name}' not registered.\n\n"
+            f"Suggestion: Ensure the resource is registered with @register_resource "
+            f"and that component discovery has completed.\n\n"
+            f"Run 'pyvider components list' to see what was registered."
+        )
+        err.add_context("resource.type_name", type_name)
+        raise err
+
+    check_test_only_access(resource_class, type_name, "resource")
+    return resource_class
+
+
+def _requested_identity(request: pb.ImportResourceState.Request, identity_schema: Any) -> Any:
+    """The identity Terraform sent, when the resource declares a schema to read it with."""
+    if identity_schema is None:
+        return None
+    return unmarshal_identity(request.identity, identity_schema)
+
+
+def _build_imported_resource(
+    resource_class: Any,
+    resource_schema: Any,
+    identity_schema: Any,
+    imported: Any,
+    imported_private: Any,
+    raw_state_dict: dict[str, Any],
+    type_name: str,
+) -> pb.ImportResourceState.ImportedResource:
+    """Marshal an adopted object into the ImportedResource Terraform writes to state."""
+    validator_type = resource_schema.block.to_cty_type()
+    state_cty = validator_type.validate(raw_state_dict)
+    marshalled = marshal(state_cty, schema=resource_schema.block)
+
+    imported_resource = pb.ImportResourceState.ImportedResource(type_name=type_name)
+    imported_resource.state.msgpack = marshalled.msgpack
+    imported_resource.private = (
+        encrypt(msgpack.packb(attrs.asdict(imported_private), use_bin_type=True))
+        if imported_private is not None
+        else b""
+    )
+
+    # Terraform reads ImportedResource.identity and writes it to state, so a
+    # resource that declares an identity schema and is then imported without
+    # this arrives in state with an empty identity -- and every later plan
+    # sees a change it cannot explain.
+    if identity_schema is not None:
+        identity_values = derive_identity_values(resource_class, imported, type_name, "import_resource_state")
+        if identity_values is not None:
+            imported_resource.identity.CopyFrom(marshal_identity(identity_values, identity_schema))
+
+    return imported_resource
+
+
 async def _import_resource_state_impl(
     request: pb.ImportResourceState.Request, context: Any
 ) -> pb.ImportResourceState.Response:
@@ -68,18 +126,7 @@ async def _import_resource_state_impl(
     )
 
     try:
-        resource_class = hub.get_component("resource", request.type_name)
-        if not resource_class:
-            err = ResourceError(
-                f"Resource type '{request.type_name}' not registered.\n\n"
-                f"Suggestion: Ensure the resource is registered with @register_resource "
-                f"and that component discovery has completed.\n\n"
-                f"Run 'pyvider components list' to see what was registered."
-            )
-            err.add_context("resource.type_name", request.type_name)
-            raise err
-
-        check_test_only_access(resource_class, request.type_name, "resource")
+        resource_class = _registered_resource(request.type_name)
 
         resource_schema = resource_class.get_schema()
         identity_schema = resolve_identity_schema(resource_class)
@@ -116,9 +163,7 @@ async def _import_resource_state_impl(
             state=None,
             capabilities=provider_instance.metadata.capabilities if provider_instance else {},  # type: ignore[arg-type]
             test_mode_enabled=test_mode_enabled,
-            identity=(
-                unmarshal_identity(request.identity, identity_schema) if identity_schema is not None else None
-            ),
+            identity=_requested_identity(request, identity_schema),
         )
 
         imported = await import_state(resource_context, request.id)
@@ -150,32 +195,17 @@ async def _import_resource_state_impl(
             return response
 
         raw_state_dict = attrs_to_dict_for_cty(imported)
-        validator_type = resource_schema.block.to_cty_type()
-        state_cty = validator_type.validate(raw_state_dict)
-        marshalled = marshal(state_cty, schema=resource_schema.block)
-
-        imported_resource = pb.ImportResourceState.ImportedResource(
-            type_name=request.type_name,
-        )
-        imported_resource.state.msgpack = marshalled.msgpack
-        imported_resource.private = (
-            encrypt(msgpack.packb(attrs.asdict(imported_private), use_bin_type=True))
-            if imported_private is not None
-            else b""
-        )
-
-        # Terraform reads ImportedResource.identity and writes it to state, so a
-        # resource that declares an identity schema and is then imported without
-        # this arrives in state with an empty identity -- and every later plan
-        # sees a change it cannot explain.
-        if identity_schema is not None:
-            identity_values = derive_identity_values(
-                resource_class, imported, request.type_name, "import_resource_state"
+        response.imported_resources.append(
+            _build_imported_resource(
+                resource_class,
+                resource_schema,
+                identity_schema,
+                imported,
+                imported_private,
+                raw_state_dict,
+                request.type_name,
             )
-            if identity_values is not None:
-                imported_resource.identity.CopyFrom(marshal_identity(identity_values, identity_schema))
-
-        response.imported_resources.append(imported_resource)
+        )
 
         logger.info(
             "Resource imported successfully",

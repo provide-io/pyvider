@@ -196,31 +196,34 @@ ignore = [
     "S311",     # random (not for crypto)
     "S603",     # subprocess-without-shell-equals-true (trusted input)
     "S607",     # start-process-with-partial-path (trusted executables)
-    "PLR0911",  # too-many-return-statements (refactor later)
-    "PLR0912",  # too-many-branches (refactor later)
+    # A guard clause is a return. The refactor for #28 moved code toward them --
+    # `if not x: return` in place of a nested body -- so counting returns would
+    # push back against the shape the complexity ceiling was set to encourage.
+    "PLR0911",  # too-many-return-statements
     "PLR0913",  # too-many-arguments (common in config classes)
     "PLR0917",  # too-many-positional-arguments (same rationale as PLR0913)
-    "PLR0915",  # too-many-statements (refactor later)
     "PLR2004",  # magic-value-comparison (too noisy)
     "PLC0415",  # import-outside-top-level (deliberate: breaks hub import cycles and keeps CLI startup cheap)
     "PLW0603",  # global-statement (module-level singletons and caches, each guarded by a lock)
 ]
 
+# 8, not the default 10. Every function in src/ is under it (#28); the ceiling is
+# what keeps it that way. PLR0912 (branches) and PLR0915 (statements) are on at
+# ruff's defaults and clean, so they are not in the ignore list above.
+[tool.ruff.lint.mccabe]
+max-complexity = 8
+
 [tool.ruff.lint.per-file-ignores]
 # A test suite reaches into what it is testing (SLF001), is laid out as
 # directories rather than packages (INP001), and prints and sleeps and stats
 # without an event loop to protect (T201, ASYNC240, PERF401).
-"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ASYNC240", "B017", "C901", "E402", "INP001", "PERF401", "PGH003", "PLR0124", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117", "SLF001", "T201"]
+"tests/**" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ASYNC240", "B017", "C901", "E402", "INP001", "PERF401", "PGH003", "PLR0124", "PLR0915", "PLR1714", "S102", "S105", "S106", "S110", "S307", "S311", "S324", "S602", "SIM102", "SIM105", "SIM108", "SIM117", "SLF001", "T201"]
 # Snippets teach one idea each. The file examples would have to wrap every
 # read and stat in asyncio.to_thread to satisfy ASYNC240, which is a lesson
 # about thread pools rather than about the resource lifecycle they exist to show.
 "docs/snippets/**/*.py" = ["ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ASYNC240", "E402", "INP001"]
 # Developer and CI scripts are console programs; stdout is their interface.
 "scripts/**" = ["PERF401", "T201"]
-# Complex protocol handlers - inherently complex due to Terraform protocol requirements
-"src/pyvider/cli/launch_context_command.py" = ["C901"]
-"src/pyvider/protocols/tfprotov6/handlers/utils.py" = ["C901"]
-"src/pyvider/protocols/tfprotov6/handlers/read_data_source.py" = ["C901"]
 # SLF001 sees module-private access; these three reach into names their own
 # package owns, which is a distinction ruff cannot draw.
 "src/pyvider/cli/components_commands.py" = ["SLF001"]

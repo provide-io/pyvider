@@ -239,30 +239,39 @@ def _get_pspf_details() -> dict[str, Any]:
     return details
 
 
+def _module_from_main_path(argv0: str) -> str | None:
+    """Recover the package from a `python -m` argv[0], e.g. .../src/pyvider/__main__.py -> pyvider."""
+    path_parts = Path(argv0).parts
+    for i, part in enumerate(reversed(path_parts)):
+        if part != "__main__.py" or i + 1 >= len(path_parts):
+            continue
+        module_name = path_parts[-(i + 2)]  # the parent directory
+        if module_name != "src":  # a src layout puts the package one level further in
+            return module_name
+    return None
+
+
+def _module_from_dash_m() -> str | None:
+    """Read the module out of an explicit `-m <module>` in argv. Rare, but possible."""
+    if "-m" not in sys.argv:
+        return None
+    m_index = sys.argv.index("-m")
+    if m_index + 1 < len(sys.argv):
+        return sys.argv[m_index + 1]
+    return None
+
+
 def _get_module_name() -> str:
     """Get the module name being executed."""
-    # For python -m execution, the module name might not be in sys.argv
-    # but we can infer it from the path structure
-    if len(sys.argv) >= 1:
-        argv0 = sys.argv[0]
-        if "__main__.py" in argv0:
-            # Try to extract module name from path
-            # e.g., /path/to/pyvider/src/pyvider/__main__.py -> pyvider
-            path_parts = Path(argv0).parts
-            for i, part in enumerate(reversed(path_parts)):
-                if part == "__main__.py" and i + 1 < len(path_parts):
-                    module_name = path_parts[-(i + 2)]  # Get the parent directory
-                    if module_name != "src":  # Skip src directory
-                        return module_name
+    # For `python -m`, the module name is not in sys.argv, but the path shape gives it away.
+    if sys.argv and "__main__.py" in sys.argv[0]:
+        from_path = _module_from_main_path(sys.argv[0])
+        if from_path is not None:
+            return from_path
 
-    # Fallback: check if -m is explicitly in sys.argv (rare but possible)
-    if "-m" in sys.argv:
-        try:
-            m_index = sys.argv.index("-m")
-            if m_index + 1 < len(sys.argv):
-                return sys.argv[m_index + 1]
-        except (ValueError, IndexError):
-            pass
+    from_flag = _module_from_dash_m()
+    if from_flag is not None:
+        return from_flag
 
     return "pyvider"  # Default assumption
 

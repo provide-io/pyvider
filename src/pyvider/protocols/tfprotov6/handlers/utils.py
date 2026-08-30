@@ -268,6 +268,27 @@ def check_test_only_access(
     raise err
 
 
+def _can_cycle(instance: Any) -> bool:
+    """A primitive cannot take part in a cycle, so it is not worth tracking."""
+    return not isinstance(instance, str | int | float | bool | type(None))
+
+
+def _convert_payload(instance: Any, _visited: set[int]) -> Any:
+    """Convert one container by converting what it holds. Anything else passes through."""
+    if attrs.has(type(instance)):
+        return {
+            a.name: attrs_to_dict_for_cty(getattr(instance, a.name), _visited)
+            for a in attrs.fields(type(instance))
+        }
+    if isinstance(instance, tuple):
+        return tuple(attrs_to_dict_for_cty(item, _visited) for item in instance)
+    if isinstance(instance, list):
+        return [attrs_to_dict_for_cty(item, _visited) for item in instance]
+    if isinstance(instance, dict):
+        return {k: attrs_to_dict_for_cty(v, _visited) for k, v in instance.items()}
+    return instance
+
+
 def _process_instance(instance: Any, _visited: set[int]) -> Any:
     obj_id = id(instance)
     if obj_id in _visited:
@@ -275,25 +296,13 @@ def _process_instance(instance: Any, _visited: set[int]) -> Any:
             return {"__circular_ref__": type(instance).__name__}
         return f"<circular_ref:{type(instance).__name__}>"
 
-    if not isinstance(instance, str | int | float | bool | type(None)):
+    if _can_cycle(instance):
         _visited.add(obj_id)
 
     try:
-        if attrs.has(type(instance)):
-            res = {}
-            for a in attrs.fields(type(instance)):
-                value = getattr(instance, a.name)
-                res[a.name] = attrs_to_dict_for_cty(value, _visited)
-            return res
-        if isinstance(instance, tuple):
-            return tuple(attrs_to_dict_for_cty(item, _visited) for item in instance)
-        if isinstance(instance, list):
-            return [attrs_to_dict_for_cty(item, _visited) for item in instance]
-        if isinstance(instance, dict):
-            return {k: attrs_to_dict_for_cty(v, _visited) for k, v in instance.items()}
-        return instance
+        return _convert_payload(instance, _visited)
     finally:
-        if not isinstance(instance, str | int | float | bool | type(None)) and obj_id in _visited:
+        if _can_cycle(instance) and obj_id in _visited:
             _visited.remove(obj_id)
 
 
@@ -560,88 +569,104 @@ def cty_path_to_proto_path(cty_path: CtyPath | None) -> pb.AttributePath | None:
     return pb.AttributePath(steps=proto_steps)
 
 
+# Validation errors that name the cty type they failed on, and usually the value.
+_SPECIFIC_VALIDATION_ERRORS = (
+    CtyAttributeValidationError,
+    CtyListValidationError,
+    CtySetValidationError,
+    CtyTupleValidationError,
+    CtyMapValidationError,
+    CtyNumberValidationError,
+    CtyStringValidationError,
+    CtyBoolValidationError,
+)
+
+_DEFAULT_SUMMARY = "An unexpected error occurred"
+
+# What one exception becomes: summary, detail, and the attribute it happened at.
+_Diagnosis = tuple[str, str, "CtyPath | None"]
+
+
+def _diagnose_specific_validation(exc: Any) -> _Diagnosis:
+    """A typed validation failure. The message already carries the error kind."""
+    summary = exc.message if hasattr(exc, "message") else str(exc)
+    detail = f"Validation failed for a value of type '{exc.type_name}'."
+    if hasattr(exc, "value") and exc.value is not None:
+        value_repr = repr(exc.value)
+        if len(value_repr) > 100:
+            value_repr = value_repr[:97] + "..."
+        detail += f" The invalid value provided was {value_repr}."
+    return summary, detail, exc.path
+
+
+def _diagnose_validation(exc: CtyValidationError) -> _Diagnosis:
+    """A validation failure that does not name a type."""
+    summary = exc.message if hasattr(exc, "message") else str(exc)
+    return summary, "A configuration validation error occurred.", exc.path
+
+
+def _diagnose_foundation(exc: FoundationError) -> _Diagnosis:
+    """A foundation error carries a context dict, which may hold Terraform-facing text."""
+    context = exc.context
+    if not isinstance(context, dict):
+        return _DEFAULT_SUMMARY, str(exc), None
+
+    summary = context.get("terraform.summary", _DEFAULT_SUMMARY)
+
+    detail_parts = [str(exc)]
+    if "terraform.detail" in context:
+        detail_parts.append(context["terraform.detail"])
+    for key, value in context.items():
+        if not key.startswith("terraform.") and key != "private_state.error" and value:
+            detail_parts.append(f"{key}: {value}")
+
+    return summary, "\n".join(detail_parts), None
+
+
+def _diagnose_lifecycle_contract(exc: ResourceLifecycleContractError) -> _Diagnosis:
+    """A contract violation explains itself, and may attach the comparison that found it."""
+    detail = str(exc)
+    if hasattr(exc, "detail") and exc.detail:
+        detail += f"\n\nDetails:\n{exc.detail}"
+    return _DEFAULT_SUMMARY, detail, None
+
+
+def _diagnose_unhandled(exc: Exception) -> _Diagnosis:
+    """Anything else is a provider bug, and is reported as one."""
+    logger.error(
+        f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
+        exc_info=True,
+    )
+    return (
+        "Internal Provider Error",
+        (
+            "The provider encountered an unexpected error. This is likely a bug in the provider."
+            "\nPlease report this issue to the provider developers."
+        ),
+        None,
+    )
+
+
 async def create_diagnostic_from_exception(exc: Exception) -> pb.Diagnostic:
     """Create a Terraform diagnostic from an exception.
 
     Uses foundation's ErrorContext when available for richer diagnostics.
     """
-    summary = "An unexpected error occurred"
-    detail = str(exc)
-    attribute_path: CtyPath | None = None
-    severity = pb.Diagnostic.ERROR
-
-    # First handle specific CTY validation errors
-    specific_validation_errors = (
-        CtyAttributeValidationError,
-        CtyListValidationError,
-        CtySetValidationError,
-        CtyTupleValidationError,
-        CtyMapValidationError,
-        CtyNumberValidationError,
-        CtyStringValidationError,
-        CtyBoolValidationError,
-    )
-
-    if isinstance(exc, specific_validation_errors):
-        # Use the exception's message for the summary (it contains the prefixed error type)
-        summary = exc.message if hasattr(exc, "message") else str(exc)
-        detail = f"Validation failed for a value of type '{exc.type_name}'."
-        if hasattr(exc, "value") and exc.value is not None:
-            value_repr = repr(exc.value)
-            if len(value_repr) > 100:
-                value_repr = value_repr[:97] + "..."
-            detail += f" The invalid value provided was {value_repr}."
-        attribute_path = exc.path
+    if isinstance(exc, _SPECIFIC_VALIDATION_ERRORS):
+        summary, detail, attribute_path = _diagnose_specific_validation(exc)
     elif isinstance(exc, CtyValidationError):
-        # Use the exception's message for the summary
-        summary = exc.message if hasattr(exc, "message") else str(exc)
-        detail = "A configuration validation error occurred."
-        attribute_path = exc.path
-    # Check if this is a foundation error with context
+        summary, detail, attribute_path = _diagnose_validation(exc)
     elif isinstance(exc, FoundationError) and hasattr(exc, "context"):
-        # Use foundation's error context for richer diagnostics
-        context = exc.context
-
-        # Check for severity in context dict
-        if isinstance(context, dict):
-            # Default to ERROR severity
-            severity = pb.Diagnostic.ERROR
-
-            # Check for Terraform-specific metadata
-            if "terraform.summary" in context:
-                summary = context["terraform.summary"]
-
-            # Build detail including original message and terraform detail
-            detail_parts = [str(exc)]
-            if "terraform.detail" in context:
-                detail_parts.append(context["terraform.detail"])
-
-            # Add other context items
-            for key, value in context.items():
-                if not key.startswith("terraform.") and key != "private_state.error" and value:
-                    detail_parts.append(f"{key}: {value}")
-
-            detail = "\n".join(detail_parts) if detail_parts else str(exc)
-    # Handle other specific exception types
+        summary, detail, attribute_path = _diagnose_foundation(exc)
     elif isinstance(exc, ResourceLifecycleContractError):
-        detail = str(exc)
-        if hasattr(exc, "detail") and exc.detail:
-            detail += f"\n\nDetails:\n{exc.detail}"
-    elif isinstance(exc, (FunctionError, ResourceError | DataSourceError, PyviderError)):
-        detail = str(exc)
+        summary, detail, attribute_path = _diagnose_lifecycle_contract(exc)
+    elif isinstance(exc, FunctionError | ResourceError | DataSourceError | PyviderError):
+        summary, detail, attribute_path = _DEFAULT_SUMMARY, str(exc), None
     else:
-        summary = "Internal Provider Error"
-        detail = (
-            "The provider encountered an unexpected error. This is likely a bug in the provider."
-            "\nPlease report this issue to the provider developers."
-        )
-        logger.error(
-            f"Creating diagnostic for unhandled exception type: {type(exc).__name__}",
-            exc_info=True,
-        )
+        summary, detail, attribute_path = _diagnose_unhandled(exc)
 
     return pb.Diagnostic(
-        severity=severity,
+        severity=pb.Diagnostic.ERROR,
         summary=summary,
         detail=detail,
         attribute=cty_path_to_proto_path(attribute_path),

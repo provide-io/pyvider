@@ -32,6 +32,29 @@ PrivateStateType = TypeVar("PrivateStateType", bound=PrivateState)
 _UNREFINED_UNKNOWN_SENTINEL = CtyValue.unknown(CtyDynamic()).value
 
 
+def _copy_config_into_plan(
+    base_plan: dict[str, Any], cty_value_dict: dict[str, Any], write_only_attrs: set[str]
+) -> None:
+    """Fill in plan entries the resource left empty from the configuration.
+
+    The planned state wins wherever it said something. Nulls are skipped as
+    likely computed fields, write-only attributes never reach the plan at all,
+    and an unknown is left as a CtyValue so the handler can still see that it
+    is unknown.
+    """
+    for key, value in cty_value_dict.items():
+        if key in write_only_attrs:
+            continue
+        if key in base_plan and base_plan[key] is not None:
+            continue
+        if isinstance(value, CtyValue) and value.is_null:
+            continue
+        if isinstance(value, CtyValue) and not value.is_unknown:
+            base_plan[key] = cty_to_native(value)
+        else:
+            base_plan[key] = value
+
+
 class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
     """Base class for Terraform-managed resources.
 
@@ -422,22 +445,7 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         ):
             cty_value_dict = ctx.config_cty.value
             if isinstance(cty_value_dict, dict):
-                for key, value in cty_value_dict.items():
-                    # Skip write-only attributes entirely from config copy
-                    if key in write_only_attrs:
-                        continue
-
-                    # Only add if not already in base_plan (planned_state takes precedence)
-                    if key not in base_plan or base_plan[key] is None:
-                        # Skip null values - they're likely computed fields
-                        if isinstance(value, CtyValue) and value.is_null:
-                            continue
-                        # Convert known CtyValues to native Python values
-                        # Unknown CtyValues are preserved as-is for the handler to detect
-                        if isinstance(value, CtyValue) and not value.is_unknown:
-                            base_plan[key] = cty_to_native(value)
-                        else:
-                            base_plan[key] = value
+                _copy_config_into_plan(base_plan, cty_value_dict, write_only_attrs)
 
     async def plan(self, ctx: ResourceContext) -> tuple[dict[str, Any] | None, PrivateStateType | None]:
         validation_errors = await self.validate(ctx.config)

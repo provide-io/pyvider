@@ -256,6 +256,95 @@ async def CallFunctionHandler(request: pb.CallFunction.Request, context: Any) ->
     return await _call_function_impl(request, context)
 
 
+def _resolve_function(func_name: str) -> tuple[Any, Any]:
+    """Look up a registered function and get an instance of it.
+
+    Returns the registered class alongside the object to call, because the
+    metadata comes from the class and the invocation goes to the instance.
+    """
+    if not func_name:
+        logger.error(
+            "Function call attempted without function name",
+            operation="call_function",
+        )
+        raise PyviderFunctionError(
+            "Function name is required.\n\n"
+            "This is an internal error - Terraform should always provide a function name."
+        )
+
+    function_cls = hub.get_component("function", func_name)
+    if not function_cls:
+        registered = hub.get_components("function")
+        logger.error(
+            "Function not found",
+            operation="call_function",
+            function_name=func_name,
+            registered_functions=list(registered.keys()) if registered else [],
+        )
+        raise PyviderFunctionError(
+            f"Function '{func_name}' not found.\n\n"
+            f"Suggestion: Ensure the function is registered using the @function decorator "
+            f"and that component discovery has completed successfully.\n\n"
+            f"Troubleshooting:\n"
+            f"  1. Check that the function has the @function decorator\n"
+            f"  2. Verify the function module is imported by the provider\n"
+            f"  3. Run 'pyvider components list' to see registered functions\n"
+            f"  4. Review provider logs for component registration errors"
+        )
+
+    # Instantiate the function class if it's a class. inspect.isclass narrows to
+    # bare `type`, which drops the constructor signature the hub actually hands
+    # back, so the class branch is cast back to a callable factory.
+    function_obj: Any = (
+        cast("Callable[..., Any]", function_cls)(name=func_name)
+        if inspect.isclass(function_cls)
+        else function_cls
+    )
+
+    # Check if this is a test-only component accessed without test mode
+    check_test_only_access(function_obj, func_name, "function")
+    return function_cls, function_obj
+
+
+def _check_argument_count(func_name: str, num_required: int, num_provided: int, variadic_meta: Any) -> None:
+    """A variadic function needs at least its required arguments; any other needs exactly them."""
+    if variadic_meta:
+        if num_provided >= num_required:
+            return
+        logger.error(
+            "Function called with too few arguments (variadic)",
+            operation="call_function",
+            function_name=func_name,
+            required_count=num_required,
+            provided_count=num_provided,
+            has_variadic=True,
+        )
+        raise PyviderFunctionError(
+            f"Incorrect number of arguments for function '{func_name}'.\n\n"
+            f"Expected: at least {num_required} arguments (function accepts variadic arguments)\n"
+            f"Received: {num_provided} arguments\n\n"
+            f"Suggestion: Provide at least {num_required} arguments. This function accepts "
+            f"additional variadic arguments beyond the required ones."
+        )
+
+    if num_provided == num_required:
+        return
+    logger.error(
+        "Function called with wrong number of arguments",
+        operation="call_function",
+        function_name=func_name,
+        required_count=num_required,
+        provided_count=num_provided,
+        has_variadic=False,
+    )
+    raise PyviderFunctionError(
+        f"Incorrect number of arguments for function '{func_name}'.\n\n"
+        f"Expected: {num_required} arguments\n"
+        f"Received: {num_provided} arguments\n\n"
+        f"Suggestion: Provide exactly {num_required} arguments to this function."
+    )
+
+
 async def _call_function_impl(request: pb.CallFunction.Request, context: Any) -> pb.CallFunction.Response:
     """Implementation of CallFunction handler."""
     logger.debug(
@@ -268,50 +357,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
     response = pb.CallFunction.Response()
     try:
         func_name = request.name
-        if not func_name:
-            logger.error(
-                "Function call attempted without function name",
-                operation="call_function",
-            )
-            raise PyviderFunctionError(
-                "Function name is required.\n\n"
-                "This is an internal error - Terraform should always provide a function name."
-            )
-
-        function_cls = hub.get_component("function", func_name)
-        if not function_cls:
-            logger.error(
-                "Function not found",
-                operation="call_function",
-                function_name=func_name,
-                registered_functions=list(hub.get_components("function").keys())
-                if hub.get_components("function")
-                else [],
-            )
-
-            raise PyviderFunctionError(
-                f"Function '{func_name}' not found.\n\n"
-                f"Suggestion: Ensure the function is registered using the @function decorator "
-                f"and that component discovery has completed successfully.\n\n"
-                f"Troubleshooting:\n"
-                f"  1. Check that the function has the @function decorator\n"
-                f"  2. Verify the function module is imported by the provider\n"
-                f"  3. Run 'pyvider components list' to see registered functions\n"
-                f"  4. Review provider logs for component registration errors"
-            )
-
-        # Instantiate the function class if it's a class. inspect.isclass narrows to
-        # bare `type`, which drops the constructor signature the hub actually hands
-        # back, so the class branch is cast back to a callable factory.
-        function_obj: Any = (
-            cast("Callable[..., Any]", function_cls)(name=func_name)
-            if inspect.isclass(function_cls)
-            else function_cls
-        )
-
-        # Check if this is a test-only component accessed without test mode
-        check_test_only_access(function_obj, func_name, "function")
-
+        function_cls, function_obj = _resolve_function(func_name)
         func_meta = function_to_dict(function_cls)
         params_meta = func_meta.get("parameters", [])
         variadic_meta = func_meta.get("variadic_parameter")  # Optional variadic parameter
@@ -321,46 +367,7 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
         else:
             func_sig = inspect.signature(function_obj)
 
-        # Validate argument count
-        # - Without variadic: must match exactly
-        # - With variadic: must have at least the required parameters
-        num_required = len(params_meta)
-        num_provided = len(request.arguments)
-
-        if variadic_meta:
-            # With variadic parameter, we need AT LEAST the required parameters
-            if num_provided < num_required:
-                logger.error(
-                    "Function called with too few arguments (variadic)",
-                    operation="call_function",
-                    function_name=func_name,
-                    required_count=num_required,
-                    provided_count=num_provided,
-                    has_variadic=True,
-                )
-                raise PyviderFunctionError(
-                    f"Incorrect number of arguments for function '{func_name}'.\n\n"
-                    f"Expected: at least {num_required} arguments (function accepts variadic arguments)\n"
-                    f"Received: {num_provided} arguments\n\n"
-                    f"Suggestion: Provide at least {num_required} arguments. This function accepts "
-                    f"additional variadic arguments beyond the required ones."
-                )
-        # Without variadic parameter, must match exactly
-        elif num_provided != num_required:
-            logger.error(
-                "Function called with wrong number of arguments",
-                operation="call_function",
-                function_name=func_name,
-                required_count=num_required,
-                provided_count=num_provided,
-                has_variadic=False,
-            )
-            raise PyviderFunctionError(
-                f"Incorrect number of arguments for function '{func_name}'.\n\n"
-                f"Expected: {num_required} arguments\n"
-                f"Received: {num_provided} arguments\n\n"
-                f"Suggestion: Provide exactly {num_required} arguments to this function."
-            )
+        _check_argument_count(func_name, len(params_meta), len(request.arguments), variadic_meta)
 
         native_kwargs, has_unknown = _process_function_arguments(
             list(request.arguments), params_meta, variadic_meta, func_sig, func_name

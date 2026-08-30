@@ -72,21 +72,65 @@ async def _instantiate_providers(logger: Any, hub: Any) -> dict:
     return provider_instances
 
 
-async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
-    """
-    Initializes and runs the provider in server mode. This function contains
-    all imports for the server machinery to prevent them from running during
-    standard CLI mode, ensuring a clean and fast CLI experience.
-    """
-    # --- Deferred Imports for Provider Mode ---
-    from attrs import define, field
-    from provide.foundation import logger
+def _report_detection_error(script_name: str, magic_cookie: str) -> None:
+    """Explain a binary name Terraform will not accept, and exit non-zero.
 
-    from pyvider.common.config import PyviderConfig
-    from pyvider.handler import ProviderHandler
-    from pyvider.hub import hub
+    Terraform sets the magic cookie for any plugin it launches, but go-plugin
+    resolves the provider by a binary named `terraform-provider-*`. A mismatch
+    means the practitioner is one rename away from a working provider, so say
+    exactly that rather than failing the handshake with nothing.
+    """
+    pout("\n" + "─" * 70, fg="red")
+    pout(" ❌  Provider Detection Error", fg="red", bold=True)
+    pout("─" * 70, fg="red")
+    pout(
+        "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
+        f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
+        fg="yellow",
+    )
+    pout(
+        "\nThis usually happens when:",
+        fg="white",
+    )
+    pout(
+        "  1. The provider binary was renamed or symlinked incorrectly",
+        fg="white",
+    )
+    pout(
+        "  2. The PSPF package was built with an incorrect command configuration",
+        fg="white",
+    )
+    pout("\nTo fix this:", fg="cyan", bold=True)
+    pout(
+        f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
+        fg="cyan",
+    )
+    pout(
+        "  • Check the [tool.flavor] configuration in pyproject.toml",
+        fg="cyan",
+    )
+    pout(
+        "  • Rebuild the package with the correct command path",
+        fg="cyan",
+    )
+    pout("─" * 70, fg="red")
+    pout("\nDebug Info:", fg="white", dim=True)
+    pout(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
+    pout(f"  script_name: {script_name}", fg="white", dim=True)
+    pout(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
+    sys.exit(1)
+
+
+def _build_protocol() -> Any:
+    """The RPC protocol object the plugin server speaks.
+
+    Its imports are deferred with the rest of the server machinery: a plain CLI
+    invocation must not pay for loading protobuf and grpc.
+    """
+    from attrs import define, field
+
     import pyvider.protocols.tfprotov6.protobuf as pb
-    from pyvider.rpcplugin import RPCPluginProtocol, RPCPluginServer
+    from pyvider.rpcplugin import RPCPluginProtocol
 
     @define
     class PyviderProtocol(RPCPluginProtocol):
@@ -108,6 +152,132 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         async def add_to_server(self, server: Any, handler: Any) -> None:
             pb.add_ProviderServicer_to_server(handler, server)  # type: ignore[no-untyped-call]
+
+    return PyviderProtocol()
+
+
+async def _discover_and_signal(logger: Any, hub: Any, ready_event: asyncio.Event) -> None:
+    """Run component discovery and signal when it is done, however it ends.
+
+    The event is set in `finally` deliberately: a failed discovery must still
+    release everything waiting on it, or the server hangs instead of serving a
+    provider with no components.
+    """
+    try:
+        from pyvider.hub.discovery import ComponentDiscovery
+
+        discovery = ComponentDiscovery(hub)
+        await discovery.discover_all()
+        logger.debug(
+            "Discovery complete, signaling ready event",
+            operation="component_discovery",
+        )
+    except Exception:
+        logger.exception(
+            "Component discovery failed",
+            operation="component_discovery",
+        )
+    finally:
+        ready_event.set()
+
+
+async def _initialize_and_register_provider(logger: Any, hub: Any, discovery_task: Any) -> None:
+    """Instantiate the provider once discovery has finished, and publish it."""
+    logger.debug(
+        "Waiting for component discovery before provider instantiation",
+        operation="provider_init",
+    )
+    await discovery_task
+    logger.debug(
+        "Component discovery completed, now instantiating providers",
+        operation="provider_init",
+    )
+    provider_instances = await _instantiate_providers(logger, hub)
+    primary_provider = next(iter(provider_instances.values()))
+    logger.debug(
+        "Primary provider instantiated",
+        operation="provider_init",
+        provider=next(iter(provider_instances.keys())),
+    )
+    hub.register("singleton", "provider", primary_provider)
+    logger.debug(
+        "Primary provider registered in hub",
+        operation="hub_register",
+        provider=next(iter(provider_instances.keys())),
+    )
+
+
+def _report_server_crash(e: Exception) -> None:
+    """Explain a failed server start on stderr and exit non-zero.
+
+    Terraform shows the practitioner very little of what a plugin prints, so
+    this says everything it can while it still has a terminal to say it on.
+    """
+    import logging
+
+    logging.basicConfig()
+    local_logger = logging.getLogger("pyvider.critical")
+    local_logger.error(
+        "Provider server failed to start or crashed",
+        exc_info=e,
+        extra={
+            "error_type": type(e).__name__,
+            "error_message": str(e),
+            "python_version": sys.version,
+            "platform": sys.platform,
+        },
+    )
+
+    pout("\n" + "═" * 70, fg="red", err=True)
+    pout(" ❌  Provider Server Error", fg="red", bold=True, err=True)
+    pout("═" * 70, fg="red", err=True)
+    pout(
+        "\nThe provider server failed to start or crashed unexpectedly.\n",
+        fg="white",
+        err=True,
+    )
+    pout(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
+    pout(f"Error Message: {e!s}\n", fg="yellow", err=True)
+
+    pout("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
+    pout("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
+    pout("  2. Verify all dependencies are installed: 'uv sync'", fg="white", err=True)
+    pout("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
+    pout("  4. Review the full error trace above for specific details", fg="white", err=True)
+    pout("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
+
+    pout("\nCommon Causes:", fg="cyan", bold=True, err=True)
+    pout("  • Missing or incompatible dependencies", fg="white", err=True)
+    pout("  • Invalid provider configuration", fg="white", err=True)
+    pout("  • Port already in use (if binding to specific port)", fg="white", err=True)
+    pout("  • Insufficient permissions", fg="white", err=True)
+    pout("  • Corrupted provider binary or package", fg="white", err=True)
+
+    pout("\nIf the issue persists:", fg="cyan", bold=True, err=True)
+    pout("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
+    pout(
+        f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}",
+        fg="white",
+        err=True,
+    )
+    pout("═" * 70, fg="red", err=True)
+
+    sys.exit(1)
+
+
+async def _run_provider_server(magic_cookie: str) -> None:
+    """
+    Initializes and runs the provider in server mode. This function contains
+    all imports for the server machinery to prevent them from running during
+    standard CLI mode, ensuring a clean and fast CLI experience.
+    """
+    # --- Deferred Imports for Provider Mode ---
+    from provide.foundation import logger
+
+    from pyvider.common.config import PyviderConfig
+    from pyvider.handler import ProviderHandler
+    from pyvider.hub import hub
+    from pyvider.rpcplugin import RPCPluginServer
 
     try:
         logger.info(
@@ -145,56 +315,10 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             operation="component_discovery",
         )
 
-        async def discover_and_signal() -> None:
-            """Run discovery and signal when it's complete."""
-            try:
-                from pyvider.hub.discovery import ComponentDiscovery
-
-                discovery = ComponentDiscovery(hub)
-                await discovery.discover_all()
-                logger.debug(
-                    "Discovery complete, signaling ready event",
-                    operation="component_discovery",
-                )
-            except Exception:
-                logger.error(
-                    "Component discovery failed",
-                    operation="component_discovery",
-                    exc_info=True,
-                )
-            finally:
-                discovery_ready_event.set()
-
-        discovery_task = asyncio.create_task(discover_and_signal())
-
-        # Create a coroutine for provider initialization (don't schedule yet)
-        async def initialize_and_register_provider() -> None:
-            """Initialize and register provider after discovery."""
-            logger.debug(
-                "Waiting for component discovery before provider instantiation",
-                operation="provider_init",
-            )
-            await discovery_task
-            logger.debug(
-                "Component discovery completed, now instantiating providers",
-                operation="provider_init",
-            )
-            provider_instances = await _instantiate_providers(logger, hub)
-            primary_provider = next(iter(provider_instances.values()))
-            logger.debug(
-                "Primary provider instantiated",
-                operation="provider_init",
-                provider=next(iter(provider_instances.keys())),
-            )
-            hub.register("singleton", "provider", primary_provider)
-            logger.debug(
-                "Primary provider registered in hub",
-                operation="hub_register",
-                provider=next(iter(provider_instances.keys())),
-            )
+        discovery_task = asyncio.create_task(_discover_and_signal(logger, hub, discovery_ready_event))
 
         # Create protocol immediately (doesn't need discovery or providers)
-        protocol = PyviderProtocol()
+        protocol = _build_protocol()
 
         # Create handler without a provider - it will fetch from hub on first use
         logger.debug(
@@ -223,7 +347,7 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
 
         # Schedule provider initialization to run in background immediately
         # Server will start listening while provider initializes
-        background_init = asyncio.create_task(initialize_and_register_provider())
+        background_init = asyncio.create_task(_initialize_and_register_provider(logger, hub, discovery_task))
 
         # Yield control to let background tasks start before blocking on server.serve()
         # This ensures provider initialization begins before the RPC server starts blocking
@@ -258,56 +382,7 @@ async def _run_provider_server(magic_cookie: str) -> None:  # noqa: C901
             domain="system",
         )
     except Exception as e:
-        import logging
-
-        logging.basicConfig()
-        local_logger = logging.getLogger("pyvider.critical")
-        local_logger.exception(
-            "Provider server failed to start or crashed",
-            extra={
-                "error_type": type(e).__name__,
-                "error_message": str(e),
-                "python_version": sys.version,
-                "platform": sys.platform,
-            },
-        )
-
-        # Enhanced error message for users
-        pout("\n" + "═" * 70, fg="red", err=True)
-        pout(" ❌  Provider Server Error", fg="red", bold=True, err=True)
-        pout("═" * 70, fg="red", err=True)
-        pout(
-            "\nThe provider server failed to start or crashed unexpectedly.\n",
-            fg="white",
-            err=True,
-        )
-        pout(f"Error Type: {type(e).__name__}", fg="yellow", err=True)
-        pout(f"Error Message: {e!s}\n", fg="yellow", err=True)
-
-        pout("Troubleshooting Steps:", fg="cyan", bold=True, err=True)
-        pout("  1. Check Python version compatibility (requires Python 3.11+)", fg="white", err=True)
-        pout("  2. Verify all dependencies are installed: 'uv sync'", fg="white", err=True)
-        pout("  3. Check provider configuration in pyproject.toml", fg="white", err=True)
-        pout("  4. Review the full error trace above for specific details", fg="white", err=True)
-        pout("  5. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG", fg="white", err=True)
-
-        pout("\nCommon Causes:", fg="cyan", bold=True, err=True)
-        pout("  • Missing or incompatible dependencies", fg="white", err=True)
-        pout("  • Invalid provider configuration", fg="white", err=True)
-        pout("  • Port already in use (if binding to specific port)", fg="white", err=True)
-        pout("  • Insufficient permissions", fg="white", err=True)
-        pout("  • Corrupted provider binary or package", fg="white", err=True)
-
-        pout("\nIf the issue persists:", fg="cyan", bold=True, err=True)
-        pout("  • Report at: https://github.com/provide-io/pyvider/issues", fg="white", err=True)
-        pout(
-            f"  • Include: Error type, Python {sys.version.split()[0]}, Platform {sys.platform}",
-            fg="white",
-            err=True,
-        )
-        pout("═" * 70, fg="red", err=True)
-
-        sys.exit(1)
+        _report_server_crash(e)
 
 
 @cli.command("provide")
@@ -344,45 +419,7 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
         and "terraform-provider" not in script_name.lower()
         and "terraform-provider" not in sys.argv[0].lower()
     ):
-        pout("\n" + "─" * 70, fg="red")
-        pout(" ❌  Provider Detection Error", fg="red", bold=True)
-        pout("─" * 70, fg="red")
-        pout(
-            "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
-            f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
-            fg="yellow",
-        )
-        pout(
-            "\nThis usually happens when:",
-            fg="white",
-        )
-        pout(
-            "  1. The provider binary was renamed or symlinked incorrectly",
-            fg="white",
-        )
-        pout(
-            "  2. The PSPF package was built with an incorrect command configuration",
-            fg="white",
-        )
-        pout("\nTo fix this:", fg="cyan", bold=True)
-        pout(
-            f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
-            fg="cyan",
-        )
-        pout(
-            "  • Check the [tool.flavor] configuration in pyproject.toml",
-            fg="cyan",
-        )
-        pout(
-            "  • Rebuild the package with the correct command path",
-            fg="cyan",
-        )
-        pout("─" * 70, fg="red")
-        pout("\nDebug Info:", fg="white", dim=True)
-        pout(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
-        pout(f"  script_name: {script_name}", fg="white", dim=True)
-        pout(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
-        sys.exit(1)
+        _report_detection_error(script_name, magic_cookie)
 
     if not magic_cookie and not force:
         # Show launch context in interactive mode

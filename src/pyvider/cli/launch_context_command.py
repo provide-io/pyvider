@@ -6,12 +6,92 @@
 """CLI command for inspecting Pyvider launch context."""
 
 import json
+from typing import Any
 
 import click
 from provide.foundation.console import pout
 
 from pyvider.cli.main import cli
-from pyvider.common.launch_context import LaunchMethod
+from pyvider.common.launch_context import LaunchContext, LaunchMethod
+
+
+def _emit_json(launch_context: LaunchContext, verbose: bool) -> None:
+    """Render the context as JSON, which is what scripts consume."""
+    data: dict[str, Any] = {
+        "method": launch_context.method.value,
+        "executable_path": launch_context.executable_path,
+        "python_executable": launch_context.python_executable,
+        "working_directory": launch_context.working_directory,
+        "is_terraform_invoked": launch_context.is_terraform_invoked,
+        "details": launch_context.details,
+    }
+    if verbose:
+        data["environment_info"] = launch_context.environment_info
+    click.echo(json.dumps(data, indent=2))
+
+
+def _emit_summary(launch_context: LaunchContext) -> None:
+    """The five fields every launch has."""
+    pout("\n🚀 Pyvider Launch Context", fg="green", bold=True)
+    pout("─" * 50, fg="green")
+
+    pout("\nLaunch Method: ", fg="cyan", bold=True, nl=False)
+    pout(launch_context.method.value, fg="white")
+
+    pout("Executable Path: ", fg="cyan", bold=True, nl=False)
+    pout(launch_context.executable_path, fg="white")
+
+    pout("Python Executable: ", fg="cyan", bold=True, nl=False)
+    pout(launch_context.python_executable, fg="white")
+
+    pout("Working Directory: ", fg="cyan", bold=True, nl=False)
+    pout(launch_context.working_directory, fg="white")
+
+    pout("Terraform Invoked: ", fg="cyan", bold=True, nl=False)
+    color = "green" if launch_context.is_terraform_invoked else "red"
+    pout(str(launch_context.is_terraform_invoked), fg=color)
+
+
+def _emit_details(details: dict[str, Any]) -> None:
+    """The method-specific fields, with anything long collapsed."""
+    if not details:
+        return
+    pout("\nMethod Details:", fg="cyan", bold=True)
+    for key, value in details.items():
+        pout(f"  {key}: ", fg="cyan", nl=False)
+        if isinstance(value, list | dict) and len(str(value)) > 80:
+            pout("<complex_value>", fg="yellow")
+        else:
+            pout(str(value), fg="white")
+
+
+def _emit_environment(env_info: dict[str, Any]) -> None:
+    """The --verbose section: argv, PSPF variables, then everything else."""
+    pout("\nEnvironment Information:", fg="cyan", bold=True)
+    for key, value in env_info.items():
+        if key == "argv":
+            pout(f"  {key}: ", fg="cyan", nl=False)
+            pout(" ".join(value), fg="white")
+        elif key == "pspf_env_vars" and value:
+            pout("  PSPF Environment Variables:", fg="cyan")
+            for env_key, env_value in value.items():
+                pout(f"    {env_key}: {env_value}", fg="white")
+        else:
+            pout(f"  {key}: ", fg="cyan", nl=False)
+            if isinstance(value, str) and len(value) > 100:
+                pout(f"{value[:100]}...", fg="white")
+            else:
+                pout(str(value), fg="white")
+
+
+def _emit_human(launch_context: LaunchContext, verbose: bool) -> None:
+    """Render the context for a person reading a terminal."""
+    _emit_summary(launch_context)
+    _emit_details(launch_context.details)
+    if verbose:
+        _emit_environment(launch_context.environment_info)
+    pout("\n" + "─" * 50, fg="green")
+    _show_method_specific_help(launch_context.method)
 
 
 @cli.command("launch-context")
@@ -42,81 +122,9 @@ def launch_context_cmd(output_format: str, verbose: bool) -> None:
     launch_context = detect_launch_context()
 
     if output_format.lower() == "json":
-        # Convert to JSON-serializable format
-        data = {
-            "method": launch_context.method.value,
-            "executable_path": launch_context.executable_path,
-            "python_executable": launch_context.python_executable,
-            "working_directory": launch_context.working_directory,
-            "is_terraform_invoked": launch_context.is_terraform_invoked,
-            "details": launch_context.details,
-        }
-
-        if verbose:
-            data["environment_info"] = launch_context.environment_info
-
-        click.echo(json.dumps(data, indent=2))
-
+        _emit_json(launch_context, verbose)
     else:
-        # Human-readable format
-        pout("\n🚀 Pyvider Launch Context", fg="green", bold=True)
-        pout("─" * 50, fg="green")
-
-        pout("\nLaunch Method: ", fg="cyan", bold=True, nl=False)
-        pout(launch_context.method.value, fg="white")
-
-        pout("Executable Path: ", fg="cyan", bold=True, nl=False)
-        pout(launch_context.executable_path, fg="white")
-
-        pout("Python Executable: ", fg="cyan", bold=True, nl=False)
-        pout(launch_context.python_executable, fg="white")
-
-        pout("Working Directory: ", fg="cyan", bold=True, nl=False)
-        pout(launch_context.working_directory, fg="white")
-
-        pout("Terraform Invoked: ", fg="cyan", bold=True, nl=False)
-        color = "green" if launch_context.is_terraform_invoked else "red"
-        pout(str(launch_context.is_terraform_invoked), fg=color)
-
-        # Show method-specific details
-        if launch_context.details:
-            pout("\nMethod Details:", fg="cyan", bold=True)
-            for key, value in launch_context.details.items():
-                pout(f"  {key}: ", fg="cyan", nl=False)
-
-                # Format complex values
-                if isinstance(value, (list, dict)):
-                    if len(str(value)) > 80:
-                        pout("<complex_value>", fg="yellow")
-                    else:
-                        pout(str(value), fg="white")
-                else:
-                    pout(str(value), fg="white")
-
-        # Show environment info if verbose
-        if verbose:
-            pout("\nEnvironment Information:", fg="cyan", bold=True)
-            env_info = launch_context.environment_info
-
-            for key, value in env_info.items():
-                if key == "argv":
-                    pout(f"  {key}: ", fg="cyan", nl=False)
-                    pout(" ".join(value), fg="white")
-                elif key == "pspf_env_vars" and value:
-                    pout("  PSPF Environment Variables:", fg="cyan")
-                    for env_key, env_value in value.items():
-                        pout(f"    {env_key}: {env_value}", fg="white")
-                else:
-                    pout(f"  {key}: ", fg="cyan", nl=False)
-                    if isinstance(value, str) and len(value) > 100:
-                        pout(f"{value[:100]}...", fg="white")
-                    else:
-                        pout(str(value), fg="white")
-
-        pout("\n" + "─" * 50, fg="green")
-
-        # Add helpful information based on launch method
-        _show_method_specific_help(launch_context.method)
+        _emit_human(launch_context, verbose)
 
 
 def _show_method_specific_help(method: LaunchMethod) -> None:

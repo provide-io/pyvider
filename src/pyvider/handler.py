@@ -89,6 +89,40 @@ def _error_response(method: str, summary: str, detail: str) -> Any | None:
     return response_class()
 
 
+def _write_state_error(summary: str, detail: str) -> pb.WriteStateBytes.Response:
+    """Every WriteStateBytes failure is one ERROR diagnostic and no write."""
+    return pb.WriteStateBytes.Response(
+        diagnostics=[pb.Diagnostic(severity=pb.Diagnostic.ERROR, summary=summary, detail=detail)]
+    )
+
+
+async def _drain_state_stream(request_iterator: AsyncIterator[Any]) -> tuple[str, str, bytes, int]:
+    """Read the client stream to its end, returning type name, state id, state and declared length.
+
+    The stream is always drained, even when the metadata turns out to be
+    missing: leaving a client-stream call unread hangs it.
+    """
+    state_chunks = bytearray()
+    state_store_type = ""
+    state_id = ""
+    expected_total_length = 0
+
+    async for request_chunk in request_iterator:
+        # Presence, not truthiness: an unset submessage is still a truthy
+        # object, and Core sends meta on the first chunk only. Reading it
+        # unconditionally would blank the type name and state id on every
+        # later chunk of a multi-chunk write.
+        if request_chunk.HasField("meta"):
+            state_store_type = request_chunk.meta.type_name
+            state_id = request_chunk.meta.state_id
+        if request_chunk.bytes:
+            state_chunks.extend(request_chunk.bytes)
+        if request_chunk.total_length:
+            expected_total_length = request_chunk.total_length
+
+    return state_store_type, state_id, bytes(state_chunks), expected_total_length
+
+
 @define
 class ProviderHandler(ProviderServicer):
     """Handler for provider operations that delegates to individual operation handlers.
@@ -478,36 +512,15 @@ class ProviderHandler(ProviderServicer):
         handler_requests.inc(handler="WriteStateBytes")
         # Drain the stream to preserve protocol semantics and avoid hanging client-stream calls.
         try:
-            state_chunks = bytearray()
-            state_store_type = ""
-            state_id = ""
-            expected_total_length = 0
-
-            async for request_chunk in request_iterator:
-                # Presence, not truthiness: an unset submessage is still a
-                # truthy object, and Core sends meta on the first chunk only.
-                # Reading it unconditionally would blank the type name and
-                # state id on every later chunk of a multi-chunk write.
-                if request_chunk.HasField("meta"):
-                    state_store_type = request_chunk.meta.type_name
-                    state_id = request_chunk.meta.state_id
-                if request_chunk.bytes:
-                    state_chunks.extend(request_chunk.bytes)
-                if request_chunk.total_length:
-                    expected_total_length = request_chunk.total_length
+            state_store_type, state_id, state, expected_total_length = await _drain_state_stream(
+                request_iterator
+            )
 
             if not state_store_type or not state_id:
-                return pb.WriteStateBytes.Response(
-                    diagnostics=[
-                        pb.Diagnostic(
-                            severity=pb.Diagnostic.ERROR,
-                            summary="WriteStateBytes requires request metadata",
-                            detail="RequestChunk.meta must include type_name and state_id.",
-                        )
-                    ]
+                return _write_state_error(
+                    "WriteStateBytes requires request metadata",
+                    "RequestChunk.meta must include type_name and state_id.",
                 )
-
-            state = bytes(state_chunks)
 
             # Checked before the write, and that order is the whole point. A
             # stream that ends short of its declared total_length -- an aborted
@@ -525,18 +538,11 @@ class ProviderHandler(ProviderServicer):
                     declared_length=expected_total_length,
                     received_length=len(state),
                 )
-                return pb.WriteStateBytes.Response(
-                    diagnostics=[
-                        pb.Diagnostic(
-                            severity=pb.Diagnostic.ERROR,
-                            summary="WriteStateBytes received a truncated stream",
-                            detail=(
-                                f"The stream declared {expected_total_length} bytes and delivered "
-                                f"{len(state)}. Nothing was written: storing a partial state would "
-                                "destroy the state already stored."
-                            ),
-                        )
-                    ]
+                return _write_state_error(
+                    "WriteStateBytes received a truncated stream",
+                    f"The stream declared {expected_total_length} bytes and delivered "
+                    f"{len(state)}. Nothing was written: storing a partial state would "
+                    "destroy the state already stored.",
                 )
 
             try:
@@ -550,15 +556,7 @@ class ProviderHandler(ProviderServicer):
                     state_id=state_id,
                     error_message=str(exc),
                 )
-                return pb.WriteStateBytes.Response(
-                    diagnostics=[
-                        pb.Diagnostic(
-                            severity=pb.Diagnostic.ERROR,
-                            summary="WriteStateBytes could not persist state",
-                            detail=str(exc),
-                        )
-                    ]
-                )
+                return _write_state_error("WriteStateBytes could not persist state", str(exc))
 
             return pb.WriteStateBytes.Response(
                 diagnostics=[],

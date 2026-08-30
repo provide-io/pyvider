@@ -21,29 +21,25 @@ from pyvider.cty import (
 )
 from pyvider.schema.types import PvsAttribute
 
+# Ordered, because the first match wins. Primitives, then collections, then the
+# complex and dynamic types that carry no useful Python hint of their own.
+_PYTHON_TYPE_HINTS: tuple[tuple[Any, Any], ...] = (
+    (CtyString, str | None),
+    (CtyNumber, int | float | None),
+    (CtyBool, bool | None),
+    (CtyList, list | None),
+    (CtyMap, dict | None),
+    (CtySet, set | None),
+    (CtyTuple, tuple | None),
+    (CtyObject | CtyDynamic, dict | Any | None),
+)
+
 
 def _pvs_type_to_python_type(pvs_type: PvsAttribute) -> Any:
     """Maps a CtyType from a PvsAttribute to a Python type hint."""
-    cty_type = pvs_type.type
-    # Primitives
-    if isinstance(cty_type, CtyString):
-        return str | None
-    if isinstance(cty_type, CtyNumber):
-        return int | float | None
-    if isinstance(cty_type, CtyBool):
-        return bool | None
-    # Collections
-    if isinstance(cty_type, CtyList):
-        return list | None
-    if isinstance(cty_type, CtyMap):
-        return dict | None
-    if isinstance(cty_type, CtySet):
-        return set | None
-    if isinstance(cty_type, CtyTuple):
-        return tuple | None
-    # Complex/Dynamic
-    if isinstance(cty_type, CtyObject | CtyDynamic):
-        return dict | Any | None
+    for cty_class, hint in _PYTHON_TYPE_HINTS:
+        if isinstance(pvs_type.type, cty_class):
+            return hint
     return Any | None
 
 

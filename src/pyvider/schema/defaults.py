@@ -279,20 +279,19 @@ def _set_elements_match(plan_value: Any, config_value: Any, block: PvsObjectType
         configured = config_value.value.get(name)
         if attribute.write_only or not _is_resolvable(configured):
             continue
-
-        planned = plan_value.get(name)
-        if attribute.default is not None:
-            if not _defaulted_attribute_matches(planned, configured, attribute):
-                return False
-            continue
-
-        if attribute.object_type is not None:
-            if not _set_elements_match(planned, configured, attribute.object_type):
-                return False
-        elif planned != cty_to_native(configured):
+        if not _attribute_matches(plan_value.get(name), configured, attribute):
             return False
 
     return True
+
+
+def _attribute_matches(planned: Any, configured: Any, attribute: PvsAttribute) -> bool:
+    """Whether one attribute of a set element agrees with the configuration it may pair with."""
+    if attribute.default is not None:
+        return _defaulted_attribute_matches(planned, configured, attribute)
+    if attribute.object_type is not None:
+        return _set_elements_match(planned, configured, attribute.object_type)
+    return bool(planned == cty_to_native(configured))
 
 
 def _defaulted_attribute_matches(planned: Any, configured: Any, attribute: PvsAttribute) -> bool:

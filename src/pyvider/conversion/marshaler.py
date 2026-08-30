@@ -48,6 +48,26 @@ def _finalize_container(
     return container_val
 
 
+def _rebuild_container(container_val: CtyValue, results: dict[int, CtyValue]) -> CtyValue:
+    """Reassemble a container from whatever its children turned into.
+
+    Called once every child of `container_val` has a result, so each lookup
+    either finds the processed child or falls back to the child unchanged.
+    """
+    new_inner_value: dict[str, CtyValue] = {}
+    made_change = False
+
+    if isinstance(container_val.value, dict):
+        for key, child_val in container_val.value.items():
+            processed_child = results.get(id(child_val), child_val)
+            new_inner_value[cast(str, key)] = cast(CtyValue, processed_child)
+
+            if processed_child is not child_val or processed_child.marks:
+                made_change = True
+
+    return _finalize_container(container_val, new_inner_value, made_change)
+
+
 def _apply_schema_marks_iterative(root_value: CtyValue, root_schema: PvsType | CtyType) -> CtyValue:
     """
     A dedicated, iterative function to apply marks from a schema to an
@@ -68,20 +88,7 @@ def _apply_schema_marks_iterative(root_value: CtyValue, root_schema: PvsType | C
             container_val, _ = work_stack.pop()
             container_id = id(container_val)
             processing.remove(container_id)
-
-            new_inner_value: dict[str, CtyValue] = {}
-            made_change = False
-
-            if isinstance(container_val.value, dict):
-                for key, child_val in container_val.value.items():
-                    processed_child = results.get(id(child_val), child_val)
-                    new_inner_value[cast(str, key)] = cast(CtyValue, processed_child)
-
-                    if processed_child is not child_val or processed_child.marks:
-                        made_change = True
-
-            final_container = _finalize_container(container_val, new_inner_value, made_change)
-            results[container_id] = final_container
+            results[container_id] = _rebuild_container(container_val, results)
             continue
 
         val, schema = current_item
