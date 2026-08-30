@@ -18,8 +18,9 @@ on:
       # stayed broken while every pull request went green.
       - '.github/workflows/docs-check.yml'
 
-# The repository default for GITHUB_TOKEN is read-only, so any job that writes
-# has to ask for it explicitly. Only build-and-deploy does; see below.
+# Nothing here writes to the repository: this workflow checks the docs, it does
+# not publish them. Declared explicitly so a job that starts needing write has
+# to say so rather than inheriting it.
 permissions:
   contents: read
 
@@ -64,48 +65,3 @@ jobs:
           config_file: .markdownlint.json
           ignore_files: docs/api
         continue-on-error: true
-
-  build-and-deploy:
-    name: Build and Deploy Docs
-    runs-on: ubuntu-24.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: check-docs
-
-    # Pushing the built site to gh-pages is a write to this repository. Without
-    # this the deploy step fails with "Permission to provide-io/pyvider.git
-    # denied to github-actions[bot]", which it did on every push to main.
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
-        with:
-          python-version: '3.11'
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
-
-      - name: Install dependencies
-        run: |
-          uv pip install --system mkdocs mkdocs-material mkdocstrings[python] pymdown-extensions
-          uv pip install --system "git+https://github.com/provide-io/provide-foundry.git"
-
-      - name: Setup foundry documentation assets
-        run: |
-          python -c "from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))"
-
-      - name: Build documentation
-        run: |
-          mkdocs build
-
-      - name: Deploy to GitHub Pages
-        if: success()
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e  # v4.0.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          publish_branch: gh-pages
