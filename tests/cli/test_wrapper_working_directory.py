@@ -15,12 +15,19 @@ visible to practitioners as paths resolving somewhere they never named:
 
 from pathlib import Path
 import subprocess
+import sys
 from typing import Any
 
 import pytest
 
 from pyvider.cli.context import PyviderContext
 from pyvider.cli.utils import _place_terraform_provider_script
+
+#: The development-mode wrapper is a bash script that sources `venv/bin/activate`
+#: -- a POSIX layout `pyvider install` only ever writes. Windows cannot execute
+#: it (WinError 193), so the cases that run it are skipped there; the case that
+#: inspects the generated text still runs everywhere.
+posix_only = pytest.mark.skipif(sys.platform == "win32", reason="dev-mode wrapper is a POSIX shell script")
 
 
 @pytest.fixture
@@ -64,6 +71,7 @@ def _run_from(script: Path, cwd: Path) -> dict[str, str]:
 
 
 class TestWorkingDirectory:
+    @posix_only
     def test_callers_directory_is_preserved(self, project: Path, tmp_path: Path) -> None:
         """The provider runs where Terraform ran, not where it was installed."""
         script = _generate(project)
@@ -93,6 +101,7 @@ class TestWorkingDirectory:
 class TestConfigStillFound:
     """Dropping the `cd` must not lose the provider's own configuration."""
 
+    @posix_only
     def test_config_is_anchored_to_the_checkout(self, project: Path, tmp_path: Path) -> None:
         """pyvider.toml lives beside the provider, not beside the .tf files."""
         (project / "pyvider.toml").write_text('[logging]\nlevel = "DEBUG"\n')
@@ -104,6 +113,7 @@ class TestConfigStillFound:
 
         assert Path(reported["CONFIG"]) == project / "pyvider.toml"
 
+    @posix_only
     def test_no_config_file_means_no_override(self, project: Path, tmp_path: Path) -> None:
         """Absent a pyvider.toml, nothing is pinned and discovery stays default."""
         script = _generate(project)
