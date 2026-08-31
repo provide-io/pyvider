@@ -140,6 +140,16 @@ def _place_terraform_provider_script(ctx: PyviderContext) -> None:
         pyvider_cmd = venv_dir / "bin" / "pyvider"
         has_pyvider_cmd = pyvider_cmd.exists()
 
+        # The provider reads its own pyvider.toml from the working directory. Since
+        # the wrapper no longer moves there (see below), pin it explicitly when the
+        # checkout has one -- otherwise PyviderConfig would look in whatever
+        # directory Terraform was run from and could read an unrelated file.
+        config_file = install_dir / "pyvider.toml"
+        if config_file.is_file():
+            config_line = f'export PYVIDER_CONFIG_FILE="{config_file}"'
+        else:
+            config_line = "# No pyvider.toml in the install directory; nothing to pin."
+
         # Determine execution method
         if has_pyvider_cmd:
             exec_line = 'exec pyvider "$@"'
@@ -165,8 +175,14 @@ VENV_PATH="{venv_dir}/bin/activate"
 # Python executable
 PYTHON_EXE="{python_exe}"
 
-# Change to installation directory
-cd "$INSTALL_DIR" || {{ echo "ERROR: Failed to cd to $INSTALL_DIR" >&2; exit 1; }}
+# The working directory is deliberately left alone. Terraform launches the
+# provider as a subprocess, and the provider inherits Terraform's working
+# directory -- which is what every relative path in a practitioner's
+# configuration resolves against, and where the filesystem state store puts
+# `.pyvider/state`. This script used to `cd "$INSTALL_DIR"` first, which
+# silently repointed both at the provider's own checkout. Everything below
+# refers to absolute paths, so nothing here needs a particular directory.
+{config_line}
 
 # Activate virtual environment
 if [ ! -f "$VENV_PATH" ]; then
