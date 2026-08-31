@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`pyvider-cty>=0.5.3`** (was `>=0.5.2`). The lock has resolved 0.5.3 since it
+  was published, so the declared floor promised a combination nothing here had
+  run. 0.5.3 also types `CtyObject.optional_attributes` precisely enough that
+  two `# type: ignore[arg-type]` comments here became unused, and mypy strict
+  rejects those, so they are gone. Verified at the floor with
+  `uv lock --resolution lowest-direct`.
+
 ## [0.6.2] - 2026-08-31
 
 ### Fixed
