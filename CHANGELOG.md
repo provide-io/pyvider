@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-08-31
+
 ### Fixed
 
 - **The development-mode wrapper moved the provider out of Terraform's working directory.** The script written by `pyvider install` ran `cd "$INSTALL_DIR"` before exec'ing the provider. Terraform launches the provider as a subprocess, so the provider inherits Terraform's working directory — and that is what every relative path in a configuration resolves against. The `cd` silently repointed all of them at the provider's own checkout: `path.module`, `path.root` and any bare `./file` resolved somewhere the practitioner had never named, and could even succeed by matching an unrelated file there, which is worse than failing. The filesystem state store was caught by the same thing, since its default root is `Path.cwd() / .pyvider/state`; practitioner state was being written inside the provider repository. Nothing in the script needed a particular directory — every path in it is absolute. The provider's own `pyvider.toml` was the one thing the `cd` was doing real work for, so it is now pinned explicitly with `PYVIDER_CONFIG_FILE` when the checkout has one, which is also more precise than the old behaviour: previously any `pyvider.toml` sitting in the Terraform directory would have been picked up instead.
