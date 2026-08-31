@@ -7,8 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-08-31
+
 ### Fixed
 
+- **A broken lifecycle contract would not say which attribute broke it.** `is_valid_refinement` already walks the object and prefixes the offending attribute onto its reason, and `ResourceLifecycleContractError` carries that as `detail`, but none of it reached the practitioner. The error extends foundation's `StateError` rather than `PyviderError`, so it missed the `except (CtyValidationError, PyviderError)` clause that routes to the diagnostic builder — and the diagnostic builder is what appends the detail. It fell to the generic handler, which rebuilds the message from `str(e)` alone and reports only that "the final state returned by the resource's apply method is not a valid refinement of the planned state". The only way to find the attribute was to bisect the resource. It now names it.
 - **The provider name in `[tool.pyvider]` was read under one spelling and written under another.** The resolver looked for `provider_name`; `pyvider.toml` and plating both look for `name`, the tutorial showed `provider_name`, and the two shipped provider repositories had one of each. A name written under the spelling the resolver did not want was not an error — it fell through to the default, `pyvider`, and the provider installed to `local/providers/pyvider/` under the binary name `terraform-provider-pyvider`. Since that is a valid provider in a valid location, nothing failed: Terraform simply never found the checkout where the examples asked for it, and resolved whatever else was in the plugin directory instead. One repository had been testing a nine-month-old prebuilt binary this way. `name` is now the documented key and `provider_name` is accepted as an alias, in `[tool.pyvider]`, in the top-level `[pyvider]` table, and in `pyvider.toml`.
 - **`pyvider.toml` was consulted for the provider name only when `PYVIDER_CONFIG_FILE` pointed at it.** `PyviderConfig` loads that file from the working directory by default, so its `[pyvider] name` was inert in every ordinary checkout while appearing, in the file and in the tests, to work.
 - **`pyvider install` now prints where the name came from,** and says so when it had to fall back to the default, since the failure has no other symptom at install time.
