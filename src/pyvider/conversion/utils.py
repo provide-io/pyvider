@@ -37,7 +37,7 @@ def unify_and_validate_list_of_objects(dict_list: list[dict[str, Any]]) -> CtyVa
 
     unified_object_type = CtyObject(
         attribute_types=attribute_types,
-        optional_attributes=optional_keys_list,  # type: ignore[arg-type]
+        optional_attributes=optional_keys_list,
     )
 
     final_list_type = CtyList(element_type=unified_object_type)

@@ -4,10 +4,10 @@ requires-python = ">=3.11"
 resolution-markers = [
     "python_full_version >= '3.15'",
     "python_full_version == '3.14.*' and sys_platform == 'emscripten'",
-    "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
-    "python_full_version == '3.12.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.14.*' and sys_platform != 'emscripten'",
+    "python_full_version == '3.13.*' and sys_platform == 'emscripten'",
     "python_full_version == '3.13.*' and sys_platform != 'emscripten'",
+    "python_full_version == '3.12.*' and sys_platform == 'emscripten'",
     "(python_full_version < '3.13' and sys_platform != 'emscripten') or (python_full_version < '3.12' and sys_platform == 'emscripten')",
 ]
 
@@ -3406,7 +3406,7 @@ requires-dist = [
     { name = "msgpack", specifier = ">=1.1.1" },
     { name = "protobuf", specifier = ">=7.35.1" },
     { name = "provide-foundation", specifier = ">=0.4.0" },
-    { name = "pyvider-cty", specifier = ">=0.5.2" },
+    { name = "pyvider-cty", specifier = ">=0.5.3" },
     { name = "pyvider-rpcplugin", specifier = ">=0.4.2" },
 ]
 
@@ -3419,16 +3419,16 @@ docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" }]
 
 [[package]]
 name = "pyvider-cty"
-version = "0.5.2"
+version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
     { name = "msgpack" },
     { name = "provide-foundation" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/4f/e5a6a0303481fe1b5c1de22ad928a5982d918368fc7a6da9d3bf7eb2b826/pyvider_cty-0.5.2.tar.gz", hash = "sha256:25eac04c4b27def301ac6df05e44ec521c71c125b16714e686db900d631de1ca", size = 253785, upload-time = "2026-08-29T22:49:45.837Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/9b/58939a10d157e9f5d5a9bebc01e9a3270b90d9ca90e73392f1937d26c7ec/pyvider_cty-0.5.3.tar.gz", hash = "sha256:ffb66f2ca5d4b42d1a7385e4b359c69cba6013d0ee1b52059ff0b0bf4284131a", size = 253994, upload-time = "2026-08-31T01:18:33.364Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/0f/0c4e72bbeb56ea0ad95a6692fe72fd8f120467e546a8a9d17194429c7f53/pyvider_cty-0.5.2-py3-none-any.whl", hash = "sha256:755443f33b0c2ddd273bab993931d3be584bcdbb4f1c7334166671ebca64f63a", size = 296857, upload-time = "2026-08-29T22:49:44.084Z" },
+    { url = "https://files.pythonhosted.org/packages/b6/80/108b953cc47c91039fe33e4e3ca9cfa7524faeae49fb9a90b6e4101f9bbf/pyvider_cty-0.5.3-py3-none-any.whl", hash = "sha256:065166f9429fb3be4e5c461fd3cd0a93c5bf1a91753355b2f79e50e1057c987e", size = 297028, upload-time = "2026-08-31T01:18:31.695Z" },
 ]
 
 [[package]]
