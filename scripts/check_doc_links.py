@@ -157,13 +157,16 @@ def _check_internal_link(
     return errors
 
 
-def check_file_links(file_path: Path) -> list[str]:
+def check_file_links(file_path: Path) -> tuple[list[str], int]:
     """
     Check all links in a file for broken references.
 
-    Returns list of error messages.
+    Returns the error messages and the number of internal links examined. The
+    count is what lets the caller tell "every link resolved" from "no link was
+    looked at", which read the same before: both printed nothing and exited 0.
     """
     errors = []
+    checked = 0
     links = extract_links(file_path)
 
     # Get headings from this file for anchor validation
@@ -173,13 +176,14 @@ def check_file_links(file_path: Path) -> list[str]:
         if _is_external_or_special_link(link_url):
             continue
 
+        checked += 1
         errors.extend(
             _check_internal_link(
                 file_path, link_url, line_num, file_headings, DOCS_DIR, resolve_link_path, extract_headings
             )
         )
 
-    return errors
+    return errors, checked
 
 
 def main() -> int:
@@ -192,10 +196,12 @@ def main() -> int:
     print()
 
     all_errors = []
+    checked = 0
 
     for md_file in markdown_files:
-        errors = check_file_links(md_file)
+        errors, file_checked = check_file_links(md_file)
         all_errors.extend(errors)
+        checked += file_checked
 
     if all_errors:
         print("❌ Found broken links:")
@@ -203,8 +209,19 @@ def main() -> int:
         for error in all_errors:
             print(f"  {error}")
         print()
-        print(f"Total: {len(all_errors)} broken link(s)")
+        print(f"Total: {len(all_errors)} broken link(s) among {checked} internal links")
         return 1
+
+    if not checked:
+        # Every file parsed and not one internal link came out of them. The
+        # documentation is heavily cross-referenced, so this means the link
+        # extraction stopped working, and reporting success would be reporting
+        # on nothing.
+        print(f"❌ No internal links found across {len(markdown_files)} files")
+        print("   Link extraction is broken; this run verified nothing.")
+        return 1
+
+    print(f"✅ {checked} internal links across {len(markdown_files)} files all resolve")
     return 0
 
 
