@@ -30,6 +30,7 @@ from pyvider.exceptions import (
     DataSourceError,
     FrameworkConfigurationError,
     FunctionError,
+    IncompleteResourceStateError,
     PyviderError,
     ResourceError,
     ResourceLifecycleContractError,
@@ -320,6 +321,35 @@ def attrs_to_dict_for_cty(instance: Any, _visited: set[int] | None = None) -> An
         return instance
 
     return _process_instance(instance, _visited)
+
+
+def complete_state_dict(
+    raw_state: dict[str, Any],
+    block: Any,
+    *,
+    resource_type: str,
+    state_class_name: str,
+) -> dict[str, Any]:
+    """Fill in every attribute the schema declares before cty validates the dict.
+
+    Write-only attributes are unconditionally forced null, matching pyvider's
+    documented contract that they are never persisted regardless of what the
+    resource returned. Any other attribute missing from `raw_state` means the
+    resource's state class doesn't carry a field its own schema declares --
+    a resource implementation bug, raised here with enough context to fix it
+    rather than surfacing downstream as cty's generic "missing attribute".
+    """
+    for name, attr in getattr(block, "attributes", {}).items():
+        if getattr(attr, "write_only", False):
+            raw_state[name] = None
+        elif name not in raw_state:
+            raise IncompleteResourceStateError(
+                f"Resource '{resource_type}' returned state missing declared attribute "
+                f"'{name}'.\n\n"
+                f"Suggestion: declare '{name}' on {state_class_name}, or mark it "
+                "write_only=True if it should never be persisted to state."
+            )
+    return raw_state
 
 
 def _decide_unknown_or_null(plan: CtyValue, result: CtyValue) -> tuple[bool, str] | None:

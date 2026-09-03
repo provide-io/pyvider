@@ -43,6 +43,7 @@ def test_omits_identity_when_schema_is_none() -> None:
         RESOURCE_SCHEMA,
         None,
         response,
+        type_name="demo",
         identity_schema=None,
         identity_values=None,
     )
@@ -59,6 +60,7 @@ def test_emits_identity_after_apply() -> None:
         RESOURCE_SCHEMA,
         None,
         response,
+        type_name="demo",
         identity_schema=IDENTITY_SCHEMA,
         identity_values={"path": "/tmp/x"},
     )
@@ -78,6 +80,7 @@ def test_omits_identity_when_schema_present_but_values_are_none() -> None:
         RESOURCE_SCHEMA,
         None,
         response,
+        type_name="demo",
         identity_schema=IDENTITY_SCHEMA,
         identity_values=None,
     )

@@ -186,7 +186,7 @@ class TestHandleApplyResult:
 
         planned_cty = CtyValue(vtype=CtyString(), value="test")
 
-        _handle_apply_result(None, None, MockSchema(), planned_cty, response)
+        _handle_apply_result(None, None, MockSchema(), planned_cty, response, type_name="test_resource")
 
         assert response.new_state.msgpack == b"\xc0"
 
@@ -231,7 +231,9 @@ class TestHandleApplyResult:
             mock_refine.return_value = (False, "Values don't match")
 
             with pytest.raises(ResourceLifecycleContractError, match="not a valid refinement"):
-                _handle_apply_result(new_state, None, MockSchema(), planned_cty, response)
+                _handle_apply_result(
+                    new_state, None, MockSchema(), planned_cty, response, type_name="test_resource"
+                )
 
     def test_encrypts_and_sets_private_state(self) -> None:
         """Test that private state is serialized and encrypted."""
@@ -275,7 +277,9 @@ class TestHandleApplyResult:
             mock_marshal.return_value = pb.DynamicValue(msgpack=b"marshaled")
             mock_encrypt.return_value = b"encrypted_private"
 
-            _handle_apply_result(new_state, new_private, MockSchema(), None, response)
+            _handle_apply_result(
+                new_state, new_private, MockSchema(), None, response, type_name="test_resource"
+            )
 
             assert response.private == b"encrypted_private"
             mock_encrypt.assert_called_once()

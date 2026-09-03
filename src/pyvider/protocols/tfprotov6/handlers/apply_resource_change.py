@@ -33,6 +33,7 @@ from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     check_test_only_access,
+    complete_state_dict,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
     derive_identity_values,
@@ -215,20 +216,17 @@ def _handle_apply_result(
     planned_state_cty: Any,
     response: pb.ApplyResourceChange.Response,
     *,
+    type_name: str,
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
 ) -> None:
     if new_state_attrs is not None:
-        raw_new_state = attrs_to_dict_for_cty(new_state_attrs)
-
-        # Force write-only attributes to None (null in state)
-        write_only_attrs = {
-            name
-            for name, attr in getattr(resource_schema.block, "attributes", {}).items()
-            if getattr(attr, "write_only", False)
-        }
-        for attr_name in write_only_attrs:
-            raw_new_state[attr_name] = None
+        raw_new_state = complete_state_dict(
+            attrs_to_dict_for_cty(new_state_attrs),
+            resource_schema.block,
+            resource_type=type_name,
+            state_class_name=type(new_state_attrs).__name__,
+        )
 
         validator_type = resource_schema.block.to_cty_type()
         new_state_cty = validator_type.validate(raw_new_state)
@@ -341,6 +339,7 @@ async def _apply_resource_change_impl(
             resource_schema,
             planned_state_cty,
             response,
+            type_name=request.type_name,
             identity_schema=identity_schema,
             identity_values=(
                 derive_identity_values(

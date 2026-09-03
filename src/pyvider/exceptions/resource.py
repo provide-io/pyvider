@@ -62,4 +62,17 @@ class ResourceLifecycleContractError(FoundationStateError):
         return "RESOURCE_LIFECYCLE_CONTRACT_ERROR"
 
 
+class IncompleteResourceStateError(ResourceError):
+    """
+    Raised when a resource's returned state is missing an attribute its schema
+    declares. Every non-write-only schema attribute must have a corresponding
+    entry in the state a resource returns; a missing one means the resource's
+    state class doesn't carry a field the schema promises, which is a bug in
+    the resource implementation rather than something the caller did wrong.
+    """
+
+    def _default_code(self) -> str:
+        return "INCOMPLETE_RESOURCE_STATE"
+
+
 # 🐍🏗️🔚

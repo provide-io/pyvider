@@ -17,6 +17,7 @@ from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     attrs_to_dict_for_cty,
     check_test_only_access,
+    complete_state_dict,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
     derive_identity_values,
@@ -165,17 +166,12 @@ def _write_new_state(
         )
         return
 
-    raw_state_dict = attrs_to_dict_for_cty(new_state_attrs)
-
-    # Force write-only attributes to None (null in state)
-    write_only_attrs = {
-        name
-        for name, attr in getattr(resource_schema.block, "attributes", {}).items()
-        if getattr(attr, "write_only", False)
-    }
-    for attr_name in write_only_attrs:
-        if attr_name in raw_state_dict:
-            raw_state_dict[attr_name] = None
+    raw_state_dict = complete_state_dict(
+        attrs_to_dict_for_cty(new_state_attrs),
+        resource_schema.block,
+        resource_type=type_name,
+        state_class_name=type(new_state_attrs).__name__,
+    )
 
     new_state_cty = resource_schema.block.to_cty_type().validate(raw_state_dict)
     response.new_state.msgpack = marshal(new_state_cty, schema=resource_schema.block).msgpack
