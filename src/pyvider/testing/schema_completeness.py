@@ -67,12 +67,16 @@ def assert_schema_state_parity(resource_class: type[Any]) -> None:
     framework`` catch it at construction time.
     """
     missing = find_missing_state_fields(resource_class)
-    assert not missing, (
-        f"{resource_class.__name__}.state_class ({resource_class.state_class.__name__}) is "
-        f"missing field(s) for schema attribute(s): {', '.join(missing)}.\n\n"
-        f"Declare each on {resource_class.state_class.__name__}, or mark it write_only=True "
-        "if it should never be persisted to state."
-    )
+    if missing:
+        # Not a bare `assert`: this must still fire under `python -O`, which
+        # strips assert statements -- the whole point of this check is to be
+        # unconditional, the same way pyvider's runtime check is.
+        raise AssertionError(
+            f"{resource_class.__name__}.state_class ({resource_class.state_class.__name__}) is "
+            f"missing field(s) for schema attribute(s): {', '.join(missing)}.\n\n"
+            f"Declare each on {resource_class.state_class.__name__}, or mark it write_only=True "
+            "if it should never be persisted to state."
+        )
 
 
 # 🐍🏗️🔚
