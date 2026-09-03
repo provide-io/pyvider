@@ -167,3 +167,77 @@ async def test_write_only_required_attr_omitted_from_state_class(provider_in_hub
         assert new_state.value["id"].value == "test-id"
     finally:
         hub.unregister("resource", "e2e_secret_no_field")
+
+
+@define
+class BareIdState:
+    id: str = ""
+
+
+@pytest.mark.asyncio
+async def test_missing_non_write_only_attribute_produces_a_diagnostic(provider_in_hub: Any) -> None:
+    """A required, non-write-only attribute missing from state is a resource bug,
+    not a write-only omission -- it must surface as a clear diagnostic rather than
+    an unhandled crash or cty's generic "missing attribute" error.
+    """
+
+    class BareIdResource(BaseResource):
+        config_class = BareIdState
+        state_class = BareIdState
+
+        @classmethod
+        def get_schema(cls) -> Any:
+            return s_resource(
+                attributes={
+                    "id": a_str(computed=True),
+                    "name": a_str(required=True),
+                }
+            )
+
+        async def _validate_config(self, config):
+            return []
+
+        async def _create(self, ctx, plan):
+            plan["id"] = "test-id"
+            return plan, None
+
+        async def _create_apply(self, ctx):
+            # Returns state that never carries "name", even though the schema
+            # requires it -- the state class (BareIdState) simply has no field
+            # for it. This is a resource implementation bug, not a write-only case.
+            return ctx.planned_state, ctx.private_state
+
+        async def read(self, ctx):
+            return ctx.state
+
+        async def _delete_apply(self, ctx):
+            pass
+
+    hub.register("resource", "e2e_bare_id", BareIdResource)
+    try:
+        schema = BareIdResource.get_schema()
+        cty_type = schema.block.to_cty_type()
+        config_cty = cty_type.validate({"name": "n"})
+        config_dv = marshal(config_cty, schema=schema.block)
+
+        plan_req = pb.PlanResourceChange.Request(
+            type_name="e2e_bare_id",
+            config=config_dv,
+            proposed_new_state=config_dv,
+        )
+        plan_res = await _plan_resource_change_impl(plan_req, context=None)
+        assert len(plan_res.diagnostics) == 0
+
+        apply_req = pb.ApplyResourceChange.Request(
+            type_name="e2e_bare_id",
+            config=config_dv,
+            planned_state=plan_res.planned_state,
+        )
+        apply_res = await _apply_resource_change_impl(apply_req, context=None)
+
+        assert len(apply_res.diagnostics) == 1
+        detail = apply_res.diagnostics[0].detail
+        assert "e2e_bare_id" in detail
+        assert "'name'" in detail
+    finally:
+        hub.unregister("resource", "e2e_bare_id")

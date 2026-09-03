@@ -41,6 +41,7 @@ from pyvider.exceptions.registry import (
 from pyvider.exceptions.resource import (
     CapabilityError,
     DataSourceError,
+    IncompleteResourceStateError,
     ResourceError,
     ResourceLifecycleContractError,
     ResourceNotFoundError,
@@ -81,6 +82,7 @@ __all__ = [
     "GRPCConnectionError",
     # gRPC
     "GRPCError",
+    "IncompleteResourceStateError",
     "InvalidTypeError",
     "NetworkError",
     "PluginError",
