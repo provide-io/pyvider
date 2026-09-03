@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **A resource's returned state is checked against its schema.**
+  `complete_state_dict()` walks every attribute the schema declares. Write-only
+  attributes are forced to null, matching the documented contract. Any other
+  attribute the resource left out raises `IncompleteResourceStateError`, which
+  names the resource type, the attribute, and the state class to fix — where
+  previously the omission fell through to a generic "Missing required
+  attribute" raised deep inside `pyvider-cty`, with nothing to say which
+  resource produced it. `apply_resource_change` and `read_resource` both call
+  the one shared helper instead of each hand-rolling the write-only set.
+- **`pyvider.testing.assert_schema_state_parity()`** fails a resource author's
+  own test suite when a non-write-only schema attribute has no matching field
+  on the state class — the same predicate the runtime check enforces, applied
+  statically. A Go provider cannot construct an incomplete state value at all:
+  `tftypes.NewValue` panics on a mismatched attribute set, and
+  `terraform-plugin-framework`'s `resp.State.Set` requires a struct field per
+  schema attribute. An attrs state class carries no such invariant, so this is
+  the closest Python equivalent. It lives here rather than in
+  `provide-testkit`, which is schema-agnostic and sits below pyvider in the
+  dependency graph; pyvider is the only package that can see both halves of the
+  comparison.
+
 ### Changed
 
 - **`pyvider-cty>=0.5.3`** (was `>=0.5.2`). The lock has resolved 0.5.3 since it
@@ -15,6 +38,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   two `# type: ignore[arg-type]` comments here became unused, and mypy strict
   rejects those, so they are gone. Verified at the floor with
   `uv lock --resolution lowest-direct`.
+- **`provide-testkit>=0.4.5`** (was `>=0.4.0`). The lock had only ever resolved
+  0.4.3, so 0.4.4 and 0.4.5 satisfied the declared floor without anything here
+  having run against them.
+
+### Fixed
+
+- **A required write-only attribute no longer breaks apply.** Applying a
+  resource with a `required` + `write_only` attribute failed with
+  `CtyAttributeValidationError: Missing required attribute` whenever the state
+  class did not carry the attribute — which is the natural way to model a value
+  that is never stored. Write-only attributes were nulled only where the key was
+  already present, so a state dict that omitted it stayed omitted, and the cty
+  object validator, which has no notion of write-only, rejected it. In a cty
+  object every attribute exists in the type, so absent is not a state the value
+  can be in; null is how "no value" is spelled, and it is now written
+  unconditionally. This is what the architecture documentation already
+  described: write-only attributes are nullified on outbound state regardless
+  of `write_only_attributes_allowed`, so that an older Terraform cannot store
+  the secret in plain text. It also removes the workaround of declaring the
+  attribute on the state class purely to satisfy the validator.
+- **The documentation link checker says what it checked.** It printed a file
+  count, then nothing, then exited 0 — so "every link resolved" and "no link was
+  looked at" were indistinguishable. It now reports
+  `✅ 451 internal links across 78 files all resolve`, and fails when extraction
+  finds no internal links at all rather than passing on having verified nothing.
+- `assert_schema_state_parity` raises `AssertionError` directly instead of using
+  a bare `assert`, which `python -O` strips. The check is meant to be
+  unconditional, like the runtime one it complements.
 
 ## [0.6.2] - 2026-08-31
 
