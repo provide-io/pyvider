@@ -2824,7 +2824,7 @@ wheels = [
 
 [[package]]
 name = "provide-testkit"
-version = "0.4.3"
+version = "0.4.5"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2837,9 +2837,9 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "pytest-xdist" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/e6/7a/344e16edce3f872797376d5667633813765cf05cc2050da4be7253c09c40/provide_testkit-0.4.3.tar.gz", hash = "sha256:d6e98d6786c3bef1de00e84105d1f3187f3ea460b1e0279d43fc12afa71c827e", size = 134764, upload-time = "2026-08-21T06:22:17.319Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/7e/04/e985af2eb6d764b99ff5710c4ceb7a24faab38f3837fff8a00c931193590/provide_testkit-0.4.5.tar.gz", hash = "sha256:f111df569068feb5d67c336118e2355d1343f8a1d2bc707fe779dcb3f3f82643", size = 136646, upload-time = "2026-08-31T06:22:02.637Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/07/8f960756945ca9ff86f7cd81bb8eba6a057f6014392c27c5c83665014282/provide_testkit-0.4.3-py3-none-any.whl", hash = "sha256:657fba04d8e27c96e81b25ebbfff4ae0046fbb7d603c56a2fcdfa0f48abae034", size = 183152, upload-time = "2026-08-21T06:22:15.609Z" },
+    { url = "https://files.pythonhosted.org/packages/29/8b/c694725261062f727b233aade82cfd73923f8479415737bf517e7f9c8c0b/provide_testkit-0.4.5-py3-none-any.whl", hash = "sha256:7b2ebeb5544639e6f697f7af76ce3b5244f766a7a941b6502af4d2998e765959", size = 183673, upload-time = "2026-08-31T06:22:01.229Z" },
 ]
 
 [package.optional-dependencies]
@@ -3413,9 +3413,9 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "grpcio-tools", specifier = ">=1.83.0" },
-    { name = "provide-testkit", extras = ["pyvider-dev"], specifier = ">=0.4.0" },
+    { name = "provide-testkit", extras = ["pyvider-dev"], specifier = ">=0.4.5" },
 ]
-docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.0" }]
+docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.4.5" }]
 
 [[package]]
 name = "pyvider-cty"
