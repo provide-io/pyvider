@@ -228,8 +228,7 @@ def _handle_apply_result(
             if getattr(attr, "write_only", False)
         }
         for attr_name in write_only_attrs:
-            if attr_name in raw_new_state:
-                raw_new_state[attr_name] = None
+            raw_new_state[attr_name] = None
 
         validator_type = resource_schema.block.to_cty_type()
         new_state_cty = validator_type.validate(raw_new_state)
