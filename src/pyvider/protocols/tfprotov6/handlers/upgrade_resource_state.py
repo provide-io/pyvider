@@ -12,6 +12,7 @@ from provide.foundation import logger
 from pyvider.conversion import marshal
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
+from pyvider.protocols.tfprotov6.handlers.utils import null_write_only_attributes
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.protocols.tfprotov6.protobuf import (
     Diagnostic,
@@ -50,6 +51,12 @@ def _upgraded_state_value(
     provider cannot read back -- the very failure the version bump exists to
     prevent.
     """
+    # Terraform rejects a non-null write-only attribute in an upgraded state
+    # (upgrade_resource_state.go:129-141). A state written before the attribute
+    # became write-only can still carry the value, so the upgrade is exactly
+    # where it has to be dropped.
+    null_write_only_attributes(upgraded, schema.block)
+
     try:
         state_cty = schema.block.to_cty_type().validate(upgraded)
     except Exception as exc:

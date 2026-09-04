@@ -28,6 +28,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
+    null_write_only_attributes,
     resolve_identity_schema,
     str_path_to_proto_path,
 )
@@ -281,6 +282,14 @@ def _handle_planned_state_dict(
     validator_type = resource_schema.block.to_cty_type()
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
+
+    # Write-only attributes are nulled here, at the protocol boundary, rather
+    # than relying on BaseResource._merge_config_into_plan: `plan()` is a
+    # documented extension point, and a resource that overrides it used to hand
+    # the secret straight to Terraform. Terraform rejects a non-null write-only
+    # value in a plan ("returned a value for the write-only attribute ... during
+    # planning"), and an older Terraform stores it in the plan file instead.
+    null_write_only_attributes(planned_state_dict, resource_schema.block)
 
     _fill_undetermined_computed_attributes(
         planned_state_dict, resource_schema, validator_type, prior_state_cty

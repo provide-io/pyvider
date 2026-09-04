@@ -4,7 +4,7 @@
 #
 
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, MutableMapping
 import inspect
 from typing import Any
 
@@ -38,7 +38,7 @@ from pyvider.exceptions import (
 from pyvider.hub import hub
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.resources.base import BaseResource
-from pyvider.schema import PvsSchema
+from pyvider.schema import NestingMode, PvsSchema
 
 # Regex to parse attribute paths like `attr`, `attr[0]`, `attr["key"]`
 
@@ -323,6 +323,72 @@ def attrs_to_dict_for_cty(instance: Any, _visited: set[int] | None = None) -> An
     return _process_instance(instance, _visited)
 
 
+def _null_write_only_in_object(values: Any, attributes: Any) -> None:
+    """Null the write-only attributes of one object, descending into its members."""
+    if not isinstance(values, MutableMapping):
+        return
+
+    for name, attr in (attributes or {}).items():
+        if getattr(attr, "write_only", False):
+            # Written unconditionally rather than only where the key is present.
+            # In a cty object every attribute exists in the type, so "absent" is
+            # not a state the value can be in -- null is how "no value" is
+            # spelled, and the object validator has no notion of write-only.
+            values[name] = None
+            continue
+
+        object_type = getattr(attr, "object_type", None)
+        if object_type is not None:
+            _null_write_only_in_object(values.get(name), getattr(object_type, "attributes", {}))
+
+
+def _null_write_only_in_nested_block(element: Any, nested: Any) -> None:
+    """Descend into one nested block, whatever its nesting mode.
+
+    An absent block is None and has nothing inside it to null.
+    """
+    if element is None:
+        return
+
+    if nested.nesting in (NestingMode.SINGLE, NestingMode.GROUP):
+        null_write_only_attributes(element, nested.block)
+    elif nested.nesting is NestingMode.MAP:
+        if isinstance(element, MutableMapping):
+            for value in element.values():
+                null_write_only_attributes(value, nested.block)
+    elif isinstance(element, list | tuple):
+        # LIST and SET are both an ordered collection of elements here.
+        for value in element:
+            null_write_only_attributes(value, nested.block)
+
+
+def null_write_only_attributes(values: Any, block: Any) -> Any:
+    """Force every write-only attribute in `values` to null, at any depth.
+
+    Terraform rejects a non-null write-only attribute in every value a provider
+    returns -- refresh, plan, apply, import, upgrade and move all check it -- and
+    a Terraform old enough not to check writes the value to the state file in
+    plain text instead.
+
+    This walks nested blocks and `a_obj` members as well as the top level. The
+    two places that did this before each covered part of the surface: the plan
+    path went through `BaseResource._merge_config_into_plan`, which a resource
+    overriding `plan()` skips, and `complete_state_dict` iterated only
+    `block.attributes`, so a secret one block down was passed straight through.
+
+    Mutates and returns `values`.
+    """
+    if not isinstance(values, MutableMapping):
+        return values
+
+    _null_write_only_in_object(values, getattr(block, "attributes", {}))
+
+    for nested in getattr(block, "block_types", []) or []:
+        _null_write_only_in_nested_block(values.get(nested.type_name), nested)
+
+    return values
+
+
 def complete_state_dict(
     raw_state: dict[str, Any],
     block: Any,
@@ -332,17 +398,23 @@ def complete_state_dict(
 ) -> dict[str, Any]:
     """Fill in every attribute the schema declares before cty validates the dict.
 
-    Write-only attributes are unconditionally forced null, matching pyvider's
-    documented contract that they are never persisted regardless of what the
-    resource returned. Any other attribute missing from `raw_state` means the
-    resource's state class doesn't carry a field its own schema declares --
-    a resource implementation bug, raised here with enough context to fix it
-    rather than surfacing downstream as cty's generic "missing attribute".
+    Write-only attributes are unconditionally forced null, at any depth, matching
+    pyvider's documented contract that they are never persisted regardless of
+    what the resource returned. Any other attribute missing from `raw_state`
+    means the resource's state class doesn't carry a field its own schema
+    declares -- a resource implementation bug, raised here with enough context to
+    fix it rather than surfacing downstream as cty's generic "missing attribute".
+
+    The presence check stays top-level: a state class maps to the top-level
+    block, and what is inside a nested block or an `a_obj` is shaped by the
+    resource rather than by a class this can compare against.
     """
+    null_write_only_attributes(raw_state, block)
+
     for name, attr in getattr(block, "attributes", {}).items():
         if getattr(attr, "write_only", False):
-            raw_state[name] = None
-        elif name not in raw_state:
+            continue
+        if name not in raw_state:
             raise IncompleteResourceStateError(
                 f"Resource '{resource_type}' returned state missing declared attribute "
                 f"'{name}'.\n\n"

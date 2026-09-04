@@ -21,6 +21,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
     derive_identity_values,
+    null_write_only_attributes,
     resolve_identity_schema,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -69,6 +70,12 @@ def _build_imported_resource(
     type_name: str,
 ) -> pb.ImportResourceState.ImportedResource:
     """Marshal an adopted object into the ImportedResource Terraform writes to state."""
+    # Terraform rejects a non-null write-only attribute in an imported state
+    # ("Import returned a non-null value for a write-only attribute",
+    # node_resource_import.go:106-124), and an older Terraform writes it to the
+    # state file instead. An import hook has no reason to know that.
+    null_write_only_attributes(raw_state_dict, resource_schema.block)
+
     validator_type = resource_schema.block.to_cty_type()
     state_cty = validator_type.validate(raw_state_dict)
     marshalled = marshal(state_cty, schema=resource_schema.block)

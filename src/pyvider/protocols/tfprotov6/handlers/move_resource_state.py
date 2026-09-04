@@ -14,6 +14,7 @@ from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
+    null_write_only_attributes,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
 
@@ -169,6 +170,11 @@ async def _move_resource_state_impl(
         target_private = b""
         if isinstance(moved, tuple):
             moved, target_private = moved
+
+        # Terraform rejects a non-null write-only attribute in a moved state
+        # (refactoring/cross_provider_move.go:159-176). The source type's state
+        # may well have carried one; the target's must not.
+        null_write_only_attributes(moved, resource_class.get_schema().block)
 
         response.target_state.CopyFrom(pb.DynamicValue(json=json.dumps(moved).encode("utf-8")))
         response.target_private = target_private
