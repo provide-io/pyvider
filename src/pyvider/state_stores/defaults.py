@@ -23,10 +23,25 @@ from typing import Final
 DEFAULT_STATE_STORE_CHUNK_SIZE: Final[int] = 8 << 20  # 8 MB
 MAX_STATE_STORE_CHUNK_SIZE: Final[int] = 128 << 20  # 128 MB
 
-# Lease duration for a state lock, in seconds. A lock whose lease has expired is
-# reclaimable by any other process, which is what keeps a crashed provider from
-# wedging the state forever.
-DEFAULT_LOCK_TTL_SECONDS: Final[float] = 300.0
+# Lease duration for a state lock, in seconds. Zero means no expiry: the lock is
+# held until it is explicitly unlocked.
+#
+# Terraform acquires a state lock once per operation and releases it with
+# UnlockState when the operation ends. Nothing renews it in between -- the
+# pluggable state store client sends Lock and Unlock and no third thing
+# (terraform/internal/states/remote/remote_grpc.go:122-130), and there is no TTL
+# anywhere under internal/states or internal/backend/pluggable. So a lease that
+# lapses on its own is a lock that can be taken out from under a running apply,
+# and the holder's own UnlockState is then refused because the lock id no longer
+# matches.
+#
+# This defaulted to five minutes, which is shorter than an ordinary apply. The
+# stale-lock problem it was guarding against is the one every Terraform backend
+# has, and it has a standard answer: `terraform force-unlock <ID>`, which arrives
+# here as UnlockState with that id. Expiry remains available for an operator who
+# decides they want it, via PYVIDER_STATE_STORE_LOCK_TTL or an explicit
+# ttl_seconds, and it warns when used.
+DEFAULT_LOCK_TTL_SECONDS: Final[float] = 0.0
 
 # Backend identifiers understood by the manager.
 BACKEND_MEMORY: Final[str] = "memory"

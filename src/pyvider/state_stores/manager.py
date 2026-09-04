@@ -62,7 +62,13 @@ def default_backend_name() -> str:
 
 
 def default_lock_ttl_seconds() -> float:
-    """Lease duration applied when a caller does not specify one."""
+    """Lease duration applied when a caller does not specify one.
+
+    Zero, the default, means the lock is held until it is unlocked. A positive
+    value opts into expiry, which lets a second writer take the lock from a
+    holder that is merely slow -- Terraform never renews a state lock -- so it
+    says so out loud.
+    """
     raw = os.environ.get(ENV_LOCK_TTL, "").strip()
     if not raw:
         return DEFAULT_LOCK_TTL_SECONDS
@@ -76,7 +82,25 @@ def default_lock_ttl_seconds() -> float:
             value=raw,
         )
         return DEFAULT_LOCK_TTL_SECONDS
-    return value if value > 0 else DEFAULT_LOCK_TTL_SECONDS
+
+    if value <= 0:
+        # An explicit zero or negative is a request for no expiry, which is also
+        # the default. It used to be coerced back to the default of 300s, so an
+        # operator could not turn expiry off at all.
+        return 0.0
+
+    logger.warning(
+        "State locks are configured to expire, which Terraform does not expect",
+        operation="state_store_config",
+        env_var=ENV_LOCK_TTL,
+        ttl_seconds=value,
+        detail=(
+            "Terraform acquires a state lock once per operation and never renews it, "
+            "so any operation that runs longer than this can have its lock taken by "
+            "another process. Prefer `terraform force-unlock <ID>` for a stale lock."
+        ),
+    )
+    return value
 
 
 def normalize_chunk_size(chunk_size: int) -> int:
