@@ -5,9 +5,12 @@
 
 """Tests for identity schema to protobuf conversion."""
 
+import asyncio
+
 import pytest
 
 from pyvider.conversion import pvs_identity_schema_to_proto
+import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema import PvsSchema, a_list, a_str, b_list, s_identity
 from pyvider.schema.exceptions import PvsSchemaDefinitionError
 from pyvider.schema.types import PvsObjectType
@@ -130,3 +133,35 @@ def test_preserves_attribute_order() -> None:
 
 
 # 🐍🏗️🔚
+
+
+def test_a_markdown_description_is_published_as_markdown() -> None:
+    """`description_kind` was carried on the attribute and dropped on the wire.
+
+    Terraform renders a description as Markdown only when told to; anything
+    other than MARKDOWN is mapped to plain (plugin6/convert/schema.go:234-241).
+    So a description written as Markdown was published as plain text, and the
+    registry showed the raw markup.
+    """
+    from pyvider.conversion.schema_adapter import pvs_schema_to_proto
+    from pyvider.schema import s_resource
+    from pyvider.schema.types import StringKind
+
+    schema = s_resource(
+        {"name": a_str(required=True, description="**bold**", description_kind=StringKind.MARKDOWN)}
+    )
+
+    proto = asyncio.run(pvs_schema_to_proto(schema))
+
+    attribute = next(a for a in proto.block.attributes if a.name == "name")
+    assert attribute.description_kind == pb.StringKind.MARKDOWN
+
+
+def test_a_plain_description_stays_plain() -> None:
+    from pyvider.conversion.schema_adapter import pvs_schema_to_proto
+    from pyvider.schema import s_resource
+
+    proto = asyncio.run(pvs_schema_to_proto(s_resource({"name": a_str(required=True, description="plain")})))
+
+    attribute = next(a for a in proto.block.attributes if a.name == "name")
+    assert attribute.description_kind == pb.StringKind.PLAIN

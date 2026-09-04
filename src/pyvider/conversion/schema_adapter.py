@@ -81,6 +81,11 @@ def _pvs_attribute_to_proto(attr: PvsAttribute, name: str | None = None) -> pb.S
     attribute = pb.Schema.Attribute(
         name=name if name is not None else attr.name,
         description=attr.description,
+        # Terraform renders a description as Markdown only when told to
+        # (plugin6/convert/schema.go:234-241 maps anything else to plain). The
+        # flag was carried on PvsAttribute and dropped here, so a Markdown
+        # description was published as plain text.
+        description_kind=attr.description_kind.value,
         required=attr.required,
         optional=attr.optional,
         computed=attr.computed,
