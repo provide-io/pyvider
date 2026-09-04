@@ -46,7 +46,12 @@ from pyvider.state_stores import FileSystemStateStore, state_store_manager
 pytestmark = pytest.mark.integration
 
 RESOURCE_TYPE = "e2e_widget"
-LIST_TYPE = "e2e_widget_list"
+# A list resource is registered under the managed resource's own name: Terraform
+# looks its results up against the managed resource type with the same name and
+# refuses to list at all when there is no such type
+# (internal/plugin6/grpc_provider.go:1341-1345). This fixture used to use
+# "e2e_widget_list", which passes in-process and fails against real Terraform.
+LIST_TYPE = RESOURCE_TYPE
 ACTION_TYPE = "e2e_widget_reboot"
 STORE_TYPE = "e2e_store"
 STATE_ID = "production"

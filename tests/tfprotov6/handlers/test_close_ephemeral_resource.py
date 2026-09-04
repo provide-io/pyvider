@@ -133,9 +133,7 @@ class TestCloseEphemeralResourceImpl:
         """Test that private data is unpacked from msgpack."""
         with (
             patch("pyvider.hub.hub.get_component") as mock_get,
-            patch(
-                "pyvider.protocols.tfprotov6.handlers.close_ephemeral_resource.msgpack.unpackb"
-            ) as mock_unpack,
+            patch("pyvider.ephemerals.private_state.msgpack.unpackb") as mock_unpack,
         ):
             mock_get.return_value = mock_ephemeral_class
             mock_unpack.return_value = {"token": "test_token"}

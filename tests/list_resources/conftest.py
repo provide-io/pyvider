@@ -18,7 +18,10 @@ from pyvider.list_resources import BaseListResource, ListResourceContext, ListRe
 from pyvider.schema import PvsSchema, a_bool, a_num, a_str, s_identity, s_resource
 
 RESOURCE_TYPE = "demo_widget"
-LIST_TYPE = "demo_widget_list"
+# A list resource shares its name with the managed resource it lists: Terraform
+# resolves results against the managed type of the same name and refuses to list
+# when there is none (internal/plugin6/grpc_provider.go:1341-1345).
+LIST_TYPE = RESOURCE_TYPE
 
 
 @attrs.define

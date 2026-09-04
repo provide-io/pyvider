@@ -16,7 +16,7 @@ from pyvider.protocols.tfprotov6.adapters.function_adapter import (
     dict_to_proto_function,
 )
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
-from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
+from pyvider.protocols.tfprotov6.handlers.utils import get_all_components, get_filtered_components
 import pyvider.protocols.tfprotov6.protobuf as pb
 
 # --- Module-level Cache using asyncio.Future ---
@@ -96,7 +96,58 @@ async def _collect_ephemeral_resource_schemas(
 async def _collect_list_resource_schemas(
     diagnostics: list[pb.Diagnostic],
 ) -> dict[str, pb.Schema]:
-    return await _collect_schemas("list_resource", diagnostics)
+    schemas = await _collect_schemas("list_resource", diagnostics)
+    _check_list_resources_have_a_managed_counterpart(schemas, diagnostics)
+    return schemas
+
+
+def _check_list_resources_have_a_managed_counterpart(
+    schemas: dict[str, pb.Schema],
+    diagnostics: list[pb.Diagnostic],
+) -> None:
+    """Report a list resource that Terraform will refuse to list.
+
+    Terraform resolves a list resource's results against the managed resource
+    type of the *same name*, and gives up if there is no such type:
+
+        resourceSchema, ok := schema.ResourceTypes[r.TypeName]
+        if !ok || resourceSchema.Identity == nil {
+            ... "Identity schema not found for resource type %s; this is a bug
+            in the provider - please report it there"
+
+    (internal/plugin6/grpc_provider.go:1341-1345). `ResourceTypes` is built only
+    from `resource_schemas` merged with the identity schemas by name (:183-186),
+    so publishing an identity schema under the list resource's own name does not
+    satisfy it -- a managed resource of that name has to exist.
+
+    Reported as a warning rather than raised: one misnamed list resource should
+    not take the whole provider down, and Terraform will refuse that resource by
+    itself. The point is to say which name is wrong and why, at the moment the
+    schema is built and every component is known, rather than leaving the
+    practitioner with an error that blames the provider without saying how.
+    """
+    managed = set(get_all_components("resource"))
+
+    for name in schemas:
+        if name in managed:
+            continue
+        diagnostics.append(
+            pb.Diagnostic(
+                severity=pb.Diagnostic.WARNING,
+                summary=f"List resource '{name}' has no managed resource of the same name",
+                detail=(
+                    f"Terraform looks up a list resource's results against the managed "
+                    f"resource type with the same name, so '{name}' can only list if a "
+                    f"resource registered as '{name}' exists and declares an identity "
+                    f'schema. Without it `terraform query` fails with "Identity schema '
+                    f'not found for resource type {name}; this is a bug in the provider".\n\n'
+                    f"Suggestion: register the list resource under the managed resource's "
+                    f'own name, so that `@register_list_resource("{name}")` names a '
+                    f"resource that exists. A list resource is another way to find "
+                    f"instances of a managed resource, not a type of its own."
+                ),
+            )
+        )
 
 
 async def _collect_action_schemas(
