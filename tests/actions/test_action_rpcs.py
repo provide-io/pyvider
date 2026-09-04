@@ -138,15 +138,37 @@ async def test_plan_warnings_become_warning_diagnostics(demo_action: type[DemoRe
 async def test_plan_deferral_is_forwarded_when_the_client_allows_it(
     demo_action: type[DemoRebootAction],
 ) -> None:
-    demo_action.planned = ActionPlan(defer=DeferralReason.ABSENT_PREREQ)
+    demo_action.planned = ActionPlan(defer=DeferralReason.PROVIDER_CONFIG_UNKNOWN)
     request = pb.PlanAction.Request(action_type=ACTION_TYPE, config=_config())
     request.client_capabilities.deferral_allowed = True
 
     response = await PlanActionHandler(request, context=None)
 
     assert response.HasField("deferred")
-    assert response.deferred.reason == pb.Deferred.ABSENT_PREREQ
+    assert response.deferred.reason == pb.Deferred.PROVIDER_CONFIG_UNKNOWN
     assert list(response.diagnostics) == []
+
+
+@pytest.mark.asyncio
+async def test_an_action_may_only_defer_for_an_unknown_provider_config(
+    demo_action: type[DemoRebootAction],
+) -> None:
+    """Terraform accepts exactly one reason from PlanAction.
+
+    "An action can only be deferred due to an unknown provider configuration"
+    (internal/plugin6/grpc_provider.go:1941-1958). Any other reason is refused
+    there, so it is reported here, where the action that chose it can be named.
+    """
+    demo_action.planned = ActionPlan(defer=DeferralReason.ABSENT_PREREQ)
+    request = pb.PlanAction.Request(action_type=ACTION_TYPE, config=_config())
+    request.client_capabilities.deferral_allowed = True
+
+    response = await PlanActionHandler(request, context=None)
+
+    assert not response.HasField("deferred"), "a reason Terraform refuses was sent anyway"
+    detail = " ".join(d.summary + " " + d.detail for d in response.diagnostics)
+    assert "ABSENT_PREREQ" in detail
+    assert "PROVIDER_CONFIG_UNKNOWN" in detail, "the diagnostic does not say what to use instead"
 
 
 @pytest.mark.asyncio

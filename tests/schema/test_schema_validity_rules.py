@@ -151,3 +151,37 @@ class TestWriteOnlyPlacement:
 
 
 # 🐍🏗️🔚
+
+
+class TestIdentityAttributeTypes:
+    """Core rejects a map, set or object in identity and accepts the rest.
+
+    schemarepo/loadschemas/plugins.go:150-161; terraform-plugin-go documents the
+    accepted set as bool, number, string and a list of those
+    (tfprotov6/resource_identity_schema.go:63-72).
+    """
+
+    def test_a_list_of_strings_is_accepted(self) -> None:
+        """This was rejected, which is stricter than Terraform for no reason."""
+        from pyvider.conversion.schema_adapter import pvs_identity_schema_to_proto
+        from pyvider.schema import a_list, s_identity
+
+        proto = pvs_identity_schema_to_proto(s_identity({"path": a_list(a_str(), required=True)}))
+
+        assert [attr.name for attr in proto.identity_attributes] == ["path"]
+
+    def test_a_scalar_is_still_accepted(self) -> None:
+        from pyvider.conversion.schema_adapter import pvs_identity_schema_to_proto
+        from pyvider.schema import s_identity
+
+        proto = pvs_identity_schema_to_proto(s_identity({"id": a_str(required=True)}))
+
+        assert [attr.name for attr in proto.identity_attributes] == ["id"]
+
+    def test_a_map_is_still_rejected(self) -> None:
+        from pyvider.conversion.schema_adapter import pvs_identity_schema_to_proto
+        from pyvider.schema import a_map, s_identity
+        from pyvider.schema.exceptions import PvsSchemaDefinitionError
+
+        with pytest.raises(PvsSchemaDefinitionError, match="identity"):
+            pvs_identity_schema_to_proto(s_identity({"tags": a_map(a_str(), required=True)}))

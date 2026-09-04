@@ -13,6 +13,7 @@ from typing import Any
 from provide.foundation import logger
 
 from pyvider.actions import ActionContext, BaseAction
+from pyvider.actions.types import DeferralReason
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
@@ -101,6 +102,21 @@ async def PlanActionHandler(request: pb.PlanAction.Request, context: Any) -> pb.
                 error_diagnostic(
                     f"Action '{request.action_type}' deferred but the client does not allow deferrals",
                     "Terraform did not set deferral_allowed for this request.",
+                )
+            )
+        elif plan.defer is not DeferralReason.PROVIDER_CONFIG_UNKNOWN:
+            # Terraform accepts exactly one reason from PlanAction: "An action
+            # can only be deferred due to an unknown provider configuration"
+            # (internal/plugin6/grpc_provider.go:1941-1958). Any other reason is
+            # refused there, so it is reported here where the action that chose
+            # it can be named.
+            response.diagnostics.append(
+                error_diagnostic(
+                    f"Action '{request.action_type}' deferred for a reason Terraform will refuse",
+                    f"An action may only be deferred because the provider configuration is "
+                    f"not yet known, and this one gave {plan.defer.name}.\n\n"
+                    f"Suggestion: defer with DeferralReason.PROVIDER_CONFIG_UNKNOWN, or "
+                    f"report the condition as a diagnostic instead.",
                 )
             )
         else:

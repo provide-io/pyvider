@@ -6,8 +6,9 @@
 
 from functools import lru_cache
 import json
+from typing import Any
 
-from pyvider.cty import CtyBool, CtyNumber, CtyString, CtyType
+from pyvider.cty import CtyBool, CtyList, CtyNumber, CtyString, CtyType
 from pyvider.cty.conversion.type_encoder import encode_cty_type_to_wire_json
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema.exceptions import PvsSchemaDefinitionError
@@ -130,9 +131,28 @@ def _pvs_nested_block_to_proto(nb: PvsNestedBlock) -> pb.Schema.NestedBlock:
 
 
 # Identity is compared by equality and must be "wholly representative of all
-# data necessary to compare two managed resource instances", so only flat
-# scalars are valid.
+# data necessary to compare two managed resource instances", so it holds scalars
+# and lists of them -- see _is_valid_identity_type for what Terraform accepts.
 _IDENTITY_SCALAR_TYPES = (CtyString, CtyNumber, CtyBool)
+
+
+def _is_valid_identity_type(cty_type: CtyType[Any]) -> bool:
+    """Whether Terraform will accept this type in an identity schema.
+
+    Core rejects a map, a set or an object, and accepts everything else
+    (schemarepo/loadschemas/plugins.go:150-161); terraform-plugin-go documents
+    the accepted set as bool, number, string and a list of any of those
+    (tfprotov6/resource_identity_schema.go:63-72).
+
+    A list was rejected here as well, which is stricter than Terraform and ruled
+    out an ordinary composite identity -- a resource keyed by an ordered pair,
+    say -- for no protocol reason.
+    """
+    if isinstance(cty_type, _IDENTITY_SCALAR_TYPES):
+        return True
+    if isinstance(cty_type, CtyList):
+        return isinstance(cty_type.element_type, _IDENTITY_SCALAR_TYPES)
+    return False
 
 
 def pvs_identity_schema_to_proto(schema: PvsSchema) -> pb.ResourceIdentitySchema:
@@ -152,10 +172,10 @@ def pvs_identity_schema_to_proto(schema: PvsSchema) -> pb.ResourceIdentitySchema
 
     attributes = []
     for name, attr in block.attributes.items():
-        if not isinstance(attr.type, _IDENTITY_SCALAR_TYPES):
+        if not _is_valid_identity_type(attr.type):
             raise PvsSchemaDefinitionError(
                 f"Identity attribute '{name}' has type {type(attr.type).__name__}; "
-                "identity attributes must be scalar (string, number, or bool)."
+                "identity attributes must be a string, number or bool, or a list of those."
             )
         if attr.default is not None:
             # Checked before `computed`, which a default implies: reporting the
