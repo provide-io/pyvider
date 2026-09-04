@@ -3,27 +3,41 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-"""Tests for StopProvider handler.
+"""Tests for the StopProvider handler.
 
-StopProvider must answer *before* the server goes down. Stopping the gRPC
-server drains its grace period and then cancels every call still in flight,
-so a handler that awaits its own shutdown deadlocks on itself and the caller
-gets UNAVAILABLE -- indistinguishable from the plugin crashing. Failures are
-reported through StopProvider.Response.Error, which is what the protocol
-provides that channel for.
+Terraform's Stop is advisory: it asks the provider to halt what it is doing and
+expects an immediate answer, then waits for the calls already in flight to come
+back on their own (terraform/internal/providers/provider.go:63-73,
+internal/terraform/context.go:340-386). Stopping the process is a separate step,
+driven by `Close()` and go-plugin's `Kill()`, which reaches the plugin as
+GRPCController.Shutdown (internal/plugin6/grpc_provider.go:1885-1904).
+
+This handler used to schedule `RPCPluginServer.stop()` shortly after replying,
+which tore down the gRPC server, unlinked the socket and exited the process. An
+`ApplyResourceChange` still running was cut off, so an interrupted apply failed
+with UNAVAILABLE and a resource created remotely never reached state; Terraform's
+own teardown then found a dead socket and reported "plugin failed to exit
+gracefully". terraform-plugin-go implements Stop by cancelling contexts and
+carries on serving (tfprotov6/tf6server/server.go:412-454).
 """
 
-import asyncio
-
-from provide.testkit.mocking import AsyncMock, MagicMock, patch
+from provide.testkit.mocking import AsyncMock, patch
 import pytest
 
+from pyvider.common.stop_signal import is_stop_requested, reset_stop_signal
+from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers.stop_provider import (
     StopProviderHandler,
-    _shutdown_tasks,
     _stop_provider_impl,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+
+
+@pytest.fixture(autouse=True)
+def _clean_signal() -> None:
+    reset_stop_signal()
+    yield
+    reset_stop_signal()
 
 
 class TestStopProviderHandlerStructure:
@@ -32,16 +46,16 @@ class TestStopProviderHandlerStructure:
     @pytest.mark.asyncio
     async def test_handler_returns_response(self) -> None:
         """Test that handler returns a StopProvider.Response."""
-        request = pb.StopProvider.Request()
+        response = await StopProviderHandler(pb.StopProvider.Request(), context=None)
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_server = AsyncMock()
-            # Return a factory that returns the mock server
-            mock_hub.get_component.return_value = lambda: mock_server
+        assert isinstance(response, pb.StopProvider.Response)
 
-            response = await StopProviderHandler(request, context=None)
+    @pytest.mark.asyncio
+    async def test_handler_reports_no_error(self) -> None:
+        """Nothing here can fail, so the protocol's Error field stays empty."""
+        response = await StopProviderHandler(pb.StopProvider.Request(), context=None)
 
-            assert isinstance(response, pb.StopProvider.Response)
+        assert not response.Error
 
     @pytest.mark.asyncio
     async def test_handler_calls_implementation(self) -> None:
@@ -56,93 +70,63 @@ class TestStopProviderHandlerStructure:
             mock_impl.assert_called_once_with(request, None)
 
 
-class TestStopProviderImpl:
-    """Tests for StopProvider implementation."""
+class TestStopProviderSignals:
+    """Stop asks in-flight work to wind up."""
 
     @pytest.mark.asyncio
-    async def test_impl_stops_server_instance(self) -> None:
-        """Test that implementation calls server stop() when instance exists."""
-        request = pb.StopProvider.Request()
+    async def test_it_raises_the_stop_signal(self) -> None:
+        assert is_stop_requested() is False
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
+        await _stop_provider_impl(pb.StopProvider.Request(), context=None)
 
-            response = await _stop_provider_impl(request, context=None)
-            await asyncio.gather(*_shutdown_tasks)
-
-            assert isinstance(response, pb.StopProvider.Response)
-            mock_hub.get_component.assert_called_once_with("singleton", "rpc_plugin_server")
-            mock_server.stop.assert_awaited_once()
+        assert is_stop_requested() is True
 
     @pytest.mark.asyncio
-    async def test_impl_handles_no_server_instance(self) -> None:
-        """Test that implementation handles missing server instance gracefully."""
-        request = pb.StopProvider.Request()
+    async def test_a_context_sees_the_request(self) -> None:
+        """A resource reaches the signal through the context it already has."""
+        from pyvider.resources.context import ResourceContext
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_hub.get_component.return_value = None
+        ctx: ResourceContext = ResourceContext()
+        await _stop_provider_impl(pb.StopProvider.Request(), context=None)
 
-            response = await _stop_provider_impl(request, context=None)
-
-            assert isinstance(response, pb.StopProvider.Response)
+        assert ctx.stop_requested is True
 
     @pytest.mark.asyncio
-    async def test_impl_reports_a_failed_lookup_through_the_error_field(self) -> None:
-        """A stop that cannot even be started is reported, not raised.
+    async def test_stopping_twice_is_harmless(self) -> None:
+        """A second Ctrl-C sends StopProvider again; it must not be an error."""
+        first = await _stop_provider_impl(pb.StopProvider.Request(), context=None)
+        second = await _stop_provider_impl(pb.StopProvider.Request(), context=None)
 
-        Raising reaches Terraform as a transport error, which is what a crashed
-        plugin looks like. The response carries an Error string precisely so the
-        two can be told apart.
-        """
-        request = pb.StopProvider.Request()
+        assert not first.Error
+        assert not second.Error
+        assert is_stop_requested() is True
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_hub.get_component.side_effect = RuntimeError("hub exploded")
 
-            response = await _stop_provider_impl(request, context=None)
+class TestStopProviderLeavesTheServerRunning:
+    """The regression guard: Stop must not tear the plugin down."""
+
+    @pytest.mark.asyncio
+    async def test_the_server_is_not_stopped(self) -> None:
+        """Terraform still has calls in flight and stops the process itself."""
+        mock_server = AsyncMock()
+        previous = hub.get_component("singleton", "rpc_plugin_server")
+        hub.register("singleton", "rpc_plugin_server", lambda: mock_server)
+        try:
+            await _stop_provider_impl(pb.StopProvider.Request(), context=None)
+        finally:
+            if previous is None:
+                hub.unregister("singleton", "rpc_plugin_server")
+            else:
+                hub.register("singleton", "rpc_plugin_server", previous)
+
+        mock_server.stop.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_it_returns_without_waiting_on_anything(self) -> None:
+        """Stop must answer immediately; Terraform is holding the call open."""
+        response = await _stop_provider_impl(pb.StopProvider.Request(), context=None)
 
         assert isinstance(response, pb.StopProvider.Response)
-        assert "hub exploded" in response.Error
-
-    @pytest.mark.asyncio
-    async def test_impl_answers_before_the_server_is_stopped(self) -> None:
-        """The response must be produced without waiting on the shutdown.
-
-        This is the whole contract: awaiting server.stop() here cancels this very
-        call. Asserting the server is untouched when the handler returns is what
-        stops that regressing.
-        """
-        request = pb.StopProvider.Request()
-
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            response = await _stop_provider_impl(request, context=None)
-
-            assert not response.Error
-            mock_server.stop.assert_not_awaited()
-
-            # ...and the shutdown really does happen, just afterwards.
-            await asyncio.gather(*_shutdown_tasks)
-            mock_server.stop.assert_awaited_once()
-
-    @pytest.mark.asyncio
-    async def test_a_shutdown_failure_does_not_escape_the_background_task(self) -> None:
-        """A stop that fails after responding is logged, not raised into the loop."""
-        request = pb.StopProvider.Request()
-
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_server = AsyncMock()
-            mock_server.stop.side_effect = RuntimeError("Server stop failed")
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            response = await _stop_provider_impl(request, context=None)
-            assert not response.Error
-
-            # gather() would re-raise a task that let the error escape.
-            await asyncio.gather(*_shutdown_tasks)
 
 
 class TestStopProviderMetrics:
@@ -151,196 +135,39 @@ class TestStopProviderMetrics:
     @pytest.mark.asyncio
     async def test_handler_records_request_metric(self) -> None:
         """Test that handler increments request counter."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            await StopProviderHandler(request, context=None)
+        with patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests:
+            await StopProviderHandler(pb.StopProvider.Request(), context=None)
 
             mock_requests.inc.assert_called_once_with(handler="StopProvider")
 
     @pytest.mark.asyncio
     async def test_handler_records_duration_metric(self) -> None:
         """Test that handler records duration metric."""
-        request = pb.StopProvider.Request()
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
+        with patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration:
+            await StopProviderHandler(pb.StopProvider.Request(), context=None)
 
-            await StopProviderHandler(request, context=None)
-
-            # Duration should be recorded
             assert mock_duration.observe.called
             call_args = mock_duration.observe.call_args
             assert call_args[1]["handler"] == "StopProvider"
-            # Duration should be a positive number
             assert call_args[0][0] >= 0
-
-    @pytest.mark.asyncio
-    async def test_handler_records_error_metric_on_failure(self) -> None:
-        """A failure reported in the response must still count as a failure.
-
-        The metric decorator only counts raised exceptions, so returning the
-        error instead would otherwise make a broken shutdown invisible.
-        """
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_hub.get_component.side_effect = RuntimeError("Stop failed")
-
-            response = await StopProviderHandler(request, context=None)
-
-            assert response.Error
-            mock_errors.inc.assert_called_once_with(handler="StopProvider")
-
-    @pytest.mark.asyncio
-    async def test_a_late_shutdown_failure_is_counted(self) -> None:
-        """A stop that fails after the response is still counted."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.handler_errors") as mock_errors,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_server = AsyncMock()
-            mock_server.stop.side_effect = RuntimeError("Stop failed")
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            await StopProviderHandler(request, context=None)
-            await asyncio.gather(*_shutdown_tasks)
-
-            mock_errors.inc.assert_called_once_with(handler="StopProvider")
 
 
 class TestStopProviderLogging:
     """Tests for StopProvider logging behavior."""
 
     @pytest.mark.asyncio
-    async def test_impl_logs_shutdown_initiation(self) -> None:
-        """Test that implementation logs shutdown initiation."""
-        request = pb.StopProvider.Request()
+    async def test_impl_logs_the_request(self) -> None:
+        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger:
+            await _stop_provider_impl(pb.StopProvider.Request(), context=None)
 
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            await _stop_provider_impl(request, context=None)
-
-            # Check that info was called with shutdown message
-            assert any("StopProvider RPC received" in str(call) for call in mock_logger.info.call_args_list)
-
-    @pytest.mark.asyncio
-    async def test_impl_logs_server_stop_completion(self) -> None:
-        """Completion is logged once the background shutdown finishes."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            await _stop_provider_impl(request, context=None)
-            await asyncio.gather(*_shutdown_tasks)
-
-            # Check that completion was logged
-            assert any("stop completed successfully" in str(call) for call in mock_logger.info.call_args_list)
-
-    @pytest.mark.asyncio
-    async def test_impl_logs_warning_when_no_server(self) -> None:
-        """Test that implementation logs warning when no server instance."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_hub.get_component.return_value = None
-
-            await _stop_provider_impl(request, context=None)
-
-            # Check that warning was logged
-            mock_logger.warning.assert_called_once()
-            assert "No active RPCPluginServer" in str(mock_logger.warning.call_args)
-
-    @pytest.mark.asyncio
-    async def test_impl_logs_error_on_exception(self) -> None:
-        """A stop that cannot be started is logged as well as returned."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.logger") as mock_logger,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_hub.get_component.side_effect = RuntimeError("Test error")
-
-            response = await _stop_provider_impl(request, context=None)
-
-            assert response.Error
-            mock_logger.error.assert_called_once()
-            assert "Unexpected error" in str(mock_logger.error.call_args)
-
-
-class TestStopProviderEdgeCases:
-    """Edge case tests for StopProvider handler."""
+            assert mock_logger.info.called
 
     @pytest.mark.asyncio
     async def test_handler_with_context_object(self) -> None:
-        """Test handler with non-None context object."""
-        request = pb.StopProvider.Request()
-        context = MagicMock()
+        """A gRPC context object is accepted and ignored."""
+        response = await StopProviderHandler(pb.StopProvider.Request(), context=object())
 
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub:
-            mock_server = AsyncMock()
-            mock_hub.get_component.return_value = lambda: mock_server
-
-            response = await StopProviderHandler(request, context=context)
-
-            assert isinstance(response, pb.StopProvider.Response)
-
-    @pytest.mark.asyncio
-    async def test_handler_resilience_decorator(self) -> None:
-        """Test that handler uses resilient decorator."""
-        # The @resilient() decorator should handle exceptions gracefully
-        request = pb.StopProvider.Request()
-
-        with patch("pyvider.protocols.tfprotov6.handlers.stop_provider._stop_provider_impl") as mock_impl:
-            mock_impl.side_effect = Exception("Test exception")
-
-            with pytest.raises(Exception, match="Test exception"):
-                await StopProviderHandler(request, context=None)
-
-    @pytest.mark.asyncio
-    async def test_metrics_recorded_even_on_error(self) -> None:
-        """Test that metrics are recorded even when handler errors."""
-        request = pb.StopProvider.Request()
-
-        with (
-            patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
-            patch("pyvider.protocols.tfprotov6.handlers.stop_provider.hub") as mock_hub,
-        ):
-            mock_hub.get_component.side_effect = RuntimeError("Error")
-
-            response = await StopProviderHandler(request, context=None)
-
-            assert response.Error
-            # Duration should still be recorded
-            assert mock_duration.observe.called
+        assert isinstance(response, pb.StopProvider.Response)
 
 
 # 🐍🏗️🔚

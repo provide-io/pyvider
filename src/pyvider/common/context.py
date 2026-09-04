@@ -20,6 +20,21 @@ class BaseContext:
 
     diagnostics: list[pb.Diagnostic] = field(factory=list, init=False)
 
+    @property
+    def stop_requested(self) -> bool:
+        """Whether Terraform has asked the provider to stop.
+
+        Terraform's Stop is advisory: it asks in-flight work to wind up and then
+        waits for it to return (internal/providers/provider.go:63-73). A resource
+        doing something long-running -- polling an API, waiting for a machine to
+        boot -- should check this between steps and return early, so an
+        interrupted `terraform apply` ends with the resource accounted for
+        instead of being cut off mid-call.
+        """
+        from pyvider.common.stop_signal import is_stop_requested
+
+        return is_stop_requested()
+
     def _add_diagnostic(
         self,
         severity: pb.Diagnostic.Severity,
