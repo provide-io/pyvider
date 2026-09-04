@@ -20,6 +20,7 @@ from pyvider.cty import (
     CtyValue,
 )
 from pyvider.cty.conversion import cty_to_native
+from pyvider.cty.values.markers import UnknownValue
 from pyvider.exceptions.resource import StateClassMismatchError
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
@@ -381,7 +382,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if isinstance(data, CtyValue):
             return cls._handle_cty_value(data, target_cls, apply_defaults=apply_defaults)
 
-        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL:
+        # Any unknown payload, not just the unrefined singleton. Terraform
+        # refines an unknown whenever it knows something about a value it cannot
+        # yet compute -- "this will not be null" for `x = other_resource.attr` is
+        # the common one -- and that arrives as a RefinedUnknownValue, a
+        # different object. Matching on identity alone let it reach the list and
+        # set branches, which iterated it and raised "'RefinedUnknownValue'
+        # object is not iterable" as an Internal Provider Error during plan.
+        if data is None or isinstance(data, UnknownValue):
             return None
 
         origin = get_origin(target_cls)
