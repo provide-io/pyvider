@@ -35,9 +35,12 @@ echo "==> Installing this pyvider plus the components the corpus configures"
 uv venv --clear "${VENV}"
 # pyvider comes from this checkout so the gate tests the change under review;
 # everything else comes from the registry, so a corpus failure is attributable.
+# PYVIDER_COMPONENTS lets a developer point the gate at a local components
+# checkout; CI takes the released package, so a corpus failure is attributable
+# to the pyvider under review rather than to unreleased components.
 VIRTUAL_ENV="${VENV}" uv pip install \
   --editable "${PROJECT_ROOT}" \
-  pyvider-components \
+  "${PYVIDER_COMPONENTS:-pyvider-components}" \
   "tofusoup[all]"
 
 echo "==> Publishing the provider where Terraform will look for it"
