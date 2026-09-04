@@ -151,6 +151,44 @@ class TestKeywordOnlyParameters:
         with pytest.raises(FunctionRegistrationError, match="mode"):
             function_to_dict(needs_a_keyword)
 
+    def test_an_injected_capability_parameter_is_not_refused(self) -> None:
+        """The hub supplies this one, so Terraform never has to.
+
+        `@register_function(component_of="lens")` means the handler injects the
+        capability under that exact name at call time
+        (`call_function.py:_inject_capabilities`, `native_kwargs[parent] = ...`),
+        so `*, lens: LensCapability` is reachable even though Terraform cannot
+        name it. Refusing it unregisters every capability-backed function --
+        `pyvider_components`' `lens_jq` among them, which then fails under
+        Terraform as "Function not found in provider".
+        """
+        from pyvider.functions.adapters import function_to_dict
+
+        def uses_a_capability(text: str, *, lens: object) -> str:
+            return text
+
+        uses_a_capability._parent_capability = "lens"  # type: ignore[attr-defined]
+
+        described = function_to_dict(uses_a_capability)
+
+        assert described is not None
+        assert [p["name"] for p in described["parameters"]] == ["text"], (
+            "the injected capability must not appear as a Terraform parameter"
+        )
+
+    def test_a_keyword_only_parameter_that_is_not_the_capability_is_still_refused(self) -> None:
+        """Only the injected name is exempt; anything else is still unreachable."""
+        from pyvider.exceptions.function import FunctionRegistrationError
+        from pyvider.functions.adapters import function_to_dict
+
+        def uses_a_capability_and_more(text: str, *, lens: object, mode: str) -> str:
+            return text
+
+        uses_a_capability_and_more._parent_capability = "lens"  # type: ignore[attr-defined]
+
+        with pytest.raises(FunctionRegistrationError, match="mode"):
+            function_to_dict(uses_a_capability_and_more)
+
     def test_a_keyword_only_parameter_with_a_default_is_allowed(self) -> None:
         """It always takes its default, which is harmless; a warning says so."""
         from pyvider.functions.adapters import function_to_dict

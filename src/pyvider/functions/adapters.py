@@ -150,13 +150,24 @@ def _reject_unreachable_keyword_only_parameters(func_obj: Callable[..., Any], si
     always took it, and one without a default made the function impossible to
     call at all, failing at invocation with a `TypeError` from deep inside the
     binding rather than at registration.
+
+    One keyword-only parameter *is* reachable: the capability a function is
+    registered against. `@register_function(component_of="lens")` makes the
+    handler inject it by that exact name at call time --
+    `native_kwargs[parent_capability] = instance` in
+    `call_function.py:_inject_capabilities` -- so `*, lens: LensCapability` is
+    supplied by the framework rather than by Terraform. Refusing it
+    unregisters every capability-backed function, which surfaces under
+    Terraform only as "Function not found in provider": `pyvider_components`'
+    `lens_jq` failed exactly that way.
     """
+    injected = getattr(func_obj, "_parent_capability", None)
     unreachable = [
         name
         for name, param in sig.parameters.items()
         if param.kind == inspect.Parameter.KEYWORD_ONLY
         and param.default is inspect.Parameter.empty
-        and name != "self"
+        and name not in ("self", injected)
     ]
     if unreachable:
         names = ", ".join(repr(name) for name in unreachable)
@@ -172,7 +183,7 @@ def _reject_unreachable_keyword_only_parameters(func_obj: Callable[..., Any], si
     defaulted = [
         name
         for name, param in sig.parameters.items()
-        if param.kind == inspect.Parameter.KEYWORD_ONLY and name != "self"
+        if param.kind == inspect.Parameter.KEYWORD_ONLY and name not in ("self", injected)
     ]
     if defaulted:
         logger.warning(
