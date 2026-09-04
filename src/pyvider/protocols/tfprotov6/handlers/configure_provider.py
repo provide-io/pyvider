@@ -200,7 +200,18 @@ async def _configure_provider_impl(
         provider_schema = provider_instance.schema
         config_cty = unmarshal_config(request.config, provider_schema.block)
 
-        if config_cty.is_unknown:
+        # `is_unknown` is top-level only, and Terraform does not send a wholly
+        # unknown provider block. What it does send during the plan and apply
+        # walks is a known object with an unknown somewhere inside it -- the
+        # ordinary `token = aws_secretsmanager_secret_version.t.secret_string` on
+        # the run that creates that secret. Only the import walk requires the
+        # configuration to be wholly known (node_provider.go:148-156).
+        #
+        # That case used to fall through to the parse, which withholds any value
+        # that is not wholly known so a provider is never handed a half-known
+        # object, and the resulting None became a hard error -- while this very
+        # log line claimed the configuration was being deferred.
+        if not config_cty.is_wholly_known():
             logger.warning(
                 "Provider configuration contains unknown values, deferring configuration",
                 operation="configure_provider",
