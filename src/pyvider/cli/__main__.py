@@ -19,23 +19,36 @@ from pyvider.common.config import PyviderConfig
 LogLevel = Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "TRACE", "NOTSET"]
 
 
-def _log_level_from_argv(argv: list[str]) -> str | None:
-    """The `--log-level` a user asked for, read straight from the command line.
+def _option_from_argv(argv: list[str], option: str) -> str | None:
+    """The value a user gave for `option`, read straight from the command line.
 
-    Foundation is configured once, below, before Click parses anything, so a
-    flag declared on a subcommand cannot reach it through the ordinary route --
-    `provide --log-level DEBUG` was accepted and did nothing at all. Reading it
-    here is what makes the flag mean something, and an explicit flag is the most
-    specific thing a user can say, so it wins over the environment.
+    Foundation is configured below, before Click parses anything, so a flag
+    declared on a subcommand cannot reach it through the ordinary route --
+    `provide --log-level DEBUG` was accepted and did nothing at all. Reading
+    the command line here is what makes these flags mean something.
+
+    Only the long spelling is read: the short forms belong to Click, and a bare
+    scan cannot tell one command's `-c` from another's.
     """
+    prefix = f"{option}="
     for index, argument in enumerate(argv):
-        if argument == "--log-level":
+        if argument == option:
             if index + 1 < len(argv):
-                return argv[index + 1].upper()
+                return argv[index + 1]
             return None
-        if argument.startswith("--log-level="):
-            return argument.split("=", 1)[1].upper()
+        if argument.startswith(prefix):
+            return argument.split("=", 1)[1]
     return None
+
+
+def _log_level_from_argv(argv: list[str]) -> str | None:
+    """The `--log-level` a user asked for.
+
+    An explicit flag is the most specific thing a user can say, so it wins over
+    the environment.
+    """
+    level = _option_from_argv(argv, "--log-level")
+    return level.upper() if level else None
 
 
 def main() -> None:
@@ -44,6 +57,14 @@ def main() -> None:
     requested_level = _log_level_from_argv(sys.argv)
     if requested_level:
         os.environ["PYVIDER_LOG_LEVEL"] = requested_level
+
+    # The config this reads decides the starting log level, so `--config` has
+    # to be applied here as well as in the Click group -- otherwise the file it
+    # names is read for everything except the one setting used before Click
+    # runs.
+    requested_config = _option_from_argv(sys.argv, "--config")
+    if requested_config:
+        os.environ["PYVIDER_CONFIG_FILE"] = requested_config
 
     pyvider_config = PyviderConfig()  # Loads from environment
 
