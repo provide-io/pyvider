@@ -140,11 +140,69 @@ def b_group(type_name: str, **kwargs: Any) -> PvsNestedBlock:
 
 
 # --- Schema Factories (s_*) ---
+def _reject_name_collisions(
+    attributes: dict[str, PvsAttribute] | None,
+    block_types: list[PvsNestedBlock] | None,
+) -> None:
+    """An attribute and a block cannot share a name.
+
+    Terraform rejects the whole provider at init over it
+    (configschema/internal_validate.go:56): the configuration language has no
+    way to tell which of the two `auth = ...` or `auth { ... }` means.
+    """
+    if not attributes or not block_types:
+        return
+
+    block_names = {nested.type_name for nested in block_types}
+    shared = sorted(set(attributes) & block_names)
+    if shared:
+        names = ", ".join(repr(name) for name in shared)
+        raise ValueError(
+            f"Invalid schema configuration: {names} is declared both as an attribute "
+            f"and as a nested block.\n\n"
+            f"Terraform rejects a provider whose schema does this, because a "
+            f"configuration cannot say which one it means.\n\n"
+            f"Suggestion: rename one of them."
+        )
+
+
+def _reject_write_only(
+    attributes: dict[str, PvsAttribute] | None,
+    block_types: list[PvsNestedBlock] | None,
+    *,
+    schema_kind: str,
+) -> None:
+    """Write-only belongs to managed resources only.
+
+    terraform-plugin-sdk rejects it on provider and data source schemas
+    (helper/schema/provider.go:202,208,242), and Terraform's own write-only
+    checks only ever run against managed resources -- so the flag would be
+    advertised, never enforced, and the value stored in plain text.
+    """
+    offenders = sorted(name for name, attr in (attributes or {}).items() if attr.write_only)
+    for nested in block_types or []:
+        offenders.extend(
+            f"{nested.type_name}.{name}" for name, attr in nested.block.attributes.items() if attr.write_only
+        )
+
+    if offenders:
+        names = ", ".join(repr(name) for name in offenders)
+        raise ValueError(
+            f"Invalid {schema_kind} schema: write_only cannot be set on {names}.\n\n"
+            f"Write-only is a managed-resource concept: Terraform's checks that the "
+            f"value is never persisted only run against managed resources, so on a "
+            f"{schema_kind} the flag would be advertised and never enforced.\n\n"
+            f"Suggestion: drop write_only, or mark the attribute sensitive if the "
+            f"intent is to keep it out of logs and plan output."
+        )
+
+
 def _create_schema(
     version: int,
     attributes: dict[str, PvsAttribute] | None = None,
     block_types: list[PvsNestedBlock] | None = None,
 ) -> PvsSchema:
+    _reject_name_collisions(attributes, block_types)
     block = b_main(attributes=attributes, block_types=block_types)
     return PvsSchema(version=version, block=block)
 
@@ -178,6 +236,7 @@ def s_data_source(
     attributes: dict[str, PvsAttribute] | None = None,
     block_types: list[PvsNestedBlock] | None = None,
 ) -> PvsSchema:
+    _reject_write_only(attributes, block_types, schema_kind="data source")
     return _create_schema(1, attributes=attributes, block_types=block_types)
 
 
@@ -185,6 +244,7 @@ def s_provider(
     attributes: dict[str, PvsAttribute] | None = None,
     block_types: list[PvsNestedBlock] | None = None,
 ) -> PvsSchema:
+    _reject_write_only(attributes, block_types, schema_kind="provider")
     return _create_schema(1, attributes=attributes, block_types=block_types)
 
 
