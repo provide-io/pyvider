@@ -13,8 +13,9 @@ the next apply, as a failure inside a resource they did not touch.
 """
 
 from collections.abc import Iterator
-from typing import Any
+from typing import Any, ClassVar
 
+import attrs
 import pytest
 
 from pyvider.hub import hub
@@ -22,7 +23,8 @@ from pyvider.protocols.tfprotov6.handlers.move_resource_state import (
     MoveResourceStateHandler,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
-from pyvider.schema import PvsSchema, a_str, s_resource
+from pyvider.resources.base import BaseResource
+from pyvider.schema import PvsSchema, a_str, s_identity, s_resource
 
 
 class _NoMoveSupport:
@@ -184,3 +186,101 @@ class TestSupportedMove:
 
 
 # 🐍🏗️🔚
+
+
+# --- What a cross-type move must produce -----------------------------------
+
+
+@attrs.define(frozen=True)
+class _MovedState:
+    id: str | None = None
+    name: str | None = None
+
+
+class _MoveTarget(BaseResource[_MovedState, _MovedState, _MovedState]):
+    """Accepts a move and translates the source's shape into its own."""
+
+    config_class = _MovedState
+    state_class = _MovedState
+
+    #: What move_state returns; each test sets it.
+    moved: ClassVar[Any] = None
+
+    @classmethod
+    def get_schema(cls) -> PvsSchema:
+        return s_resource({"id": a_str(required=True), "name": a_str(optional=True)})
+
+    @classmethod
+    def get_identity_schema(cls) -> PvsSchema:
+        return s_identity({"id": a_str(required=True)})
+
+    async def move_state(
+        self,
+        source_provider_address: str,
+        source_type_name: str,
+        source_state: dict[str, Any],
+        source_schema_version: int,
+    ) -> Any:
+        return type(self).moved
+
+    async def _validate_config(self, config: _MovedState) -> list[str]:
+        return []
+
+    async def read(self, ctx: Any) -> _MovedState | None:
+        return None
+
+    async def _delete_apply(self, ctx: Any) -> None:
+        return None
+
+
+@pytest.fixture
+def move_target() -> Any:
+    _MoveTarget.moved = None
+    hub.register("resource", "move_target", _MoveTarget)
+    yield _MoveTarget
+    hub.unregister("resource", "move_target")
+
+
+async def _move() -> Any:
+    return await MoveResourceStateHandler(
+        pb.MoveResourceState.Request(
+            source_type_name="old_widget",
+            target_type_name="move_target",
+            source_state=pb.RawState(json=b'{"widget_id":"w-1"}'),
+        ),
+        context=None,
+    )
+
+
+@pytest.mark.asyncio
+async def test_a_cross_type_move_carries_identity(move_target: Any) -> None:
+    """A resource that declares identity keeps one across a move.
+
+    The target used to arrive with none, so a later import or list could not tie
+    the object back to it. Identity is derived from the moved state the same way
+    apply and read derive it.
+    """
+    move_target.moved = {"id": "w-1", "name": "widget one"}
+
+    response = await _move()
+
+    assert not response.diagnostics, f"move failed: {response.diagnostics}"
+    assert response.target_identity.identity_data.msgpack, "the moved resource has no identity"
+
+
+@pytest.mark.asyncio
+async def test_a_moved_state_the_target_schema_rejects_is_refused(move_target: Any) -> None:
+    """The hook's output is checked before Terraform writes it to state.
+
+    Core rejects a non-conforming value itself
+    (refactoring/cross_provider_move.go:202-219), but by then the message is
+    about the provider rather than the hook that produced it.
+    """
+    # `id` is required by the target schema and the hook did not produce it.
+    move_target.moved = {"name": "widget one"}
+
+    response = await _move()
+
+    assert response.diagnostics, "an unusable moved state was accepted"
+    detail = " ".join(d.summary + " " + d.detail for d in response.diagnostics)
+    assert "move_target" in detail
