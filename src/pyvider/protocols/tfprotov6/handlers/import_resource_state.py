@@ -168,7 +168,7 @@ async def _import_resource_state_impl(
         resource_context: ResourceContext = ResourceContext(
             config=None,
             state=None,
-            capabilities=provider_instance.metadata.capabilities if provider_instance else {},  # type: ignore[arg-type]
+            capabilities=getattr(provider_instance, "capabilities", {}) if provider_instance else {},
             test_mode_enabled=test_mode_enabled,
             identity=_requested_identity(request, identity_schema),
         )

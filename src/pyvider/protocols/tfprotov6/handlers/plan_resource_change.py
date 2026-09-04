@@ -206,7 +206,12 @@ def _create_resource_context(
         private_state=private_state_instance,
         config_cty=config_cty_marked,
         planned_state_cty=proposed_new_state_cty,
-        capabilities=provider_instance.metadata.capabilities,
+        # The provider's configured capability instances, which is what
+        # ResourceContext.capabilities is declared to hold. This used to read
+        # provider_instance.metadata.capabilities -- the ProviderCapabilities
+        # flags struct, an unrelated object sharing the name -- so the
+        # documented ctx.capabilities["name"] raised TypeError.
+        capabilities=getattr(provider_instance, "capabilities", {}),
         test_mode_enabled=test_mode_enabled,
         identity=(
             unmarshal_identity(prior_identity, identity_schema) if identity_schema is not None else None

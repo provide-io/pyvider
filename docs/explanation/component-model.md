@@ -216,7 +216,7 @@ Components can use capabilities for cross-cutting concerns:
 class Server(BaseResource):
     async def _create_apply(self, ctx: ResourceContext):
         # Access capabilities through context
-        token = await ctx.capabilities.auth.get_token()
+        token = await ctx.capabilities["auth"].get_token()
 ```
 
 **See**: [Capabilities Overview](../capabilities/overview.md)
