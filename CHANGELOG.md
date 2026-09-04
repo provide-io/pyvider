@@ -33,6 +33,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for collection nesting, so they were being dropped silently. Declaring the
   same shape without them still works; a nested block carries them today.
 - **State locks no longer expire by default.** See below.
+- **A state id containing anything but lowercase letters, digits, `-` and `_`
+  is stored under a different filename.** The filesystem state store's segment encoder is an allow-list now, and every
+  character outside it is percent-escaped, so `Prod` is stored as
+  `%50rod.tfstate` where it was `Prod.tfstate` and `my.store` as
+  `my%2Estore.tfstate`. Escaping case is what keeps `prod` and `Prod` apart on
+  a case-folding filesystem, which is the data-loss fix below; escaping the
+  rest closes the same class instead of the members of it found so far.
+  Terraform's own type names are lowercase, so a store's directories stay where
+  they are and stay readable. A state id is a workspace name, which may carry
+  capitals, and those files do move. One that moves is taken over rather than
+  abandoned: the older spelling is renamed forward the first time its state is
+  touched, so no migration step is needed. Adoption
+  requires an exact directory-entry match, because on a case-insensitive
+  filesystem `Prod.tfstate` opens the file stored as `prod.tfstate`, which
+  belongs to a different state id.
 
 ### Added
 
@@ -256,6 +271,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `assert_schema_state_parity` raises `AssertionError` directly instead of using
   a bare `assert`, which `python -O` strips. The check is meant to be
   unconditional, like the runtime one it complements.
+- **Two state ids differing only in case shared one state file.** APFS and NTFS
+  fold case, so `prod` and `Prod` named one file on disk. Writing one
+  overwrote the other, a read of either returned whichever was written last,
+  and `list_states` reported a single state -- so nothing anywhere showed that
+  a state had been lost. The two also shared one lock file, so a lease taken
+  for one blocked the other. Uppercase is escaped now, which makes the names
+  distinct on every filesystem rather than only on the ones that already
+  distinguished them.
+- **A state id naming a Windows device was never a file.** `con`, `prn`, `aux`,
+  `nul`, `com1`-`com9` and `lpt1`-`lpt9` resolve to a device whatever extension
+  follows, so `con.tfstate` opened the console. They are escaped now, and only
+  the whole segment counts: `console` is an ordinary name.
+- **Two providers could hold the same state lock on Windows.** The
+  cross-process mutex fell back to an `O_EXCL` sentinel file wherever `fcntl`
+  is absent, which is every Windows host. A sentinel is an ordinary file:
+  nothing removes it when its holder is killed, so it needed a staleness
+  heuristic, and the heuristic broke mutual exclusion twice over. The unlink
+  was neither atomic with the staleness check nor identity-checked, so a
+  process that judged a sentinel stale could delete the fresh sentinel a
+  legitimate new holder had created in between, and both then wrote the same
+  lease record. And nothing refreshed the sentinel's mtime during a hold, so a
+  live holder blocked on a slow network filesystem for longer than the
+  staleness floor was declared dead and evicted. Windows has the primitive the
+  sentinel stood in for: `msvcrt.locking` takes a byte-range lock on an open
+  descriptor and releases it when the handle closes, which the OS does for
+  every handle at process termination -- the same guarantee `fcntl.lockf`
+  gives, and the one this mutex depends on. Using it deletes the staleness
+  apparatus rather than patching it. A host offering neither primitive is now
+  refused outright, since a lock that silently fails to exclude is worse than
+  no lock; every platform CPython supports has one of the two. The lock file
+  handle is also closed even when releasing the lock raises. Closing is what
+  drops the lock on Windows, so a failed release previously left the file
+  locked for the life of the process.
+- **`pyvider --config FILE` crashed every command that read configuration.**
+  The root group stored each parsed option on the context under its own name,
+  and `--config` carries a path whose name collides with the loaded
+  `PyviderConfig` the context keeps in `ctx.config`. The store replaced that
+  object with a `Path`, so `pyvider --config alt.toml config show` raised
+  `AttributeError: 'PosixPath' object has no attribute 'loaded_file_path'`. The
+  path goes to `config_file` -- the field foundation's CLIContext declares for
+  it -- and to `PYVIDER_CONFIG_FILE`, where the config loader, the
+  provider-name resolution and `config show`'s own report of where it looked
+  all read it. It is applied before the context is built, and read off
+  `sys.argv` in `main()` as well, since the config that decides the starting
+  log level is loaded before Click parses anything.
 
 ## [0.6.2] - 2026-08-31
 
