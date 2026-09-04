@@ -199,6 +199,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   type of the same name and refuses to list when there is none. Nothing checked
   it, and the architecture documentation, the end-to-end test and the
   list-resource fixtures all demonstrated the shape that fails.
+- **An absent collection block encoded as null.** Terraform decodes a block that
+  appears no times as the empty value for its nesting mode -- an empty list, set
+  or map, an object of nulls for a group -- and rejects the wrong one per mode
+  ("must be empty to indicate no blocks, not null"). Every absent block encoded
+  as null, so a resource that simply did not mention one produced a plan
+  Terraform refuses. Single was right, and only because null happens to be its
+  empty value too.
+- **A non-conforming `CtyValue` was encoded anyway.** `marshal` validated a raw
+  Python value and trusted a `CtyValue` as it stood, so a payload disagreeing
+  with the declared type went onto the wire -- a string where the schema
+  promises a number, or a short object -- and Terraform blamed the provider with
+  nothing naming the attribute or the hook. The exposure was a hook returning a
+  hand-built value, which `list()` results and function returns both are.
+- **`provide --log-level` did nothing.** Foundation is configured before Click
+  parses anything, so a flag on a subcommand could never reach it. The config
+  file also overwrote the environment's log level, inverting the documented
+  precedence, and the console formatter was written under a name nothing reads.
+- **A background provider-initialization failure was silent,** logging nothing at
+  the time and surfacing only as asyncio's "Task exception was never retrieved"
+  at interpreter shutdown.
+- **A malformed state lock lease wedged the lock permanently.** Corrupt JSON was
+  already discarded, but a lease that parsed and carried a bad timestamp raised
+  out of `float()` -- on every subsequent attempt too, so the state could not be
+  locked again without deleting the file by hand.
 - **An attribute's `description_kind` never reached the wire,** so a
   description written as Markdown was published as plain text.
 - Identity attributes may be a list of scalars, which Terraform allows and this
