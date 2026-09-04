@@ -201,6 +201,10 @@ def _create_resource_context(
         planned_state=planned_state_instance,
         private_state=private_state_instance,
         config_cty=config_cty,
+        # BaseResource.apply decides create/update/destroy from this, not from
+        # the converted instance: a null planned state is Terraform asking for a
+        # destroy, and nothing else is.
+        planned_state_cty=planned_state_cty,
         capabilities=provider_instance.metadata.capabilities,
         test_mode_enabled=test_mode_enabled,
         identity=(
