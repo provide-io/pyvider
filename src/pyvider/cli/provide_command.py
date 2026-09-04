@@ -12,7 +12,7 @@ import sys
 from typing import Any
 
 import click
-from provide.foundation.console import pout
+from provide.foundation.console import perr, pout
 
 from pyvider.cli.main import cli
 
@@ -80,44 +80,44 @@ def _report_detection_error(script_name: str, magic_cookie: str) -> None:
     means the practitioner is one rename away from a working provider, so say
     exactly that rather than failing the handshake with nothing.
     """
-    pout("\n" + "─" * 70, fg="red")
-    pout(" ❌  Provider Detection Error", fg="red", bold=True)
-    pout("─" * 70, fg="red")
-    pout(
+    perr("\n" + "─" * 70, fg="red")
+    perr(" ❌  Provider Detection Error", fg="red", bold=True)
+    perr("─" * 70, fg="red")
+    perr(
         "\nTerraform is trying to launch this provider (TF_PLUGIN_MAGIC_COOKIE is set),\n"
         f"but the binary name '{script_name}' doesn't contain 'terraform-provider'.",
         fg="yellow",
     )
-    pout(
+    perr(
         "\nThis usually happens when:",
         fg="white",
     )
-    pout(
+    perr(
         "  1. The provider binary was renamed or symlinked incorrectly",
         fg="white",
     )
-    pout(
+    perr(
         "  2. The PSPF package was built with an incorrect command configuration",
         fg="white",
     )
-    pout("\nTo fix this:", fg="cyan", bold=True)
-    pout(
+    perr("\nTo fix this:", fg="cyan", bold=True)
+    perr(
         f"  • Ensure the binary is named 'terraform-provider-pyvider' (not '{script_name}')",
         fg="cyan",
     )
-    pout(
+    perr(
         "  • Check the [tool.flavor] configuration in pyproject.toml",
         fg="cyan",
     )
-    pout(
+    perr(
         "  • Rebuild the package with the correct command path",
         fg="cyan",
     )
-    pout("─" * 70, fg="red")
-    pout("\nDebug Info:", fg="white", dim=True)
-    pout(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
-    pout(f"  script_name: {script_name}", fg="white", dim=True)
-    pout(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
+    perr("─" * 70, fg="red")
+    perr("\nDebug Info:", fg="white", dim=True)
+    perr(f"  sys.argv[0]: {sys.argv[0]}", fg="white", dim=True)
+    perr(f"  script_name: {script_name}", fg="white", dim=True)
+    perr(f"  TF_PLUGIN_MAGIC_COOKIE: {magic_cookie[:20]}...", fg="white", dim=True)
     sys.exit(1)
 
 
@@ -205,6 +205,27 @@ async def _initialize_and_register_provider(logger: Any, hub: Any, discovery_tas
         operation="hub_register",
         provider=next(iter(provider_instances.keys())),
     )
+
+
+def _reject_a_foreign_magic_cookie(magic_cookie: str | None, *, force: bool) -> None:
+    """Refuse a cookie that is set but is not Terraform's.
+
+    The value is fixed and public -- a "did a human run this by mistake" guard
+    rather than a secret (go-plugin/server.go:49-52). It used to be compared
+    against itself: the environment value was read and then handed back as the
+    expected value, so any cookie at all was accepted and this guard never
+    fired.
+    """
+    if not magic_cookie or force or magic_cookie == TERRAFORM_PLUGIN_MAGIC_COOKIE:
+        return
+
+    perr(
+        "TF_PLUGIN_MAGIC_COOKIE is set but does not match the value Terraform uses, "
+        "so this process was not launched by Terraform.\n\n"
+        "This binary is a Terraform provider plugin. It is meant to be started by "
+        "Terraform, not run directly."
+    )
+    sys.exit(1)
 
 
 def _report_server_crash(e: Exception) -> None:
@@ -468,8 +489,9 @@ def provide_cmd(ctx: click.Context, /, force: bool, log_level: str, **kwargs: An
             pass
         sys.exit(0)
 
-    # If --force is used, provide a dummy cookie value.
-    cookie_to_use = magic_cookie or "forced-by-cli"
+    _reject_a_foreign_magic_cookie(magic_cookie, force=force)
+
+    cookie_to_use = magic_cookie or TERRAFORM_PLUGIN_MAGIC_COOKIE
 
     try:
         asyncio.run(_run_provider_server(cookie_to_use))
