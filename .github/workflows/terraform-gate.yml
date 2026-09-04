@@ -1,0 +1,61 @@
+# Runs this pyvider against a real OpenTofu, over the provider's example corpus.
+#
+# The reusable python-ci pipeline tests pyvider in-process. That cannot see a
+# component which fails to register, or a plan Terraform refuses, because
+# nothing in it is Terraform. This workflow is the other half.
+name: 🌍 Terraform Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stir:
+    name: 🥣 Example corpus
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      # The pyvider under review.
+      - name: Check out pyvider
+        uses: actions/checkout@v6
+
+      # The example corpus. A public repository, so no token is involved.
+      - name: Check out the provider's examples
+        uses: actions/checkout@v6
+        with:
+          repository: provide-io/terraform-provider-pyvider
+          path: .terraform-gate/provider
+
+      # stir drives whichever of terraform/tofu it finds on PATH.
+      - name: Install OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: '1.12.6'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      # Builds the venv, publishes the provider, runs init/apply/plan/destroy
+      # over every example directory.
+      - name: Run the corpus
+        run: ci/terraform-gate.sh
+
+      # The logs name the failing directory and carry Terraform's own output,
+      # which the summary table alone does not.
+      - name: Upload stir logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stir-logs
+          path: .terraform-gate/provider/examples/**/.soup/logs/
+          retention-days: 7
