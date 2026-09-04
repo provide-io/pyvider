@@ -106,3 +106,46 @@ async def test_an_expired_lease_is_still_reclaimable_when_opted_in(tmp_path) -> 
 
 
 # 🐍🏗️🔚
+
+
+@pytest.mark.asyncio
+async def test_a_lease_with_an_unreadable_timestamp_does_not_wedge_the_lock(tmp_path) -> None:
+    """A lease nobody can interpret is discarded, not raised on forever.
+
+    Corrupt JSON was already treated as "no lease", on the reasoning that
+    refusing to ever lock again is worse than reclaiming a record nobody can
+    read. A lease that parses as JSON but carries a malformed timestamp took a
+    different path: `StateLock.from_dict` raised `ValueError` out of `float()`,
+    and it raised on every subsequent attempt, so the state could never be
+    locked again without deleting the file by hand.
+    """
+    import json
+
+    store = FileSystemStateStore(root=str(tmp_path))
+    lock = await store.lock_state(TYPE_NAME, STATE_ID, "apply")
+    await store.unlock_state(TYPE_NAME, STATE_ID, lock.lock_id)
+
+    lock_path = store._lock_path(TYPE_NAME, STATE_ID)
+    lock_path.write_text(json.dumps({"lock_id": "stale", "expires_at": "not-a-number"}))
+
+    # Must not raise, and must be lockable again.
+    reacquired = await store.lock_state(TYPE_NAME, STATE_ID, "apply")
+
+    assert reacquired.lock_id != "stale"
+
+
+@pytest.mark.asyncio
+async def test_a_lease_holding_a_null_timestamp_is_also_discarded(tmp_path) -> None:
+    """The same shape, reached through TypeError rather than ValueError."""
+    import json
+
+    store = FileSystemStateStore(root=str(tmp_path))
+    lock = await store.lock_state(TYPE_NAME, STATE_ID, "apply")
+    await store.unlock_state(TYPE_NAME, STATE_ID, lock.lock_id)
+
+    lock_path = store._lock_path(TYPE_NAME, STATE_ID)
+    lock_path.write_text(json.dumps({"lock_id": "stale", "acquired_at": None}))
+
+    reacquired = await store.lock_state(TYPE_NAME, STATE_ID, "apply")
+
+    assert reacquired.lock_id != "stale"

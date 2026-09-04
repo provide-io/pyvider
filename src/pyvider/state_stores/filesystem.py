@@ -323,7 +323,21 @@ def _read_lease(handle: IO[bytes]) -> StateLock | None:
         return None
     if not isinstance(payload, dict) or "lock_id" not in payload:
         return None
-    return StateLock.from_dict(payload)
+    try:
+        return StateLock.from_dict(payload)
+    except (TypeError, ValueError):
+        # Readable JSON, but not a lease: a malformed timestamp raises out of
+        # `float()`. This used to escape, and it escaped on every subsequent
+        # attempt too, so the state could never be locked again without deleting
+        # the file by hand. Same reasoning as the corrupt-JSON case above --
+        # refusing to ever lock again is worse than reclaiming a record nobody
+        # can interpret.
+        logger.warning(
+            "Discarding malformed state lock lease",
+            operation="lock_state",
+            lock_id=str(payload.get("lock_id")),
+        )
+        return None
 
 
 def _write_lease(handle: IO[bytes], lock: StateLock | None) -> None:
