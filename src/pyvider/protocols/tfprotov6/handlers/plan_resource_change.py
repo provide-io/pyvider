@@ -28,6 +28,7 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
+    normalise_absent_blocks,
     null_write_only_attributes,
     resolve_identity_schema,
     str_path_to_proto_path,
@@ -295,6 +296,10 @@ def _handle_planned_state_dict(
     # value in a plan ("returned a value for the write-only attribute ... during
     # planning"), and an older Terraform stores it in the plan file instead.
     null_write_only_attributes(planned_state_dict, resource_schema.block)
+    # A block the resource did not mention is empty, not null, for every nesting
+    # mode but single. Terraform rejects the wrong one per mode:
+    # "must be empty to indicate no blocks, not null" (plan_valid.go:74-91).
+    normalise_absent_blocks(planned_state_dict, resource_schema.block)
 
     _fill_undetermined_computed_attributes(
         planned_state_dict, resource_schema, validator_type, prior_state_cty

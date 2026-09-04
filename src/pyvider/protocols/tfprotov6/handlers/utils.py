@@ -389,6 +389,64 @@ def null_write_only_attributes(values: Any, block: Any) -> Any:
     return values
 
 
+def _empty_block_value(nested: Any) -> Any:
+    """What Terraform decodes a block that appears no times as.
+
+    From `configschema.Block.EmptyValue` (empty_value.go:37-61): a list or set
+    of blocks is an empty collection, a map of blocks is an empty map, a group is
+    an object whose attributes are all null -- because a group is always present
+    -- and only a single block is null.
+    """
+    if nested.nesting is NestingMode.SINGLE:
+        return None
+    if nested.nesting is NestingMode.MAP:
+        return {}
+    if nested.nesting is NestingMode.GROUP:
+        return dict.fromkeys(getattr(nested.block, "attributes", {}))
+    return []
+
+
+def normalise_absent_blocks(values: Any, block: Any) -> Any:
+    """Give every block a resource did not mention the value Terraform expects.
+
+    An absent block encoded as null regardless of nesting mode. Terraform decodes
+    an absent block as the empty value for its mode, and rejects the wrong one in
+    a plan per mode (objchange/plan_valid.go:74-91):
+
+        attribute representing a list of nested blocks must be empty to indicate
+        no blocks, not null
+
+    So a resource that simply did not mention a list, set or map block produced a
+    plan Terraform refuses. Single was right, and only because null happens to be
+    its empty value too.
+
+    Mutates and returns `values`.
+    """
+    if not isinstance(values, MutableMapping):
+        return values
+
+    for nested in getattr(block, "block_types", []) or []:
+        present = values.get(nested.type_name)
+        if present is None:
+            values[nested.type_name] = _empty_block_value(nested)
+            continue
+
+        # A block that is there may itself contain blocks that are not.
+        for element in _block_elements(present, nested):
+            normalise_absent_blocks(element, nested.block)
+
+    return values
+
+
+def _block_elements(present: Any, nested: Any) -> Iterable[Any]:
+    """The objects inside a present block, whatever its nesting mode."""
+    if nested.nesting in (NestingMode.SINGLE, NestingMode.GROUP):
+        return [present]
+    if nested.nesting is NestingMode.MAP:
+        return list(present.values()) if isinstance(present, MutableMapping) else []
+    return list(present) if isinstance(present, list | tuple) else []
+
+
 def complete_state_dict(
     raw_state: dict[str, Any],
     block: Any,
@@ -410,6 +468,7 @@ def complete_state_dict(
     resource rather than by a class this can compare against.
     """
     null_write_only_attributes(raw_state, block)
+    normalise_absent_blocks(raw_state, block)
 
     for name, attr in getattr(block, "attributes", {}).items():
         if getattr(attr, "write_only", False):
