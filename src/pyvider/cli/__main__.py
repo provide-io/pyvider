@@ -28,13 +28,13 @@ def _log_level_from_argv(argv: list[str]) -> str | None:
     here is what makes the flag mean something, and an explicit flag is the most
     specific thing a user can say, so it wins over the environment.
     """
-    for index, token in enumerate(argv):
-        if token == "--log-level":
+    for index, argument in enumerate(argv):
+        if argument == "--log-level":
             if index + 1 < len(argv):
                 return argv[index + 1].upper()
             return None
-        if token.startswith("--log-level="):
-            return token.split("=", 1)[1].upper()
+        if argument.startswith("--log-level="):
+            return argument.split("=", 1)[1].upper()
     return None
 
 

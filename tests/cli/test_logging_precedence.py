@@ -28,6 +28,29 @@ import pytest
 from pyvider.cli.__main__ import _log_level_from_argv
 from pyvider.cli.provide_command import _configure_telemetry
 
+#: The variables `_configure_telemetry` writes.
+_TELEMETRY_ENV = ("PYVIDER_LOG_LEVEL", "PROVIDE_LOG_CONSOLE_FORMATTER")
+
+
+@pytest.fixture(autouse=True)
+def _restore_telemetry_env() -> None:
+    """Put the environment back exactly as it was found.
+
+    `monkeypatch.delenv` on a key that was already absent records nothing to
+    restore, so a key the code under test then *creates* survives teardown --
+    and `_configure_telemetry` creates exactly these. That leaked
+    `PYVIDER_LOG_LEVEL` into the rest of the session and broke an unrelated
+    config-precedence test, but only when the two ran in the same process:
+    under `pytest -n auto` they landed on different workers and it passed.
+    """
+    saved = {name: os.environ.get(name) for name in _TELEMETRY_ENV}
+    yield
+    for name, value in saved.items():
+        if value is None:
+            os.environ.pop(name, None)
+        else:
+            os.environ[name] = value
+
 
 class TestLogLevelFromArgv:
     """Read before Foundation is initialised, since nothing else can."""
