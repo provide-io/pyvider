@@ -221,6 +221,7 @@ def _handle_apply_result(
     response: pb.ApplyResourceChange.Response,
     *,
     type_name: str,
+    planned_private: bytes = b"",
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
 ) -> None:
@@ -268,6 +269,18 @@ def _handle_apply_result(
         response.private = encrypt(serialized_bytes)
         logger.debug("Setting response.private", private=repr(response.private))
         logger.debug("Serialized private bytes", serialized_bytes=repr(serialized_bytes))
+    elif planned_private:
+        # Silence from the apply hook means "unchanged", not "erase it".
+        # Terraform records whatever comes back here as the instance's private
+        # state, so returning nothing loses whatever the resource had stored.
+        # The planned bytes are passed through as they arrived, still encrypted.
+        response.private = planned_private
+        logger.debug(
+            "Carried planned private state forward",
+            operation="apply_resource_change",
+            resource_type=type_name,
+            private_state_size=len(planned_private),
+        )
 
 
 @rpc_handler("ApplyResourceChange")
@@ -344,6 +357,7 @@ async def _apply_resource_change_impl(
             planned_state_cty,
             response,
             type_name=request.type_name,
+            planned_private=request.planned_private,
             identity_schema=identity_schema,
             identity_values=(
                 derive_identity_values(

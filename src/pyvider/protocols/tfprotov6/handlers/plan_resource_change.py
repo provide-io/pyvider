@@ -112,9 +112,36 @@ async def _process_private_state(resource_class: Any, prior_private: bytes) -> A
 
     private_state_instance = None
     if hasattr(resource_class, "private_state_class") and resource_class.private_state_class and prior_private:
-        decrypted_bytes = None
+        # Failing to decrypt and failing to rebuild the object are different
+        # things, and only the second one is recoverable.
+        #
+        # A decrypt failure means the bytes are not what this provider wrote:
+        # the shared secret was rotated or lost, or the blob is corrupt. There
+        # is nothing to continue with, and continuing anyway used to plan as
+        # though the resource had never had private state -- while apply raised
+        # on the very same bytes, so a clean-looking plan was followed by a
+        # failed apply.
         try:
             decrypted_bytes = decrypt(prior_private)
+        except Exception as e:
+            err = ResourceError(
+                "The private state stored for this resource could not be decrypted.\n\n"
+                "This usually means PYVIDER_PRIVATE_STATE_SHARED_SECRET has changed "
+                "since the state was written, or differs between the machines that "
+                "run this provider.\n\n"
+                "Suggestion: restore the previous shared secret. The value is not "
+                "recoverable without it."
+            )
+            err.add_context("resource.type_name", getattr(resource_class, "__name__", str(resource_class)))
+            err.add_context("terraform.summary", "Private state could not be decrypted")
+            raise err from e
+
+        # Past decryption the bytes are ours. Failing to rebuild the object from
+        # them means the resource's private_state_class has changed shape since
+        # they were written, which is an ordinary consequence of upgrading a
+        # provider. The resource is expected to rebuild what it needs, so the
+        # plan continues without it.
+        try:
             private_data = msgpack.unpackb(decrypted_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
 
@@ -133,7 +160,7 @@ async def _process_private_state(resource_class: Any, prior_private: bytes) -> A
                 resource_class=getattr(resource_class, "__name__", str(resource_class)),
                 error_type=type(e).__name__,
                 error_message=str(e),
-                suggestion="This may be expected if the resource schema changed. Private state will be regenerated during apply.",
+                suggestion="This may be expected if the resource's private state class changed. Private state will be regenerated during apply.",
             )
     return private_state_instance
 
@@ -493,10 +520,36 @@ def _finalize_planned_state(
 
 
 def _store_planned_private_state(
-    response: pb.PlanResourceChange.Response, planned_private_state_attrs: Any, type_name: str
+    response: pb.PlanResourceChange.Response,
+    planned_private_state_attrs: Any,
+    type_name: str,
+    *,
+    prior_private: bytes = b"",
 ) -> None:
-    """Encrypt whatever private state the plan produced. A resource that keeps none stores none."""
+    """Store whatever private state the plan produced, or keep what was already there.
+
+    Terraform records the plan's private state verbatim and hands it back as
+    `prior_private` next time, so returning nothing erases it rather than
+    leaving it alone (node_resource_abstract_instance.go:549,1396). Most
+    resources establish private state at create and never mention it again --
+    the default `_update` returns `(base_plan, None)` -- so the first plan after
+    a create used to wipe it.
+
+    terraform-plugin-sdk assigns `resp.PlannedPrivate = req.PriorPrivate` before
+    the hook runs (helper/schema/grpc_provider.go:1040,1065,1164), and this is
+    the same default. The prior bytes are passed through as they arrived, still
+    encrypted: they are opaque here, and decrypting only to re-encrypt would add
+    a way to fail without adding anything.
+    """
     if not planned_private_state_attrs:
+        if prior_private:
+            response.planned_private = prior_private
+            logger.debug(
+                "Carried prior private state forward",
+                operation="plan_resource_change",
+                resource_type=type_name,
+                private_state_size=len(prior_private),
+            )
         return
 
     serialized_private_bytes = msgpack.packb(attrs.asdict(planned_private_state_attrs), use_bin_type=True)
@@ -588,7 +641,12 @@ async def _plan_resource_change_impl(
                 request.type_name,
             )
 
-        _store_planned_private_state(response, planned_private_state_attrs, request.type_name)
+        _store_planned_private_state(
+            response,
+            planned_private_state_attrs,
+            request.type_name,
+            prior_private=request.prior_private,
+        )
 
         logger.info(
             "Resource plan completed successfully",

@@ -177,7 +177,37 @@ class TestProcessPrivateState:
 
     @pytest.mark.asyncio
     async def test_handles_deserialization_error(self) -> None:
-        """Test that deserialization errors are handled gracefully."""
+        """A private state that no longer fits its class is handled gracefully.
+
+        The bytes decrypt, so they are this provider's; they just no longer
+        rebuild into `private_state_class` because its shape changed between
+        releases. The resource is expected to regenerate what it needs, so the
+        plan continues without it.
+        """
+        mock_resource = MagicMock()
+        mock_resource.private_state_class = MagicMock
+        mock_resource.__name__ = "TestResource"
+
+        with (
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.decrypt") as mock_decrypt,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.msgpack.unpackb") as mock_unpack,
+            patch("pyvider.protocols.tfprotov6.handlers.plan_resource_change.logger"),
+        ):
+            mock_decrypt.return_value = b"decrypted"
+            mock_unpack.side_effect = Exception("Not the shape it used to be")
+
+            result = await _process_private_state(mock_resource, b"bad_data")
+
+            assert result is None
+
+    @pytest.mark.asyncio
+    async def test_a_decrypt_failure_is_raised_rather_than_planned_past(self) -> None:
+        """A decrypt failure is not recoverable and must not be swallowed.
+
+        It means the bytes are not what this provider wrote -- the shared secret
+        was rotated or lost. Continuing plans as though the resource never had
+        private state, while apply raises on the very same bytes.
+        """
         mock_resource = MagicMock()
         mock_resource.private_state_class = MagicMock
         mock_resource.__name__ = "TestResource"
@@ -188,9 +218,8 @@ class TestProcessPrivateState:
         ):
             mock_decrypt.side_effect = Exception("Decrypt failed")
 
-            result = await _process_private_state(mock_resource, b"bad_data")
-
-            assert result is None
+            with pytest.raises(ResourceError, match="could not be decrypted"):
+                await _process_private_state(mock_resource, b"bad_data")
 
 
 class TestPlanResourceChangeEdgeCases:
