@@ -13,7 +13,7 @@ from provide.foundation import logger
 from pyvider.conversion import marshal
 from pyvider.cty.exceptions import CtyValidationError
 from pyvider.ephemerals import EphemeralResourceContext
-from pyvider.exceptions import Deferral, PyviderError
+from pyvider.exceptions import Deferral, PyviderError, ResourceError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
@@ -43,7 +43,7 @@ def _registered_ephemeral(type_name: str) -> Any:
         resource_type=type_name,
         registered_ephemeral_resources=list(registered.keys()) if registered else [],
     )
-    raise ValueError(
+    raise ResourceError(
         f"Ephemeral resource type '{type_name}' not found.\n\n"
         f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator "
         f"and that component discovery has completed successfully.\n\n"

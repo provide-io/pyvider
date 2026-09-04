@@ -104,20 +104,27 @@ class TestCloseEphemeralResourceImpl:
             )
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_private_state_class(
+    async def test_impl_closes_a_resource_with_no_private_state_class(
         self, sample_request: pb.CloseEphemeralResource.Request
     ) -> None:
-        """Test handling when resource doesn't define private_state_class."""
+        """Private state is optional, and Terraform closes everything it opened.
+
+        This used to be an error. An ephemeral resource that just reads a value
+        keeps nothing between calls and has no reason to declare a
+        `private_state_class`, and it still has to close.
+        """
         mock_class = MagicMock()
-        mock_class.private_state_class = None  # No private state class!
+        mock_class.private_state_class = None
+        mock_class.return_value.close = AsyncMock()
+        request = pb.CloseEphemeralResource.Request(type_name=sample_request.type_name)
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = mock_class
 
-            response = await _close_ephemeral_resource_impl(sample_request, context=None)
+            response = await _close_ephemeral_resource_impl(request, context=None)
 
-            assert len(response.diagnostics) > 0
-            assert "private_state_class" in response.diagnostics[0].detail
+            assert not response.diagnostics, response.diagnostics
+            mock_class.return_value.close.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_impl_unpacks_private_data_correctly(
