@@ -94,6 +94,13 @@ else
   echo "==> ${TF_BIN} has no query command; list resources are not exercised"
 fi
 
+# Two examples keep encrypted private state and the provider refuses to serve
+# them without a shared secret, so both were skipped everywhere and the
+# encryption path was never exercised. The secret only ever protects values
+# this run creates and destroys, so the gate makes one rather than skipping
+# them. A secret supplied by the caller is left alone.
+export PYVIDER_PRIVATE_STATE_SHARED_SECRET="${PYVIDER_PRIVATE_STATE_SHARED_SECRET:-$(head -c 32 /dev/urandom | base64 | tr -d '\n')}"
+
 echo "==> Running the corpus: ${CORPUS} (${CONFIGURATIONS} configurations)"
 # PYVIDER_TESTMODE publishes the components registered `test_only`, which a
 # large part of the corpus configures and would otherwise skip.
