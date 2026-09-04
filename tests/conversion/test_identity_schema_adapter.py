@@ -61,10 +61,29 @@ def test_rejects_nested_blocks() -> None:
         pvs_identity_schema_to_proto(schema)
 
 
-def test_rejects_non_scalar_attribute_type() -> None:
-    schema = s_identity(attributes={"tags": a_list(a_str(), required=True)})
+def test_accepts_a_list_of_scalars() -> None:
+    """Terraform allows it, and this used to be stricter than Terraform.
 
-    with pytest.raises(PvsSchemaDefinitionError, match="scalar"):
+    Core rejects a map, a set and an object in an identity schema and accepts
+    everything else (schemarepo/loadschemas/plugins.go:150-161);
+    terraform-plugin-go documents the accepted set as bool, number, string and a
+    list of those (tfprotov6/resource_identity_schema.go:63-72). Refusing a list
+    ruled out an ordinary composite identity for no protocol reason.
+    """
+    schema = s_identity(attributes={"path": a_list(a_str(), required=True)})
+
+    proto = pvs_identity_schema_to_proto(schema)
+
+    assert [attr.name for attr in proto.identity_attributes] == ["path"]
+
+
+def test_rejects_a_map_attribute_type() -> None:
+    """A map is one of the three shapes Terraform genuinely refuses."""
+    from pyvider.schema import a_map
+
+    schema = s_identity(attributes={"tags": a_map(a_str(), required=True)})
+
+    with pytest.raises(PvsSchemaDefinitionError, match="identity"):
         pvs_identity_schema_to_proto(schema)
 
 
