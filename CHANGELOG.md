@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Breaking
+
+- **A schema Terraform would reject at `terraform init` is now rejected where
+  it is written.** Terraform runs `Block.InternalValidate()` over every managed,
+  data, ephemeral and list schema as it loads a provider, and one violation
+  takes the whole provider down with "provider ... has invalid schema ... which
+  is a bug in the provider", naming the provider rather than the declaration
+  that caused it. None of those rules were checked here, and eleven invalid
+  shapes were accepted: a single block requiring two elements, a single block
+  with mismatched bounds, a group or map block carrying item counts, a list
+  with a minimum above its maximum, a set block containing a dynamic or
+  write-only attribute, an attribute and a block sharing a name, an uppercase
+  block name, and negative counts. Write-only on a provider or data source
+  schema is refused too, as terraform-plugin-sdk refuses it: Terraform's
+  write-only enforcement only runs against managed resources, so anywhere else
+  the flag is advertised and never enforced. A provider carrying one of these
+  will now fail its own test run rather than every practitioner's `init`.
+- **A state or config class that requires a field its schema does not declare
+  now raises `StateClassMismatchError`.** It previously converted to None, and
+  None was read as "Terraform asked for a destroy" -- see the fix below.
+- **`a_list`, `a_set` and `a_map` refuse an `a_obj` element whose members carry
+  `computed`, `sensitive`, `write_only` or a default.** Those flags reach
+  Terraform only through a nested type, which this framework does not yet emit
+  for collection nesting, so they were being dropped silently. Declaring the
+  same shape without them still works; a nested block carries them today.
+- **State locks no longer expire by default.** See below.
+
 ### Added
 
 - **A resource's returned state is checked against its schema.**
@@ -38,11 +65,150 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   two `# type: ignore[arg-type]` comments here became unused, and mypy strict
   rejects those, so they are gone. Verified at the floor with
   `uv lock --resolution lowest-direct`.
-- **`provide-testkit>=0.4.5`** (was `>=0.4.0`). The lock had only ever resolved
-  0.4.3, so 0.4.4 and 0.4.5 satisfied the declared floor without anything here
-  having run against them.
+- **`provide-testkit>=0.4.5`** (was `>=0.4.0`), in the `dev` and `docs`
+  dependency groups only, so there is no runtime effect on a provider that
+  installs pyvider. The lock was at 0.4.3 when the floor was raised, so 0.4.4
+  and 0.4.5 satisfied the declared floor without anything here having run
+  against them. (An earlier wording said the lock "had only ever resolved
+  0.4.3"; it had also resolved 0.4.0 and 0.4.2 under the same floor.)
+
+### Removed
+
+- **The `google` dependency.** It is the Google-search scraper package, pulled
+  into every provider install, and nothing here imports it.
 
 ### Fixed
+
+- **A resource could be destroyed by an update.** `BaseResource.apply` chose
+  between create, update and destroy by asking whether `ctx.planned_state` is
+  None. That is derived data: the planned state is produced by converting the
+  planned value into the resource's attrs state class, and the converter
+  returned None whenever the class could not be constructed. So a state class
+  requiring a field its schema does not declare -- an ordinary authoring
+  mistake -- was read as a destroy. On a create that produced a null state and
+  Terraform's "inconsistent result after apply"; on an update it ran the
+  resource's own `_delete_apply` against a live object, with `ctx.state` also
+  None, so the resource was destroyed on no information. Terraform says it
+  wants a destroy by sending a null `planned_state` and in no other way, so
+  that is what the decision is taken from now.
+- **A value referencing another resource crashed the plan.** Conversion
+  recognised an unknown by identity against the unrefined singleton. Terraform
+  refines an unknown whenever it knows something about a value it cannot yet
+  compute, and `targets = other_resource.some_list` arrives refined, as a
+  different object -- which fell through to the list branch and raised
+  `TypeError: 'RefinedUnknownValue' object is not iterable`, reaching the
+  practitioner as "Internal Provider Error" on every plan. go-cty has emitted
+  refinements since Terraform 1.6.
+- **`terraform plan` never came back empty for a resource with an
+  optional+computed attribute.** Every such attribute the plan hook did not set
+  was re-planned unknown on every run, regardless of state. If the API returned
+  null, the null was replaced by unknown; if it returned a value, the value was
+  discarded. With `requires_replace` the attribute then landed in the
+  replacement paths, so the resource was destroyed and recreated on every plan.
+  Terraform's own `ProposedNew` carries the prior value forward for an
+  optional+computed attribute whose configuration is null, and so does this.
+- **Private state was erased by the first plan after a create.** Terraform
+  records whatever the plan and apply return and hands it back as
+  `prior_private` next time, so returning nothing erases it rather than leaving
+  it alone. Both handlers set the field only when the resource's hook produced
+  an object, and the default `_update` returns none -- so any lease, token or
+  bookkeeping a resource established at create was lost.
+  terraform-plugin-sdk defaults the other way, and now so does this.
+- **A decrypt failure at plan time was swallowed.** Failing to decrypt private
+  state and failing to rebuild the object from it were caught together and both
+  reported as "may be expected if the resource schema changed". Only the second
+  is recoverable. A rotated or lost `PYVIDER_PRIVATE_STATE_SHARED_SECRET`
+  produced a clean-looking plan and an apply that failed on the same bytes.
+- **Ctrl-C during an apply cut the provider off mid-call.** `StopProvider`
+  scheduled a server stop shortly after replying, which tore down the gRPC
+  server, unlinked the socket and exited. Terraform's Stop is advisory: it asks
+  in-flight work to wind up and then waits for it to return, and stopping the
+  process is a separate step it drives itself. An interrupted
+  `ApplyResourceChange` failed with `Unavailable` and a resource created
+  remotely never reached state. It now raises a provider-wide signal, readable
+  from any context as `ctx.stop_requested`, so a resource polling an API can
+  return early and be accounted for.
+- **A state lock could be taken from a running apply.** Locks were leased for
+  five minutes and an expired lease was reclaimable by any other process.
+  Terraform acquires a state lock once per operation and never renews it, so
+  any apply longer than the lease -- an ordinary size of infrastructure -- could
+  be joined by a second writer, and the first writer's own `UnlockState` was
+  then refused. The default is no expiry; `terraform force-unlock <ID>` is the
+  standard answer for a stale lock and already works. Expiry remains available
+  and now warns when configured.
+- **Write-only values reached Terraform on three paths.** The nulling was done
+  in two places and neither covered the contract: the plan path went through a
+  `BaseResource` helper that a resource overriding `plan()` skips, and the
+  apply and read path iterated only top-level attributes, so a write-only
+  attribute inside a nested block or an `a_obj` was untouched. Import, upgrade
+  and move did none of it, and import additionally failed with "Missing
+  required attribute" when the state class did not carry the field. It is now
+  one recursive pass at the protocol boundary on all six paths.
+- **`ctx.capabilities` was the wrong object.** Every resource handler populated
+  it from `provider_instance.metadata.capabilities` -- a flags struct describing
+  what the provider supports -- rather than the configured capability instances.
+  The documented `ctx.capabilities["auth"]` raised `TypeError`, and there was no
+  way to reach a capability from a resource at all.
+- **A null function argument shifted every argument after it.** An argument
+  whose Python parameter carries a default is dropped so the default applies,
+  and the remaining arguments were then rebuilt as a positional list, so
+  `pad("x", null, "-")` bound `fill` to `width`. No error, just the wrong
+  answer. Arguments are bound by name now wherever Python allows it.
+- **`FunctionError.function_argument` reached the wire for the first time.**
+  Terraform uses it to point at the offending expression rather than the call as
+  a whole; the conversion was a commented-out placeholder, so every function
+  error pointed at the whole call.
+- **An ephemeral resource that keeps no private state could not be closed.**
+  Close and Renew required a `private_state_class` and unpacked the private
+  bytes unconditionally, and unpacking empty bytes raises. Terraform closes
+  every ephemeral resource it opened, so the ordinary case -- one that just
+  reads a value -- failed on every close.
+- **A provider block carrying an unknown value failed the plan.** The deferral
+  was guarded on the whole configuration being unknown, which Terraform never
+  sends; what it does send during plan and apply is a known object with an
+  unknown inside it. That fell through to a hard error, while the log line above
+  it said the configuration was being deferred.
+- **A set block element could take a neighbour's configured values.** Elements
+  are paired with their configuration by value, because a set has no order, but
+  that pairing was skipped when the plan held exactly one element -- which then
+  took configuration element zero. A plan hook dropping one element of a
+  two-element set handed the survivor the other's explicit values.
+- **`terraform plan -generate-config-out` produced configuration Terraform
+  rejects.** When a resource does not override `generate_config`, the handler
+  forwarded the state verbatim, so the generated file assigned computed-only
+  attributes such as `id`. The state still stands in, reduced to what a
+  configuration may contain.
+- **Numbers lost precision on upgrade and move.** State JSON was decoded with
+  binary floats where Terraform's numbers are arbitrary precision, so a value
+  that arrived exact went back out rounded -- a diff on an attribute nobody
+  touched.
+- **`UpgradeResourceState` invented state that was not there.** An absent raw
+  state was answered with an empty JSON object, which describes a *present*
+  object with every attribute null. Flatmap state, written by Terraform 0.11,
+  fell through the same branch and was quietly emptied; it is refused now.
+- **A cross-type move dropped identity and was never validated.** The hook's
+  output went to Terraform unchecked, and identity was carried only by the
+  same-type pass-through, so a moved resource arrived at its new type without
+  one.
+- **The magic cookie was compared against itself,** so any value was accepted
+  and the "this binary is a plugin" guard never fired. The provider-detection
+  error also printed to stdout, which carries only the go-plugin handshake
+  line -- so the explanation became the thing Terraform reported as garbage.
+- **A list resource with no managed resource of the same name is now
+  reported.** Terraform resolves a list resource's results against the managed
+  type of the same name and refuses to list when there is none. Nothing checked
+  it, and the architecture documentation, the end-to-end test and the
+  list-resource fixtures all demonstrated the shape that fails.
+- **An attribute's `description_kind` never reached the wire,** so a
+  description written as Markdown was published as plain text.
+- Identity attributes may be a list of scalars, which Terraform allows and this
+  refused. `PlanAction` may only defer for an unknown provider configuration,
+  which is the only reason Terraform accepts. `GetFunctions` honours test-mode
+  filtering, as `GetProviderSchema` already did. The derived-key cache is
+  bounded; it was keyed on a per-call random salt, so it never hit and grew for
+  the life of the process. The ephemeral handlers raise a typed error instead of
+  a bare `ValueError`, which reached Terraform as "Internal Provider Error" with
+  the explanation stripped.
 
 - **A required write-only attribute no longer breaks apply.** Applying a
   resource with a `required` + `write_only` attribute failed with
