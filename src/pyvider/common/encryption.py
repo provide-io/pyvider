@@ -43,6 +43,11 @@ NONCE_SIZE: Final[int] = 12  # 96-bit nonce for AES-GCM
 KEY_SIZE: Final[int] = 32  # AES-256
 HKDF_INFO: Final[bytes] = b"pyvider-private-state-v1"
 
+#: Derived keys held at once. Bounded because encryption salts are random
+#: and never repeat, so without a bound the cache grows for the life of
+#: the process without ever being read.
+MAX_CACHED_KEYS: Final[int] = 128
+
 # Error messages
 ERROR_NO_SECRET: Final[str] = (
     "Private state shared secret not configured. "
@@ -131,6 +136,15 @@ class EncryptionManager:
             if salt in self._key_cache:
                 logger.debug("Using cached encryption key", salt_hash=salt[:8].hex())
                 return self._key_cache[salt]
+            if len(self._key_cache) >= MAX_CACHED_KEYS:
+                # Encryption draws a fresh random salt per call, so those entries
+                # are never read again and the cache only grows. Decryption is
+                # where a salt repeats -- the same stored blob, read on every plan
+                # -- and that is what the cache is for. Clearing wholesale rather
+                # than evicting one entry keeps this off the hot path: the cost is
+                # a rederivation, and HKDF is cheap.
+                logger.debug("Clearing encryption key cache", size=len(self._key_cache))
+                self._key_cache.clear()
 
         # Derive new key
         secret = self._get_shared_secret()

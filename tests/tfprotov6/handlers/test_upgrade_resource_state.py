@@ -71,7 +71,10 @@ async def test_upgrade_resource_state_handles_empty_state() -> None:
     assert isinstance(response, pb.UpgradeResourceState.Response)
     assert len(response.diagnostics) == 0
     # Should return empty object
-    assert response.upgraded_state.json == b"{}"
+    # Absence is now reported as absence: an unset upgraded_state, which
+    # Terraform decodes as a typed null. Answering b"{}" described a present
+    # object with every attribute null, which is a different thing.
+    assert not response.upgraded_state.json
 
 
 @pytest.mark.asyncio
@@ -89,7 +92,10 @@ async def test_upgrade_resource_state_handles_no_raw_state() -> None:
     assert isinstance(response, pb.UpgradeResourceState.Response)
     assert len(response.diagnostics) == 0
     # Should return empty object
-    assert response.upgraded_state.json == b"{}"
+    # Absence is now reported as absence: an unset upgraded_state, which
+    # Terraform decodes as a typed null. Answering b"{}" described a present
+    # object with every attribute null, which is a different thing.
+    assert not response.upgraded_state.json
 
 
 @pytest.mark.asyncio

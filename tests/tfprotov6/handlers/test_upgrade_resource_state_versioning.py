@@ -124,14 +124,42 @@ async def test_an_unregistered_resource_type_is_reported() -> None:
 
 
 @pytest.mark.asyncio
-async def test_no_stored_state_stays_the_empty_object() -> None:
+async def test_no_stored_state_upgrades_to_a_null_state() -> None:
+    """Absence is reported as absence, not as an object of nulls.
+
+    Leaving `upgraded_state` unset is how "there is no prior object" is said:
+    Terraform decodes an absent DynamicValue as a typed null
+    (internal/plugin6/grpc_provider.go:2078-2093). Answering `{}` described a
+    *present* object with every attribute null, which is a different thing.
+    """
     request = pb.UpgradeResourceState.Request(type_name="demo", version=1, raw_state=pb.RawState())
 
     with patch(f"{MODULE}.hub.get_component", return_value=_resource()):
         response = await UpgradeResourceStateHandler(request, context=None)
 
     assert not response.diagnostics
-    assert response.upgraded_state.json == b"{}"
+    assert not response.upgraded_state.json
+    assert not response.upgraded_state.msgpack
+
+
+@pytest.mark.asyncio
+async def test_flatmap_state_is_refused_rather_than_emptied() -> None:
+    """Pre-0.12 state is not readable here, and must not be silently discarded.
+
+    It used to fall through the empty-state branch, so a resource whose state
+    was written by Terraform 0.11 was "upgraded" to one with every attribute
+    null.
+    """
+    request = pb.UpgradeResourceState.Request(
+        type_name="demo", version=1, raw_state=pb.RawState(flatmap={"id": "abc"})
+    )
+
+    with patch(f"{MODULE}.hub.get_component", return_value=_resource()):
+        response = await UpgradeResourceStateHandler(request, context=None)
+
+    assert response.diagnostics, "flatmap state was accepted and quietly emptied"
+    detail = " ".join(d.summary + " " + d.detail for d in response.diagnostics)
+    assert "flatmap" in detail.lower()
 
 
 # --- end to end, through the real hub and a real resource -------------------
@@ -220,3 +248,32 @@ async def test_a_registered_resource_at_its_current_version_is_untouched(
 
 
 # 🐍🏗️🔚
+
+
+@pytest.mark.asyncio
+async def test_upgrading_does_not_round_a_number_it_cannot_represent() -> None:
+    """State numbers are arbitrary precision and must survive the upgrade.
+
+    go-cty parses them through `ParseNumberVal`, backed by a 512-bit big.Float
+    (go-cty/cty/json/unmarshal.go:75). Decoding with Python's default float
+    turns a value that arrived exact into a rounded binary float, which then
+    goes back out as a float64 rather than the string form the codec uses for a
+    number it cannot represent -- a diff on an attribute nobody touched, on the
+    first plan after an upgrade.
+    """
+    precise = "12345678901234567890.123456789"
+    resource = _resource(upgraded=None)
+    # The hook returns whatever it was given, so the value round-trips.
+    resource.upgrade_state = AsyncMock(side_effect=lambda _v, raw: raw)
+    request = pb.UpgradeResourceState.Request(
+        type_name="demo",
+        version=1,
+        raw_state=pb.RawState(json=f'{{"name": "demo", "size": {precise}}}'.encode()),
+    )
+
+    with patch(f"{MODULE}.hub.get_component", return_value=resource):
+        response = await UpgradeResourceStateHandler(request, context=None)
+
+    assert not response.diagnostics, f"upgrade failed: {response.diagnostics}"
+    seen = resource.upgrade_state.await_args[0][1]["size"]
+    assert str(seen) == precise, f"the number was rounded on the way in: {seen}"

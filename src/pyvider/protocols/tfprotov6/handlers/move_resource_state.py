@@ -4,6 +4,7 @@
 #
 
 
+from decimal import Decimal
 import json
 from typing import Any
 
@@ -17,6 +18,20 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     null_write_only_attributes,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+
+
+def _load_state_json(raw: bytes) -> Any:
+    """Decode state JSON without losing number precision.
+
+    Terraform's numbers are arbitrary precision: go-cty parses them through
+    `ParseNumberVal`, which is backed by a 512-bit big.Float
+    (go-cty/cty/json/unmarshal.go:75). Python's `json.loads` turns them into
+    binary floats, so a value that arrived exact goes back out rounded --
+    encoded as a float64 rather than the string form the codec uses for a
+    number it cannot represent exactly. The result is a diff on an attribute
+    nobody touched, on the first plan after an upgrade or a move.
+    """
+    return json.loads(raw, parse_float=Decimal, parse_int=Decimal)
 
 
 @rpc_handler("MoveResourceState")
@@ -144,7 +159,7 @@ async def _move_resource_state_impl(
                 f"resource and declare the new one, which recreates the object.",
             )
 
-        source_state = json.loads(request.source_state.json or b"{}")
+        source_state = _load_state_json(request.source_state.json or b"{}")
         moved = await move_state(
             request.source_provider_address,
             request.source_type_name,
