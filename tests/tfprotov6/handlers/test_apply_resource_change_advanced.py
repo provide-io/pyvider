@@ -133,10 +133,10 @@ class TestCreateResourceContext:
             state_class = State
 
         class MockProvider:
-            class Metadata:
-                capabilities: ClassVar[dict] = {"test": True}
-
-            metadata = Metadata()
+            # Capability instances live on the provider, as BaseProvider.setup()
+            # publishes them. `metadata.capabilities` is the ProviderCapabilities
+            # flags struct, which is a different thing that shares the name.
+            capabilities: ClassVar[dict] = {"test": True}
 
         config_cty = CtyValue(
             vtype=CtyObject(attribute_types={"name": CtyString()}),

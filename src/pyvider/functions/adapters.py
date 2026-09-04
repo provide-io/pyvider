@@ -22,6 +22,7 @@ from pyvider.cty import (
     CtyType,
     CtyValue,
 )
+from pyvider.exceptions.function import FunctionRegistrationError
 
 
 def _get_cty_type_for_union(python_type: Any, args: tuple[Any, ...]) -> CtyType[object]:
@@ -140,6 +141,58 @@ def _defaults_fill_the_variadic_slot(func_obj: Callable[..., Any], sig: inspect.
     return True
 
 
+def _reject_unreachable_keyword_only_parameters(func_obj: Callable[..., Any], sig: inspect.Signature) -> None:
+    """A keyword-only parameter cannot be reached from Terraform.
+
+    tfproto v6 describes a function's parameters as an ordered list with no
+    names on the wire, so there is nowhere for a keyword argument to go. Such a
+    parameter was dropped from the schema silently: one carrying a default
+    always took it, and one without a default made the function impossible to
+    call at all, failing at invocation with a `TypeError` from deep inside the
+    binding rather than at registration.
+
+    One keyword-only parameter *is* reachable: the capability a function is
+    registered against. `@register_function(component_of="lens")` makes the
+    handler inject it by that exact name at call time --
+    `native_kwargs[parent_capability] = instance` in
+    `call_function.py:_inject_capabilities` -- so `*, lens: LensCapability` is
+    supplied by the framework rather than by Terraform. Refusing it
+    unregisters every capability-backed function, which surfaces under
+    Terraform only as "Function not found in provider": `pyvider_components`'
+    `lens_jq` failed exactly that way.
+    """
+    injected = getattr(func_obj, "_parent_capability", None)
+    unreachable = [
+        name
+        for name, param in sig.parameters.items()
+        if param.kind == inspect.Parameter.KEYWORD_ONLY
+        and param.default is inspect.Parameter.empty
+        and name not in ("self", injected)
+    ]
+    if unreachable:
+        names = ", ".join(repr(name) for name in unreachable)
+        raise FunctionRegistrationError(
+            f"Function '{func_obj.__name__}' has keyword-only parameters with no "
+            f"default ({names}), which Terraform can never supply.\n\n"
+            f"A function's parameters are an ordered list on the wire, with no names, "
+            f"so a keyword-only parameter cannot be passed at all.\n\n"
+            f"Suggestion: make them ordinary positional parameters, or give them "
+            f"defaults if they are for internal use."
+        )
+
+    defaulted = [
+        name
+        for name, param in sig.parameters.items()
+        if param.kind == inspect.Parameter.KEYWORD_ONLY and name not in ("self", injected)
+    ]
+    if defaulted:
+        logger.warning(
+            f"Function {func_obj.__name__} has keyword-only parameters "
+            f"({', '.join(defaulted)}) which Terraform cannot pass, so they will "
+            f"always take their defaults."
+        )
+
+
 def _extract_parameters_meta(
     func_obj: Callable[..., Any], sig: inspect.Signature, type_hints: dict[str, Any]
 ) -> dict[str, Any]:
@@ -159,6 +212,8 @@ def _extract_parameters_meta(
     param_descriptions = getattr(func_obj, "_function_metadata", {}).get("param_descriptions", {})
 
     defaults_are_variadic = _defaults_fill_the_variadic_slot(func_obj, sig)
+
+    _reject_unreachable_keyword_only_parameters(func_obj, sig)
 
     for name, param in sig.parameters.items():
         if param.kind == inspect.Parameter.KEYWORD_ONLY or name == "self":

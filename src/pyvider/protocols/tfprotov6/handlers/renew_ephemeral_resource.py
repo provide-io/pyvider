@@ -11,6 +11,7 @@ import msgpack  # type: ignore[import-untyped]
 from provide.foundation import logger
 
 from pyvider.ephemerals import EphemeralResourceContext
+from pyvider.ephemerals.private_state import rebuild_private_state
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
@@ -49,7 +50,7 @@ async def _renew_ephemeral_resource_impl(
                 if hub.get_components("ephemeral_resource")
                 else [],
             )
-            raise ValueError(
+            raise ResourceError(
                 f"Ephemeral resource type '{request.type_name}' not found.\n\n"
                 f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator.\n\n"
                 f"Troubleshooting:\n"
@@ -57,20 +58,9 @@ async def _renew_ephemeral_resource_impl(
                 f"  2. Run 'pyvider components list' to see registered ephemeral resources\n"
                 f"  3. Enable debug logging: export PYVIDER_LOG_LEVEL=DEBUG"
             )
-        if not resource_class.private_state_class:
-            logger.error(
-                "Ephemeral resource missing private_state_class",
-                operation="renew_ephemeral_resource",
-                resource_type=request.type_name,
-            )
-            raise ResourceError(
-                f"Resource '{request.type_name}' does not define a private_state_class, cannot renew.\n\n"
-                f"Suggestion: Ephemeral resources that support renewal must define a private_state_class.\n\n"
-                f"Documentation: See ephemeral resource documentation for private state usage."
-            )
-
-        private_data = msgpack.unpackb(request.private, raw=False)
-        private_state_instance = resource_class.private_state_class(**private_data)
+        # Private state is optional: a resource that renews on a schedule need
+        # not carry anything between calls.
+        private_state_instance = rebuild_private_state(resource_class, request.private, request.type_name)
 
         provider_context = hub.get_component("singleton", "provider_context")
         test_mode_enabled = getattr(provider_context, "test_mode_enabled", False)

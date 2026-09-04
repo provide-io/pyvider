@@ -4,18 +4,70 @@
 #
 
 
+from decimal import Decimal
 import json
 from typing import Any
 
 from provide.foundation import logger
 
+from pyvider.conversion import marshal_identity
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
+    cty_to_attrs_instance,
+    derive_identity_values,
+    null_write_only_attributes,
+    resolve_identity_schema,
 )
 import pyvider.protocols.tfprotov6.protobuf as pb
+
+
+def _load_state_json(raw: bytes) -> Any:
+    """Decode state JSON without losing number precision.
+
+    Terraform's numbers are arbitrary precision: go-cty parses them through
+    `ParseNumberVal`, which is backed by a 512-bit big.Float
+    (go-cty/cty/json/unmarshal.go:75). Python's `json.loads` turns them into
+    binary floats, so a value that arrived exact goes back out rounded --
+    encoded as a float64 rather than the string form the codec uses for a
+    number it cannot represent exactly. The result is a diff on an attribute
+    nobody touched, on the first plan after an upgrade or a move.
+    """
+    return json.loads(raw, parse_float=Decimal, parse_int=Decimal)
+
+
+def _set_target_identity(
+    response: pb.MoveResourceState.Response,
+    resource_class: Any,
+    target_schema: Any,
+    moved: dict[str, Any],
+    target_type_name: str,
+) -> None:
+    """Give the moved resource the identity its new type derives from state.
+
+    Identity used to be carried only by the same-type pass-through, so a
+    resource that declares an identity schema arrived at its new type without
+    one, and a later import or list could not tie the object back to it.
+    Deriving it here is what apply and read already do, so no hook signature has
+    to change to get it.
+    """
+    identity_schema = resolve_identity_schema(resource_class)
+    if identity_schema is None:
+        return
+
+    state_value: Any = moved
+    if resource_class.state_class is not None:
+        state_value = cty_to_attrs_instance(
+            target_schema.block.to_cty_type().validate(moved), resource_class.state_class
+        )
+
+    identity_values = derive_identity_values(
+        resource_class, state_value, target_type_name, "move_resource_state"
+    )
+    if identity_values is not None:
+        response.target_identity.CopyFrom(marshal_identity(identity_values, identity_schema))
 
 
 @rpc_handler("MoveResourceState")
@@ -143,7 +195,7 @@ async def _move_resource_state_impl(
                 f"resource and declare the new one, which recreates the object.",
             )
 
-        source_state = json.loads(request.source_state.json or b"{}")
+        source_state = _load_state_json(request.source_state.json or b"{}")
         moved = await move_state(
             request.source_provider_address,
             request.source_type_name,
@@ -169,6 +221,32 @@ async def _move_resource_state_impl(
         target_private = b""
         if isinstance(moved, tuple):
             moved, target_private = moved
+
+        # Terraform rejects a non-null write-only attribute in a moved state
+        # (refactoring/cross_provider_move.go:159-176). The source type's state
+        # may well have carried one; the target's must not.
+        target_schema = resource_class.get_schema()
+        null_write_only_attributes(moved, target_schema.block)
+
+        # The moved state is a hook's plain Python and nothing else checks it
+        # before Terraform writes it to state. Core rejects a value that does not
+        # conform (refactoring/cross_provider_move.go:202-219), but by then the
+        # message is about the provider rather than about the hook that produced
+        # it. This is what UpgradeResourceState already does with its own hook's
+        # output, for the same reason.
+        try:
+            target_schema.block.to_cty_type().validate(moved)
+        except Exception as exc:
+            return _refuse(
+                response,
+                f"Moved state is not valid for {request.target_type_name}",
+                f"`move_state` on '{request.target_type_name}' returned a state that does "
+                f"not match its own schema:\n\n{exc}\n\n"
+                f"Suggestion: the hook must return a value of the *target* resource's "
+                f"schema, translated from the source's, not the source state as it stands.",
+            )
+
+        _set_target_identity(response, resource_class, target_schema, moved, request.target_type_name)
 
         response.target_state.CopyFrom(pb.DynamicValue(json=json.dumps(moved).encode("utf-8")))
         response.target_private = target_private

@@ -28,6 +28,8 @@ from pyvider.protocols.tfprotov6.handlers.utils import (
     check_test_only_access,
     create_diagnostic_from_exception,
     cty_to_attrs_instance,
+    normalise_absent_blocks,
+    null_write_only_attributes,
     resolve_identity_schema,
     str_path_to_proto_path,
 )
@@ -112,9 +114,36 @@ async def _process_private_state(resource_class: Any, prior_private: bytes) -> A
 
     private_state_instance = None
     if hasattr(resource_class, "private_state_class") and resource_class.private_state_class and prior_private:
-        decrypted_bytes = None
+        # Failing to decrypt and failing to rebuild the object are different
+        # things, and only the second one is recoverable.
+        #
+        # A decrypt failure means the bytes are not what this provider wrote:
+        # the shared secret was rotated or lost, or the blob is corrupt. There
+        # is nothing to continue with, and continuing anyway used to plan as
+        # though the resource had never had private state -- while apply raised
+        # on the very same bytes, so a clean-looking plan was followed by a
+        # failed apply.
         try:
             decrypted_bytes = decrypt(prior_private)
+        except Exception as e:
+            err = ResourceError(
+                "The private state stored for this resource could not be decrypted.\n\n"
+                "This usually means PYVIDER_PRIVATE_STATE_SHARED_SECRET has changed "
+                "since the state was written, or differs between the machines that "
+                "run this provider.\n\n"
+                "Suggestion: restore the previous shared secret. The value is not "
+                "recoverable without it."
+            )
+            err.add_context("resource.type_name", getattr(resource_class, "__name__", str(resource_class)))
+            err.add_context("terraform.summary", "Private state could not be decrypted")
+            raise err from e
+
+        # Past decryption the bytes are ours. Failing to rebuild the object from
+        # them means the resource's private_state_class has changed shape since
+        # they were written, which is an ordinary consequence of upgrading a
+        # provider. The resource is expected to rebuild what it needs, so the
+        # plan continues without it.
+        try:
             private_data = msgpack.unpackb(decrypted_bytes, raw=False)
             private_state_instance = resource_class.private_state_class(**private_data)
 
@@ -133,7 +162,7 @@ async def _process_private_state(resource_class: Any, prior_private: bytes) -> A
                 resource_class=getattr(resource_class, "__name__", str(resource_class)),
                 error_type=type(e).__name__,
                 error_message=str(e),
-                suggestion="This may be expected if the resource schema changed. Private state will be regenerated during apply.",
+                suggestion="This may be expected if the resource's private state class changed. Private state will be regenerated during apply.",
             )
     return private_state_instance
 
@@ -178,7 +207,12 @@ def _create_resource_context(
         private_state=private_state_instance,
         config_cty=config_cty_marked,
         planned_state_cty=proposed_new_state_cty,
-        capabilities=provider_instance.metadata.capabilities,
+        # The provider's configured capability instances, which is what
+        # ResourceContext.capabilities is declared to hold. This used to read
+        # provider_instance.metadata.capabilities -- the ProviderCapabilities
+        # flags struct, an unrelated object sharing the name -- so the
+        # documented ctx.capabilities["name"] raised TypeError.
+        capabilities=getattr(provider_instance, "capabilities", {}),
         test_mode_enabled=test_mode_enabled,
         identity=(
             unmarshal_identity(prior_identity, identity_schema) if identity_schema is not None else None
@@ -186,11 +220,65 @@ def _create_resource_context(
     )
 
 
+def _fill_undetermined_computed_attributes(
+    planned_state_dict: dict[str, Any],
+    resource_schema: Any,
+    validator_type: CtyObject,
+    prior_state_cty: CtyValue | None,
+) -> None:
+    """Decide what an unset optional+computed attribute is planned as.
+
+    On a create the provider does not know the value yet, so it plans unknown --
+    what Terraform shows as "known after apply". Planning null there promises a
+    null that apply then contradicts, and Core rejects the apply with "Provider
+    produced inconsistent result after apply: .id: was null, but now ...".
+
+    On an update the value is not undetermined: the last read already found out
+    what it is, and it is sitting in prior state. Re-planning it unknown says it
+    may change on every run, which never converges -- `terraform plan` is never
+    empty, and with `requires_replace` the attribute lands in the replacement
+    paths and the resource is destroyed and recreated on every plan. Terraform's
+    own ProposedNew carries the prior value forward for an optional+computed
+    attribute whose configuration is null (terraform/internal/plans/objchange/
+    objchange.go:328-345), so that is what is kept here, including when the prior
+    value is a null the remote API legitimately returned.
+
+    An earlier version of this filled unknown only when some *other* attribute
+    already happened to be unknown, which broke creates from a wholly known
+    configuration; the fix for that filled unconditionally and broke updates.
+    Both cases are pinned in tests/tfprotov6/handlers/
+    test_plan_computed_null_stability.py.
+    """
+    has_prior = prior_state_cty is not None and not prior_state_cty.is_null
+
+    for attr in resource_schema.block.attributes.values():
+        if not attr.computed or attr.required:
+            continue
+        if planned_state_dict.get(attr.name) is not None:
+            continue
+        attr_type = validator_type.attribute_types.get(attr.name)
+        if attr_type is None:
+            continue
+
+        prior_value: CtyValue | None = None
+        if has_prior and prior_state_cty is not None:
+            try:
+                prior_value = prior_state_cty[attr.name]
+            except (KeyError, TypeError):
+                # Not in prior state at all, which happens when the schema gained
+                # the attribute since the state was written. Nothing to carry
+                # forward, so it is undetermined in the same sense as a create.
+                prior_value = None
+
+        planned_state_dict[attr.name] = prior_value if prior_value is not None else CtyValue.unknown(attr_type)
+
+
 def _handle_planned_state_dict(
     planned_state_dict: dict[str, Any],
     resource_schema: Any,
     response: pb.PlanResourceChange.Response,
     *,
+    prior_state_cty: CtyValue | None = None,
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
 ) -> CtyValue:
@@ -201,26 +289,21 @@ def _handle_planned_state_dict(
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
 
-    # A computed attribute that neither the practitioner nor the plan hook set is
-    # unknown -- what Terraform shows as "known after apply". Planning it null
-    # instead promises Core a null that apply then contradicts, and Core rejects
-    # the whole apply with "Provider produced inconsistent result after apply:
-    # .id: was null, but now cty.StringVal(...)".
-    #
-    # This used to run only when some *other* top-level attribute already
-    # happened to be unknown, which made it look like it worked: any config with
-    # an interpolation marked its computed attributes, and a wholly known config
-    # planned every one of them null. The gate was top-level only as well, so an
-    # unknown nested inside a list or object attribute did not trip it either --
-    # which is why the failure read as intermittent rather than as always.
-    for attr in resource_schema.block.attributes.values():
-        if not attr.computed or attr.required:
-            continue
-        if planned_state_dict.get(attr.name) is not None:
-            continue
-        attr_type = validator_type.attribute_types.get(attr.name)
-        if attr_type:
-            planned_state_dict[attr.name] = CtyValue.unknown(attr_type)
+    # Write-only attributes are nulled here, at the protocol boundary, rather
+    # than relying on BaseResource._merge_config_into_plan: `plan()` is a
+    # documented extension point, and a resource that overrides it used to hand
+    # the secret straight to Terraform. Terraform rejects a non-null write-only
+    # value in a plan ("returned a value for the write-only attribute ... during
+    # planning"), and an older Terraform stores it in the plan file instead.
+    null_write_only_attributes(planned_state_dict, resource_schema.block)
+    # A block the resource did not mention is empty, not null, for every nesting
+    # mode but single. Terraform rejects the wrong one per mode:
+    # "must be empty to indicate no blocks, not null" (plan_valid.go:74-91).
+    normalise_absent_blocks(planned_state_dict, resource_schema.block)
+
+    _fill_undetermined_computed_attributes(
+        planned_state_dict, resource_schema, validator_type, prior_state_cty
+    )
 
     # Pass unknown CtyValues directly to validation - CTY knows how to handle them
     # Don't convert to None, as that creates null CtyValues which fail validation for required fields
@@ -440,6 +523,7 @@ def _finalize_planned_state(
         planned_state_dict,
         resource_schema,
         response,
+        prior_state_cty=prior_state_cty,
         identity_schema=identity_schema,
         identity_values=identity_values,
     )
@@ -455,10 +539,36 @@ def _finalize_planned_state(
 
 
 def _store_planned_private_state(
-    response: pb.PlanResourceChange.Response, planned_private_state_attrs: Any, type_name: str
+    response: pb.PlanResourceChange.Response,
+    planned_private_state_attrs: Any,
+    type_name: str,
+    *,
+    prior_private: bytes = b"",
 ) -> None:
-    """Encrypt whatever private state the plan produced. A resource that keeps none stores none."""
+    """Store whatever private state the plan produced, or keep what was already there.
+
+    Terraform records the plan's private state verbatim and hands it back as
+    `prior_private` next time, so returning nothing erases it rather than
+    leaving it alone (node_resource_abstract_instance.go:549,1396). Most
+    resources establish private state at create and never mention it again --
+    the default `_update` returns `(base_plan, None)` -- so the first plan after
+    a create used to wipe it.
+
+    terraform-plugin-sdk assigns `resp.PlannedPrivate = req.PriorPrivate` before
+    the hook runs (helper/schema/grpc_provider.go:1040,1065,1164), and this is
+    the same default. The prior bytes are passed through as they arrived, still
+    encrypted: they are opaque here, and decrypting only to re-encrypt would add
+    a way to fail without adding anything.
+    """
     if not planned_private_state_attrs:
+        if prior_private:
+            response.planned_private = prior_private
+            logger.debug(
+                "Carried prior private state forward",
+                operation="plan_resource_change",
+                resource_type=type_name,
+                private_state_size=len(prior_private),
+            )
         return
 
     serialized_private_bytes = msgpack.packb(attrs.asdict(planned_private_state_attrs), use_bin_type=True)
@@ -550,7 +660,12 @@ async def _plan_resource_change_impl(
                 request.type_name,
             )
 
-        _store_planned_private_state(response, planned_private_state_attrs, request.type_name)
+        _store_planned_private_state(
+            response,
+            planned_private_state_attrs,
+            request.type_name,
+            prior_private=request.prior_private,
+        )
 
         logger.info(
             "Resource plan completed successfully",

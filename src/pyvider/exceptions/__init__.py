@@ -47,6 +47,7 @@ from pyvider.exceptions.resource import (
     ResourceNotFoundError,
     ResourceOperationError,
     ResourceValidationError,
+    StateClassMismatchError,
 )
 from pyvider.exceptions.schema import (
     SchemaConversionError,
@@ -109,6 +110,7 @@ __all__ = [
     "SchemaValidationError",
     # Serialization
     "SerializationError",
+    "StateClassMismatchError",
     "UnsupportedTypeError",
     # Validation
     "ValidationError",

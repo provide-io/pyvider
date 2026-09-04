@@ -69,7 +69,10 @@ async def test_upgrade_handles_empty_state() -> None:
 
     assert isinstance(response, pb.UpgradeResourceState.Response)
     assert len(response.diagnostics) == 0
-    assert response.upgraded_state.json == b"{}"
+    # Absence is now reported as absence: an unset upgraded_state, which
+    # Terraform decodes as a typed null. Answering b"{}" described a present
+    # object with every attribute null, which is a different thing.
+    assert not response.upgraded_state.json
 
 
 # 🐍🏗️🔚

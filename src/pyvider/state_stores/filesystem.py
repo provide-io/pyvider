@@ -29,6 +29,7 @@ import contextlib
 import json
 import os
 from pathlib import Path
+import string
 import tempfile
 import time
 from typing import IO, Any
@@ -61,42 +62,112 @@ def default_state_root() -> Path:
     return Path.cwd() / DEFAULT_STATE_ROOT_DIRNAME / DEFAULT_STATE_SUBDIRNAME
 
 
+#: The characters that survive encoding unescaped. An allow-list, because the
+#: alternative is to enumerate what each filesystem treats specially, and every
+#: entry on that list arrived after the encoder was written: path separators,
+#: `..`, the trailing dots and spaces Windows drops from a component, letter
+#: case, and reserved device names. These are the characters that mean the same
+#: thing, and name the same file, on every filesystem pyvider runs on.
+_SAFE_SEGMENT_CHARS = frozenset(string.ascii_lowercase + string.digits + "-_")
+
+#: Names Windows resolves to a device rather than a file, whatever extension
+#: follows -- `con.tfstate` opens the console. Only lowercase spellings are
+#: listed because an encoded segment has no uppercase left in it.
+_WINDOWS_DEVICE_NAMES = frozenset(
+    [
+        "con",
+        "prn",
+        "aux",
+        "nul",
+        *(f"com{digit}" for digit in range(1, 10)),
+        *(f"lpt{digit}" for digit in range(1, 10)),
+    ]
+)
+
+
+def _percent_escape(character: str) -> str:
+    """One character as the percent-escapes of its UTF-8 bytes."""
+    return "".join(f"%{byte:02X}" for byte in character.encode("utf-8"))
+
+
 def _encode_segment(value: str) -> str:
     """Make a Terraform-supplied name safe to use as a single path segment.
 
     Type names and state ids arrive over the wire and may contain slashes,
-    ``..``, or characters the host filesystem rejects. Percent-encoding keeps
-    the mapping reversible (``list_states`` decodes it back) while confining
-    every state to exactly one file inside the store root.
+    ``..``, or characters the host filesystem rejects, folds together or
+    reserves. Percent-encoding everything outside ``_SAFE_SEGMENT_CHARS`` keeps
+    the mapping reversible (``_decode_segment`` reverses it, and ``list_states``
+    relies on that) while confining every state to exactly one file inside the
+    store root.
+
+    Escaping uppercase is what keeps ``prod`` and ``Prod`` apart. APFS and NTFS
+    fold case, so unescaped the two name one file: a read of either returns
+    whichever was written last, and ``list_states`` reports one state where two
+    were written.
+    """
+    encoded = "".join(c if c in _SAFE_SEGMENT_CHARS else _percent_escape(c) for c in value)
+    if encoded in _WINDOWS_DEVICE_NAMES:
+        # Escaping any single character stops the match; the first keeps the
+        # rest of the name readable.
+        encoded = _percent_escape(encoded[0]) + encoded[1:]
+    return encoded
+
+
+def _decode_segment(value: str) -> str:
+    return urllib.parse.unquote(value)
+
+
+def _legacy_encode_segment(value: str) -> str:
+    """The on-disk name ``_encode_segment`` produced before the allow-list.
+
+    Kept so that a store written by an earlier release can be found and taken
+    over by ``_adopt_legacy_name``. Both can go once no store predates the
+    allow-list.
     """
     encoded = urllib.parse.quote(value, safe="")
-    # `quote` does not escape `.` -- it is in the always-safe set, whatever
-    # `safe=""` says -- so `..` came through intact and walked out of the root
-    # this function's docstring promises to confine it to.
-    #
-    # Trailing dots are escaped as well, not only an all-dots segment. Windows
-    # drops trailing dots and spaces from a path component, so a name encoding to
-    # one ending in a dot names a *different* directory on disk than the encoder
-    # meant, and the mapping `list_states` reverses stops being reversible --
-    # silently, since nothing errors at encode time. `../..` encodes to `..%2F..`,
-    # which Windows resolved against `..%2F`:
-    #
-    #     [WinError 3] The system cannot find the path specified:
-    #     '...\\store\\state\\..%2F\\tmphiaxm3tu.tmp' ->
-    #     '...\\store\\state\\..%2F..\\victim.tfstate'
-    #
-    # `quote` already escapes a space, so only dots can reach the strip; the
-    # space is kept in the set because what is being ruled out is the class of
-    # characters Windows discards, not the two that happen to occur today.
-    # `unquote` reverses the escapes unchanged, so the mapping stays exact.
     kept = encoded.rstrip(". ")
     if len(kept) != len(encoded):
         encoded = kept + "".join(f"%{ord(c):02X}" for c in encoded[len(kept) :])
     return encoded
 
 
-def _decode_segment(value: str) -> str:
-    return urllib.parse.unquote(value)
+def _adopt_legacy_name(parent: Path, name: str, legacy_name: str) -> Path:
+    """The canonical path, taking over one an earlier release wrote.
+
+    The previous encoder left uppercase letters and device names unescaped, so
+    a store written before this release holds ``Prod.tfstate`` where this one
+    looks for ``%50rod.tfstate``. Renaming it forward the first time the state
+    is touched converges the store with no migration step and no window where
+    both spellings are live.
+
+    The legacy name has to match a directory entry *exactly*, not merely
+    resolve. On a case-insensitive filesystem ``Prod.tfstate`` opens the file
+    stored as ``prod.tfstate``, which belongs to a different state id; the
+    entry's stored spelling is the only evidence of which id wrote it. Adopting
+    on a resolve would serve one state's bytes for another and rename the
+    original out of existence on the way.
+    """
+    target = parent / name
+    if name == legacy_name or target.exists() or not parent.is_dir():
+        return target
+    with os.scandir(parent) as entries:
+        if not any(entry.name == legacy_name for entry in entries):
+            return target
+    legacy = parent / legacy_name
+    try:
+        legacy.rename(target)
+    except OSError as exc:
+        # Serving the state from where it already is beats reporting it
+        # missing, which is what returning the unwritten canonical path does.
+        logger.warning(
+            "Could not rename a state file written by an earlier release; using it in place",
+            operation="adopt_legacy_name",
+            legacy_path=str(legacy),
+            target_path=str(target),
+            error=str(exc),
+        )
+        return legacy
+    return target
 
 
 class FileSystemStateStore(BaseStateStore):
@@ -139,13 +210,21 @@ class FileSystemStateStore(BaseStateStore):
     # ------------------------------------------------------------------
 
     def _type_dir(self, type_name: str) -> Path:
-        return self._root / _encode_segment(type_name)
+        return _adopt_legacy_name(self._root, _encode_segment(type_name), _legacy_encode_segment(type_name))
 
     def _state_path(self, type_name: str, state_id: str) -> Path:
-        return self._type_dir(type_name) / f"{_encode_segment(state_id)}{STATE_FILE_SUFFIX}"
+        return self._entry_path(type_name, state_id, STATE_FILE_SUFFIX)
 
     def _lock_path(self, type_name: str, state_id: str) -> Path:
-        return self._type_dir(type_name) / f"{_encode_segment(state_id)}{LOCK_FILE_SUFFIX}"
+        return self._entry_path(type_name, state_id, LOCK_FILE_SUFFIX)
+
+    def _entry_path(self, type_name: str, state_id: str, suffix: str) -> Path:
+        directory = self._type_dir(type_name)
+        return _adopt_legacy_name(
+            directory,
+            f"{_encode_segment(state_id)}{suffix}",
+            f"{_legacy_encode_segment(state_id)}{suffix}",
+        )
 
     def _ensure_root(self) -> None:
         self._root.mkdir(parents=True, exist_ok=True)
@@ -323,7 +402,21 @@ def _read_lease(handle: IO[bytes]) -> StateLock | None:
         return None
     if not isinstance(payload, dict) or "lock_id" not in payload:
         return None
-    return StateLock.from_dict(payload)
+    try:
+        return StateLock.from_dict(payload)
+    except (TypeError, ValueError):
+        # Readable JSON, but not a lease: a malformed timestamp raises out of
+        # `float()`. This used to escape, and it escaped on every subsequent
+        # attempt too, so the state could never be locked again without deleting
+        # the file by hand. Same reasoning as the corrupt-JSON case above --
+        # refusing to ever lock again is worse than reclaiming a record nobody
+        # can interpret.
+        logger.warning(
+            "Discarding malformed state lock lease",
+            operation="lock_state",
+            lock_id=str(payload.get("lock_id")),
+        )
+        return None
 
 
 def _write_lease(handle: IO[bytes], lock: StateLock | None) -> None:

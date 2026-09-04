@@ -49,10 +49,14 @@ async def _get_functions_once() -> dict[str, Function]:
 
         logger.debug("Computing and caching function definitions", operation="get_functions")
 
-        from pyvider.hub import hub
+        from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
 
         functions: dict[str, Function] = {}
-        registered_funcs = hub.get_components("function")
+        # Filtered, so a test-only function is not advertised to a provider that
+        # is not in test mode. GetProviderSchema already filters, and Terraform
+        # takes its function list from there, so this only ever mattered to
+        # another client -- but the two should not disagree about what exists.
+        registered_funcs = get_filtered_components("function")
 
         for name, func_obj in registered_funcs.items():
             try:

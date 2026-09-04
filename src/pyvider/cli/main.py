@@ -4,6 +4,7 @@
 #
 
 
+import os
 from typing import Any
 
 import click
@@ -66,6 +67,17 @@ def cli(ctx: click.Context, /, **kwargs: Any) -> None:
     # Ensure the custom context object is created and attached
     # at the top level of the application. This makes it available to all
     # subcommands via `ctx.obj`.
+    # `--config` carries a path to read, not a setting to store, and its
+    # parsed name collides with the loaded `PyviderConfig` the context keeps in
+    # `ctx.config`. It goes to `config_file`, which is the field
+    # foundation's CLIContext declares for it, and to PYVIDER_CONFIG_FILE,
+    # which is where `PyviderConfig`, the provider-name resolution and
+    # `config show` all look -- applied before the context loads anything.
+    config_file = kwargs.pop("config", None)
+    if config_file is not None:
+        kwargs["config_file"] = config_file
+        os.environ["PYVIDER_CONFIG_FILE"] = str(config_file)
+
     if ctx.obj is None:
         ctx.obj = PyviderContext()
 

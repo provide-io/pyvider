@@ -163,13 +163,19 @@ class TestEphemeralResourceErrorMessages:
             assert "@ephemeral decorator" in error_message
 
     @pytest.mark.asyncio
-    async def test_renew_ephemeral_missing_private_state_class_has_documentation(self) -> None:
-        """Test that missing private_state_class error includes documentation reference."""
+    async def test_unreadable_ephemeral_private_state_says_what_happened(self) -> None:
+        """Private state that will not unpack names the resource and the cause.
+
+        A missing `private_state_class` is no longer an error -- private state is
+        optional, and Terraform renews and closes such resources anyway. Private
+        state that is present but unreadable still is, and it reports what it was
+        and where it came from rather than a bare unpacking failure.
+        """
         request = pb.RenewEphemeralResource.Request(type_name="test_ephemeral")
-        request.private = msgpack.packb({"test": "data"})
+        request.private = b"\x01not-valid-msgpack"
 
         mock_class = MagicMock()
-        mock_class.private_state_class = None
+        mock_class.private_state_class = MagicMock
 
         with (
             patch("pyvider.protocols.tfprotov6.handlers.renew_ephemeral_resource.hub") as mock_hub,
@@ -182,11 +188,9 @@ class TestEphemeralResourceErrorMessages:
 
             await _renew_ephemeral_resource_impl(request, context=None)
 
-            called_exception = mock_diag.call_args[0][0]
-            error_message = str(called_exception)
+            error_message = str(mock_diag.call_args[0][0])
             assert "Suggestion:" in error_message
-            assert "private_state_class" in error_message
-            assert "Documentation:" in error_message
+            assert "test_ephemeral" in error_message
 
     @pytest.mark.asyncio
     async def test_close_ephemeral_error_has_troubleshooting_steps(self) -> None:

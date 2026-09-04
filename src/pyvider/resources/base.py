@@ -20,6 +20,8 @@ from pyvider.cty import (
     CtyValue,
 )
 from pyvider.cty.conversion import cty_to_native
+from pyvider.cty.values.markers import UnknownValue
+from pyvider.exceptions.resource import StateClassMismatchError
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
@@ -311,20 +313,43 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         try:
             return target_cls(**kwargs)
         except TypeError as e:
-            # If we can't create the instance due to missing required fields,
-            # it's likely because some values are unknown/computed during planning.
-            # Return None to signal "attrs instance not available - use is_field_unknown() instead"
+            # A "missing required argument" here means the class declares a
+            # mandatory field that the incoming value cannot supply. The value
+            # is a cty object, which carries exactly the attributes its schema
+            # declares, so the field is not merely null -- it is absent, and no
+            # configuration or state will ever fill it in.
             #
-            # Resources should check ctx.is_field_unknown("field_name") to handle unknown values
-            # explicitly rather than relying on ctx.config being None.
+            # This used to return None, described as "unknown or computed values
+            # present". Unknowns do not arrive this way: `from_cty` converts an
+            # unknown attribute to None and still passes it, so the keyword is
+            # present and attrs is satisfied. The None was therefore only ever
+            # produced by a schema/class mismatch, and it was read downstream as
+            # a control signal -- `BaseResource.apply` treats a missing planned
+            # state as "Terraform asked for a destroy", so an update against a
+            # live object ran the resource's own delete instead.
             if "missing" in str(e) and "required" in str(e):
-                logger.debug(
-                    "Cannot create attrs instance - unknown or computed values present",
+                declared = {f.name for f in cls._resolved_fields(target_cls)}
+                missing = sorted(
+                    f.name
+                    for f in cls._resolved_fields(target_cls)
+                    if f.init and f.default is attrs.NOTHING and f.name not in kwargs
+                )
+                logger.error(
+                    "State class requires a field its schema does not declare",
                     class_name=target_cls.__name__,
                     error=str(e),
-                    available_fields=list(kwargs.keys()),
+                    missing_fields=missing,
+                    supplied_fields=sorted(kwargs),
+                    declared_fields=sorted(declared),
                 )
-                return None
+                names = ", ".join(repr(name) for name in missing) or "a required field"
+                raise StateClassMismatchError(
+                    f"'{target_cls.__name__}' requires {names}, which the schema does not "
+                    f"declare, so no value arriving from Terraform can supply it.\n\n"
+                    f"Suggestion: add the attribute to the schema, give the field a default, "
+                    f"or drop it from the class. `pyvider.testing.assert_schema_state_parity()` "
+                    f"checks this in your own test suite."
+                ) from e
             # Re-raise other TypeErrors as they indicate real problems
             # Extract field information for better error messages
             provided_fields = list(kwargs.keys())
@@ -357,7 +382,14 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if isinstance(data, CtyValue):
             return cls._handle_cty_value(data, target_cls, apply_defaults=apply_defaults)
 
-        if data is None or data is _UNREFINED_UNKNOWN_SENTINEL:
+        # Any unknown payload, not just the unrefined singleton. Terraform
+        # refines an unknown whenever it knows something about a value it cannot
+        # yet compute -- "this will not be null" for `x = other_resource.attr` is
+        # the common one -- and that arrives as a RefinedUnknownValue, a
+        # different object. Matching on identity alone let it reach the list and
+        # set branches, which iterated it and raised "'RefinedUnknownValue'
+        # object is not iterable" as an Internal Provider Error during plan.
+        if data is None or isinstance(data, UnknownValue):
             return None
 
         origin = get_origin(target_cls)
@@ -529,7 +561,17 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
 
     async def apply(self, ctx: ResourceContext) -> tuple[StateType | None, PrivateStateType | None]:
         is_create = ctx.state is None
-        is_delete = ctx.planned_state is None
+        # Terraform says it wants a destroy by sending a null planned state, so
+        # that is what the decision is taken from. The converted instance is
+        # derived data: anything that stops the state class being built collapses
+        # it to None, and reading that as a destroy has twice turned a create or
+        # an update into a delete (see tests/tfprotov6/handlers/
+        # test_apply_unknown_computed.py and test_apply_state_class_mismatch.py).
+        # The instance is still the fallback for a context built directly in a
+        # unit test, which carries no cty value.
+        is_delete = (
+            ctx.planned_state_cty.is_null if ctx.planned_state_cty is not None else ctx.planned_state is None
+        )
 
         logger.debug(
             "Resource apply operation started",

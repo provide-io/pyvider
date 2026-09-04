@@ -57,7 +57,7 @@ class TestGetFunctionsStructure:
     @pytest.mark.asyncio
     async def test_handler_returns_response(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test handler returns correct response type."""
-        with patch("pyvider.hub.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             # Clear cache before test
             import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
@@ -74,7 +74,7 @@ class TestGetFunctionsStructure:
         self, sample_request: pb.GetFunctions.Request
     ) -> None:
         """Test handler returns empty dict when no functions registered."""
-        with patch("pyvider.hub.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             # Clear cache before test
             import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
@@ -90,7 +90,7 @@ class TestGetFunctionsStructure:
     @pytest.mark.asyncio
     async def test_handler_returns_diagnostics_list(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test handler returns diagnostics list."""
-        with patch("pyvider.hub.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             # Clear cache before test
             import pyvider.protocols.tfprotov6.handlers.get_functions as gf_module
 
@@ -118,7 +118,7 @@ class TestGetFunctionsImplementation:
     ) -> None:
         """Test successful retrieval of registered functions."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -145,7 +145,7 @@ class TestGetFunctionsImplementation:
     ) -> None:
         """Test handling of function_to_dict conversion errors."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
         ):
             # Clear cache before test
@@ -171,7 +171,7 @@ class TestGetFunctionsImplementation:
     ) -> None:
         """Test handling of dict_to_proto conversion errors."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -198,7 +198,7 @@ class TestGetFunctionsImplementation:
     ) -> None:
         """Test handling when function_to_dict returns None."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
         ):
             # Clear cache before test
@@ -223,7 +223,7 @@ class TestGetFunctionsImplementation:
     ) -> None:
         """Test handling when dict_to_proto_function returns None."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -273,7 +273,7 @@ class TestGetFunctionsCaching:
     ) -> None:
         """Test that function definitions are cached after first call."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -306,7 +306,7 @@ class TestGetFunctionsCaching:
     ) -> None:
         """Test that cached results are returned on subsequent calls."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -337,7 +337,7 @@ class TestGetFunctionsMetrics:
         """Test request counter incremented."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_requests") as mock_requests,
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
 
@@ -350,7 +350,7 @@ class TestGetFunctionsMetrics:
         """Test duration observer called."""
         with (
             patch("pyvider.protocols.tfprotov6.handlers._metrics.handler_duration") as mock_duration,
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
         ):
             mock_hub.get_components.return_value = {}
 
@@ -383,7 +383,7 @@ class TestGetFunctionsEdgeCases:
     @pytest.mark.asyncio
     async def test_with_none_context(self, sample_request: pb.GetFunctions.Request) -> None:
         """Test with None context."""
-        with patch("pyvider.hub.hub") as mock_hub:
+        with patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub:
             mock_hub.get_components.return_value = {}
 
             response = await GetFunctionsHandler(sample_request, context=None)
@@ -400,7 +400,7 @@ class TestGetFunctionsEdgeCases:
     ) -> None:
         """Test with multiple registered functions."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"
@@ -436,7 +436,7 @@ class TestGetFunctionsEdgeCases:
     ) -> None:
         """Test with mix of successful and failed function conversions."""
         with (
-            patch("pyvider.hub.hub") as mock_hub,
+            patch("pyvider.protocols.tfprotov6.handlers.utils.hub") as mock_hub,
             patch("pyvider.protocols.tfprotov6.handlers.get_functions.function_to_dict") as mock_to_dict,
             patch(
                 "pyvider.protocols.tfprotov6.handlers.get_functions.dict_to_proto_function"

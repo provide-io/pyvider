@@ -212,10 +212,24 @@ def _merge_nested_into_plan(plan_value: Any, config_value: Any, nested: PvsNeste
     if not isinstance(plan_value, list | tuple) or not isinstance(config_value.value, tuple):
         return plan_value
 
-    if nested.nesting is NestingMode.SET and len(plan_value) > 1:
+    if nested.nesting is NestingMode.SET and not (len(plan_value) == 1 and len(config_value.value) == 1):
         # A set has no order, so an element is paired with the configuration it
         # came from by value rather than by position -- including when the
         # counts differ, which pairs what it can and leaves the rest.
+        #
+        # One element on each side is the exception: there is only one pairing
+        # available, so position cannot be wrong, and taking it corrects a plan
+        # that retained a stale prior value even when the element carries nothing
+        # to identify it by.
+        #
+        # The condition used to be `len(plan_value) > 1` alone, which also took
+        # the positional path when the plan had one element and the configuration
+        # had several. The one element left need not be the first one configured:
+        # a plan hook that dropped an element left the survivor paired with
+        # configuration element zero, so it took a neighbour's explicitly
+        # configured values -- a value the practitioner never wrote for it, and
+        # "inconsistent result after apply" if the resource reads its
+        # configuration back during apply.
         return _merge_set_into_plan(plan_value, config_value.value, nested)
 
     # A list keeps its order, so position is what pairs an element with its

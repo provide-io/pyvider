@@ -10,6 +10,7 @@ import attrs
 
 from pyvider.cty import CtyObject, CtyType, CtyValue
 from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
+from pyvider.cty.json_codec import cty_from_json
 from pyvider.cty.marks import CtyMark
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema.defaults import resolve_schema_defaults
@@ -204,7 +205,16 @@ def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicVa
     schema_cty_type = schema.to_cty_type() if hasattr(schema, "to_cty_type") else schema
 
     if isinstance(value, CtyValue):
-        validated_value = value
+        # A CtyValue used to be trusted as-is, so a value whose payload
+        # disagreed with the declared type was encoded anyway -- a string on the
+        # wire where the schema promises a number, or a short object where one
+        # attribute is required. Terraform then fails to decode it and blames
+        # the provider, with nothing saying which attribute or which hook
+        # produced it. go-cty conforms and converts before encoding
+        # (cty/msgpack/marshal.go:18-27); this is the same check at the same
+        # boundary. Validation is idempotent for a value that already conforms,
+        # and preserves unknowns.
+        validated_value = schema_cty_type.validate(value)
     else:
         raw_value = attrs.asdict(value) if attrs.has(type(value)) else value
         validated_value = schema_cty_type.validate(raw_value)
@@ -245,7 +255,12 @@ def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType, apply_defaults:
     if dv.msgpack:
         value = cty_from_msgpack(dv.msgpack, root_cty_type)
     elif dv.json:
-        raise NotImplementedError("JSON unmarshalling is not yet implemented.")
+        # Terraform sends msgpack for everything it encodes itself, so this is
+        # the path a differently-built client takes -- and the one raw state
+        # arrives on. Core accepts either in a response and decodes whichever is
+        # present (internal/plugin6/grpc_provider.go:2078-2093), so refusing one
+        # of the two was a gap rather than a policy.
+        value = cty_from_json(dv.json, root_cty_type)
     else:
         value = CtyValue.null(root_cty_type)
 

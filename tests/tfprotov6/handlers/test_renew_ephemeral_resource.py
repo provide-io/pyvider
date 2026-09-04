@@ -104,20 +104,26 @@ class TestRenewEphemeralResourceImpl:
             assert len(response.diagnostics) > 0
 
     @pytest.mark.asyncio
-    async def test_impl_handles_missing_private_state_class(
+    async def test_impl_renews_a_resource_with_no_private_state_class(
         self, sample_request: pb.RenewEphemeralResource.Request
     ) -> None:
-        """Test handling when resource doesn't define private_state_class."""
+        """Private state is optional, so a renewal without one must succeed.
+
+        This used to be an error. A resource that renews on a schedule need not
+        carry anything between calls.
+        """
         mock_class = MagicMock()
         mock_class.private_state_class = None
+        mock_class.return_value.renew = AsyncMock(return_value=(None, None))
+        request = pb.RenewEphemeralResource.Request(type_name=sample_request.type_name)
 
         with patch("pyvider.hub.hub.get_component") as mock_get:
             mock_get.return_value = mock_class
 
-            response = await _renew_ephemeral_resource_impl(sample_request, context=None)
+            response = await _renew_ephemeral_resource_impl(request, context=None)
 
-            assert len(response.diagnostics) > 0
-            assert "private_state_class" in response.diagnostics[0].detail
+            assert not response.diagnostics, response.diagnostics
+            mock_class.return_value.renew.assert_awaited_once()
 
     @pytest.mark.asyncio
     async def test_impl_unpacks_private_data(

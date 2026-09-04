@@ -357,10 +357,17 @@ remotely. Results are keyed by resource identity, which is how Terraform ties a 
 a managed resource. Setting `resource_type` borrows that resource's identity and state schemas, so the
 common case restates neither.
 
+**A list resource is registered under the managed resource's own name.** Terraform looks its results up
+against the managed resource type with the same name, and refuses to list at all when there is no such
+type: `Identity schema not found for resource type <name>; this is a bug in the provider`
+(`internal/plugin6/grpc_provider.go:1341-1345`). A list resource is another way to find instances of a
+managed resource, not a type of its own, so a name like `acme_widget_list` cannot work. The framework
+warns at schema time when a list resource has no managed counterpart.
+
 ```python
 from pyvider.list_resources import BaseListResource, ListResult, register_list_resource
 
-@register_list_resource("acme_widget_list", resource_type="acme_widget")
+@register_list_resource("acme_widget", resource_type="acme_widget")
 class WidgetList(BaseListResource):
     config_class = WidgetListConfig
 

@@ -19,6 +19,7 @@ from pyvider.cty import (
     CtyString,
     CtyValue,
 )
+from pyvider.exceptions.resource import StateClassMismatchError
 from pyvider.resources.base import _UNREFINED_UNKNOWN_SENTINEL, BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
@@ -160,14 +161,22 @@ class TestFromCtyConversion:
 
         assert result is None
 
-    def test_handle_attrs_conversion_with_missing_required_field_returns_none(self) -> None:
-        """Test _handle_attrs_conversion returns None for missing required fields."""
-        # Missing 'name' field which is required
+    def test_handle_attrs_conversion_raises_when_a_required_field_cannot_be_supplied(self) -> None:
+        """A field the incoming value cannot supply is an error, not a None.
+
+        This previously returned None, on the reading that a missing required
+        field meant "unknown or computed values are present during planning".
+        Unknowns do not arrive that way -- an unknown attribute is converted to
+        None and still passed, so attrs is satisfied -- and the None was used
+        downstream as a control signal: `BaseResource.apply` reads a missing
+        planned state as a destroy, so a schema/class mismatch could delete a
+        live resource during an update.
+        """
+        # 'name' is required by SampleConfig and absent from the incoming value.
         data = {"count": 5}
 
-        result = SampleResource._handle_attrs_conversion(data, SampleConfig)
-
-        assert result is None
+        with pytest.raises(StateClassMismatchError, match="name"):
+            SampleResource._handle_attrs_conversion(data, SampleConfig)
 
     def test_handle_attrs_conversion_raises_on_other_type_errors(self) -> None:
         """Test _handle_attrs_conversion raises TypeError for non-missing-field errors."""

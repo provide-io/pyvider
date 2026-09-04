@@ -1,0 +1,93 @@
+# Runs this pyvider against a real OpenTofu and a real Terraform, over the
+# provider's example corpus.
+#
+# The reusable python-ci pipeline tests pyvider in-process. That cannot see a
+# component which fails to register, or a plan Terraform refuses, because
+# nothing in it is Terraform. This workflow is the other half.
+#
+# Both engines run because they do not cover the same ground. Only Terraform
+# has a `query` command, which is the only way a list resource is reached at
+# all; OpenTofu is what most practitioners run, and is the engine the corpus
+# was written against.
+name: 🌍 Terraform Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: terraform-gate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  stir:
+    name: 🥣 Example corpus (${{ matrix.engine }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      # One engine's failure is not the other's; both results are wanted.
+      fail-fast: false
+      matrix:
+        include:
+          - engine: tofu
+            version: '1.12.6'
+          - engine: terraform
+            version: '1.16.1'
+    steps:
+      # The pyvider under review.
+      - name: Check out pyvider
+        uses: actions/checkout@v6
+
+      # The example corpus. A public repository, so no token is involved.
+      - name: Check out the provider's examples
+        uses: actions/checkout@v6
+        with:
+          repository: provide-io/terraform-provider-pyvider
+          path: terraform-gate/provider
+
+      # The engine most practitioners run, and the one the corpus was written
+      # against. It has no `query` command, so it exercises no list resource.
+      - name: Install OpenTofu
+        if: matrix.engine == 'tofu'
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: ${{ matrix.version }}
+
+      # The only engine with a `query` command, which reads *.tfquery.hcl and
+      # is the only path to a list resource. `terraform_wrapper` is off because
+      # the wrapper it installs otherwise intercepts stdout, which stir parses.
+      - name: Install Terraform
+        if: matrix.engine == 'terraform'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ matrix.version }}
+          terraform_wrapper: false
+
+      # Builds the gate's venv, and caches the wheels between runs.
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      # Builds the venv, publishes the provider, runs init/apply/plan/destroy
+      # -- and query, where the engine has one -- over every example directory.
+      # The engine is named rather than inferred: stir's own search order
+      # prefers OpenTofu wherever both are installed.
+      - name: Run the corpus
+        run: ci/terraform-gate.sh
+        env:
+          TOFUSOUP_TF_COMMAND: ${{ matrix.engine }}
+
+      # The logs name the failing directory and carry Terraform's own output,
+      # which the summary table alone does not.
+      - name: Upload stir logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stir-logs-${{ matrix.engine }}
+          path: terraform-gate/provider/examples/**/.soup/logs/
+          retention-days: 7

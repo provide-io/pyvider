@@ -228,7 +228,7 @@ async def _read_resource_impl(request: pb.ReadResource.Request, context: Any) ->
             config=None,
             state=prior_state_instance,
             private_state=private_state_instance,
-            capabilities=provider_instance.metadata.capabilities,
+            capabilities=getattr(provider_instance, "capabilities", {}),
             test_mode_enabled=test_mode_enabled,
             identity=(
                 unmarshal_identity(request.current_identity, identity_schema)

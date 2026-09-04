@@ -9,7 +9,7 @@ from typing import Any
 from provide.foundation import logger
 
 from pyvider.cty.exceptions import CtyValidationError
-from pyvider.exceptions import PyviderError
+from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
@@ -47,7 +47,7 @@ async def _validate_ephemeral_resource_config_impl(
                 if hub.get_components("ephemeral_resource")
                 else [],
             )
-            raise ValueError(
+            raise ResourceError(
                 f"Ephemeral resource type '{request.type_name}' not found.\n\n"
                 f"Suggestion: Ensure the ephemeral resource is registered using the @ephemeral decorator.\n\n"
                 f"Troubleshooting:\n"

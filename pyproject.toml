@@ -46,7 +46,6 @@ dependencies = [
     "grpcio>=1.83.0",
     "protobuf>=7.35.1",
     "msgpack>=1.1.1",
-    "google>=3.0.0",
     "cryptography>=45.0.7",
     "provide-foundation>=0.4.0",
     "pyvider-cty>=0.5.3",

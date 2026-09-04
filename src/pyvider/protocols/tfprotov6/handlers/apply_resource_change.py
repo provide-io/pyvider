@@ -201,7 +201,16 @@ def _create_resource_context(
         planned_state=planned_state_instance,
         private_state=private_state_instance,
         config_cty=config_cty,
-        capabilities=provider_instance.metadata.capabilities,
+        # BaseResource.apply decides create/update/destroy from this, not from
+        # the converted instance: a null planned state is Terraform asking for a
+        # destroy, and nothing else is.
+        planned_state_cty=planned_state_cty,
+        # The provider's configured capability instances, which is what
+        # ResourceContext.capabilities is declared to hold. This used to read
+        # provider_instance.metadata.capabilities -- the ProviderCapabilities
+        # flags struct, an unrelated object sharing the name -- so the
+        # documented ctx.capabilities["name"] raised TypeError.
+        capabilities=getattr(provider_instance, "capabilities", {}),
         test_mode_enabled=test_mode_enabled,
         identity=(
             unmarshal_identity(planned_identity, identity_schema) if identity_schema is not None else None
@@ -217,6 +226,7 @@ def _handle_apply_result(
     response: pb.ApplyResourceChange.Response,
     *,
     type_name: str,
+    planned_private: bytes = b"",
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
 ) -> None:
@@ -264,6 +274,18 @@ def _handle_apply_result(
         response.private = encrypt(serialized_bytes)
         logger.debug("Setting response.private", private=repr(response.private))
         logger.debug("Serialized private bytes", serialized_bytes=repr(serialized_bytes))
+    elif planned_private:
+        # Silence from the apply hook means "unchanged", not "erase it".
+        # Terraform records whatever comes back here as the instance's private
+        # state, so returning nothing loses whatever the resource had stored.
+        # The planned bytes are passed through as they arrived, still encrypted.
+        response.private = planned_private
+        logger.debug(
+            "Carried planned private state forward",
+            operation="apply_resource_change",
+            resource_type=type_name,
+            private_state_size=len(planned_private),
+        )
 
 
 @rpc_handler("ApplyResourceChange")
@@ -340,6 +362,7 @@ async def _apply_resource_change_impl(
             planned_state_cty,
             response,
             type_name=request.type_name,
+            planned_private=request.planned_private,
             identity_schema=identity_schema,
             identity_values=(
                 derive_identity_values(

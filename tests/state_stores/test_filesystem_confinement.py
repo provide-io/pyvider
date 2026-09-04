@@ -81,22 +81,30 @@ def test_an_encoded_segment_never_ends_in_a_dot_or_space(value: str) -> None:
     assert encoded == encoded.rstrip(". "), f"{value!r} encoded to {encoded!r}"
 
 
-@pytest.mark.parametrize("value", ["ordinary", "my.store", "..foo", "a-b_c", "a.b.c"])
-def test_ordinary_names_are_unchanged_on_disk(value: str) -> None:
-    """A name that cannot traverse keeps its existing on-disk spelling, so no migration."""
+@pytest.mark.parametrize("value", ["ordinary", "a-b_c", "production-1", "s3", "tf_state_2"])
+def test_a_name_of_safe_characters_is_unchanged_on_disk(value: str) -> None:
+    """The names practitioners actually use are readable in the store directory.
+
+    Terraform's own identifiers are lowercase, digits and underscores, so the
+    allow-list leaves the ordinary case alone: a store stays greppable, which
+    is most of the reason to back one with a filesystem at all.
+    """
     assert _encode_segment(value) == value
 
 
-def test_a_name_ending_in_a_dot_is_the_one_that_changes_spelling() -> None:
-    """`foo..` is the only shape whose on-disk name moves, and it had no valid one.
+@pytest.mark.parametrize("value", ["my.store", "..foo", "a.b.c", "foo.."])
+def test_a_dot_is_escaped_rather_than_kept(value: str) -> None:
+    """A dot names a parent directory, and Windows drops it from the end.
 
-    It was listed above as needing no migration, which was true on POSIX and
-    false on Windows, where it had always been stored as `foo` -- the trailing
-    dots dropped by the filesystem, not by this encoder. There is no
-    cross-platform stored state to preserve, so the escape is safe to introduce.
+    Escaping every one of them costs a less readable name and settles both:
+    `..` cannot traverse, and a component cannot end in a character the
+    filesystem discards. A state written under the older, unescaped spelling is
+    found and renamed forward -- see `test_state_id_encoding.py`.
     """
-    assert _encode_segment("foo..") == "foo%2E%2E"
-    assert _decode_segment(_encode_segment("foo..")) == "foo.."
+    encoded = _encode_segment(value)
+
+    assert "." not in encoded
+    assert _decode_segment(encoded) == value
 
 
 async def test_a_written_state_reads_back_under_a_hostile_name(tmp_path: Path) -> None:

@@ -230,15 +230,35 @@ class TestProvideServerMode:
 
         runner = CliRunner()
 
-        cookie_value = "test-magic-cookie-123"
+        # The value Terraform sends is fixed and public; anything else means the
+        # process was not launched by Terraform.
         with (
-            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": cookie_value}, clear=False),
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": TERRAFORM_PLUGIN_MAGIC_COOKIE}, clear=False),
             patch("sys.argv", ["terraform-provider-pyvider", "provide"]),
         ):
             runner.invoke(cli, ["provide"])
 
         # Should call the server
         assert mock_run.call_count >= 1
+
+    @patch("pyvider.cli.provide_command.asyncio.run")
+    def test_a_wrong_magic_cookie_is_refused(self, mock_run: MagicMock) -> None:
+        """The check used to compare the environment value against itself.
+
+        It read TF_PLUGIN_MAGIC_COOKIE and passed that same value back as the
+        expected one, so any cookie at all was accepted and the "this binary is
+        a plugin" guard never fired.
+        """
+        runner = CliRunner()
+
+        with (
+            patch.dict(os.environ, {"TF_PLUGIN_MAGIC_COOKIE": "not-the-real-cookie"}, clear=False),
+            patch("sys.argv", ["terraform-provider-pyvider", "provide"]),
+        ):
+            result = runner.invoke(cli, ["provide"])
+
+        assert result.exit_code == 1
+        assert mock_run.call_count == 0, "the server was started for a process Terraform did not launch"
 
 
 class TestProvideServerErrorHandling:
