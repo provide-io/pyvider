@@ -22,10 +22,57 @@ from pyvider.cty import (
 )
 from pyvider.schema.types import NestingMode, PvsAttribute, PvsNestedBlock, PvsObjectType, PvsSchema
 
+#: Member flags that only reach Terraform through a `nested_type`, and so cannot
+#: survive being used as a collection's element type.
+_FLAGS_NEEDING_NESTED_TYPE = ("computed", "sensitive", "write_only")
+
+
+def _reject_lost_member_flags(type_def: PvsAttribute) -> None:
+    """Refuse an object element whose members declare flags that cannot be sent.
+
+    `a_obj` reaches Terraform as a `nested_type`, which is what carries a
+    member's `computed`, `sensitive`, `write_only` and default. Inside `a_list`,
+    `a_set` or `a_map` only the cty type survives, because this framework does
+    not yet emit LIST, SET or MAP nested types and tfprotov6 has no other way to
+    express per-member flags on a collection element
+    (tfprotov6/schema.go:58-81 models the nesting this would need).
+
+    Accepting them and dropping them silently is worse than refusing: a
+    `computed=True` member looks declared, Terraform is never told, and a
+    provider that fills the value in during apply is told "planned value for a
+    non-computed attribute" with nothing pointing back at the schema.
+    """
+    object_type = type_def.object_type
+    if object_type is None:
+        return
+
+    offenders: list[str] = []
+    for name, member in object_type.attributes.items():
+        flags = [flag for flag in _FLAGS_NEEDING_NESTED_TYPE if getattr(member, flag, False)]
+        if member.default is not None:
+            flags.append("default")
+        offenders.extend(f"{name}.{flag}" for flag in flags)
+
+    if not offenders:
+        return
+
+    raise ValueError(
+        f"Invalid schema attribute: a collection of objects cannot carry per-member "
+        f"flags ({', '.join(offenders)}).\n\n"
+        f"An a_obj() attribute is sent to Terraform as a nested type, which is what "
+        f"carries a member's computed, sensitive, write_only and default. Inside "
+        f"a_list(), a_set() or a_map() only the object's type is sent, so those flags "
+        f"would be silently dropped and Terraform would never know about them.\n\n"
+        f"Suggestion: declare the collection as a nested block instead -- b_list(), "
+        f"b_set() or b_map() -- which carries the flags per attribute; or drop the "
+        f"flags if the members really are plain values."
+    )
+
 
 def _get_cty_type(type_def: Any) -> CtyType:
     """Gets the CtyType from a PvsAttribute or a raw CtyType."""
     if isinstance(type_def, PvsAttribute):
+        _reject_lost_member_flags(type_def)
         return type_def.type
     if isinstance(type_def, CtyType):
         return type_def
