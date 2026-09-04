@@ -152,16 +152,27 @@ async def test_hook_receives_the_decoded_state(hookable_resource: type[HookableW
 
 
 @pytest.mark.asyncio
-async def test_a_hook_returning_none_passes_the_state_through(
+async def test_a_hook_returning_none_reduces_the_state_to_a_configuration(
     hookable_resource: type[HookableWidget],
 ) -> None:
-    state = _state()
-    request = pb.GenerateResourceConfig.Request(type_name=RESOURCE_TYPE, state=state)
+    """State stands in for the answer, minus what a configuration cannot set.
+
+    This used to forward the state bytes verbatim, which put computed-only
+    attributes into the generated file; Terraform then rejects it on the next
+    plan. Terraform's own fallback for a provider without this capability does
+    the same reduction (node_resource_plan_instance.go:1192-1208), and pyvider
+    advertises the capability unconditionally so that fallback never runs.
+    """
+    from pyvider.conversion import unmarshal
+
+    request = pb.GenerateResourceConfig.Request(type_name=RESOURCE_TYPE, state=_state())
 
     response = await GenerateResourceConfigHandler(request, context=None)
 
-    assert response.config == state
     assert list(response.diagnostics) == []
+    config = unmarshal(response.config, schema=hookable_resource.get_schema().block)
+    assert config["id"].value == "w-1", "a configurable attribute was dropped"
+    assert config["computed_arn"].is_null, "a computed-only attribute reached the configuration"
 
 
 @pytest.mark.asyncio

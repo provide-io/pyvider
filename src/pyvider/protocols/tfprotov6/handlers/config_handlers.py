@@ -19,6 +19,7 @@ from typing import Any
 from provide.foundation import logger
 
 from pyvider.conversion import marshal, unmarshal
+from pyvider.cty.conversion import cty_to_native
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
@@ -71,6 +72,36 @@ __all__ = [
 ]
 
 
+def _state_as_configuration(state: pb.DynamicValue, schema: Any) -> pb.DynamicValue:
+    """Turn a state value into something a configuration could actually contain.
+
+    Terraform's own fallback for a provider that does not implement this RPC is
+    `genconfig.ExtractLegacyConfigFromState`, which drops what a configuration
+    cannot set (node_resource_plan_instance.go:1192-1208). pyvider advertises the
+    capability unconditionally, so that fallback never runs and this stands in
+    for it.
+
+    Forwarding the state bytes verbatim, which is what happened before, put
+    computed-only attributes such as `id` into the generated file; Terraform then
+    rejects it on the next plan, because a configuration cannot assign them. An
+    optional+computed attribute is kept: the practitioner is allowed to set it,
+    and dropping it would discard a real setting.
+    """
+    if not state.ByteSize():
+        return state
+
+    values = cty_to_native(unmarshal(state, schema=schema.block))
+    if not isinstance(values, dict):
+        return state
+
+    for name, attr in schema.block.attributes.items():
+        computed_only = attr.computed and not attr.optional
+        if computed_only or attr.write_only:
+            values[name] = None
+
+    return marshal(values, schema=schema.block)
+
+
 @rpc_handler("GenerateResourceConfig")
 async def GenerateResourceConfigHandler(
     request: pb.GenerateResourceConfig.Request, context: Any
@@ -88,8 +119,11 @@ async def GenerateResourceConfigHandler(
     generate = getattr(resource_class, "generate_config", None)
     if generate is None:
         # A duck-typed resource that predates the hook has nothing to say about
-        # config generation, and its state is the best answer available.
-        return pb.GenerateResourceConfig.Response(config=request.state, diagnostics=[])
+        # config generation, so its state stands in -- reduced to what a
+        # configuration is allowed to contain.
+        return pb.GenerateResourceConfig.Response(
+            config=_state_as_configuration(request.state, resource_class.get_schema()), diagnostics=[]
+        )
 
     try:
         schema = resource_class.get_schema()
@@ -117,9 +151,11 @@ async def GenerateResourceConfigHandler(
         )
 
     if generated is None:
-        # The hook declined to rewrite anything. Forwarding the original wire
-        # value avoids a decode/encode round trip that could only lose fidelity.
-        return pb.GenerateResourceConfig.Response(config=request.state, diagnostics=[])
+        # The hook declined to rewrite anything, so the state stands in -- reduced
+        # to what a configuration is allowed to contain.
+        return pb.GenerateResourceConfig.Response(
+            config=_state_as_configuration(request.state, schema), diagnostics=[]
+        )
 
     try:
         config = marshal(generated, schema=schema.block)
