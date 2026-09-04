@@ -123,13 +123,17 @@ class TestUnmarshal:
         assert isinstance(result, CtyValue)
         assert result.is_null
 
-    def test_unmarshal_json_raises_not_implemented(self) -> None:
-        """Test that JSON unmarshaling raises NotImplementedError."""
-        schema = CtyString()
-        dv = pb.DynamicValue(json=b'{"value": "test"}')
+    def test_unmarshal_decodes_a_json_dynamic_value(self) -> None:
+        """Both encodings are read, as Terraform reads both.
 
-        with pytest.raises(NotImplementedError, match="JSON unmarshalling"):
-            unmarshal(dv, schema=schema)
+        Core decodes whichever of msgpack or json is present
+        (internal/plugin6/grpc_provider.go:2078-2093). This used to raise
+        NotImplementedError, which made a differently-built client -- and raw
+        state, which arrives as JSON -- unreadable.
+        """
+        value = unmarshal(pb.DynamicValue(json=b'"hello"'), schema=CtyString())
+
+        assert value.value == "hello"
 
     def test_unmarshal_invalid_schema_type_raises_error(self) -> None:
         """Test that invalid schema type raises TypeError."""

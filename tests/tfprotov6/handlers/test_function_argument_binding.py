@@ -137,4 +137,31 @@ async def test_an_error_without_an_index_omits_the_field() -> None:
     assert not response.HasField("error"), response.error.text
 
 
+class TestKeywordOnlyParameters:
+    """Terraform passes an ordered list with no names, so these cannot be reached."""
+
+    def test_a_keyword_only_parameter_without_a_default_is_refused(self) -> None:
+        """It made the function impossible to call, and said so only at call time."""
+        from pyvider.exceptions.function import FunctionRegistrationError
+        from pyvider.functions.adapters import function_to_dict
+
+        def needs_a_keyword(text: str, *, mode: str) -> str:
+            return text + mode
+
+        with pytest.raises(FunctionRegistrationError, match="mode"):
+            function_to_dict(needs_a_keyword)
+
+    def test_a_keyword_only_parameter_with_a_default_is_allowed(self) -> None:
+        """It always takes its default, which is harmless; a warning says so."""
+        from pyvider.functions.adapters import function_to_dict
+
+        def has_a_keyword(text: str, *, mode: str = "fast") -> str:
+            return text + mode
+
+        described = function_to_dict(has_a_keyword)
+
+        assert described is not None
+        assert [p["name"] for p in described["parameters"]] == ["text"]
+
+
 # 🐍🏗️🔚

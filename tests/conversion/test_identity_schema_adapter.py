@@ -165,3 +165,20 @@ def test_a_plain_description_stays_plain() -> None:
 
     attribute = next(a for a in proto.block.attributes if a.name == "name")
     assert attribute.description_kind == pb.StringKind.PLAIN
+
+
+def test_a_json_dynamic_value_is_decoded() -> None:
+    """Terraform accepts either encoding in a response, so this must read both.
+
+    Core decodes whichever of msgpack or json is present
+    (internal/plugin6/grpc_provider.go:2078-2093). Terraform encodes msgpack
+    itself, so this is the path a differently-built client takes and the one raw
+    state arrives on; it used to raise NotImplementedError.
+    """
+    from pyvider.conversion import unmarshal
+    from pyvider.schema import s_resource
+
+    block = s_resource({"name": a_str(required=True)}).block
+    value = unmarshal(pb.DynamicValue(json=b'{"name": "alpha"}'), schema=block)
+
+    assert value["name"].value == "alpha"

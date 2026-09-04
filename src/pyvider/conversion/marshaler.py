@@ -10,6 +10,7 @@ import attrs
 
 from pyvider.cty import CtyObject, CtyType, CtyValue
 from pyvider.cty.codec import cty_from_msgpack, cty_to_msgpack
+from pyvider.cty.json_codec import cty_from_json
 from pyvider.cty.marks import CtyMark
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.schema.defaults import resolve_schema_defaults
@@ -245,7 +246,12 @@ def unmarshal(dv: pb.DynamicValue, *, schema: PvsType | CtyType, apply_defaults:
     if dv.msgpack:
         value = cty_from_msgpack(dv.msgpack, root_cty_type)
     elif dv.json:
-        raise NotImplementedError("JSON unmarshalling is not yet implemented.")
+        # Terraform sends msgpack for everything it encodes itself, so this is
+        # the path a differently-built client takes -- and the one raw state
+        # arrives on. Core accepts either in a response and decodes whichever is
+        # present (internal/plugin6/grpc_provider.go:2078-2093), so refusing one
+        # of the two was a gap rather than a policy.
+        value = cty_from_json(dv.json, root_cty_type)
     else:
         value = CtyValue.null(root_cty_type)
 
