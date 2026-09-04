@@ -186,11 +186,65 @@ def _create_resource_context(
     )
 
 
+def _fill_undetermined_computed_attributes(
+    planned_state_dict: dict[str, Any],
+    resource_schema: Any,
+    validator_type: CtyObject,
+    prior_state_cty: CtyValue | None,
+) -> None:
+    """Decide what an unset optional+computed attribute is planned as.
+
+    On a create the provider does not know the value yet, so it plans unknown --
+    what Terraform shows as "known after apply". Planning null there promises a
+    null that apply then contradicts, and Core rejects the apply with "Provider
+    produced inconsistent result after apply: .id: was null, but now ...".
+
+    On an update the value is not undetermined: the last read already found out
+    what it is, and it is sitting in prior state. Re-planning it unknown says it
+    may change on every run, which never converges -- `terraform plan` is never
+    empty, and with `requires_replace` the attribute lands in the replacement
+    paths and the resource is destroyed and recreated on every plan. Terraform's
+    own ProposedNew carries the prior value forward for an optional+computed
+    attribute whose configuration is null (terraform/internal/plans/objchange/
+    objchange.go:328-345), so that is what is kept here, including when the prior
+    value is a null the remote API legitimately returned.
+
+    An earlier version of this filled unknown only when some *other* attribute
+    already happened to be unknown, which broke creates from a wholly known
+    configuration; the fix for that filled unconditionally and broke updates.
+    Both cases are pinned in tests/tfprotov6/handlers/
+    test_plan_computed_null_stability.py.
+    """
+    has_prior = prior_state_cty is not None and not prior_state_cty.is_null
+
+    for attr in resource_schema.block.attributes.values():
+        if not attr.computed or attr.required:
+            continue
+        if planned_state_dict.get(attr.name) is not None:
+            continue
+        attr_type = validator_type.attribute_types.get(attr.name)
+        if attr_type is None:
+            continue
+
+        prior_value: CtyValue | None = None
+        if has_prior and prior_state_cty is not None:
+            try:
+                prior_value = prior_state_cty[attr.name]
+            except (KeyError, TypeError):
+                # Not in prior state at all, which happens when the schema gained
+                # the attribute since the state was written. Nothing to carry
+                # forward, so it is undetermined in the same sense as a create.
+                prior_value = None
+
+        planned_state_dict[attr.name] = prior_value if prior_value is not None else CtyValue.unknown(attr_type)
+
+
 def _handle_planned_state_dict(
     planned_state_dict: dict[str, Any],
     resource_schema: Any,
     response: pb.PlanResourceChange.Response,
     *,
+    prior_state_cty: CtyValue | None = None,
     identity_schema: PvsSchema | None = None,
     identity_values: dict[str, Any] | None = None,
 ) -> CtyValue:
@@ -201,26 +255,9 @@ def _handle_planned_state_dict(
     if not isinstance(validator_type, CtyObject):
         raise TypeError("Resource schema must be an object type for planning.")
 
-    # A computed attribute that neither the practitioner nor the plan hook set is
-    # unknown -- what Terraform shows as "known after apply". Planning it null
-    # instead promises Core a null that apply then contradicts, and Core rejects
-    # the whole apply with "Provider produced inconsistent result after apply:
-    # .id: was null, but now cty.StringVal(...)".
-    #
-    # This used to run only when some *other* top-level attribute already
-    # happened to be unknown, which made it look like it worked: any config with
-    # an interpolation marked its computed attributes, and a wholly known config
-    # planned every one of them null. The gate was top-level only as well, so an
-    # unknown nested inside a list or object attribute did not trip it either --
-    # which is why the failure read as intermittent rather than as always.
-    for attr in resource_schema.block.attributes.values():
-        if not attr.computed or attr.required:
-            continue
-        if planned_state_dict.get(attr.name) is not None:
-            continue
-        attr_type = validator_type.attribute_types.get(attr.name)
-        if attr_type:
-            planned_state_dict[attr.name] = CtyValue.unknown(attr_type)
+    _fill_undetermined_computed_attributes(
+        planned_state_dict, resource_schema, validator_type, prior_state_cty
+    )
 
     # Pass unknown CtyValues directly to validation - CTY knows how to handle them
     # Don't convert to None, as that creates null CtyValues which fail validation for required fields
@@ -440,6 +477,7 @@ def _finalize_planned_state(
         planned_state_dict,
         resource_schema,
         response,
+        prior_state_cty=prior_state_cty,
         identity_schema=identity_schema,
         identity_values=identity_values,
     )
