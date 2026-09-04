@@ -205,7 +205,16 @@ def marshal(value: CtyValue | Any, *, schema: PvsType | CtyType) -> pb.DynamicVa
     schema_cty_type = schema.to_cty_type() if hasattr(schema, "to_cty_type") else schema
 
     if isinstance(value, CtyValue):
-        validated_value = value
+        # A CtyValue used to be trusted as-is, so a value whose payload
+        # disagreed with the declared type was encoded anyway -- a string on the
+        # wire where the schema promises a number, or a short object where one
+        # attribute is required. Terraform then fails to decode it and blames
+        # the provider, with nothing saying which attribute or which hook
+        # produced it. go-cty conforms and converts before encoding
+        # (cty/msgpack/marshal.go:18-27); this is the same check at the same
+        # boundary. Validation is idempotent for a value that already conforms,
+        # and preserves unknowns.
+        validated_value = schema_cty_type.validate(value)
     else:
         raw_value = attrs.asdict(value) if attrs.has(type(value)) else value
         validated_value = schema_cty_type.validate(raw_value)

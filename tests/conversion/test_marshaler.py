@@ -271,3 +271,51 @@ class TestMarshalUnmarksAtTheWireBoundary:
         marked = _apply_schema_marks_iterative(value, schema)
 
         assert isinstance(marshal(marked, schema=schema), pb.DynamicValue)
+
+
+class TestMarshalConformance:
+    """A CtyValue is checked against the schema before it is encoded.
+
+    `marshal` validated a raw Python value and trusted a `CtyValue`, so a value
+    whose payload disagreed with the declared type was serialised anyway:
+
+        object({n: number})  <-  CtyValue holding {"n": "x"}   ->  81a16ea178
+
+    which is a string on the wire where the schema promises a number. Terraform
+    fails to decode it and blames the provider, with nothing saying which
+    attribute or which hook produced it. A short object encoded just as quietly,
+    reaching Terraform as "an object with N attributes is required".
+
+    go-cty conforms and converts before encoding (cty/msgpack/marshal.go:18-27);
+    this is the same check at the same boundary.
+    """
+
+    def test_a_wrongly_typed_value_is_refused(self) -> None:
+        declared = CtyObject({"n": CtyNumber()})
+        wrong = CtyValue(
+            vtype=CtyObject({"n": CtyString()}),
+            value={"n": CtyValue(vtype=CtyString(), value="x")},
+        )
+
+        with pytest.raises(Exception, match=r"(?i)number|valid|conform"):
+            marshal(wrong, schema=declared)
+
+    def test_a_value_missing_an_attribute_is_refused(self) -> None:
+        declared = CtyObject({"n": CtyNumber()})
+        short = CtyValue(vtype=CtyObject({}), value={})
+
+        with pytest.raises(Exception, match=r"(?i)attribute|valid|conform"):
+            marshal(short, schema=declared)
+
+    def test_a_conforming_value_is_unchanged(self) -> None:
+        declared = CtyObject({"n": CtyNumber(), "s": CtyString()})
+        good = declared.validate({"n": 1, "s": "x"})
+
+        assert marshal(good, schema=declared).msgpack == marshal({"n": 1, "s": "x"}, schema=declared).msgpack
+
+    def test_an_unknown_attribute_still_encodes(self) -> None:
+        """Conformance must not reject a value that is merely not yet known."""
+        declared = CtyObject({"n": CtyNumber(), "s": CtyString()})
+        partial = declared.validate({"n": CtyValue.unknown(CtyNumber()), "s": "x"})
+
+        assert marshal(partial, schema=declared).msgpack
