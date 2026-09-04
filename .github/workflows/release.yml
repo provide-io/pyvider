@@ -157,6 +157,13 @@ jobs:
       contents: write
       id-token: write
     steps:
+      # Only the attach script is taken from the checkout, and no token is left
+      # behind, so nothing fetched from a registry runs next to the signing
+      # identity -- which is what this job was kept checkout-free to avoid.
+      - name: 📥 Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
       - name: 📦 Download artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
         with:
@@ -176,12 +183,14 @@ jobs:
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.5.0
         with:
           inputs: dist/*.whl dist/*.tar.gz sbom-python.cdx.json
+      # Retried: `gh release upload` gives up on the first rejection with part
+      # of the set already attached, so one transient 502 leaves a signature
+      # beside no artifact.
       - name: ⬆️ Attach artifacts to release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
-        run: |
-          gh release upload "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json --repo "$GITHUB_REPOSITORY" --clobber
+        run: scripts/attach_release_artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json
 
   # Repair path for a release whose sign-and-upload failed, leaving the GitHub
   # release without the artifacts that reached PyPI.
@@ -230,5 +239,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.release_tag }}
-        run: |
-          gh release upload "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json --repo "$GITHUB_REPOSITORY" --clobber
+        run: scripts/attach_release_artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json
+      # An SBOM is deliberately not rebuilt here, so a signature left over from
+      # the failed run signs a file this release no longer has. Removing it
+      # leaves the release honestly without an SBOM instead of appearing to
+      # carry a verified one.
+      - name: 🧹 Drop a signature whose SBOM is gone
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
+        run: scripts/drop_orphan_sbom_signature.sh "$TAG"
