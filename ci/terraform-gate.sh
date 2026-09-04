@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Drive this checkout of pyvider through OpenTofu with tofusoup's `stir`.
+# Drive this checkout of pyvider through a real Terraform or OpenTofu with
+# tofusoup's `stir`. `TOFUSOUP_TF_COMMAND` picks which; stir's own search order
+# prefers OpenTofu, so the engine is named rather than inferred.
 #
 # The unit suite exercises pyvider in-process, where a provider that never
 # registers a component and a provider that registers it correctly look the
@@ -38,10 +40,12 @@ uv venv --clear "${VENV}"
 # PYVIDER_COMPONENTS lets a developer point the gate at a local components
 # checkout; CI takes the released package, so a corpus failure is attributable
 # to the pyvider under review rather than to unreleased components.
+# TOFUSOUP does the same for stir itself, which is what a developer needs to
+# try a lifecycle phase before it is released.
 VIRTUAL_ENV="${VENV}" uv pip install \
   --editable "${PROJECT_ROOT}" \
   "${PYVIDER_COMPONENTS:-pyvider-components}" \
-  "tofusoup[all]"
+  "${TOFUSOUP:-tofusoup[all]}"
 
 echo "==> Publishing the provider where Terraform will look for it"
 # `pyvider install` writes a wrapper around whichever venv it detects from the
@@ -68,6 +72,26 @@ CONFIGURATIONS="$(find "${CORPUS}" -name '*.tf' | wc -l | tr -d ' ')"
 if [ "${CONFIGURATIONS}" -eq 0 ]; then
   echo "no .tf configurations under ${CORPUS}; the gate would prove nothing" >&2
   exit 1
+fi
+
+TF_BIN="${TOFUSOUP_TF_COMMAND:-$(command -v tofu || command -v terraform || echo tofu)}"
+
+# A list resource is reached only through `terraform query`: no other phase
+# evaluates a `list` block, so a provider can ship one Terraform refuses and
+# still pass init, apply, plan and destroy. OpenTofu has no query command at
+# any version, so this guard binds only on the engine that has one -- where a
+# corpus with no query files would prove exactly what the OpenTofu run already
+# proved, at twice the cost.
+if "${TF_BIN}" query -help >/dev/null 2>&1; then
+  QUERIES="$(find "${CORPUS}" -name '*.tfquery.hcl' | wc -l | tr -d ' ')"
+  if [ "${QUERIES}" -eq 0 ]; then
+    echo "${TF_BIN} can query, but no *.tfquery.hcl under ${CORPUS};" >&2
+    echo "no list resource would be exercised and the run would add nothing" >&2
+    exit 1
+  fi
+  echo "==> ${TF_BIN} can query: ${QUERIES} query configurations to exercise"
+else
+  echo "==> ${TF_BIN} has no query command; list resources are not exercised"
 fi
 
 echo "==> Running the corpus: ${CORPUS} (${CONFIGURATIONS} configurations)"
