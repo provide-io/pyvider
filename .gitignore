@@ -107,4 +107,4 @@ memray-output/
 mutants/
 
 # Terraform gate: venv and the checked-out example corpus (ci/terraform-gate.sh)
-.terraform-gate/
+terraform-gate/

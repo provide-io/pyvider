@@ -20,8 +20,8 @@
 set -euo pipefail
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-CORPUS="${TERRAFORM_GATE_CORPUS:-${PROJECT_ROOT}/.terraform-gate/provider/examples}"
-VENV="${PROJECT_ROOT}/.terraform-gate/venv"
+CORPUS="${TERRAFORM_GATE_CORPUS:-${PROJECT_ROOT}/terraform-gate/provider/examples}"
+VENV="${PROJECT_ROOT}/terraform-gate/venv"
 
 case "$(uname -s)/$(uname -m)" in
   Linux/x86_64) PLATFORM="linux_amd64" ;;
@@ -53,7 +53,38 @@ mkdir -p "${PLUGIN_DIR}"
 cp "${VENV}/bin/pyvider" "${PLUGIN_DIR}/terraform-provider-pyvider"
 chmod +x "${PLUGIN_DIR}/terraform-provider-pyvider"
 
-echo "==> Running the corpus: ${CORPUS}"
+# An empty corpus is the one way this gate can pass while proving nothing, so
+# it is checked rather than assumed. stir discovers no directory whose name
+# begins with a dot (stir/discovery.py:229), and reports finding nothing by
+# exiting 0.
+if [ ! -d "${CORPUS}" ]; then
+  echo "corpus directory does not exist: ${CORPUS}" >&2
+  exit 1
+fi
+CONFIGURATIONS="$(find "${CORPUS}" -name '*.tf' | wc -l | tr -d ' ')"
+if [ "${CONFIGURATIONS}" -eq 0 ]; then
+  echo "no .tf configurations under ${CORPUS}; the gate would prove nothing" >&2
+  exit 1
+fi
+
+echo "==> Running the corpus: ${CORPUS} (${CONFIGURATIONS} configurations)"
 # PYVIDER_TESTMODE publishes the components registered `test_only`, which a
 # large part of the corpus configures and would otherwise skip.
-PYVIDER_TESTMODE=true "${VENV}/bin/soup" stir --recursive "${CORPUS}"
+set +e
+PYVIDER_TESTMODE=true "${VENV}/bin/soup" stir --recursive "${CORPUS}" 2>&1 | tee "${PROJECT_ROOT}/terraform-gate/stir.log"
+STIR_STATUS="${PIPESTATUS[0]}"
+set -e
+
+if grep -q "No directories found" "${PROJECT_ROOT}/terraform-gate/stir.log"; then
+  echo "stir discovered no example directories; the gate proved nothing" >&2
+  exit 1
+fi
+PASSED="$(sed 's/\x1b\[[0-9;]*m//g' "${PROJECT_ROOT}/terraform-gate/stir.log" \
+  | grep -oE 'Passed:[[:space:]]+[0-9]+' | grep -oE '[0-9]+' | head -1)"
+if [ -z "${PASSED}" ] || [ "${PASSED}" -eq 0 ]; then
+  echo "stir reported no passing examples; the gate proved nothing" >&2
+  exit 1
+fi
+
+echo "==> ${PASSED} example directories passed"
+exit "${STIR_STATUS}"

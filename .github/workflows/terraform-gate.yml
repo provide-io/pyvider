@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: provide-io/terraform-provider-pyvider
-          path: .terraform-gate/provider
+          path: terraform-gate/provider
 
       # stir drives whichever of terraform/tofu it finds on PATH.
       - name: Install OpenTofu
@@ -57,5 +57,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: stir-logs
-          path: .terraform-gate/provider/examples/**/.soup/logs/
+          path: terraform-gate/provider/examples/**/.soup/logs/
           retention-days: 7
