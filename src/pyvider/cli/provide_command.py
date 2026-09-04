@@ -25,10 +25,15 @@ def _configure_telemetry(config: Any) -> None:
     # Deferred Imports for Provider Mode
     from provide.foundation import logger
 
-    log_level = config.get("logging.level", "INFO")
-    log_format = config.get("logging.format", "key_value")
-    os.environ["PYVIDER_LOG_LEVEL"] = log_level
-    os.environ["PYVIDER_LOG_CONSOLE_FORMATTER"] = log_format
+    # `PyviderConfig` documents "Environment Variable > Config File > Default",
+    # and this wrote the config file's value over the environment, inverting it.
+    # `setdefault` restores the documented order; an explicit `--log-level` has
+    # already been applied to the environment in `main()`, before Foundation was
+    # configured, so it wins over both.
+    os.environ.setdefault("PYVIDER_LOG_LEVEL", config.get("logging.level", "INFO"))
+    # Foundation reads PROVIDE_LOG_CONSOLE_FORMATTER; this used to write a
+    # PYVIDER_-prefixed name that nothing reads, so `[logging] format` was inert.
+    os.environ.setdefault("PROVIDE_LOG_CONSOLE_FORMATTER", config.get("logging.format", "key_value"))
     # Note: Foundation automatically sets up logging on import, no explicit setup needed
     logger.info("Telemetry configured for provider server mode.", domain="system")
 
@@ -396,6 +401,21 @@ async def _run_provider_server(magic_cookie: str) -> None:
                 background_init.cancel()
                 with contextlib.suppress(asyncio.CancelledError):
                     await background_init
+            else:
+                # A task that finished on its own still holds its exception until
+                # someone asks for it. Nothing did, so a provider whose
+                # initialization failed in the background logged nothing here and
+                # surfaced only as asyncio's "Task exception was never retrieved"
+                # at interpreter shutdown, long after the RPC that needed it.
+                init_error = background_init.exception()
+                if init_error is not None:
+                    logger.error(
+                        "Provider initialization failed in the background",
+                        operation="provider_initialization",
+                        error_type=type(init_error).__name__,
+                        error_message=str(init_error),
+                        exc_info=init_error,
+                    )
 
         logger.info(
             "Provider server has shut down gracefully",
