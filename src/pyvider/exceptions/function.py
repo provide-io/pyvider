@@ -36,13 +36,12 @@ class FunctionError(FoundationRuntimeError):
         return "FUNCTION_ERROR"
 
     def to_proto(self) -> dict[str, Any]:
-        """Convert to protobuf FunctionError message."""
-        # Placeholder for actual protobuf conversion
-        # from pyvider.protocols.tfprotov6.protobuf import FunctionError as ProtoFunctionError
-        # proto_error = ProtoFunctionError(text=str(self))
-        # if self.argument_index is not None:
-        #     proto_error.function_argument = self.argument_index # Ensure field name matches proto
-        # return proto_error
+        """The parts of this error that go on the wire.
+
+        `call_function` assembles the protobuf message itself, because
+        `function_argument` is an optional field and must be left unset rather
+        than sent as zero when the function did not say which argument it meant.
+        """
         return {"text": str(self), "argument_index": self.argument_index}
 
 

@@ -182,32 +182,66 @@ def _inject_capabilities(function_obj: Any, native_kwargs: dict[str, Any], func_
             )
 
 
+def _as_variadic_tuple(value: Any) -> tuple[Any, ...]:
+    """The values a `*args` parameter should receive, as a tuple."""
+    if value is None:
+        return ()
+    if isinstance(value, tuple | list):
+        return tuple(value)
+    return (value,)
+
+
+def _must_be_positional(param: inspect.Parameter, *, has_var_positional: bool) -> bool:
+    """Whether a parameter has to keep its place rather than be passed by name.
+
+    A positional-only one always does. So does anything before a `*args`, where
+    naming it would collide with the values the variadic supplies positionally.
+    """
+    if param.kind == inspect.Parameter.POSITIONAL_ONLY:
+        return True
+    return has_var_positional and param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD
+
+
 def _build_function_arguments(
     func_sig: inspect.Signature, native_kwargs: dict[str, Any]
 ) -> tuple[list[Any], dict[str, Any]]:
-    """Build positional and keyword arguments from native kwargs based on signature."""
+    """Build positional and keyword arguments from native kwargs based on signature.
+
+    A parameter is missing from `native_kwargs` when Terraform sent null and the
+    Python parameter carries a default, which is how the default gets to apply.
+    That makes gaps ordinary, and a gap is fatal to positional binding: appending
+    only the parameters that are present moved every later argument one place to
+    the left, so `pad("x", null, "-")` bound `fill` to `width` and left `fill` at
+    its default, with no error.
+
+    Anything that can be passed by name therefore is. Two kinds of parameter
+    cannot: a positional-only one, and any parameter that sits before a `*args`,
+    since naming it would collide with the values `*args` supplies positionally.
+    Those keep their place, and a gap in them is filled with the signature's own
+    default so a later argument cannot slide into it.
+    """
+    has_var_positional = any(
+        param.kind == inspect.Parameter.VAR_POSITIONAL for param in func_sig.parameters.values()
+    )
+
     positional_args: list[Any] = []
     variadic_args: list[Any] | tuple[Any, ...] = []
-    keyword_only_kwargs: dict[str, Any] = {}
+    keyword_kwargs: dict[str, Any] = {}
 
     for param_name, param in func_sig.parameters.items():
         if param.kind == inspect.Parameter.VAR_POSITIONAL:
-            # This is a *args parameter - extract its tuple
-            if param_name in native_kwargs:
-                variadic_args = native_kwargs[param_name]
-                if not isinstance(variadic_args, (tuple, list)):
-                    variadic_args = (variadic_args,)
-        elif param.kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD):
-            # Regular positional parameter - add to ordered list
+            variadic_args = _as_variadic_tuple(native_kwargs.get(param_name))
+        elif _must_be_positional(param, has_var_positional=has_var_positional):
             if param_name in native_kwargs:
                 positional_args.append(native_kwargs[param_name])
-        elif param.kind == inspect.Parameter.KEYWORD_ONLY and param_name in native_kwargs:
-            # Keyword-only parameter - must be passed as kwarg
-            keyword_only_kwargs[param_name] = native_kwargs[param_name]
+            elif param.default is not inspect.Parameter.empty:
+                positional_args.append(param.default)
+        elif param_name in native_kwargs:
+            keyword_kwargs[param_name] = native_kwargs[param_name]
 
-    # Combine: required positional + variadic
+    # Combine: positional-only + variadic. Everything else goes by name.
     all_args = positional_args + list(variadic_args)
-    return all_args, keyword_only_kwargs
+    return all_args, keyword_kwargs
 
 
 async def _invoke_function(function_obj: Any, native_kwargs: dict[str, Any], func_name: str) -> Any:
@@ -413,8 +447,15 @@ async def _call_function_impl(request: pb.CallFunction.Request, context: Any) ->
             operation="call_function",
             function_name=request.name,
             error_message=str(fe),
+            argument_index=fe.argument_index,
         )
         response.error.text = str(fe)
+        if fe.argument_index is not None:
+            # Terraform turns this into a function.NewArgError and points at the
+            # offending expression rather than the call as a whole
+            # (internal/plugin6/grpc_provider.go:1303-1312). Set only when the
+            # function actually said which argument it meant.
+            response.error.function_argument = fe.argument_index
     except Exception as e:
         logger.error(
             "Function execution failed with unexpected error",
