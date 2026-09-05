@@ -28,7 +28,7 @@ jobs:
       platform-preset: standard  # ubuntu-24.04, ubuntu-24.04-arm, macos-15, macos-15-intel
       # pyvider drives subprocesses, sockets and file locking, so Windows is a
       # platform its behaviour actually differs on -- state_stores/_filelock.py
-      # falls back to an O_EXCL sentinel where there is no fcntl, and
+      # takes the mutex with `msvcrt.locking` where there is no fcntl, and
       # pyvider-rpcplugin switches to TCP transport. Both shipped without a
       # Windows job to prove them.
       #
@@ -39,5 +39,17 @@ jobs:
       include-windows: true
       coverage-threshold: 0  # not yet enforced on the wrknv path (test.coverage has no --cov-fail-under)
       run-security: true
+      # The dependency audit gates. It could not before ci-tooling 0.8.3: the
+      # audit ran pip-audit from the virtualenv the workflow had just installed
+      # it into, so it reported on the scanner's own dependency tree, and every
+      # call site wrapped it in `|| true`. Both are fixed -- it reads the
+      # resolved lock and runs the scanner from `uvx` -- which is what makes the
+      # exit status worth acting on.
+      #
+      # Switched on here once this project's lock was clean: 169 packages, no
+      # known vulnerabilities. It was not, until provide-testkit 0.5.0 stopped
+      # declaring `safety` (and through it `nltk`, unpatched) in an extra this
+      # project takes.
+      fail-on-vulnerability: true
       run-secret-scan: true
     secrets: inherit
