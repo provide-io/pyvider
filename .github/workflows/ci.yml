@@ -46,10 +46,9 @@ jobs:
       # resolved lock and runs the scanner from `uvx` -- which is what makes the
       # exit status worth acting on.
       #
-      # Switched on here once this project's lock was clean: 169 packages, no
-      # known vulnerabilities. It was not, until provide-testkit 0.5.0 stopped
-      # declaring `safety` (and through it `nltk`, unpatched) in an extra this
-      # project takes.
+      # A known vulnerability in the lock reddens this build rather than
+      # filing a report nobody reads. The lock is clean: 169 packages, no
+      # advisories.
       fail-on-vulnerability: true
       run-secret-scan: true
     secrets: inherit
