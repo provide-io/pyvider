@@ -22,7 +22,7 @@ jobs:
   # Delegate tests + build + (optional) GH release to the ci-tooling reusable.
   # GH release creation is suppressed because `release: published` means one already exists.
   release:
-    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@v0.4.3
+    uses: provide-io/ci-tooling/.github/workflows/python-release.yml@v0.8.4
     # Skipped for a repair dispatch: that path attaches the artifacts PyPI
     # already holds, so building a fresh set here would only be discarded.
     if: github.event_name == 'release' || inputs.release_tag == ''
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: v0.4.3
+          ref: v0.8.4
           path: .ci-tooling
       - name: 🐍 Setup Python
         uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
@@ -119,12 +119,16 @@ jobs:
     permissions:
       contents: read
     steps:
-      # Only the script is needed from the checkout; no token is left behind.
+      # scripts/ and pyproject.toml: cyclonedx-py reads the project name out of
+      # the manifest, so a checkout of scripts/ alone fails the SBOM with
+      # "Could not open pyproject file". No token is left behind.
       - name: 📥 Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           persist-credentials: false
-          sparse-checkout: scripts
+          sparse-checkout: |
+            scripts
+            pyproject.toml
           sparse-checkout-cone-mode: false
       - name: 🐍 Setup uv
         uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
