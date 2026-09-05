@@ -153,8 +153,8 @@ jobs:
 
   # Sign artifacts and attach everything, SBOM included, to the GH release.
   # No package installs here: this job runs nothing but the pinned actions,
-  # `gh`, and the attach script sparse-checked-out below, so nothing fetched
-  # from a registry executes next to the signing identity.
+  # `gh`, and the shared attach script sparse-checked-out below, so nothing
+  # fetched from a registry executes next to the signing identity.
   sign-and-upload:
     needs: [publish-pypi, sbom]
     if: github.event_name == 'release'
@@ -163,13 +163,17 @@ jobs:
       contents: write
       id-token: write
     steps:
-      # Only scripts/ is materialised, and no token is left behind, so the
-      # signing identity has nothing beside it that came from a registry.
-      - name: 📥 Checkout
+      # Only the release helpers are materialised, at a tag, and no token is
+      # left behind, so the signing identity has nothing beside it that came
+      # from a registry.
+      - name: 📥 Checkout ci-tooling helpers
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
+          repository: provide-io/ci-tooling
+          ref: v0.8.4
+          path: .ci-tooling
           persist-credentials: false
-          sparse-checkout: scripts
+          sparse-checkout: scripts/release
           sparse-checkout-cone-mode: false
       - name: 📦 Download artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
@@ -203,7 +207,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
-        run: scripts/attach_release_artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json
+        run: .ci-tooling/scripts/release/attach-release-artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json
 
   # Repair path for a release whose sign-and-upload failed, leaving the GitHub
   # release without the artifacts that reached PyPI.
@@ -236,6 +240,18 @@ jobs:
           persist-credentials: false
           sparse-checkout: scripts
           sparse-checkout-cone-mode: false
+      # Second, so the checkout above cleans the workspace root before this
+      # lands beside it. Attach and orphan-drop are shared with every other
+      # repo that publishes this way, so they live in ci-tooling.
+      - name: 📥 Checkout ci-tooling helpers
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: provide-io/ci-tooling
+          ref: v0.8.4
+          path: .ci-tooling
+          persist-credentials: false
+          sparse-checkout: scripts/release
+          sparse-checkout-cone-mode: false
       - name: 📦 Fetch the published artifacts from PyPI
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
@@ -257,7 +273,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.release_tag }}
-        run: scripts/attach_release_artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json
+        run: .ci-tooling/scripts/release/attach-release-artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json
       # An SBOM is deliberately not rebuilt here, so a signature left over from
       # the failed run signs a file this release no longer has. Removing it
       # leaves the release honestly without an SBOM instead of appearing to
@@ -270,4 +286,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.release_tag }}
-        run: scripts/drop_orphan_signatures.sh "$TAG"
+        run: .ci-tooling/scripts/release/drop-orphan-signatures.sh "$TAG"
