@@ -84,10 +84,24 @@ jobs:
 
       # The logs name the failing directory and carry Terraform's own output,
       # which the summary table alone does not.
+      #
+      # `include-hidden-files` is what makes this step do anything at all. stir
+      # writes to `<example>/.soup/logs/` (stir/terraform.py:279), upload-artifact
+      # skips hidden paths by default, and a dot-directory is hidden -- so every
+      # upload since this step was added found nothing and said so in a warning
+      # nobody reads:
+      #
+      #     No files were found with the provided path:
+      #     terraform-gate/provider/examples/**/.soup/logs/
+      #
+      # The one failure that needed it was an example that failed in 0.0s with
+      # no output in the summary table, which is exactly the case the table
+      # cannot explain and the log can.
       - name: Upload stir logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: stir-logs-${{ matrix.engine }}
           path: terraform-gate/provider/examples/**/.soup/logs/
+          include-hidden-files: true
           retention-days: 7
