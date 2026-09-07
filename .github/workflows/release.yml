@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
+          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
           path: .ci-tooling
           # This job installs from TestPyPI and imports the result, so it runs
           # third-party code. Nothing it runs needs a token, and the rest of
@@ -176,7 +176,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
+          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
           path: .ci-tooling
           persist-credentials: false
           sparse-checkout: /scripts/release
@@ -233,6 +233,24 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
         run: .ci-tooling/scripts/release/attach-release-artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json "$TAG.sbom.cdx.json" "$TAG.sbom.cdx.json.sigstore.json"
+      # A release can lose an artifact with nothing failing: the attach step
+      # reports success for what it did attach, so a signing input dropped or a
+      # glob that stops matching ships a release that looks complete. That has
+      # happened here -- ten assets would have become five, found by reading an
+      # action's source rather than by anything that runs.
+      #
+      # The two allowances cover the SBOM's rename in this release and are
+      # scoped to it, so they expire on the next one rather than standing for
+      # ever and hiding the day that signature really goes missing.
+      - name: 🔍 Refuse a release that carries less than the last
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: >
+          .ci-tooling/scripts/release/release_assets.py "$TAG"
+          --repo "$GITHUB_REPOSITORY"
+          --allow-missing "sbom-python.cdx.json@$TAG"
+          --allow-missing "sbom-python.cdx.json.sigstore.json@$TAG"
       # The attach script's contract ends at "whatever earlier attempts
       # attached"; it is this step that removes a signature left without its
       # subject. Only the repair path ran it, so five consecutive 502s on a
@@ -283,7 +301,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
+          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
           path: .ci-tooling
           persist-credentials: false
           sparse-checkout: /scripts/release
