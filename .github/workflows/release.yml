@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
+          ref: 16199c4ef00147a31b556298d90ee88b41e8ebae  # v0.8.8
           path: .ci-tooling
           # This job installs from TestPyPI and imports the result, so it runs
           # third-party code. Nothing it runs needs a token, and the rest of
@@ -176,7 +176,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
+          ref: 16199c4ef00147a31b556298d90ee88b41e8ebae  # v0.8.8
           path: .ci-tooling
           persist-credentials: false
           sparse-checkout: /scripts/release
@@ -301,7 +301,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: 5858c40ff6362cda4c1f62bd406058c7e1f361a9  # v0.8.8
+          ref: 16199c4ef00147a31b556298d90ee88b41e8ebae  # v0.8.8
           path: .ci-tooling
           persist-credentials: false
           sparse-checkout: /scripts/release
