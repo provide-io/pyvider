@@ -68,8 +68,14 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: v0.8.4
+          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
           path: .ci-tooling
+          # This job installs from TestPyPI and imports the result, so it runs
+          # third-party code. Nothing it runs needs a token, and the rest of
+          # the file already drops it.
+          persist-credentials: false
+          sparse-checkout: /scripts/release
+          sparse-checkout-cone-mode: false
       - name: 🐍 Setup Python
         uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
@@ -170,10 +176,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: v0.8.4
+          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
           path: .ci-tooling
           persist-credentials: false
-          sparse-checkout: scripts/release
+          sparse-checkout: /scripts/release
           sparse-checkout-cone-mode: false
       - name: 📦 Download artifacts
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
@@ -194,12 +200,22 @@ jobs:
         uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9  # v3.5.0
         with:
           inputs: dist/*.whl dist/*.tar.gz sbom-python.cdx.json
-          # Defaults to true, which on a `release: published` event attaches
-          # every .sigstore.json to the release before any artifact and outside
-          # the attach retry. A failed attach then leaves signatures beside no
-          # files, the state the retry exists to prevent. The attach step is the
-          # release's only writer.
-          release-signing-artifacts: false
+          # Left at the default. The action appends each input *and* its
+          # bundle to one list and uploads them together (action.py:215-218),
+          # so it cannot leave a signature beside no file -- the hazard this
+          # was once set to `false` to avoid does not exist.
+          #
+          # Setting it false also stops the action downloading the release's
+          # source archives, which is the only thing that signs them: v0.7.0
+          # carries v0.7.0.tar.gz{,.sigstore.json} and v0.7.0.zip{,.sigstore.json}
+          # precisely because this was true. GitHub's generated archives are not
+          # byte-stable, so those attached copies are the only verifiable source
+          # this release has.
+          #
+          # The attach step below still runs, and remains the retry-backed
+          # guarantee: it re-uploads the whole set with --clobber, so a 502 in
+          # the middle of the action's upload is repaired rather than left.
+          release-signing-artifacts: true
       # Retried: `gh release upload` gives up on the first rejection with part
       # of the set already attached, so one transient 502 leaves a signature
       # beside no artifact.
@@ -207,7 +223,18 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
-        run: .ci-tooling/scripts/release/attach-release-artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json
+        run: .ci-tooling/scripts/release/attach-release-artifacts.sh "$TAG" dist/*.whl dist/*.tar.gz dist/*.sigstore.json sbom-python.cdx.json sbom-python.cdx.json.sigstore.json
+      # The attach script's contract ends at "whatever earlier attempts
+      # attached"; it is this step that removes a signature left without its
+      # subject. Only the repair path ran it, so five consecutive 502s on a
+      # real release left the release in exactly the state the pair exists to
+      # prevent, until someone noticed and dispatched a repair by hand.
+      - name: 🧹 Drop signatures whose subject is gone
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: .ci-tooling/scripts/release/drop-orphan-signatures.sh "$TAG"
 
   # Repair path for a release whose sign-and-upload failed, leaving the GitHub
   # release without the artifacts that reached PyPI.
@@ -247,10 +274,10 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
           repository: provide-io/ci-tooling
-          ref: v0.8.4
+          ref: ed13a693bea4b0cc89b3e6fb58dd74f513205a05  # v0.8.4
           path: .ci-tooling
           persist-credentials: false
-          sparse-checkout: scripts/release
+          sparse-checkout: /scripts/release
           sparse-checkout-cone-mode: false
       - name: 📦 Fetch the published artifacts from PyPI
         env:
@@ -268,6 +295,9 @@ jobs:
           inputs: dist/*.whl dist/*.tar.gz
           # See the note on the same input in sign-and-upload: the attach step
           # is the release's only writer.
+          # No effect here, kept only so the two signing steps read alike: the
+          # action gates this on `GITHUB_EVENT_NAME == "release"` (action.py:45)
+          # and repair-release runs only under workflow_dispatch.
           release-signing-artifacts: false
       - name: ⬆️ Attach artifacts to release
         env:
@@ -279,10 +309,14 @@ jobs:
       # leaves the release honestly without an SBOM instead of appearing to
       # carry a verified one.
       #
-      # `always()`, because a partial attach is exactly when an orphan survives:
-      # without it this step is skipped in the only run that needs it.
+      # Runs after a failed attach, because a partial attach is exactly when an
+      # orphan survives. Not `always()`: this deletes release assets and cannot
+      # be undone, so it must not fire on a cancelled run -- where a resumed
+      # attempt would have paired the signatures up -- nor after a failed
+      # helpers checkout, where it would die on a missing script and bury the
+      # real cause.
       - name: 🧹 Drop signatures whose subject is gone
-        if: always()
+        if: ${{ !cancelled() }}
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ inputs.release_tag }}
