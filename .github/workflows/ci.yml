@@ -21,7 +21,7 @@ concurrency:
 
 jobs:
   ci:
-    uses: provide-io/ci-tooling/.github/workflows/python-ci.yml@v0
+    uses: provide-io/ci-tooling/.github/workflows/python-ci.yml@07f2a72652a81faf575752f10a66a2bee35d18f6  # v0.8.7
     with:
       python-version: '3.11'
       use-wrknv: true
@@ -47,8 +47,12 @@ jobs:
       # exit status worth acting on.
       #
       # A known vulnerability in the lock reddens this build rather than
-      # filing a report nobody reads. The lock is clean: 169 packages, no
-      # advisories.
+      # filing a report nobody reads.
+      #
+      # It could not be switched on until provide-testkit 0.5.0 stopped
+      # declaring `safety` -- and through it an unpatched `nltk` -- in an extra
+      # this project takes. That is the reason for the >=0.5.0 floor in
+      # pyproject.toml, and lowering it turns this gate red again.
       fail-on-vulnerability: true
       run-secret-scan: true
     secrets: inherit

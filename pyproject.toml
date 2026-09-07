@@ -63,6 +63,10 @@ Issues = "https://github.com/provide-io/pyvider/issues"
 
 [dependency-groups]
 dev = [
+    # 0.5.0 is the floor because it stopped declaring `safety`, and through it
+    # an unpatched `nltk`, in an extra this project takes. Below it the
+    # dependency audit in ci.yml fails on a vulnerability this project does not
+    # otherwise carry.
     "provide-testkit[pyvider-dev]>=0.5.0",
     # Floor only. scripts/regen_protobuf.py --check compares stub content with
     # toolchain version stamps masked, and checks those stamps separately against
