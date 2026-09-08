@@ -2601,7 +2601,7 @@ wheels = [
 
 [[package]]
 name = "provide-foundation"
-version = "0.4.3"
+version = "0.4.10"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2609,14 +2609,14 @@ dependencies = [
     { name = "tomli-w" },
     { name = "tzdata", marker = "sys_platform == 'win32'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/32/71/28beb60f9968d6c079c2d469ab6db5833fd5a3f00b70618d3f70a7bd7d72/provide_foundation-0.4.3.tar.gz", hash = "sha256:bb534fceaa2676f6d8ad1cb40a705c58c16e5ab6a5ce077144ddd992688697da", size = 421093, upload-time = "2026-08-27T07:22:14.027Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/67/e3/6968621dc33735f8884d9717fc135e4300aa44ba9c06ad9661ff2d9c0971/provide_foundation-0.4.10.tar.gz", hash = "sha256:41641ce5218b6114c9e9f26323ffb30e2e261100ae304222dfdab51a175d977b", size = 425426, upload-time = "2026-09-08T04:18:29.108Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/be/bb/3634bef841f8cd8b43b9081fdb342b535a0b30e827f08b4061d083cd577c/provide_foundation-0.4.3-py3-none-any.whl", hash = "sha256:1ecf21251a1b219affb1feb2606f1302af571c684bc92d0c59db5f1017b45261", size = 618335, upload-time = "2026-08-27T07:22:11.902Z" },
+    { url = "https://files.pythonhosted.org/packages/bc/af/2fb25b64b9d63b99204dd0654dadbc9cbd859af3163d0bcb54b962f9b223/provide_foundation-0.4.10-py3-none-any.whl", hash = "sha256:166114924e7c1b6aa0c0ede3692a1b91fa0e03366c47bd82ac543986effaa6af", size = 622327, upload-time = "2026-09-08T04:18:27.104Z" },
 ]
 
 [[package]]
 name = "provide-testkit"
-version = "0.5.0"
+version = "0.5.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "attrs" },
@@ -2629,9 +2629,9 @@ dependencies = [
     { name = "pytest-mock" },
     { name = "pytest-xdist" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b9/2c/21c7197368b5a297a2dbb1056d5a663b12c1bddda4f168424f1e5830d850/provide_testkit-0.5.0.tar.gz", hash = "sha256:c1129c369015fabd1b542bbf92df34e3693434efd5185daa94cdeb0a17ba06f5", size = 136922, upload-time = "2026-09-05T02:40:53.025Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ab/4d/fa5cabfec8a078b326bc99bf1fd7d679ca37d9d521dc7357a6be1a730263/provide_testkit-0.5.1.tar.gz", hash = "sha256:d7f2d21234876e871da0c5502c3dc034c6071759b0f589ffc269ae21d7e380b0", size = 139162, upload-time = "2026-09-07T23:34:30.124Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/40/86/f0734334e8058a120e7e00e5f76ee7aab453efd49935becd6505462cf649/provide_testkit-0.5.0-py3-none-any.whl", hash = "sha256:9e90423aba4b8934848ef7881eb8f149941f578e39e8b6cc065f79be134806d5", size = 183659, upload-time = "2026-09-05T02:40:51.37Z" },
+    { url = "https://files.pythonhosted.org/packages/87/03/0ff9fb550b177d593b04c1a06851f38327fe255fbc35ead751d7772e0acf/provide_testkit-0.5.1-py3-none-any.whl", hash = "sha256:efe4b0c95e031d5801f97959b90809108d827fcc382f207ec77f1bf7332e4a10", size = 185248, upload-time = "2026-09-07T23:34:28.48Z" },
 ]
 
 [package.optional-dependencies]
@@ -3064,7 +3064,7 @@ requires-dist = [
     { name = "grpcio", specifier = ">=1.83.0" },
     { name = "msgpack", specifier = ">=1.1.1" },
     { name = "protobuf", specifier = ">=7.35.1" },
-    { name = "provide-foundation", specifier = ">=0.4.0" },
+    { name = "provide-foundation", specifier = ">=0.4.10" },
     { name = "pyvider-cty", specifier = ">=0.6.0" },
     { name = "pyvider-rpcplugin", specifier = ">=0.5.0" },
 ]
@@ -3072,9 +3072,9 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "grpcio-tools", specifier = ">=1.83.0" },
-    { name = "provide-testkit", extras = ["pyvider-dev"], specifier = ">=0.5.0" },
+    { name = "provide-testkit", extras = ["pyvider-dev"], specifier = ">=0.5.1" },
 ]
-docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.5.0" }]
+docs = [{ name = "provide-testkit", extras = ["docs"], specifier = ">=0.5.1" }]
 
 [[package]]
 name = "pyvider-cty"
