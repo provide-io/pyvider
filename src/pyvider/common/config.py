@@ -21,6 +21,8 @@ from provide.foundation.config import (
 )
 from provide.foundation.file import read_toml
 
+from pyvider.lint.selector import LintSelector
+
 #: Config-file spellings for typed fields whose documented key is nested. The
 #: shipped pyvider.toml writes `[logging] level`, not `log_level`.
 _TOML_ALIASES: dict[str, tuple[str, ...]] = {
@@ -64,6 +66,11 @@ class PyviderConfig(BaseConfig):
         validator=validate_positive,
         description="Maximum timeout for component discovery in seconds",
         env_var="PYVIDER_MAX_DISCOVERY_TIMEOUT",
+    )
+
+    lint_rules: tuple[str, ...] = field(
+        default=(),
+        description="Provider lint rule and group selectors",
     )
 
     # Legacy support for the custom loading logic
@@ -129,6 +136,28 @@ class PyviderConfig(BaseConfig):
             operation="config_env_override",
         )
         self._load_env_overrides()
+        self._load_lint_rules()
+
+    def _load_lint_rules(self) -> None:
+        """Load provider lint selectors with environment precedence."""
+        raw_env = os.environ.get("PYVIDER_LINT")
+        if raw_env is not None:
+            raw_rules: object = raw_env.split(",") if raw_env else ()
+        else:
+            lint_table = self._config_data.get("lint", {})
+            raw_rules = lint_table.get("rules", ()) if isinstance(lint_table, dict) else ()
+            if (
+                isinstance(lint_table, dict)
+                and "rules" in lint_table
+                and not isinstance(raw_rules, list | tuple)
+            ):
+                logger.warning(
+                    "Ignoring a lint rules value of the wrong type",
+                    operation="lint_config_load",
+                    expected_type="array",
+                )
+        selector = LintSelector.parse(raw_rules if isinstance(raw_rules, list | tuple) else ())
+        object.__setattr__(self, "lint_rules", selector.as_tokens())
 
     def get(self, key: str, default: Any = None) -> Any:
         """Gets a configuration value from the highest priority source."""

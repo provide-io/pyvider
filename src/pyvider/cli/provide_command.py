@@ -9,16 +9,27 @@ import contextlib
 import os
 from pathlib import Path
 import sys
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import click
 from provide.foundation.console import perr, pout
 
 from pyvider.cli.main import cli
 
+if TYPE_CHECKING:
+    from pyvider.common.config import PyviderConfig
+
 # Terraform's magic cookie value - this must match what Terraform sends
 # See: https://github.com/hashicorp/go-plugin
 TERRAFORM_PLUGIN_MAGIC_COOKIE = "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2"
+
+
+def _register_runtime_config(config: "PyviderConfig") -> None:
+    """Publish immutable startup configuration needed by RPC handlers."""
+    from pyvider.hub import hub
+    from pyvider.lint import LintSelector
+
+    hub.register("singleton", "lint_selector", LintSelector.parse(config.lint_rules))
 
 
 def _configure_telemetry(config: Any) -> None:
@@ -314,6 +325,7 @@ async def _run_provider_server(magic_cookie: str) -> None:
         )
 
         config = PyviderConfig()
+        _register_runtime_config(config)
         _configure_telemetry(config)
 
         # Log launch context information

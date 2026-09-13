@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from pyvider.cli.context import PyviderContext
     from pyvider.data_sources.base import BaseDataSource
     from pyvider.ephemerals.base import BaseEphemeralResource
+    from pyvider.lint import LintSelector
     from pyvider.providers.base import BaseProvider
     from pyvider.providers.context import ProviderContext
     from pyvider.resources.base import BaseResource
@@ -67,6 +68,11 @@ class ComponentRegistry:
     def get_component(
         self, component_type: Literal["singleton"], name: Literal["rpc_plugin_server"]
     ) -> "Callable[[], Any] | None": ...
+
+    @overload
+    def get_component(
+        self, component_type: Literal["singleton"], name: Literal["lint_selector"]
+    ) -> "LintSelector | None": ...
 
     # Generic singleton fallback
     @overload
