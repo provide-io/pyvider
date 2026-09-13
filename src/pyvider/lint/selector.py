@@ -51,6 +51,12 @@ class LintSelector:
                 continue
 
             (exclude if excluded else include).add(address)
+        for address in sorted(include & exclude):
+            logger.warning(
+                "Conflicting lint selector; inclusion wins",
+                selector_address=address,
+                reason="include_wins",
+            )
         return cls(include=include, exclude=exclude - include)
 
     def as_tokens(self) -> tuple[str, ...]:

@@ -5,7 +5,7 @@
 
 """Tests for OpenTofu-compatible lint selector semantics."""
 
-from unittest.mock import patch
+from unittest.mock import call, patch
 
 import pytest
 
@@ -66,11 +66,26 @@ def test_selector_enabled_precedence(
 def test_selector_parse_normalizes_tokens_and_include_wins_conflicts() -> None:
     from pyvider.lint.selector import LintSelector
 
-    selector = LintSelector.parse([" beta ", "!zeta", "alpha", "alpha", " !beta ", "!gamma", "!gamma"])
+    with patch("pyvider.lint.selector.logger.warning") as warning:
+        selector = LintSelector.parse(
+            [" beta ", "!zeta", "alpha", "alpha", " !beta ", "!alpha", "!gamma", "!gamma"]
+        )
 
     assert selector.include == frozenset({"alpha", "beta"})
     assert selector.exclude == frozenset({"gamma", "zeta"})
     assert selector.as_tokens() == ("alpha", "beta", "!gamma", "!zeta")
+    assert warning.call_args_list == [
+        call(
+            "Conflicting lint selector; inclusion wins",
+            selector_address="alpha",
+            reason="include_wins",
+        ),
+        call(
+            "Conflicting lint selector; inclusion wins",
+            selector_address="beta",
+            reason="include_wins",
+        ),
+    ]
 
 
 def test_selector_parse_logs_and_ignores_malformed_entries() -> None:
