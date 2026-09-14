@@ -637,9 +637,9 @@ Approved site commits: `326cf13aa2d514875378a5299304ceb32b1bef2d` and `d88c8421f
 - Create: `scripts/check-linting-site.py`
 - Create: `tests/test_linting_site.py`
 
-- [ ] Add source/render tests requiring all seven IDs, enable/exclude/disable commands, `[lint]` example, the four exact OpenTofu URLs listed in Task 11, exact provider fixture and proof-manifest links, OpenTofu-vs-TofuSoup matrix, supported API language, OpenTofu experimental language, compatibility-bridge language, and shortcode target `provider-linting.cast`.
-- [ ] Run `python3 -m unittest tests/test_linting_site.py -v` and observe missing-page failures.
-- [ ] Build `/linting/` as an evergreen page using the existing cast shortcode:
+- [x] Add source/render tests requiring all seven IDs, enable/exclude/disable commands, `[lint]` example, the four exact OpenTofu URLs listed in Task 11, exact provider fixture and proof-manifest links, OpenTofu-vs-TofuSoup matrix, supported API language, OpenTofu experimental language, compatibility-bridge language, and shortcode target `provider-linting.cast`.
+- [x] Run `python3 -m unittest tests/test_linting_site.py -v` and observe missing-page failures.
+- [x] Build `/linting/` as an evergreen page using the existing cast shortcode:
 
   ```go-html-template
   {{< cast id="provider-linting" file="provider-linting.cast"
@@ -647,10 +647,10 @@ Approved site commits: `326cf13aa2d514875378a5299304ceb32b1bef2d` and `d88c8421f
       rows="34" speed="1.5" idleTimeLimit="3" >}}
   ```
 
-- [ ] Include copyable commands for enable, group selection, exact exclusion, `PYVIDER_LINT=''`, and persistent TOML. Include the seven-rule table and explicitly state OpenTofu reaches provider/resource/data-source/ephemeral validation while TofuSoup directly proves all seven against the same package.
-- [ ] Add a concise homepage section/link and navigation link; use existing visual tokens rather than a separate design system.
-- [ ] Implement `scripts/check-linting-site.py PUBLIC_DIR` to parse rendered HTML and static assets, not Markdown alone.
-- [ ] Run:
+- [x] Include copyable commands for enable, group selection, exact exclusion, `PYVIDER_LINT=''`, and persistent TOML. Include the seven-rule table and explicitly state OpenTofu reaches provider/resource/data-source/ephemeral validation while TofuSoup directly proves all seven against the same package.
+- [x] Add a concise homepage section/link and navigation link; use existing visual tokens rather than a separate design system.
+- [x] Implement `scripts/check-linting-site.py PUBLIC_DIR` to parse rendered HTML and static assets, not Markdown alone.
+- [x] Run:
 
   ```shell
   site_out=$(mktemp -d /tmp/pyvider-linting-site.XXXXXX)
@@ -660,7 +660,9 @@ Approved site commits: `326cf13aa2d514875378a5299304ceb32b1bef2d` and `d88c8421f
   ```
 
   Expect the production build and all rendered checks to pass.
-- [ ] Commit with message `feat: publish provider linting proof page`.
+- [x] Commit with message `feat: publish provider linting proof page`.
+
+Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb967a895f3ff1807051bc2bc95c4ac7dc`. Independent spec review approved the seven-rule page, commands, four-vs-seven capability boundary, homepage/navigation entry points, and rendered-output checker. Independent code-quality review approved after replacing drifting `blob/main` evidence with a manifest-derived immutable fixture URL, containing decoded and symlink-resolved checker paths under the rendered site, exposing cast controls and honoring reduced motion without looping, preserving readable 120-column playback in a horizontally scrollable 900px surface, and raising small-text contrast above WCAG AA. Strict TDD evidence: missing-page and responsive-navigation tests failed first; six focused hardening regressions then reproduced every quality finding. Final focused tests passed 6/6, the full site suite passed 22/22, the production Hugo build emitted 24 pages and 157 static files, the rendered checker passed 7/7, the copied proof verifier passed 7/7, and the immutable fixture URL returned HTTP 200. The worktree was clean. Browser screenshot capture was unavailable because the Mac was locked; deterministic source/rendered checks cover the corrected responsive and accessibility contracts, and live preview inspection remains required in Task 15.
 
 ## Task 14: Final four-repository verification and independent review
 
