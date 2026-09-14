@@ -24,14 +24,14 @@ from pyvider.state_stores.base import BaseStateStore
     [
         pytest.param(BaseProvider, id="provider"),
         pytest.param(BaseResource, id="resource"),
-        pytest.param(BaseDataSource, id="data-source"),
-        pytest.param(BaseEphemeralResource, id="ephemeral-resource"),
-        pytest.param(BaseListResource, id="list-resource"),
+        pytest.param(BaseDataSource, id="data_source"),
+        pytest.param(BaseEphemeralResource, id="ephemeral"),
+        pytest.param(BaseListResource, id="list"),
         pytest.param(BaseAction, id="action"),
-        pytest.param(BaseStateStore, id="state-store"),
+        pytest.param(BaseStateStore, id="state_store"),
     ],
 )
-async def test_default_lint_hook_returns_no_findings(base_class: type[Any]) -> None:
+async def test_base_lint_hook(base_class: type[Any]) -> None:
     ctx = LintContext(config=object(), selector=LintSelector(include={"all"}))
 
     assert await base_class.lint(object(), ctx) == ()

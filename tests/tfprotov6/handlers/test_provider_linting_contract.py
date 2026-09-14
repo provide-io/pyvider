@@ -187,14 +187,14 @@ def _assert_warning(response: Any) -> None:
     [
         pytest.param(PROVIDER, id="provider"),
         pytest.param(RESOURCE, id="resource"),
-        pytest.param(DATA_SOURCE, id="data-source"),
-        pytest.param(EPHEMERAL_RESOURCE, id="ephemeral-resource"),
-        pytest.param(LIST_RESOURCE, id="list-resource"),
+        pytest.param(DATA_SOURCE, id="data_source"),
+        pytest.param(EPHEMERAL_RESOURCE, id="ephemeral"),
+        pytest.param(LIST_RESOURCE, id="list"),
         pytest.param(ACTION, id="action"),
-        pytest.param(STATE_STORE, id="state-store"),
+        pytest.param(STATE_STORE, id="state_store"),
     ],
 )
-async def test_validation_handler_lint_contract(case: HandlerCase) -> None:
+async def test_handler_lint_contract(case: HandlerCase) -> None:
     component = _component(case)
     with _isolated_hub(case, component):
         assert hub.get_component("singleton", "provider_context") is None
@@ -240,11 +240,11 @@ async def test_validation_handler_lint_contract(case: HandlerCase) -> None:
     [
         pytest.param(PROVIDER, id="provider"),
         pytest.param(RESOURCE, id="resource"),
-        pytest.param(DATA_SOURCE, id="data-source"),
-        pytest.param(EPHEMERAL_RESOURCE, id="ephemeral-resource"),
-        pytest.param(LIST_RESOURCE, id="list-resource"),
+        pytest.param(DATA_SOURCE, id="data_source"),
+        pytest.param(EPHEMERAL_RESOURCE, id="ephemeral"),
+        pytest.param(LIST_RESOURCE, id="list"),
         pytest.param(ACTION, id="action"),
-        pytest.param(STATE_STORE, id="state-store"),
+        pytest.param(STATE_STORE, id="state_store"),
     ],
 )
 async def test_validation_handler_accepts_duck_typed_component_without_lint(case: HandlerCase) -> None:
