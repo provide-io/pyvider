@@ -19,6 +19,7 @@ from provide.foundation import logger
 
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import error_diagnostic
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 import pyvider.protocols.tfprotov6.protobuf as pb
 from pyvider.state_stores import (
@@ -92,7 +93,18 @@ async def ValidateStateStoreConfigHandler(
             ]
         )
 
-    return pb.ValidateStateStore.Response(diagnostics=[error_diagnostic(message) for message in errors])
+    diagnostics = [error_diagnostic(message) for message in errors]
+    if not errors:
+        diagnostics.extend(
+            await lint_diagnostics(
+                backend,
+                config,
+                kind="state store",
+                name=request.type_name,
+                operation="validate_state_store_config",
+            )
+        )
+    return pb.ValidateStateStore.Response(diagnostics=diagnostics)
 
 
 @rpc_handler("ConfigureStateStore")

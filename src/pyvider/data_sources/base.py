@@ -52,7 +52,7 @@ class BaseDataSource(ABC, Generic[DataSourceType, StateType, ConfigType]):
         return await self._validate_config(config)
 
     async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
-        """Return advisory findings for a validated configuration."""
+        """Return opt-in advisory findings for a semantically valid configuration."""
         return ()
 
     @abstractmethod

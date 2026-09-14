@@ -15,6 +15,7 @@ from pyvider.protocols.tfprotov6.handlers._component_config import (
     config_to_attrs_instance,
     unmarshal_config,
 )
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -32,36 +33,38 @@ async def ValidateProviderConfigHandler(
     return await _validate_provider_config_impl(request, context)
 
 
-def _log_declared_test_mode(provider_instance: Any, config_cty: Any) -> None:
+def _log_declared_test_mode(config_instance: Any) -> None:
     """Say whether the configuration asks for test mode. Logging only, never fatal.
 
-    A configuration that cannot be parsed here is not a validation failure: the
-    required-attribute and schema checks have already run, and this is only
-    reporting what the practitioner asked for.
+    The required-attribute and schema checks have already run; this only reports
+    what the practitioner asked for.
     """
-    try:
-        if config_cty.is_unknown:
-            return
-        config_instance = config_to_attrs_instance(config_cty, provider_instance.config_class)
-        if not config_instance:
-            return
-        if getattr(config_instance, "pyvider_testmode", False):
-            logger.warning(
-                "⚠️  Provider test mode ENABLED - test-only components will be accessible",
-                operation="validate_provider_config",
-            )
-        else:
-            logger.debug(
-                "Provider test mode NOT enabled - test-only components will be filtered out",
-                operation="validate_provider_config",
-            )
-    except Exception as e:
-        # Don't fail validation if we can't parse config for logging
-        logger.debug(
-            "Could not parse config for test mode check",
+    if getattr(config_instance, "pyvider_testmode", False):
+        logger.warning(
+            "⚠️  Provider test mode ENABLED - test-only components will be accessible",
             operation="validate_provider_config",
-            error=str(e),
         )
+    else:
+        logger.debug(
+            "Provider test mode NOT enabled - test-only components will be filtered out",
+            operation="validate_provider_config",
+        )
+
+
+def _decode_provider_config(provider_instance: Any, config_cty: Any) -> Any | None:
+    """Decode provider config without making its existing test-mode logging fatal."""
+    try:
+        config_instance = config_to_attrs_instance(config_cty, provider_instance.config_class)
+    except Exception as e:
+        logger.debug(
+            "Could not parse config for provider linting",
+            operation="validate_provider_config",
+            error_type=type(e).__name__,
+        )
+        return None
+    if config_instance is not None:
+        _log_declared_test_mode(config_instance)
+    return config_instance
 
 
 async def _validate_provider_config_impl(
@@ -77,6 +80,7 @@ async def _validate_provider_config_impl(
 
         # Get provider instance and parse config to check test mode
         provider_instance = hub.get_component("singleton", "provider")
+        config_instance = None
         if provider_instance and request.config.msgpack:
             # Deliberately outside the `except Exception` below that tolerates
             # a config we can't parse: `.schema` raising means the provider
@@ -110,13 +114,23 @@ async def _validate_provider_config_impl(
                 # message string.
                 check_required_attributes(provider_schema.block, config_cty.value)
 
-                _log_declared_test_mode(provider_instance, config_cty)
+                config_instance = _decode_provider_config(provider_instance, config_cty)
 
         # Provider configuration validation is typically minimal
         # Most validation happens in the provider's configure() method
         response = pb.ValidateProviderConfig.Response(
             diagnostics=[]  # Empty diagnostics means validation passed
         )
+        if provider_instance is not None:
+            response.diagnostics.extend(
+                await lint_diagnostics(
+                    provider_instance,
+                    config_instance,
+                    kind="provider",
+                    name=getattr(getattr(provider_instance, "metadata", None), "name", "provider"),
+                    operation="validate_provider_config",
+                )
+            )
 
         logger.info(
             "Provider configuration validation passed",

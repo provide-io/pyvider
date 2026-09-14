@@ -25,6 +25,7 @@ from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     error_diagnostic,
     unknown_type_diagnostic,
 )
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.action_handlers import (
     PlanActionHandler,
@@ -207,7 +208,8 @@ async def ValidateListResourceConfigHandler(
 
     try:
         config = decode_config(list_resource_class, request.config)
-        errors = await list_resource_class().validate(config)
+        list_resource = list_resource_class()
+        errors = await list_resource.validate(config)
     except Exception as exc:
         logger.error(
             "List resource configuration validation failed",
@@ -222,9 +224,18 @@ async def ValidateListResourceConfigHandler(
             ]
         )
 
-    return pb.ValidateListResourceConfig.Response(
-        diagnostics=[error_diagnostic(message) for message in errors]
-    )
+    diagnostics = [error_diagnostic(message) for message in errors]
+    if not errors:
+        diagnostics.extend(
+            await lint_diagnostics(
+                list_resource,
+                config,
+                kind="list resource",
+                name=request.type_name,
+                operation="validate_list_resource_config",
+            )
+        )
+    return pb.ValidateListResourceConfig.Response(diagnostics=diagnostics)
 
 
 # 🐍🏗️🔚

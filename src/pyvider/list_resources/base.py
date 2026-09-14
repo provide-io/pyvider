@@ -14,9 +14,10 @@ instance back to a managed resource type.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Sequence
 from typing import Generic, TypeVar
 
+from pyvider.lint import LintContext, LintFinding
 from pyvider.list_resources.types import ListResourceContext, ListResult
 from pyvider.schema import PvsSchema
 
@@ -90,6 +91,10 @@ class BaseListResource(ABC, Generic[ConfigType]):
         Returns human-readable error messages; empty means valid.
         """
         return []
+
+    async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     @abstractmethod
     def list(self, ctx: ListResourceContext[ConfigType]) -> AsyncIterator[ListResult]:
