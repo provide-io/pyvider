@@ -491,13 +491,13 @@ Approved provider commits: `169fc4f6a99212b240d40d1fbe4fc27d5b8c3d61`, `bcb7f58d
 - Create: `tests/test_install_opentofu_beta.py`
 - Modify: `Makefile`
 
-- [ ] Test the installer against a local fake release directory: it must select v1.13.0-beta1 for the host OS/architecture, verify the matching line from `tofu_1.13.0-beta1_SHA256SUMS`, reject checksum mismatch, and print the installed binary path.
-- [ ] Run `uv run pytest tests/test_install_opentofu_beta.py -q` and observe the missing script failure.
-- [ ] Implement the pinned installer using `curl --fail --location`, the official release archive and SHA256SUMS, `shasum -a 256 -c`, and an explicit cache directory. Never accept `latest`.
-- [ ] Create one valid HCL fixture containing the triggering provider, managed resource, data source, and ephemeral resource configurations. Use only local paths and a non-contacted `http://127.0.0.1` URL; `validate` must not perform the data-source read.
-- [ ] Add E2E tests that install the packaged binary into a temporary filesystem mirror, run `tofu init`, and parse `tofu validate -json` for: default-off; `[lint].rules`; `PYVIDER_LINT=provide-io/pyvider:all`; environment overriding file; explicit empty environment disabling file; security group; exact rule; and exact exclusion.
-- [ ] Assert the four expected IDs and attribute ranges/expressions in JSON. Assert action/list/state-store IDs are absent and document that as the current core boundary, not a skip that claims coverage.
-- [ ] Run the E2E test with `PYVIDER_CONFORMANCE_PSP` unset and observe the expected explicit-package failure. Add a `test-linting-opentofu-binary` target that requires the same explicit `PYVIDER_CONFORMANCE_PSP` and provenance file from Task 8 and has no build prerequisite. Then run:
+- [x] Test the installer against a local fake release directory: it must select v1.13.0-beta1 for the host OS/architecture, verify the matching line from `tofu_1.13.0-beta1_SHA256SUMS`, reject checksum mismatch, and print the installed binary path.
+- [x] Run `uv run pytest tests/test_install_opentofu_beta.py -q` and observe the missing script failure.
+- [x] Implement the pinned installer using `curl --fail --location`, the official release archive and SHA256SUMS, `shasum -a 256 -c`, and an explicit cache directory. Never accept `latest`.
+- [x] Create one valid HCL fixture containing the triggering provider, managed resource, data source, and ephemeral resource configurations. Use only local paths and a non-contacted `http://127.0.0.1` URL; `validate` must not perform the data-source read.
+- [x] Add E2E tests that install the packaged binary into a temporary filesystem mirror, run `tofu init`, and parse `tofu validate -json` for: default-off; `[lint].rules`; `PYVIDER_LINT=provide-io/pyvider:all`; environment overriding file; explicit empty environment disabling file; security group; exact rule; and exact exclusion.
+- [x] Assert the four expected IDs and attribute ranges/expressions in JSON. Assert action/list/state-store IDs are absent and document that as the current core boundary, not a skip that claims coverage.
+- [x] Run the E2E test with `PYVIDER_CONFORMANCE_PSP` unset and observe the expected explicit-package failure. Add a `test-linting-opentofu-binary` target that requires the same explicit `PYVIDER_CONFORMANCE_PSP` and provenance file from Task 8 and has no build prerequisite. Then run:
 
   ```shell
   lint_binary="$PWD/dist/$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')/terraform-provider-pyvider_v$(cat VERSION)"
@@ -505,7 +505,9 @@ Approved provider commits: `169fc4f6a99212b240d40d1fbe4fc27d5b8c3d61`, `bcb7f58d
   ```
 
   Expect all OpenTofu JSON assertions pass and `tofu version` contain `v1.13.0-beta1`; assert the binary checksum still equals `provider-linting-build-provenance.json` before and after the run.
-- [ ] Commit with message `test: prove provider lints through OpenTofu beta`.
+- [x] Commit with message `test: prove provider lints through OpenTofu beta`.
+
+Approved provider commits: `169a06f2a096895d55848c2d68e348241b78efba`, `2ff051d00599cc70bc53b757413e480ea36f6b43`, `ce8154a564403d2571616e9b9cea0720aa7f0202`, `eacd06955aa7ee906a797bf9e818ba36fd647a88`, and `c331e759d2d0ef048620fd95153e4bd3882390b5`. Independent spec review: approved after ancestry, archive-hash, packaging-input, and `.gitattributes` provenance hardening. Independent code-quality review: approved after atomic concurrent-safe beta installation, dirty build-input rejection, subprocess environment isolation, a live zero-contact HTTP assertion, exact diagnostic summaries/ranges, and reuse of the Make-installed OpenTofu executable. Fresh evidence: 14 installer tests, 18 provenance-focused tests, 16 real OpenTofu E2E tests, 117 focused tests, and 204 full explicit-binary tests passed; ShellCheck, Ruff, mypy, and no-rebuild dry-run checks passed. OpenTofu reported `v1.13.0-beta1`. The coordinated provider SHA-256 remained `fed5e69e4d5c02434677b9c1f15c9126b47d222b5ed1c3be5d0a11e7d79e4805`; build-provenance SHA-256 remained `3a18f55a34fac7d861f5db69d35ab356bd3fe9d05b277c68cfcd48b59d02faaa`. `/Users/tim/code/tf/opentofu` remained untouched.
 
 ## Task 10: Checked cast, proof manifest, and CI artifact
 
