@@ -8,6 +8,7 @@
 from pathlib import Path
 
 import pytest
+import yaml
 
 DOC_PATH = Path(__file__).parents[2] / "docs" / "core-concepts" / "provider-linting.md"
 MKDOCS_PATH = Path(__file__).parents[2] / "mkdocs.yml"
@@ -130,8 +131,16 @@ def test_provider_linting_documentation_links_upstream_sources(url: str) -> None
 
 
 def test_provider_linting_documentation_is_in_navigation() -> None:
-    expected = "- 'Provider Linting': 'core-concepts/provider-linting.md'"
-    assert expected in MKDOCS_PATH.read_text(encoding="utf-8")
+    expected = {"Provider Linting": "core-concepts/provider-linting.md"}
+    formatting_variant = """nav:
+  - Concepts:
+      - Provider Linting: core-concepts/provider-linting.md
+"""
+
+    for source in (MKDOCS_PATH.read_text(encoding="utf-8"), formatting_variant):
+        config = yaml.safe_load(source)
+        concepts = next(section["Concepts"] for section in config["nav"] if "Concepts" in section)
+        assert expected in concepts
 
 
 # 🐍🏗️🔚
