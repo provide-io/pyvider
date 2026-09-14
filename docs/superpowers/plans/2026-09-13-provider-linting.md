@@ -606,11 +606,11 @@ Approved provider commits: `695046b9e732adba8728bcce76c98e872b5cf29c`, `84b5576c
 - Create from verified CI artifact: `static/casts/provider-linting.cast`
 - Create from verified CI artifact: `static/proofs/provider-linting-proof.json`
 
-- [ ] Add stdlib `unittest` tests using a local fake `gh run download` result. Prove the sync requires repository `provide-io/terraform-provider-pyvider`, an explicit numeric run ID, artifact name `provider-linting-proof`, successful manifest validation, matching cast checksum, matching seven-rule catalog, and no destination changes on any failure.
-- [ ] Run `python3 -m unittest tests/test_provider_linting_proof.py -v` and observe missing script failures.
-- [ ] Implement the shared verifier without third-party dependencies. Implement sync as download-to-temporary-directory → verify → copy both current destination files into a rollback directory → `os.replace` both verified temporary files → on any exception restore both originals (or remove both new files when no originals existed) before re-raising. Add an injected second-`os.replace` failure test and assert both destination bytes are unchanged. Never accept “latest successful run.”
-- [ ] Rerun `python3 -m unittest tests/test_provider_linting_proof.py -v`; expect pass.
-- [ ] Run `python3 scripts/sync-provider-linting-proof.py --repository provide-io/terraform-provider-pyvider --run-id "$proof_run_id" --artifact provider-linting-proof --expected-provider-sha "$provider_sha"` against the exact green provider workflow run ID from Task 11. The script must assert the manifest provider source SHA equals `provider_sha`, then run:
+- [x] Add stdlib `unittest` tests using a local fake `gh run download` result. Prove the sync requires repository `provide-io/terraform-provider-pyvider`, an explicit numeric run ID, artifact name `provider-linting-proof`, successful manifest validation, matching cast checksum, matching seven-rule catalog, and no destination changes on any failure.
+- [x] Run `python3 -m unittest tests/test_provider_linting_proof.py -v` and observe missing script failures.
+- [x] Implement the shared verifier without third-party dependencies. Implement sync as download-to-temporary-directory → verify → copy both current destination files into a rollback directory → `os.replace` both verified temporary files → on any exception restore both originals (or remove both new files when no originals existed) before re-raising. Add an injected second-`os.replace` failure test and assert both destination bytes are unchanged. Never accept “latest successful run.”
+- [x] Rerun `python3 -m unittest tests/test_provider_linting_proof.py -v`; expect pass.
+- [x] Run `python3 scripts/sync-provider-linting-proof.py --repository provide-io/terraform-provider-pyvider --run-id "$proof_run_id" --artifact provider-linting-proof --expected-provider-sha "$provider_sha"` against the exact green provider workflow run ID from Task 11. The script must assert the manifest provider source SHA equals `provider_sha`, then run:
 
   ```shell
   python3 scripts/verify-provider-linting-proof.py \
@@ -619,7 +619,9 @@ Approved provider commits: `695046b9e732adba8728bcce76c98e872b5cf29c`, `84b5576c
   ```
 
   Expect a zero exit and all seven IDs reported.
-- [ ] Commit with message `build: sync verified provider linting proof`.
+- [x] Commit with message `build: sync verified provider linting proof`.
+
+Approved site commits: `326cf13aa2d514875378a5299304ceb32b1bef2d` and `d88c8421f10c34eabcb801b93fddec220a08397c`. Independent spec review approved the exact immutable coordinates, stdlib verifier, seven-rule catalog, transactional rollback, and byte-identical artifacts. Independent code-quality review approved after canonical source/destination alias rejection, concise malformed-input handling, bounded event timestamps, and per-destination-filesystem staging and rollback. Strict TDD evidence: 10 initial missing-script failures, followed by six focused hardening regressions; final suite passed 16 tests and Ruff. Exact run `34820452404` was re-downloaded and installed; the standalone verifier reported 7/7. Site cast SHA-256: `f1060bcb595006fef8c26ebea89710d47eb17a8337efaa952a3d32be35df606b`; manifest SHA-256: `c6e3676b509f0b3f3eeee377d22b7b89435629edd57733aee60d0d2ef18f3850`.
 
 ## Task 13: Evergreen linting page and homepage entry point
 
