@@ -321,9 +321,9 @@ Approved implementation commits: `3b2e37c3b9f88085b8a05db4329d6600913bbb4e`, `29
 - Create: `tests/lint/test_public_api.py`
 - Modify: `scripts/check_doc_links.py` only if the existing checker requires explicit allowlisting
 
-- [ ] Write an import-contract test for `from pyvider.lint import LintContext, LintFinding, LintSelector` and a documentation test that checks the page contains `async def lint`, `PYVIDER_LINT`, `[lint]`, validation/deprecation/warning distinctions, unknown-safe guidance, the compatibility bridge, and native protocol migration language.
-- [ ] Run `uv run pytest tests/lint/test_public_api.py -q` and observe the documentation assertion fail.
-- [ ] Write the page with this minimal author example:
+- [x] Write an import-contract test for `from pyvider.lint import LintContext, LintFinding, LintSelector` and a documentation test that checks the page contains `async def lint`, `PYVIDER_LINT`, `[lint]`, validation/deprecation/warning distinctions, unknown-safe guidance, the compatibility bridge, and native protocol migration language.
+- [x] Run `uv run pytest tests/lint/test_public_api.py -q` and observe the documentation assertion fail.
+- [x] Write the page with this minimal author example:
 
   ```python
   async def lint(self, ctx: LintContext[HTTPAPIConfig]) -> Sequence[LintFinding]:
@@ -335,11 +335,13 @@ Approved implementation commits: `3b2e37c3b9f88085b8a05db4329d6600913bbb4e`, `29
               "Use HTTPS or suppress this rule when plaintext is intentional.", "url"),)
   ```
 
-- [ ] State that the author API is supported, OpenTofu's built-in linter retains OpenTofu's experimental status, and ordinary warning transport is a temporary compatibility adapter because tfprotov6 has no provider-lint message or selection hints.
-- [ ] Add the page to `mkdocs.yml` navigation and public exports to `pyvider.lint.__all__`.
-- [ ] Run `uv run pytest tests/lint/test_public_api.py -q && we run docs.build`; expect pass.
-- [ ] Run `we run test && we run lint && we run typecheck`; expect pass.
-- [ ] Commit with message `docs: document provider-native linting`.
+- [x] State that the author API is supported, OpenTofu's built-in linter retains OpenTofu's experimental status, and ordinary warning transport is a temporary compatibility adapter because tfprotov6 has no provider-lint message or selection hints.
+- [x] Add the page to `mkdocs.yml` navigation and public exports to `pyvider.lint.__all__`.
+- [x] Run `uv run pytest tests/lint/test_public_api.py -q && we run docs.build`; expect pass.
+- [x] Run `we run test && we run lint && we run typecheck`; expect pass.
+- [x] Commit with message `docs: document provider-native linting`.
+
+Approved implementation commits: `b6ee5ebad872e0bb62ae6929c928f41c0fe1aa86`, `07662126511ca2781d787543ec924cbfd5e973ef`. Independent spec review: approved. Independent code-quality review: approved after replacing source-string navigation matching with semantic YAML parsing. Fresh full-suite evidence: 2,477 passed, 3 skipped, 2 xfailed; 16 focused tests, docs build, 451-link check, lint, and typecheck passed.
 
 ## Task 5: Four security rules in first-party components
 
