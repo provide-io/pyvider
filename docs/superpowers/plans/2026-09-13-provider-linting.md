@@ -417,13 +417,15 @@ Approved component commit: `a43ae40cb97767bc5080d313c044aa3b9bc97fdf`. Independe
 - Modify: `README.md`
 - Create: `tests/test_lint_rule_documentation.py`
 
-- [ ] Add a test that extracts every rule constant and asserts the guide and matching component template contain its ID, trigger attribute, group, remediation, and exact suppression command.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_lint_rule_documentation.py -q` and observe missing documentation failures.
-- [ ] Document all seven rules, provider `[lint]` configuration, environment override and explicit empty disablement. Keep action/list/state-store reachability claims separate from OpenTofu core.
-- [ ] Rebuild generated flavor/plating helpers using the repository's current Plating path: `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting plating plate --output-dir docs`; inspect and retain only intended generated documentation changes.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_lint_rule_documentation.py -q && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mkdocs build --strict`; expect pass.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest -q && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
-- [ ] Commit with message `docs: catalog first-party lint rules`.
+- [x] Add a test that extracts every rule constant and asserts the guide and matching component template contain its ID, trigger attribute, group, remediation, and exact suppression command.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_lint_rule_documentation.py -q` and observe missing documentation failures.
+- [x] Document all seven rules, provider `[lint]` configuration, environment override and explicit empty disablement. Keep action/list/state-store reachability claims separate from OpenTofu core.
+- [x] Rebuild generated flavor/plating helpers using the repository's current Plating path: `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting plating plate --output-dir docs`; inspect and retain only intended generated documentation changes.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_lint_rule_documentation.py -q && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mkdocs build --strict`; expect pass.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest -q && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
+- [x] Commit with message `docs: catalog first-party lint rules`.
+
+Approved component commits: `db6f2fa9705d61d1b566f98e23a84fd3b9c830a6`, `b6f59c9c7f54ceed97d718bb145230144410665a`, `489082a9ea20641a50a72026f038f32dda4f72f1`. Independent spec review: approved. Independent code-quality review: approved after adding a tested two-pass generation wrapper, complete derived-output ignores, accurate case-insensitive/reachability language, and sibling-navigation restoration. Fresh evidence: 31 focused and 423 full-suite tests passed; all seven generated target pages inspected; strict MkDocs, Ruff, and mypy passed.
 
 ## Task 8: Reproducible coordinated packaged build and seven-RPC proof
 
