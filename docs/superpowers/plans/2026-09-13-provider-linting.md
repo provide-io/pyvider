@@ -726,11 +726,11 @@ Fresh final provider workflow [`34831588726`](https://github.com/provide-io/terr
 - Create: `tests/test_linting_preview_smoke.py`
 - Create: `docs/deployment.md`
 
-- [ ] Add HTTP smoke-check tests against a local server fixture. Require status 200 for `/linting/`, `/casts/provider-linting.cast`, and `/proofs/provider-linting-proof.json`; all seven IDs; enable/exclude/disable commands; four upstream URLs; and the cast player target. In the same test file, test `check-pages-preview-target.py` with fixture JSON for exactly one `pyvider-one` project, missing/duplicate project rejection, empty Git branch rejection, production-branch rejection, and distinct feature-branch acceptance.
-- [ ] Run `python3 -m unittest tests/test_linting_preview_smoke.py -v` and observe missing smoke script failures.
-- [ ] Implement the smoke checker with stdlib `urllib`, a required base preview URL, explicit timeouts, no redirect to `https://pyvider.com`, and clear assertion output. Implement the Pages target checker with stdlib `json`; it prints the selected production branch only after all assertions pass.
-- [ ] Run site unit/render verification again and commit with message `test: verify linting staging preview`.
-- [ ] Push the site feature branch to `origin` for provenance. Query the real Pages configuration immediately before deployment, save it, and pass it with the actual Git branch to the tested gate. Build the exact directory to be deployed, run the rendered checker against that same directory, and deploy only after the gate exits zero:
+- [x] Add HTTP smoke-check tests against a local server fixture. Require status 200 for `/linting/`, `/casts/provider-linting.cast`, and `/proofs/provider-linting-proof.json`; all seven IDs; enable/exclude/disable commands; four upstream URLs; and the cast player target. In the same test file, test `check-pages-preview-target.py` with fixture JSON for exactly one `pyvider-one` project, missing/duplicate project rejection, empty Git branch rejection, production-branch rejection, and distinct feature-branch acceptance.
+- [x] Run `python3 -m unittest tests/test_linting_preview_smoke.py -v` and observe missing smoke script failures.
+- [x] Implement the smoke checker with stdlib `urllib`, a required base preview URL, explicit timeouts, no redirect to `https://pyvider.com`, and clear assertion output. Implement the Pages target checker with stdlib `json`; it prints the selected production branch only after all assertions pass.
+- [x] Run site unit/render verification again and commit with message `test: verify linting staging preview`.
+- [x] Push the site feature branch to `origin` for provenance. Query the real Pages configuration immediately before deployment, save it, and pass it with the actual Git branch to the tested gate. Build the exact directory to be deployed, run the rendered checker against that same directory, and deploy only after the gate exits zero:
 
   ```shell
   set -euo pipefail
@@ -763,10 +763,24 @@ Fresh final provider workflow [`34831588726`](https://github.com/provide-io/terr
   ```
 
   Wrangler 4.101.0's `pages project list --json` presentation omits `production_branch`, so the tested gate consumes the exact project's production-deployment response instead. It requires non-empty production-only rows, exact `*.pyvider-one.pages.dev` deployment URLs, one non-empty branch, and a different feature branch. Do not assume `main` is production, bypass the clean/pushed-SHA assertions, invoke a production deployment, or change the production custom domain.
-- [ ] Capture the exact `*.pages.dev` feature-preview URL from Wrangler, then run `python3 scripts/smoke-linting-preview.py "$PREVIEW_URL"`; expect every URL and rendered-content assertion to pass with fresh HTTP 200 evidence.
-- [ ] Open the preview for human inspection, report the preview URL, final four repository SHAs, CI proof run ID, Tofu checksum, provider checksum, cast checksum, test totals, and smoke results.
-- [ ] Use `superpowers:finishing-a-development-branch` to present integration choices without merging, opening PRs, deleting worktrees, or deploying production unless the user selects that action.
+- [x] Capture the exact `*.pages.dev` feature-preview URL from Wrangler, then run `python3 scripts/smoke-linting-preview.py "$PREVIEW_URL"`; expect every URL and rendered-content assertion to pass with fresh HTTP 200 evidence.
+- [x] Open the preview for human inspection, report the preview URL, final four repository SHAs, CI proof run ID, Tofu checksum, provider checksum, cast checksum, test totals, and smoke results.
+- [x] Use `superpowers:finishing-a-development-branch` to present integration choices without merging, opening PRs, deleting worktrees, or deploying production unless the user selects that action.
+
+Approved site commits: `53f872996a33498dddffc2cc88cad52ac74e0a05`, `6a515f54b183c265595fb023dab2947faf6395d2`, `0b903e3989a7a5df489ed37fb4de20d3a447d3db`, and `b5d33f61b9f2f95f726d942e2ae473cb6e1b334f`. The implementer followed strict TDD: 11 initial tests produced 27 missing-script failures, and spec/quality review findings added focused regressions before each fix. Final focused tests passed 32/32; the full site suite passed 54/54; Ruff was clean; Hugo emitted 24 pages and 157 static files; rendered and proof checkers passed 7/7. The tested deployment gate discovered `main` from the real production-deployment response, proved the clean feature branch and pushed source SHA `b5d33f61b9f2f95f726d942e2ae473cb6e1b334f`, and deployed only that build with Wrangler 4.101.0. The immutable preview is `https://2ca81c84.pyvider-one.pages.dev/` (feature alias `https://codex-provider-linting.pyvider-one.pages.dev/`); live smoke passed 3/3 HTTP 200 plus all rendered requirements. Desktop 1440px and mobile 390px browser inspection found no page overflow or console errors and showed the recording player. A fresh live reviewer approved with no findings after independently confirming the deployed cast and manifest are byte-identical to the checked assets and verify 7/7. No production deployment, custom-domain change, or OpenTofu edit occurred.
 
 ## Completion audit
 
 Before marking the goal complete, the primary agent must map every completion criterion in `docs/superpowers/specs/2026-09-13-provider-linting-design.md` to fresh evidence from Task 14 or 15. A successful unit suite is not evidence for packaged provenance, a local Hugo build is not evidence for deployed HTTP status, and `soup stir` is not evidence for RPCs OpenTofu core does not call. Completion requires the final reviewer approval, final CI artifact verification, and live preview smoke output together.
+
+Completion-criterion audit:
+
+1. The supported public Pyvider lint API is exported, documented, and tested at code commit `7dd83415d8cf09c84c70b445d333b3680493ea74`.
+2. All seven base component hooks and validation handlers are exercised by the Task 14 unit and handler suites.
+3. All seven first-party component rules are documented and tested at `cb2b180558a5fee8cd34d13aefe433450928d540`.
+4. Default-off behavior, TOML configuration, environment precedence, groups, and exclusions are proven by unit tests plus packaged-provider and OpenTofu scenarios.
+5. The exact packaged provider passed all seven direct TofuSoup RPC checks; the manifest pins binary SHA-256 `66cab6bc603cb3a9d0f9ae18fe969740f71acdf2d280421644363a17f37f65bd`.
+6. OpenTofu v1.13.0-beta1 proved exactly the four core-reachable provider, managed-resource, data-source, and ephemeral-resource paths; its official archive SHA-256 is `43a270b718393f8dec878aebe0cc432a3d34dda5aaa3bfe669f32a314b5b779b`.
+7. CI run [`34831588726`](https://github.com/provide-io/terraform-provider-pyvider/actions/runs/34831588726) produced the checked cast and manifest in artifact `10342696448`; 23/23 jobs succeeded, cast SHA-256 is `ff83b187b1d2cca49067c06847181a61ae522f02a4497631dddf5726fd4665c9`, and manifest SHA-256 is `9b73144e699cafac8e4ad689cd559ada210975f7e70e2778e739b6587c200538`.
+8. pyvider.com embeds those byte-identical artifacts, passes rendered/proof checks, and accurately states the supported-Pyvider, experimental-OpenTofu, compatibility-bridge, and four-vs-seven boundaries.
+9. The immutable Cloudflare Pages preview `https://2ca81c84.pyvider-one.pages.dev/` passes 3/3 live HTTP checks and all rendered assertions, is browser-inspected at desktop and mobile widths, and remains separate from production.
