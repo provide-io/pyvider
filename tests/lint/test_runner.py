@@ -7,6 +7,8 @@
 
 from unittest.mock import patch
 
+import pytest
+
 from pyvider.lint import LintFinding, LintSelector
 from pyvider.lint._runner import LintRunResult, run_lints
 
@@ -55,6 +57,17 @@ class InvalidFindingComponent:
 class RaisingComponent:
     async def lint(self, ctx: object) -> tuple[LintFinding, ...]:
         raise RuntimeError("lint hook crashed")
+
+
+class SecretRaisingComponent:
+    async def lint(self, ctx: object) -> tuple[LintFinding, ...]:
+        raise RuntimeError("exception-secret")
+
+
+class ExplodingDescriptorComponent:
+    @property
+    def lint(self) -> object:
+        raise RuntimeError("descriptor lookup failed")
 
 
 async def test_run_lints_disabled_selector_never_calls_hook() -> None:
@@ -146,6 +159,43 @@ async def test_run_lints_raised_hook_becomes_failure_with_safe_context_log() -> 
     assert log_call.kwargs["component_name"] == "example"
     assert log_call.kwargs["operation"] == "validate"
     assert "super-secret" not in str(log_call)
+
+
+async def test_run_lints_real_failure_log_does_not_leak_secrets_or_traceback(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    result = await run_lints(
+        SecretRaisingComponent(),
+        {"password": "configuration-secret"},
+        LintSelector(include={"all"}),
+        kind="data source",
+        name="safe-name",
+        operation="safe-operation",
+    )
+
+    captured = capsys.readouterr()
+    rendered_log = captured.out + captured.err
+    assert result == LintRunResult(failed=True)
+    assert "data source" in rendered_log
+    assert "safe-name" in rendered_log
+    assert "safe-operation" in rendered_log
+    assert "RuntimeError" in rendered_log
+    assert "configuration-secret" not in rendered_log
+    assert "exception-secret" not in rendered_log
+    assert "Traceback" not in rendered_log
+
+
+async def test_run_lints_exploding_hook_descriptor_becomes_failure() -> None:
+    result = await run_lints(
+        ExplodingDescriptorComponent(),
+        {"url": "http://example.test"},
+        LintSelector(include={"all"}),
+        kind="data source",
+        name="example",
+        operation="validate",
+    )
+
+    assert result == LintRunResult(failed=True)
 
 
 async def test_run_lints_missing_duck_typed_hook_is_noop() -> None:

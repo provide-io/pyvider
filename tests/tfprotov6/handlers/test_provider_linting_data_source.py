@@ -6,6 +6,7 @@
 """Provider-native linting through data-source validation."""
 
 from collections.abc import Iterator
+from contextlib import contextmanager
 from typing import ClassVar
 from unittest.mock import call, patch
 
@@ -49,24 +50,57 @@ def _unregister_if_present(component_type: str, name: str) -> None:
         hub.unregister(component_type, name)
 
 
+@contextmanager
+def _isolated_lint_hub_scope() -> Iterator[None]:
+    keys = (
+        ("singleton", "provider_context"),
+        ("singleton", "lint_selector"),
+        ("data_source", "lint_test"),
+    )
+    previous = {key: hub.get_component(*key) for key in keys}
+    try:
+        for component_type, name in keys:
+            _unregister_if_present(component_type, name)
+        hub.register("data_source", "lint_test", LintingDataSource)
+        LintingDataSource.lint_calls = 0
+        LintingDataSource.lint_error = None
+        LintingDataSource.validation_errors = []
+        yield
+    finally:
+        for component_type, name in keys:
+            _unregister_if_present(component_type, name)
+        for (component_type, name), component in previous.items():
+            if component is not None:
+                hub.register(component_type, name, component)
+
+
 @pytest.fixture(autouse=True)
 def isolated_lint_hub() -> Iterator[None]:
     """Keep startup singleton and fake component state local to each test."""
-    _unregister_if_present("singleton", "provider_context")
-    _unregister_if_present("singleton", "lint_selector")
-    _unregister_if_present("data_source", "lint_test")
-    hub.register("data_source", "lint_test", LintingDataSource)
-    LintingDataSource.lint_calls = 0
-    LintingDataSource.lint_error = None
-    LintingDataSource.validation_errors = []
-    yield
-    _unregister_if_present("singleton", "provider_context")
-    _unregister_if_present("singleton", "lint_selector")
-    _unregister_if_present("data_source", "lint_test")
+    with _isolated_lint_hub_scope():
+        yield
 
 
 def _request() -> pb.ValidateDataResourceConfig.Request:
     return pb.ValidateDataResourceConfig.Request(type_name="lint_test")
+
+
+def test_isolated_lint_hub_restores_previous_registrations() -> None:
+    provider_context_sentinel = object()
+    lint_selector_sentinel = object()
+    data_source_sentinel = object()
+    hub.register("singleton", "provider_context", provider_context_sentinel)
+    hub.register("singleton", "lint_selector", lint_selector_sentinel)
+    hub.register("data_source", "lint_test", data_source_sentinel)
+
+    with _isolated_lint_hub_scope():
+        assert hub.get_component("singleton", "provider_context") is None
+        assert hub.get_component("singleton", "lint_selector") is None
+        assert hub.get_component("data_source", "lint_test") is LintingDataSource
+
+    assert hub.get_component("singleton", "provider_context") is provider_context_sentinel
+    assert hub.get_component("singleton", "lint_selector") is lint_selector_sentinel
+    assert hub.get_component("data_source", "lint_test") is data_source_sentinel
 
 
 async def test_data_source_lint_exact_rule_maps_warning_diagnostic() -> None:

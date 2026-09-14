@@ -31,10 +31,10 @@ async def run_lints(
     """Run enabled component lints without exposing protocol concerns."""
     if config is None or selector.is_disabled:
         return LintRunResult()
-    lint = getattr(component, "lint", None)
-    if lint is None:
-        return LintRunResult()
     try:
+        lint = getattr(component, "lint", None)
+        if lint is None:
+            return LintRunResult()
         findings = tuple(await lint(LintContext(config, selector)))
         if not all(isinstance(finding, LintFinding) for finding in findings):
             raise TypeError("lint() must return only LintFinding values")
@@ -48,7 +48,6 @@ async def run_lints(
             component_name=name,
             operation=operation,
             error_type=type(exc).__name__,
-            exc_info=True,
         )
         return LintRunResult(failed=True)
 
