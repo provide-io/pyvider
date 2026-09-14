@@ -54,6 +54,15 @@ class LintConfig:
     url: str
 
 
+@attrs.define
+class ExplodingTestModeConfig:
+    url: str
+
+    @property
+    def pyvider_testmode(self) -> bool:
+        raise RuntimeError("test-mode-accessor-secret")
+
+
 @dataclass(frozen=True)
 class HandlerCase:
     name: str
@@ -255,3 +264,25 @@ async def test_validation_handler_accepts_duck_typed_component_without_lint(case
         response = await _invoke(case, component)
 
     assert list(response.diagnostics) == []
+
+
+async def test_provider_test_mode_logging_failure_is_safe_and_linting_continues(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    component = _component(PROVIDER)
+    component.config_class = ExplodingTestModeConfig
+    with _isolated_hub(PROVIDER, component):
+        _set_selector(LintSelector(include={RULE}))
+
+        response = await _invoke(PROVIDER, component)
+
+    captured = capsys.readouterr()
+    rendered = captured.out + captured.err
+    diagnostics = " ".join(f"{item.summary} {item.detail}" for item in response.diagnostics)
+    assert all(item.severity != pb.Diagnostic.ERROR for item in response.diagnostics)
+    _assert_warning(response)
+    assert len(component.lint_contexts) == 1
+    assert isinstance(component.lint_contexts[0].config, ExplodingTestModeConfig)
+    assert "test-mode-accessor-secret" not in diagnostics
+    assert "test-mode-accessor-secret" not in rendered
+    assert "Traceback" not in rendered

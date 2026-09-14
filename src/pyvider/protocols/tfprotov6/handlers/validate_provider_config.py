@@ -63,7 +63,14 @@ def _decode_provider_config(provider_instance: Any, config_cty: Any) -> Any | No
         )
         return None
     if config_instance is not None:
-        _log_declared_test_mode(config_instance)
+        try:
+            _log_declared_test_mode(config_instance)
+        except Exception as e:
+            logger.debug(
+                "Could not inspect provider test mode",
+                operation="validate_provider_config",
+                error_type=type(e).__name__,
+            )
     return config_instance
 
 
