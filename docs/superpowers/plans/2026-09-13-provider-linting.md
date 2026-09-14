@@ -213,11 +213,11 @@ Approved implementation commits: `789f8cd66493e8d5f1fc4b37498616e82cb4ed31`, `a2
 - Create: `tests/tfprotov6/handlers/test_provider_linting_data_source.py`
 - Modify: `tests/data_sources/test_base_data_source.py`
 
-- [ ] Add a default-hook test proving `await ConcreteDataSource().lint(ctx) == ()`.
-- [ ] Add runner unit tests proving: a disabled selector never calls the hook; `config is None` never calls it; selected findings survive; returned findings are defensively re-filtered; a non-`LintFinding` result and a raised hook become one failure result; exception logs include component kind/name/operation but no configuration value.
-- [ ] Add handler tests with a fake `provide-io/pyvider:insecure-http` finding proving exact enablement, group enablement, exact exclusion, warning severity, summary `Insecure HTTP endpoint (provide-io/pyvider:insecure-http)`, detail preservation, top-level `url` attribute path, existing validation errors unchanged, no hook after semantic error, no hook for unknown config, and fail-open `Provider linting did not complete` without traceback/secret text. Explicitly unregister `provider_context` in these cases: validation must work before `ConfigureProvider`, and lint selection must come only from the startup `lint_selector` singleton.
-- [ ] Run `uv run pytest tests/lint/test_runner.py tests/tfprotov6/handlers/test_provider_linting_data_source.py tests/data_sources/test_base_data_source.py -q` and observe failures for the missing hook, runner, and adapter.
-- [ ] Implement a protocol-neutral result and runner:
+- [x] Add a default-hook test proving `await ConcreteDataSource().lint(ctx) == ()`.
+- [x] Add runner unit tests proving: a disabled selector never calls the hook; `config is None` never calls it; selected findings survive; returned findings are defensively re-filtered; a non-`LintFinding` result and a raised hook become one failure result; exception logs include component kind/name/operation but no configuration value.
+- [x] Add handler tests with a fake `provide-io/pyvider:insecure-http` finding proving exact enablement, group enablement, exact exclusion, warning severity, summary `Insecure HTTP endpoint (provide-io/pyvider:insecure-http)`, detail preservation, top-level `url` attribute path, existing validation errors unchanged, no hook after semantic error, no hook for unknown config, and fail-open `Provider linting did not complete` without traceback/secret text. Explicitly unregister `provider_context` in these cases: validation must work before `ConfigureProvider`, and lint selection must come only from the startup `lint_selector` singleton.
+- [x] Run `uv run pytest tests/lint/test_runner.py tests/tfprotov6/handlers/test_provider_linting_data_source.py tests/data_sources/test_base_data_source.py -q` and observe failures for the missing hook, runner, and adapter.
+- [x] Implement a protocol-neutral result and runner:
 
   ```python
   @define(frozen=True, slots=True)
@@ -229,21 +229,26 @@ Approved implementation commits: `789f8cd66493e8d5f1fc4b37498616e82cb4ed31`, `a2
       if config is None or selector.is_disabled:
           return LintRunResult()
       try:
-          findings = tuple(await component.lint(LintContext(config, selector)))
+          lint = getattr(component, "lint", None)
+          if lint is None:
+              return LintRunResult()
+          findings = tuple(await lint(LintContext(config, selector)))
           if not all(isinstance(item, LintFinding) for item in findings):
               raise TypeError("lint() must return only LintFinding values")
           return LintRunResult(tuple(item for item in findings if selector.enabled(item.rule, *item.groups)))
       except Exception as exc:
           logger.error("Provider linting failed", component_kind=kind, component_name=name,
-                       operation=operation, error_type=type(exc).__name__, exc_info=True)
+                       operation=operation, error_type=type(exc).__name__)
           return LintRunResult(failed=True)
   ```
 
-- [ ] Isolate all protobuf knowledge in `_linting.py`: read `hub.get_component("singleton", "lint_selector")`; if it is absent or has the wrong type, log one structured warning without configuration values and use `LintSelector()` so every validation RPC remains fail-open before `ConfigureProvider`. Call `run_lints`, construct `pb.Diagnostic.WARNING`, append the rule ID to the summary, and map the single top-level attribute name to `pb.AttributePath.Step(attribute_name=...)`. A failed hook run returns exactly one generic compatibility warning. Never read `provider_context` for lint selection.
-- [ ] In `ValidateDataResourceConfigHandler`, append lint diagnostics only in the `else` branch after `validation_errors` is empty.
-- [ ] Rerun `uv run pytest tests/lint/test_runner.py tests/tfprotov6/handlers/test_provider_linting_data_source.py tests/data_sources/test_base_data_source.py -q`; expect all pass.
-- [ ] Run `uv run pytest tests/tfprotov6/handlers/test_validate_data_resource_config.py tests/tfprotov6/test_read_data_source_integration.py -q`; expect all pass.
-- [ ] Commit with message `feat: run provider lints on data source validation`.
+- [x] Isolate all protobuf knowledge in `_linting.py`: read `hub.get_component("singleton", "lint_selector")`; if it is absent or has the wrong type, log one structured warning without configuration values and use `LintSelector()` so every validation RPC remains fail-open before `ConfigureProvider`. Call `run_lints`, construct `pb.Diagnostic.WARNING`, append the rule ID to the summary, and map the single top-level attribute name to `pb.AttributePath.Step(attribute_name=...)`. A failed hook run returns exactly one generic compatibility warning. Never read `provider_context` for lint selection.
+- [x] In `ValidateDataResourceConfigHandler`, append lint diagnostics only in the `else` branch after `validation_errors` is empty.
+- [x] Rerun `uv run pytest tests/lint/test_runner.py tests/tfprotov6/handlers/test_provider_linting_data_source.py tests/data_sources/test_base_data_source.py -q`; expect all pass.
+- [x] Run `uv run pytest tests/tfprotov6/handlers/test_validate_data_resource_config.py tests/tfprotov6/test_read_data_source_integration.py -q`; expect all pass.
+- [x] Commit with message `feat: run provider lints on data source validation`.
+
+Approved implementation commits: `3ee4a78a50c769c7e9a9da687d461aae84614fd9`, `8628d9e47e0666a8aad2a9379d0128e35cb55721`. Independent spec review: approved. Independent code-quality review: approved after hardening rendered-log secrecy, descriptor lookup isolation, and registry restoration. Fresh full-suite evidence: 2,439 passed, 3 skipped, 2 xfailed; lint and typecheck passed.
 
 ## Task 3: Seven base hooks and seven-handler contract
 
