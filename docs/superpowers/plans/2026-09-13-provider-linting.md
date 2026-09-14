@@ -684,11 +684,12 @@ Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb9
 - [ ] Run components verification after rebuilding generated Plating output:
 
   ```shell
-  uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting plating plate --output-dir docs
-  uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest -q
-  uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests
-  uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src
-  uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mkdocs build --strict
+  uv run --frozen --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting python scripts/generate-component-docs.py --output-dir docs
+  uv run --frozen --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest -q
+  uv run --frozen --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests scripts
+  uv run --frozen --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src scripts/build-docs.py
+  uv lock --check
+  uv run --frozen --isolated --only-group docs python scripts/build-docs.py
   ```
 
 - [ ] Rebuild the actual provider from the final reviewed SHAs, then run:
