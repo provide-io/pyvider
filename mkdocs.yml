@@ -116,6 +116,7 @@ nav:
   - 'Concepts':
     - 'Architecture': 'explanation/architecture.md'
     - 'Component Model': 'explanation/component-model.md'
+    - 'Provider Linting': 'core-concepts/provider-linting.md'
     - 'Schema System': 'explanation/schema-system.md'
     - 'Resources vs Data Sources': 'explanation/resources-vs-data-sources.md'
 
