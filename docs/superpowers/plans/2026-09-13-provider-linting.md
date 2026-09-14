@@ -670,9 +670,9 @@ Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb9
 
 **Files:** No planned production edits; fixes discovered by review belong in their owning repository and receive focused regression tests.
 
-- [ ] Dispatch one fresh final reviewer with the approved design, this plan, all four worktree paths, and all commit ranges. Require requirement-by-requirement verification of public API, seven hooks/handlers, seven rules, configuration precedence, packaged provenance, OpenTofu four-path evidence, TofuSoup seven-path evidence, recording/manifest integrity, docs language, and production-deployment exclusion.
-- [ ] Resolve every final-review finding via the original owning-task implementer when practical; rerun focused tests and repeat final review until approved.
-- [ ] Run Pyvider verification:
+- [x] Dispatch one fresh final reviewer with the approved design, this plan, all four worktree paths, and all commit ranges. Require requirement-by-requirement verification of public API, seven hooks/handlers, seven rules, configuration precedence, packaged provenance, OpenTofu four-path evidence, TofuSoup seven-path evidence, recording/manifest integrity, docs language, and production-deployment exclusion.
+- [x] Resolve every final-review finding via the original owning-task implementer when practical; rerun focused tests and repeat final review until approved.
+- [x] Run Pyvider verification:
 
   ```shell
   we run test
@@ -681,7 +681,7 @@ Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb9
   we run docs.build
   ```
 
-- [ ] Run components verification after rebuilding generated Plating output:
+- [x] Run components verification after rebuilding generated Plating output:
 
   ```shell
   uv run --frozen --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting python scripts/generate-component-docs.py --output-dir docs
@@ -692,7 +692,7 @@ Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb9
   uv run --frozen --isolated --only-group docs python scripts/build-docs.py
   ```
 
-- [ ] Rebuild the actual provider from the final reviewed SHAs, then run:
+- [x] Rebuild the actual provider from the final reviewed SHAs, then run:
 
   ```shell
   make build-linting-stack \
@@ -706,10 +706,14 @@ Approved site commits: `8eb8940f6bf120882662c937cf9fa4ed258ddb90` and `b57f62cb9
   uv run mkdocs build --strict
   ```
 
-- [ ] If final review changes Pyvider or components, push the new reviewed SHAs. If it changes provider source/docs, commit those changes. Dispatch `build-provider.yml` again exactly as in Task 11, require a unique green numeric run ID for the final provider source SHA, update the provider's two checked proof artifacts in one artifact-only commit, and enforce the parent-SHA/two-file invariant again.
-- [ ] Resync the site from that final green numeric CI run (never the earlier run), assert the manifest provider source/Pyvider/components SHAs match the final reviewed code commits, then run proof verification, all site unit tests, Hugo production build, and rendered checker.
-- [ ] Confirm `git status --short` in every worktree contains only intended tracked changes or is clean after commits; inspect `git diff main...HEAD --check` in all four repositories.
-- [ ] Confirm `/Users/tim/code/tf/opentofu` is unmodified and no command or workflow targets the production `pyvider.com` branch/deployment.
+- [x] If final review changes Pyvider or components, push the new reviewed SHAs. If it changes provider source/docs, commit those changes. Dispatch `build-provider.yml` again exactly as in Task 11, require a unique green numeric run ID for the final provider source SHA, update the provider's two checked proof artifacts in one artifact-only commit, and enforce the parent-SHA/two-file invariant again.
+- [x] Resync the site from that final green numeric CI run (never the earlier run), assert the manifest provider source/Pyvider/components SHAs match the final reviewed code commits, then run proof verification, all site unit tests, Hugo production build, and rendered checker.
+- [x] Confirm `git status --short` in every worktree contains only intended tracked changes or is clean after commits; inspect `git diff main...HEAD --check` in all four repositories.
+- [x] Confirm `/Users/tim/code/tf/opentofu` is unmodified and no command or workflow targets the production `pyvider.com` branch/deployment.
+
+Final independent review: approved with no findings after every integration update. Final reviewed heads at the Task 14 gate: Pyvider `7dd83415d8cf09c84c70b445d333b3680493ea74`; components `cb2b180558a5fee8cd34d13aefe433450928d540`; provider artifact commit `731a7e0f120b201bf087b941d56a10d4397a6c38`; site `fd4cd845df89f8b5c52b6581e7326df0061c1a6e`. A strict-build failure in components exposed a pre-existing ambient-environment dependency; a subagent-driven TDD fix added a tracked clean-source build wrapper, locked docs group, official Officium asset, and a safe `provide-foundry>=0.4.1` floor. Its initial three RED contracts, clean-archive spec-review rejection, and two quality-review regressions led to 5/5 focused and 429/429 full tests, clean Ruff/mypy/lock checks, byte-identical generated navigation, and a frozen isolated strict MkDocs build from tracked files.
+
+Fresh final provider workflow [`34831588726`](https://github.com/provide-io/terraform-provider-pyvider/actions/runs/34831588726) uniquely matched source provider `1e222053f5bc0525c140110dd1872091d00bba92`, Pyvider `7dd83415d8cf09c84c70b445d333b3680493ea74`, and components `cb2b180558a5fee8cd34d13aefe433450928d540`; all 23/23 jobs succeeded. Artifact `10342696448` was non-expired and matched the run/head, with GitHub digest `sha256:cbde27...`. Independent download and verification passed 7/7. Final cast SHA-256: `ff83b187b1d2cca49067c06847181a61ae522f02a4497631dddf5726fd4665c9`; manifest: `9b73144e699cafac8e4ad689cd559ada210975f7e70e2778e739b6587c200538`; build provenance: `720a1304997238acff601de9810810e6d73e745f479fc8b04720caa0b254dcc7`; packaged Linux provider: `66cab6bc603cb3a9d0f9ae18fe969740f71acdf2d280421644363a17f37f65bd`; official OpenTofu archive: `43a270b718393f8dec878aebe0cc432a3d34dda5aaa3bfe669f32a314b5b779b`. Provider artifact commit `731a7e0` has manifest source `1e222053` as its first parent and changes exactly the cast and manifest. The site copies are byte-identical; 22 tests, proof 7/7, Hugo 24 pages/157 static files, rendered checker 7/7, the immutable fixture, and all four upstream URLs passed. All four worktrees and `main...HEAD --check` were clean; OpenTofu remained clean at `ae4c17990964b1ca0819ffaec03366cf969be5ed`; no production deployment target was introduced.
 
 ## Task 15: Cloudflare Pages feature-preview deployment and live smoke proof
 
