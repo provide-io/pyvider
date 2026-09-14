@@ -356,9 +356,9 @@ Approved implementation commits: `b6ee5ebad872e0bb62ae6929c928f41c0fe1aa86`, `07
 - Create: `src/pyvider/components/lint_rules.py`
 - Create: `tests/test_provider_lint_rules_security.py`
 
-- [ ] Define the exact test prefix `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting` for every command in Tasks 5–7; do not commit an absolute path or alter `uv.lock`. Before the first red test, run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting python -c 'import pyvider; print(pyvider.__file__)'` and require the printed path to begin with `/Users/tim/.config/superpowers/worktrees/pyvider/provider-linting/`.
-- [ ] Add table-driven tests for provider `api_insecure_skip_verify is True`, local-directory POSIX other-write bit, HTTP URL beginning `http://`, and file-content `include_hidden is True`. For each rule assert trigger, nearby safe value, omitted value, unknown/`None`, exact selection, security group selection, exact exclusion from `provide-io/pyvider:all`, summary, remediation detail, groups, and attribute path.
-- [ ] Use these immutable constants:
+- [x] Define the exact test prefix `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting` for every command in Tasks 5–7; do not commit an absolute path or alter `uv.lock`. Before the first red test, run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting python -c 'import pyvider; print(pyvider.__file__)'` and require the printed path to begin with `/Users/tim/.config/superpowers/worktrees/pyvider/provider-linting/`.
+- [x] Add table-driven tests for provider `api_insecure_skip_verify is True`, local-directory POSIX other-write bit, HTTP URL beginning `http://`, and file-content `include_hidden is True`. For each rule assert trigger, nearby safe value, omitted value, unknown/`None`, exact selection, security group selection, exact exclusion from `provide-io/pyvider:all`, summary, remediation detail, groups, and attribute path.
+- [x] Use these immutable constants:
 
   ```python
   ALL = "provide-io/pyvider:all"
@@ -369,12 +369,14 @@ Approved implementation commits: `b6ee5ebad872e0bb62ae6929c928f41c0fe1aa86`, `07
   INCLUDE_HIDDEN_FILES = "provide-io/pyvider:include-hidden-files"
   ```
 
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_security.py -q` and observe missing `lint()` findings.
-- [ ] Implement pure hooks. Guard each calculation with `ctx.enabled(rule, ALL, SECURITY)`. Use `permissions is not None and int(permissions, 8) & 0o002`, case-insensitive URL scheme comparison, and identity comparison for booleans. Do no filesystem or network I/O.
-- [ ] Ensure every detail says why the choice may be intentional, names the safer setting, and gives exact suppression syntax `!<rule-id>`.
-- [ ] Rerun `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_security.py -q`, then run the same prefixed command with `pytest -q`; expect all component tests pass.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
-- [ ] Commit with message `feat: add first-party security lint rules`.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_security.py -q` and observe missing `lint()` findings.
+- [x] Implement pure hooks. Guard each calculation with `ctx.enabled(rule, ALL, SECURITY)`. Use `permissions is not None and int(permissions, 8) & 0o002`, case-insensitive URL scheme comparison, and identity comparison for booleans. Do no filesystem or network I/O.
+- [x] Ensure every detail says why the choice may be intentional, names the safer setting, and gives exact suppression syntax `!<rule-id>`.
+- [x] Rerun `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_security.py -q`, then run the same prefixed command with `pytest -q`; expect all component tests pass.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
+- [x] Commit with message `feat: add first-party security lint rules`.
+
+Approved component commit: `05c84b1d83b2c3e0dcbd6e877260a21090d55c16`. Independent spec and code-quality reviews: approved. Fresh evidence against the reviewed Pyvider source: 4 focused and 357 full-suite tests passed; Ruff and mypy passed. Because uv's shared namespace initializer preceded the editable root, commands also set `PYTHONPATH=/Users/tim/.config/superpowers/worktrees/pyvider/provider-linting/src`; `pyvider.lint.__file__` verified the reviewed checkout.
 
 ## Task 6: Three reliability rules in first-party components
 
