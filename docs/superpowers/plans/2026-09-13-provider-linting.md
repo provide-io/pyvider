@@ -526,10 +526,10 @@ Approved provider commits: `169a06f2a096895d55848c2d68e348241b78efba`, `2ff051d0
 - Create generated: `provider-linting.cast`
 - Create generated: `provider-linting-proof.json`
 
-- [ ] Add proof-verifier tests for valid fixture, missing command, missing rule, ANSI stripping, cast checksum mismatch, provider checksum mismatch, unknown observation channel, absolute user path leakage, token-like key leakage, and non-beta Tofu version.
-- [ ] Run `uv run pytest tests/proof/test_provider_linting_proof.py -q` and observe missing verifier/generator failures.
-- [ ] Define manifest schema version 1 with keys `generated_at`, `ci`, `components`, `opentofu`, `provider_binary`, `commands`, `rules`, and `cast`. Each rule object has `id`, `kind`, and an `observed_via` list: provider/resource/data-source/ephemeral use `["opentofu", "tofusoup"]`; list/action/state-store use `["tofusoup"]`.
-- [ ] Make `provider-linting-demo.sh` execute and visibly echo these real commands:
+- [x] Add proof-verifier tests for valid fixture, missing command, missing rule, ANSI stripping, cast checksum mismatch, provider checksum mismatch, unknown observation channel, absolute user path leakage, token-like key leakage, and non-beta Tofu version.
+- [x] Run `uv run pytest tests/proof/test_provider_linting_proof.py -q` and observe missing verifier/generator failures.
+- [x] Define manifest schema version 1 with keys `generated_at`, `ci`, `components`, `opentofu`, `provider_binary`, `commands`, `rules`, and `cast`. Each rule object has `id`, `kind`, and an `observed_via` list: provider/resource/data-source/ephemeral use `["opentofu", "tofusoup"]`; list/action/state-store use `["tofusoup"]`.
+- [x] Make `provider-linting-demo.sh` execute and visibly echo these real commands:
 
   ```shell
   tofu version
@@ -541,11 +541,11 @@ Approved provider commits: `169a06f2a096895d55848c2d68e348241b78efba`, `2ff051d0
   ```
 
   The `soup stir` line is retained as a real lifecycle demonstration. The explicit final command is the honest TofuSoup direct-driver proof for all seven RPCs and must visibly emit one deterministic JSON line per rule containing `rule_id`, `kind`, `severity`, `attribute`, `observed_via`, and `provider_sha256`; never relabel `soup stir` as reaching action/list/state-store validation.
-- [ ] Reuse `record-to-cast.py` and `retime-cast.py` through `record-provider-linting.sh`; parameterize title/size only as needed without breaking `record-conformance.sh`.
-- [ ] Generate the manifest only after every command exits zero. Record the provider source SHA, exact clean Pyvider/components Git SHAs and archive hashes from `provider-linting-build-provenance.json`, versions, official Tofu archive checksum, the one explicit packaged-binary path's checksum, command list, seven rules/kinds/channel lists, cast checksum, GitHub run identity when present, and UTC timestamp. Reject secrets and machine-local paths. Before and after recording, recompute the binary checksum and require it to match build provenance.
-- [ ] Parse the complete cast, strip terminal controls, and assert all six commands, the seven JSON-line observations and rule IDs, default-off evidence, exact-exclusion evidence, OpenTofu four-path statement, and TofuSoup seven-path pass summary.
-- [ ] Extend the existing default-branch `.github/workflows/build-provider.yml` `workflow_dispatch` inputs with `provider_linting_proof` (boolean, default false), `pyvider_ref`, and `components_ref`. Add one conditional Linux proof job that checks out those public repositories at exact refs under `.stack/`, uses `ci/build-provider-linting-stack.py`, captures the one explicit binary path/checksum, installs v1.13.0-beta1, drives that same binary through `test-conformance-binary` and `test-linting-opentofu-binary`, records/verifies proof, and uploads one artifact named `provider-linting-proof` containing the cast, manifest, and build provenance. Use pinned action SHAs. This workflow already exists on the default branch, so it can be dispatched with `--ref codex/provider-linting`; do not create a new workflow file that GitHub cannot dispatch before merge.
-- [ ] Run locally:
+- [x] Reuse `record-to-cast.py` and `retime-cast.py` through `record-provider-linting.sh`; parameterize title/size only as needed without breaking `record-conformance.sh`.
+- [x] Generate the manifest only after every command exits zero. Record the provider source SHA, exact clean Pyvider/components Git SHAs and archive hashes from `provider-linting-build-provenance.json`, versions, official Tofu archive checksum, the one explicit packaged-binary path's checksum, command list, seven rules/kinds/channel lists, cast checksum, GitHub run identity when present, and UTC timestamp. Reject secrets and machine-local paths. Before and after recording, recompute the binary checksum and require it to match build provenance.
+- [x] Parse the complete cast, strip terminal controls, and assert all six commands, the seven JSON-line observations and rule IDs, default-off evidence, exact-exclusion evidence, OpenTofu four-path statement, and TofuSoup seven-path pass summary.
+- [x] Extend the existing default-branch `.github/workflows/build-provider.yml` `workflow_dispatch` inputs with `provider_linting_proof` (boolean, default false), `pyvider_ref`, and `components_ref`. Add one conditional Linux proof job that checks out those public repositories at exact refs under `.stack/`, uses `ci/build-provider-linting-stack.py`, captures the one explicit binary path/checksum, installs v1.13.0-beta1, drives that same binary through `test-conformance-binary` and `test-linting-opentofu-binary`, records/verifies proof, and uploads one artifact named `provider-linting-proof` containing the cast, manifest, and build provenance. Use pinned action SHAs. This workflow already exists on the default branch, so it can be dispatched with `--ref codex/provider-linting`; do not create a new workflow file that GitHub cannot dispatch before merge.
+- [x] Run locally:
 
   ```shell
   lint_binary="$PWD/dist/$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')/terraform-provider-pyvider_v$(cat VERSION)"
@@ -555,8 +555,10 @@ Approved provider commits: `169a06f2a096895d55848c2d68e348241b78efba`, `2ff051d0
   ```
 
   Expect all checks pass.
-- [ ] Commit with message `ci: publish checked provider linting proof`.
-- [ ] Do not push or dispatch yet. Task 11 must land the provider documentation first so the later CI run is tied to the final reviewed provider source revision rather than a stale intermediate commit.
+- [x] Commit with message `ci: publish checked provider linting proof`.
+- [x] Do not push or dispatch yet. Task 11 must land the provider documentation first so the later CI run is tied to the final reviewed provider source revision rather than a stale intermediate commit.
+
+Approved provider commits: `46ddce1f027c8af71a2c4d52b5d8716b1bd7db0a`, `f334bb158a66934fbae9a97718784d160f4eb1f2`, and `de82fe9d06be417822d083d5c61d8a5232f4c5b4`. Independent spec review: approved after anchoring the manifest's provider source SHA to build provenance and making malformed nested provenance fail concisely without traceback or path leakage. Independent code-quality review: approved after full cast-header validation, exact OpenTofu version matching, longest-first nested-path redaction, and regenerated deterministic artifacts. Strict TDD evidence: the initial contract run produced 19 expected failures and one legacy-recorder pass; the final proof suite passed 25 tests and the full explicit-binary suite passed 229 tests. Ruff, mypy, ShellCheck, YAML parsing, pre-commit, diff checks, and checked 7/7 proof verification passed. Final local cast SHA-256: `73787e95aca86d84e8d888c1f6477dad97189e626d479660cd02427282457008`; manifest SHA-256: `e4485093367762524bd6b723d257576cab28c5f9044cae6cd0435e57e40199ff`. The manifest records packaged provider source `7516af9da7a35745d93f1fb1349154dd27f3f3a3`. The coordinated provider and build-provenance hashes remained unchanged; no rebuild, push, or dispatch occurred.
 
 ## Task 11: Actual-provider reproduction documentation
 
