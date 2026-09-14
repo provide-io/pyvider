@@ -390,12 +390,14 @@ Approved component commit: `05c84b1d83b2c3e0dcbd6e877260a21090d55c16`. Independe
 - Modify: `src/pyvider/components/lint_rules.py`
 - Create: `tests/test_provider_lint_rules_reliability.py`
 
-- [ ] Add table-driven tests for lease `ttl_seconds > 3600`, action `timeout_seconds > 300`, and filesystem-store relative `path`. Cover thresholds 3600/3601 and 300/301, absolute and relative paths, omitted/unknown values, exact and reliability-group selection, exact exclusion, and metadata.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_reliability.py -q` and observe missing findings.
-- [ ] Add constants `RELIABILITY`, `LONG_LIVED_LEASE`, `LONG_ACTION_TIMEOUT`, and `RELATIVE_STATE_STORE_PATH`, and implement pure hooks guarded by `ctx.enabled(rule, ALL, RELIABILITY)`. Determine relativity with `Path(str(value)).expanduser().is_absolute()` without touching the path.
-- [ ] Rerun `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_reliability.py -q`, then run the same prefixed command with `pytest -q`; expect all pass.
-- [ ] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
-- [ ] Commit with message `feat: add first-party reliability lint rules`.
+- [x] Add table-driven tests for lease `ttl_seconds > 3600`, action `timeout_seconds > 300`, and filesystem-store relative `path`. Cover thresholds 3600/3601 and 300/301, absolute and relative paths, omitted/unknown values, exact and reliability-group selection, exact exclusion, and metadata.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_reliability.py -q` and observe missing findings.
+- [x] Add constants `RELIABILITY`, `LONG_LIVED_LEASE`, `LONG_ACTION_TIMEOUT`, and `RELATIVE_STATE_STORE_PATH`, and implement pure hooks guarded by `ctx.enabled(rule, ALL, RELIABILITY)`. Determine relativity with `Path(str(value)).expanduser().is_absolute()` without touching the path.
+- [x] Rerun `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting pytest tests/test_provider_lint_rules_reliability.py -q`, then run the same prefixed command with `pytest -q`; expect all pass.
+- [x] Run `uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting ruff check src tests && uv run --with-editable /Users/tim/.config/superpowers/worktrees/pyvider/provider-linting mypy src`; expect pass.
+- [x] Commit with message `feat: add first-party reliability lint rules`.
+
+Approved component commit: `a43ae40cb97767bc5080d313c044aa3b9bc97fdf`. Independent spec and code-quality reviews: approved. Fresh evidence against reviewed Pyvider: 35 focused and 392 full-suite tests passed; Ruff and mypy passed.
 
 ## Task 7: Component rule documentation and generated provider docs
 
