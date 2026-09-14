@@ -141,10 +141,10 @@ The exact test-node families are `test_lint_finding_*`, `test_lint_context_*`, `
 - Create: `tests/lint/test_config.py`
 - Create: `tests/cli/test_lint_selector_registration.py`
 
-- [ ] Write model tests that construct immutable `LintFinding` and `LintContext` values, reject a non-matching rule or group address, reject blank summary/detail/attribute paths, normalize `groups` to a tuple, and prove `ctx.enabled()` delegates to its selector.
-- [ ] Write selector tests copied semantically from OpenTofu `internal/tfdiags/lint_test.go`: exact rule include, exact rule exclude, any included group, any excluded group, global `all`, namespaced `provide-io/pyvider:all`, same-level include/exclude conflict with inclusion winning, whitespace trimming, duplicate removal, malformed-entry logging/ignore, unknown valid selectors as no-ops, and no selectors as disabled.
-- [ ] Run `uv run pytest tests/lint/test_model.py tests/lint/test_selector.py -q` and observe collection/import failure because `pyvider.lint` does not exist.
-- [ ] Implement the immutable public objects with the exact OpenTofu grammar:
+- [x] Write model tests that construct immutable `LintFinding` and `LintContext` values, reject a non-matching rule or group address, reject blank summary/detail/attribute paths, normalize `groups` to a tuple, and prove `ctx.enabled()` delegates to its selector.
+- [x] Write selector tests copied semantically from OpenTofu `internal/tfdiags/lint_test.go`: exact rule include, exact rule exclude, any included group, any excluded group, global `all`, namespaced `provide-io/pyvider:all`, same-level include/exclude conflict with inclusion winning, whitespace trimming, duplicate removal, malformed-entry logging/ignore, unknown valid selectors as no-ops, and no selectors as disabled.
+- [x] Run `uv run pytest tests/lint/test_model.py tests/lint/test_selector.py -q` and observe collection/import failure because `pyvider.lint` does not exist.
+- [x] Implement the immutable public objects with the exact OpenTofu grammar:
 
   ```python
   RULE_ADDRESS = re.compile(r"^([a-z0-9]+[a-z0-9_\-/]*:)?[a-z0-9]+[a-z0-9_\-]*$")
@@ -175,9 +175,9 @@ The exact test-node families are `test_lint_finding_*`, `test_lint_context_*`, `
   ```
 
   Parsing treats `provide-io/pyvider:all` as an ordinary group selected by each finding's declared group list; only unqualified `all` is the global fallback.
-- [ ] Write one config test at a time, running it red before implementation, for `[lint].rules`, `PYVIDER_LINT` comma parsing, explicit empty environment disablement, malformed permissiveness, and `PYVIDER_LINT > [lint].rules > ()`. A non-array TOML `rules` value must log one warning and resolve to disabled; it must not be silently accepted or raise.
-- [ ] Run `uv run pytest tests/lint/test_config.py -q` and observe failures because `PyviderConfig` has no `lint_rules`.
-- [ ] Add `lint_rules: tuple[str, ...]` to `PyviderConfig` and load it after TOML parsing with this source decision:
+- [x] Write one config test at a time, running it red before implementation, for `[lint].rules`, `PYVIDER_LINT` comma parsing, explicit empty environment disablement, malformed permissiveness, and `PYVIDER_LINT > [lint].rules > ()`. A non-array TOML `rules` value must log one warning and resolve to disabled; it must not be silently accepted or raise.
+- [x] Run `uv run pytest tests/lint/test_config.py -q` and observe failures because `PyviderConfig` has no `lint_rules`.
+- [x] Add `lint_rules: tuple[str, ...]` to `PyviderConfig` and load it after TOML parsing with this source decision:
 
   ```python
   raw_env = os.environ.get("PYVIDER_LINT")
@@ -191,11 +191,13 @@ The exact test-node families are `test_lint_finding_*`, `test_lint_context_*`, `
   ```
 
   Do not use `get_env` for `PYVIDER_LINT`, because an explicitly empty value must remain distinguishable from an absent variable.
-- [ ] Add `tests/cli/test_lint_selector_registration.py::test_register_runtime_config_publishes_selector_before_server_start`, run `uv run pytest tests/cli/test_lint_selector_registration.py::test_register_runtime_config_publishes_selector_before_server_start -q`, and observe failure because no `lint_selector` singleton exists. Extract a small `_register_runtime_config(config: PyviderConfig)` helper in `provide_command.py`, call it immediately after `config = PyviderConfig()` and before discovery/protocol/server construction, and register `LintSelector.parse(config.lint_rules)` as `hub.register("singleton", "lint_selector", selector)`. Add the corresponding typed singleton overload in `hub/components.py`. Rerun the same command and expect pass.
-- [ ] Add a second test that calls the registration helper with `PYVIDER_LINT=''`, proves it replaces an earlier selector with `LintSelector()`, and clean up the singleton in a fixture so no global test state leaks. Run it red, implement only the replacement/cleanup behavior needed, and rerun green.
-- [ ] Run `uv run pytest tests/lint tests/common/test_config.py tests/common/test_config_file_precedence.py -q`; expect all selected tests to pass.
-- [ ] Run `we run lint && we run typecheck`; expect exit 0.
-- [ ] Commit with `git add src/pyvider/lint src/pyvider/common/config.py src/pyvider/cli/provide_command.py src/pyvider/hub/components.py tests/lint tests/cli/test_lint_selector_registration.py && git commit -m 'feat: add provider lint model and selectors'`.
+- [x] Add `tests/cli/test_lint_selector_registration.py::test_register_runtime_config_publishes_selector_before_server_start`, run `uv run pytest tests/cli/test_lint_selector_registration.py::test_register_runtime_config_publishes_selector_before_server_start -q`, and observe failure because no `lint_selector` singleton exists. Extract a small `_register_runtime_config(config: PyviderConfig)` helper in `provide_command.py`, call it immediately after `config = PyviderConfig()` and before discovery/protocol/server construction, and register `LintSelector.parse(config.lint_rules)` as `hub.register("singleton", "lint_selector", selector)`. Add the corresponding typed singleton overload in `hub/components.py`. Rerun the same command and expect pass.
+- [x] Add a second test that calls the registration helper with `PYVIDER_LINT=''`, proves it replaces an earlier selector with `LintSelector()`, and clean up the singleton in a fixture so no global test state leaks. Run it red, implement only the replacement/cleanup behavior needed, and rerun green.
+- [x] Run `uv run pytest tests/lint tests/common/test_config.py tests/common/test_config_file_precedence.py -q`; expect all selected tests to pass.
+- [x] Run `we run lint && we run typecheck`; expect exit 0.
+- [x] Commit with `git add src/pyvider/lint src/pyvider/common/config.py src/pyvider/cli/provide_command.py src/pyvider/hub/components.py tests/lint tests/cli/test_lint_selector_registration.py && git commit -m 'feat: add provider lint model and selectors'`.
+
+Approved implementation commits: `789f8cd66493e8d5f1fc4b37498616e82cb4ed31`, `a212a4e7e54b569e411373801f42b3c7150c7bcb`. Independent spec review: approved. Independent code-quality review: approved. Fresh full-suite evidence: 2,419 passed, 3 skipped, 2 xfailed; lint and typecheck passed.
 
 ## Task 2: Shared runner and first data-source validation path
 
