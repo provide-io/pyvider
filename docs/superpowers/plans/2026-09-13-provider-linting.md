@@ -273,12 +273,12 @@ Approved implementation commits: `3ee4a78a50c769c7e9a9da687d461aae84614fd9`, `86
 - Create: `tests/lint/test_base_hooks.py`
 - Create: `tests/tfprotov6/handlers/test_provider_linting_contract.py`
 
-- [ ] Parameterize a base-hook test across all seven base classes and assert the default async hook returns an empty tuple.
-- [ ] Cover `BaseProvider`, `BaseResource`, `BaseDataSource`, `BaseEphemeralResource`, `BaseListResource`, `BaseAction`, and `BaseStateStore` explicitly; functions remain out of scope.
-- [ ] Parameterize real handler contract cases for provider, managed resource, data source, ephemeral resource, list resource, action, and state store. Each case must prove decoded config reaches `lint`, disabled selection does not invoke it, semantic errors prevent invocation, exact rule/group selection works, exact exclusion works, emitted warning location is the named top-level attribute, and the path works with no `provider_context` registered.
-- [ ] Add explicit tests for duck-typed pre-lint components: `getattr(component, "lint", None)` missing means no findings, preserving backwards compatibility for decorated components that do not inherit a current base class.
-- [ ] Run `uv run pytest tests/lint/test_base_hooks.py tests/tfprotov6/handlers/test_provider_linting_contract.py -q` and observe failures for six missing hooks/integrations.
-- [ ] Add the identical supported hook to every base:
+- [x] Parameterize a base-hook test across all seven base classes and assert the default async hook returns an empty tuple.
+- [x] Cover `BaseProvider`, `BaseResource`, `BaseDataSource`, `BaseEphemeralResource`, `BaseListResource`, `BaseAction`, and `BaseStateStore` explicitly; functions remain out of scope.
+- [x] Parameterize real handler contract cases for provider, managed resource, data source, ephemeral resource, list resource, action, and state store. Each case must prove decoded config reaches `lint`, disabled selection does not invoke it, semantic errors prevent invocation, exact rule/group selection works, exact exclusion works, emitted warning location is the named top-level attribute, and the path works with no `provider_context` registered.
+- [x] Add explicit tests for duck-typed pre-lint components: `getattr(component, "lint", None)` missing means no findings, preserving backwards compatibility for decorated components that do not inherit a current base class.
+- [x] Run `uv run pytest tests/lint/test_base_hooks.py tests/tfprotov6/handlers/test_provider_linting_contract.py -q` and observe failures for six missing hooks/integrations.
+- [x] Add the identical supported hook to every base:
 
   ```python
   async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
@@ -287,10 +287,10 @@ Approved implementation commits: `3ee4a78a50c769c7e9a9da687d461aae84614fd9`, `86
   ```
 
   `BaseProvider` and `BaseStateStore` use `LintContext[Any]`; no existing `validate()` signature changes.
-- [ ] Refactor `_linting.py` to expose one `lint_diagnostics(component, config, *, kind, name, operation)` helper and call it from each handler only after its existing validation errors are known empty. Provider linting occurs after unmarshal plus `check_required_attributes`; list/action/state-store linting occurs after their own `validate()` returns no messages.
-- [ ] Preserve handler behavior for unknown types and exceptions. Do not move linting into plan/apply/read/open/invoke/configure handlers and do not add cross-phase deduplication.
-- [ ] Rerun `uv run pytest tests/lint/test_base_hooks.py tests/tfprotov6/handlers/test_provider_linting_contract.py -q`; expect all pass.
-- [ ] Run:
+- [x] Refactor `_linting.py` to expose one `lint_diagnostics(component, config, *, kind, name, operation)` helper and call it from each handler only after its existing validation errors are known empty. Provider linting occurs after unmarshal plus `check_required_attributes`; list/action/state-store linting occurs after their own `validate()` returns no messages.
+- [x] Preserve handler behavior for unknown types and exceptions. Do not move linting into plan/apply/read/open/invoke/configure handlers and do not add cross-phase deduplication.
+- [x] Rerun `uv run pytest tests/lint/test_base_hooks.py tests/tfprotov6/handlers/test_provider_linting_contract.py -q`; expect all pass.
+- [x] Run:
 
   ```shell
   uv run pytest \
@@ -304,8 +304,10 @@ Approved implementation commits: `3ee4a78a50c769c7e9a9da687d461aae84614fd9`, `86
   ```
 
   Expect all pass.
-- [ ] Run `we run test && we run lint && we run typecheck`; expect the Pyvider baseline plus new tests to pass.
-- [ ] Commit with message `feat: lint every configuration validation path`.
+- [x] Run `we run test && we run lint && we run typecheck`; expect the Pyvider baseline plus new tests to pass.
+- [x] Commit with message `feat: lint every configuration validation path`.
+
+Approved implementation commits: `3b2e37c3b9f88085b8a05db4329d6600913bbb4e`, `291ca3d6cc47fbebba780e452a105c17a76f4007`, `9eacda77551d9e42f223a7ebbae3e9647d987584`. Independent spec review: approved. Independent code-quality review: approved after restoring nonfatal, secret-safe provider test-mode inspection. Fresh full-suite evidence: 2,461 passed, 3 skipped, 2 xfailed; 104 named handler regressions, lint, and typecheck passed.
 
 ## Task 4: Pyvider author documentation and public API contract
 
