@@ -733,20 +733,36 @@ Fresh final provider workflow [`34831588726`](https://github.com/provide-io/terr
 - [ ] Push the site feature branch to `origin` for provenance. Query the real Pages configuration immediately before deployment, save it, and pass it with the actual Git branch to the tested gate. Build the exact directory to be deployed, run the rendered checker against that same directory, and deploy only after the gate exits zero:
 
   ```shell
+  set -euo pipefail
+  export PYTHONDONTWRITEBYTECODE=1
+  : "${CLOUDFLARE_ACCOUNT_ID:?Select the Cloudflare account before deployment}"
   site_branch=$(git branch --show-current)
+  test -n "$site_branch"
+  test -z "$(git status --porcelain)"
+  git push origin "$site_branch"
+  git fetch origin "$site_branch"
+  source_sha=$(git rev-parse HEAD)
+  test "$(git rev-parse "origin/$site_branch")" = "$source_sha"
   pages_json=$(mktemp /tmp/pyvider-pages-projects.XXXXXX.json)
-  npx wrangler pages project list --json > "$pages_json"
+  npx --yes wrangler@4.101.0 pages deployment list \
+    --project-name pyvider-one \
+    --environment production \
+    --json > "$pages_json"
   python3 scripts/check-pages-preview-target.py "$pages_json" pyvider-one "$site_branch"
   deploy_dir=$(mktemp -d /tmp/pyvider-linting-deploy.XXXXXX)
   hugo --environment production --minify --destination "$deploy_dir"
   python3 scripts/check-linting-site.py "$deploy_dir"
-  npx wrangler pages deploy "$deploy_dir" \
+  test -z "$(git status --porcelain)"
+  test "$(git rev-parse HEAD)" = "$source_sha"
+  git fetch origin "$site_branch"
+  test "$(git rev-parse "origin/$site_branch")" = "$source_sha"
+  npx --yes wrangler@4.101.0 pages deploy "$deploy_dir" \
     --project-name pyvider-one \
     --branch "$site_branch" \
-    --commit-dirty=true
+    --commit-hash "$source_sha"
   ```
 
-  Do not assume `main` is production: the preceding JSON assertion is the deployment gate. Do not invoke a production deployment and do not change the production custom domain.
+  Wrangler 4.101.0's `pages project list --json` presentation omits `production_branch`, so the tested gate consumes the exact project's production-deployment response instead. It requires non-empty production-only rows, exact `*.pyvider-one.pages.dev` deployment URLs, one non-empty branch, and a different feature branch. Do not assume `main` is production, bypass the clean/pushed-SHA assertions, invoke a production deployment, or change the production custom domain.
 - [ ] Capture the exact `*.pages.dev` feature-preview URL from Wrangler, then run `python3 scripts/smoke-linting-preview.py "$PREVIEW_URL"`; expect every URL and rendered-content assertion to pass with fresh HTTP 200 evidence.
 - [ ] Open the preview for human inspection, report the preview URL, final four repository SHAs, CI proof run ID, Tofu checksum, provider checksum, cast checksum, test totals, and smoke results.
 - [ ] Use `superpowers:finishing-a-development-branch` to present integration choices without merging, opening PRs, deleting worktrees, or deploying production unless the user selects that action.
