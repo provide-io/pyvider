@@ -13,6 +13,7 @@ from pyvider.exceptions import PyviderError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
 from pyvider.protocols.tfprotov6.handlers._diagnostics import unknown_type_diagnostic
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -86,6 +87,15 @@ async def _validate_data_resource_config_impl(
                 "Data source configuration validation succeeded",
                 operation="validate_data_resource_config",
                 data_source_type=request.type_name,
+            )
+            response.diagnostics.extend(
+                await lint_diagnostics(
+                    data_source_instance,
+                    config_instance,
+                    kind="data source",
+                    name=request.type_name,
+                    operation="validate_data_resource_config",
+                )
             )
 
     except (CtyValidationError, PyviderError) as e:

@@ -5,8 +5,10 @@
 
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from typing import Any, Generic, TypeVar
 
+from pyvider.lint import LintContext, LintFinding
 from pyvider.resources.base import BaseResource
 from pyvider.resources.context import ResourceContext
 from pyvider.schema import PvsSchema
@@ -48,6 +50,10 @@ class BaseDataSource(ABC, Generic[DataSourceType, StateType, ConfigType]):
         if config is None:
             return []
         return await self._validate_config(config)
+
+    async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
+        """Return advisory findings for a validated configuration."""
+        return ()
 
     @abstractmethod
     async def _validate_config(self, config: ConfigType) -> list[str]:
