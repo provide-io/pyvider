@@ -85,7 +85,12 @@ ACTION = HandlerCase("action", "action", s_resource(attributes={"url": a_str(req
 STATE_STORE = HandlerCase("state-store", "state_store", s_resource(attributes={"url": a_str(required=True)}))
 
 
-def _component(case: HandlerCase, *, with_lint: bool = True) -> type[Any]:
+def _component(
+    case: HandlerCase,
+    *,
+    with_lint: bool = True,
+    finding: LintFinding = FINDING,
+) -> type[Any]:
     class ContractComponent:
         config_class = LintConfig
         schema = case.schema
@@ -103,7 +108,7 @@ def _component(case: HandlerCase, *, with_lint: bool = True) -> type[Any]:
 
         async def lint(self: object, ctx: LintContext[Any]) -> tuple[LintFinding, ...]:
             ContractComponent.lint_contexts.append(ctx)
-            return (FINDING,)
+            return (finding,)
 
         ContractComponent.lint = lint  # type: ignore[attr-defined]
 
@@ -264,6 +269,61 @@ async def test_validation_handler_accepts_duck_typed_component_without_lint(case
         response = await _invoke(case, component)
 
     assert list(response.diagnostics) == []
+
+
+def _finding_with_invalid_metadata(field_name: str, value: str) -> LintFinding:
+    finding = LintFinding(
+        rule=RULE,
+        groups=(GROUP,),
+        summary="Contract lint finding",
+        detail="Change this test value.",
+        attribute_path="url",
+    )
+    # Simulate malformed provider-authored metadata reaching the compatibility
+    # boundary from an older plugin/model implementation.
+    object.__setattr__(finding, field_name, value)
+    return finding
+
+
+@pytest.mark.parametrize(
+    "case",
+    [
+        pytest.param(PROVIDER, id="provider"),
+        pytest.param(RESOURCE, id="resource"),
+        pytest.param(DATA_SOURCE, id="data_source"),
+        pytest.param(EPHEMERAL_RESOURCE, id="ephemeral"),
+        pytest.param(LIST_RESOURCE, id="list"),
+        pytest.param(ACTION, id="action"),
+        pytest.param(STATE_STORE, id="state_store"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("field_name", "value"),
+    [
+        pytest.param("summary", "bad surrogate \ud800", id="non_utf8"),
+        pytest.param("attribute_path", "nested.url", id="non_top_level_path"),
+    ],
+)
+async def test_malformed_lint_metadata_is_fail_open_on_every_handler(
+    case: HandlerCase,
+    field_name: str,
+    value: str,
+) -> None:
+    component = _component(
+        case,
+        finding=_finding_with_invalid_metadata(field_name, value),
+    )
+    with _isolated_hub(case, component):
+        _set_selector(LintSelector(include={RULE}))
+
+        response = await _invoke(case, component)
+
+    assert len(response.diagnostics) == 1
+    diagnostic = response.diagnostics[0]
+    assert diagnostic.severity == pb.Diagnostic.WARNING
+    assert diagnostic.summary == "Provider linting did not complete"
+    assert "bad surrogate" not in diagnostic.detail
+    assert "nested.url" not in diagnostic.detail
 
 
 async def test_provider_test_mode_logging_failure_is_safe_and_linting_continues(

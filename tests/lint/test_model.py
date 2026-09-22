@@ -78,6 +78,43 @@ def test_lint_finding_rejects_blank_text(field_name: str, blank_value: str) -> N
         LintFinding(**values)  # type: ignore[arg-type]
 
 
+@pytest.mark.parametrize(
+    "field_name",
+    ["rule", "groups", "summary", "detail", "attribute_path"],
+)
+def test_lint_finding_rejects_non_utf8_text(field_name: str) -> None:
+    from pyvider.lint.model import LintFinding
+
+    values: dict[str, object] = {
+        "rule": "provide-io/pyvider:insecure-http",
+        "groups": ("provide-io/pyvider:all",),
+        "summary": "Insecure HTTP endpoint",
+        "detail": "Use HTTPS.",
+        "attribute_path": "url",
+    }
+    values[field_name] = ("provide-io/pyvider:\ud800",) if field_name == "groups" else "\ud800"
+
+    with pytest.raises(ValueError, match="valid UTF-8"):
+        LintFinding(**values)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    "attribute_path",
+    ["nested.url", "items[0]", "url/name", "two words", "0url"],
+)
+def test_lint_finding_rejects_non_top_level_attribute_path(attribute_path: str) -> None:
+    from pyvider.lint.model import LintFinding
+
+    with pytest.raises(ValueError, match="top-level attribute name"):
+        LintFinding(
+            rule="provide-io/pyvider:insecure-http",
+            groups=("provide-io/pyvider:all",),
+            summary="Insecure HTTP endpoint",
+            detail="Use HTTPS.",
+            attribute_path=attribute_path,
+        )
+
+
 def test_lint_context_is_immutable() -> None:
     from pyvider.lint.model import LintContext
 

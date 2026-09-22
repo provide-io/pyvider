@@ -5,12 +5,21 @@
 
 """tfprotov6 compatibility adapter for protocol-neutral lint findings."""
 
+import attrs
 from provide.foundation import logger
 
 from pyvider.hub import hub
 from pyvider.lint import LintSelector
 from pyvider.lint._runner import run_lints
 import pyvider.protocols.tfprotov6.protobuf as pb
+
+
+def _failure_diagnostic() -> pb.Diagnostic:
+    return pb.Diagnostic(
+        severity=pb.Diagnostic.WARNING,
+        summary="Provider linting did not complete",
+        detail="The provider could not complete the requested lint checks. Review provider logs for details.",
+    )
 
 
 async def lint_diagnostics(
@@ -35,37 +44,44 @@ async def lint_diagnostics(
     else:
         selector = registered_selector
 
-    result = await run_lints(
-        component,
-        config,
-        selector,
-        kind=kind,
-        name=name,
-        operation=operation,
-    )
-    if result.failed:
-        return [
-            pb.Diagnostic(
-                severity=pb.Diagnostic.WARNING,
-                summary="Provider linting did not complete",
-                detail="The provider could not complete the requested lint checks. Review provider logs for details.",
-            )
-        ]
-
-    diagnostics: list[pb.Diagnostic] = []
-    for finding in result.findings:
-        attribute = None
-        if finding.attribute_path is not None:
-            attribute = pb.AttributePath(steps=[pb.AttributePath.Step(attribute_name=finding.attribute_path)])
-        diagnostics.append(
-            pb.Diagnostic(
-                severity=pb.Diagnostic.WARNING,
-                summary=f"{finding.summary} ({finding.rule})",
-                detail=finding.detail,
-                attribute=attribute,
-            )
+    try:
+        result = await run_lints(
+            component,
+            config,
+            selector,
+            kind=kind,
+            name=name,
+            operation=operation,
         )
-    return diagnostics
+        if result.failed:
+            return [_failure_diagnostic()]
+
+        diagnostics: list[pb.Diagnostic] = []
+        for finding in result.findings:
+            attrs.validate(finding)
+            attribute = None
+            if finding.attribute_path is not None:
+                attribute = pb.AttributePath(
+                    steps=[pb.AttributePath.Step(attribute_name=finding.attribute_path)]
+                )
+            diagnostics.append(
+                pb.Diagnostic(
+                    severity=pb.Diagnostic.WARNING,
+                    summary=f"{finding.summary} ({finding.rule})",
+                    detail=finding.detail,
+                    attribute=attribute,
+                )
+            )
+        return diagnostics
+    except Exception as exc:
+        logger.error(
+            "Provider lint compatibility encoding failed",
+            component_kind=kind,
+            component_name=name,
+            operation=operation,
+            error_type=type(exc).__name__,
+        )
+        return [_failure_diagnostic()]
 
 
 # 🐍🏗️🔚

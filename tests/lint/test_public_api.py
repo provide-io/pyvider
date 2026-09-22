@@ -99,6 +99,19 @@ def test_provider_linting_documentation_describes_compatibility_boundary() -> No
     assert all(value in content for value in expected)
 
 
+def test_provider_linting_transport_status_is_dated_and_matches_recorded_proof() -> None:
+    source = DOC_PATH.read_text(encoding="utf-8")
+    content = " ".join(source.split())
+
+    assert "As of 2026-09-21" in content
+    assert "tested OpenTofu version is `v1.13.0-beta1`" in content
+    assert "`v1.13.0-rc1` had been published" in content
+    assert "recorded interoperability proof remains pinned to beta1" in content
+    assert "Today," not in source
+    assert "current OpenTofu transport" not in content.lower()
+    assert "current lint-address grammar" not in content.lower()
+
+
 def test_provider_linting_documentation_promises_transport_only_migration() -> None:
     content = DOC_PATH.read_text(encoding="utf-8")
     expected = ("native transport", "`lint()` hooks", "rule IDs", "groups", "never both")
@@ -135,7 +148,7 @@ def test_provider_linting_documentation_diagrams_lifecycle_and_transport() -> No
         "finding_filter -.-> native_adapter",
         "provider, resource, data source, ephemeral, list, action, and state store",
         "provider, resource, data source, and ephemeral",
-        "Neither client supplies provider selector hints over tfprotov6 today",
+        "Neither client supplied provider selector hints over tfprotov6 in that proof",
     )
     assert all(value in content for value in expected)
 
@@ -144,7 +157,7 @@ def test_provider_linting_documentation_diagrams_lifecycle_and_transport() -> No
     "url",
     [
         pytest.param(
-            "https://github.com/opentofu/opentofu/blob/main/rfc/20260406-linting.md",
+            "https://github.com/opentofu/opentofu/blob/cfe442d449412bcc76e9d36f4a0cef19483c3eb2/rfc/20260406-linting.md",
             id="rfc",
         ),
         pytest.param(
@@ -152,12 +165,16 @@ def test_provider_linting_documentation_diagrams_lifecycle_and_transport() -> No
             id="tracker",
         ),
         pytest.param(
-            "https://github.com/opentofu/opentofu/pull/4337",
+            "https://github.com/opentofu/opentofu/commit/a35a77b22e54266c6e72249a3ec54f396dd0356a",
             id="implementation",
         ),
         pytest.param(
             "https://github.com/opentofu/opentofu/releases/tag/v1.13.0-beta1",
             id="beta-release",
+        ),
+        pytest.param(
+            "https://github.com/opentofu/opentofu/releases/tag/v1.13.0-rc1",
+            id="rc-release",
         ),
     ],
 )

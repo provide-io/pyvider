@@ -22,8 +22,18 @@ ConfigT = TypeVar("ConfigT")
 RULE_ADDRESS = re.compile(r"^([a-z0-9]+[a-z0-9_\-/]*:)?[a-z0-9]+[a-z0-9_\-]*$")
 
 
+def _valid_utf8(attribute: Any, value: str) -> None:
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as exc:
+        raise ValueError(f"{attribute.name} must contain valid UTF-8 text") from exc
+
+
 def _valid_address(_instance: object, attribute: Any, value: str) -> None:
-    if not isinstance(value, str) or RULE_ADDRESS.fullmatch(value) is None:
+    if not isinstance(value, str):
+        raise ValueError(f"{attribute.name} must be a valid lint address")
+    _valid_utf8(attribute, value)
+    if RULE_ADDRESS.fullmatch(value) is None:
         raise ValueError(f"{attribute.name} must be a valid lint address")
 
 
@@ -35,11 +45,14 @@ def _valid_addresses(instance: object, attribute: Any, values: tuple[str, ...]) 
 def _not_blank(_instance: object, attribute: Any, value: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{attribute.name} must not be blank")
+    _valid_utf8(attribute, value)
 
 
-def _optional_not_blank(instance: object, attribute: Any, value: str | None) -> None:
+def _optional_top_level_attribute(instance: object, attribute: Any, value: str | None) -> None:
     if value is not None:
         _not_blank(instance, attribute, value)
+        if not value.replace("-", "_").isidentifier():
+            raise ValueError(f"{attribute.name} must be a top-level attribute name")
 
 
 @define(frozen=True, slots=True)
@@ -50,7 +63,7 @@ class LintFinding:
     groups: tuple[str, ...] = field(converter=tuple, validator=_valid_addresses)
     summary: str = field(validator=_not_blank)
     detail: str = field(validator=_not_blank)
-    attribute_path: str | None = field(default=None, validator=_optional_not_blank)
+    attribute_path: str | None = field(default=None, validator=_optional_top_level_attribute)
 
 
 @define(frozen=True, slots=True)

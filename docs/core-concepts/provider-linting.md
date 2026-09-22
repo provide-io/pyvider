@@ -66,7 +66,10 @@ finding metadata, valid configuration remains valid and existing validation
 diagnostics remain intact. Pyvider logs safe component context without the
 configuration or exception details that could contain secrets, and returns one
 ordinary, non-blocking warning titled `Provider linting did not complete`.
-That generic warning is emitted only when provider linting was requested.
+The compatibility adapter also revalidates findings and keeps protobuf encoding
+inside this boundary, so malformed text cannot escape as an RPC exception or be
+converted into a validation error. That generic warning is emitted only when
+provider linting was requested.
 
 ## Enabling and selecting rules
 
@@ -100,7 +103,7 @@ PYVIDER_LINT > [lint].rules > disabled
 
 ### Selector grammar and matching
 
-Pyvider follows OpenTofu's current lint-address grammar:
+Pyvider follows the lint-address grammar in the pinned OpenTofu RFC:
 
 ```text
 ^([a-z0-9]+[a-z0-9_\-/]*:)?[a-z0-9]+[a-z0-9_\-]*$
@@ -123,10 +126,16 @@ For a finding's primary rule and groups, matching uses OpenTofu's precedence:
 A namespaced `example/acme:all` is a provider-defined group, not the global
 `all` selector.
 
-## Current OpenTofu transport
+## OpenTofu transport status (2026-09-21)
 
 Pyvider's author-facing API is supported. Separately, OpenTofu's built-in
 linter remains experimental under OpenTofu's own status designation.
+
+As of 2026-09-21, the tested OpenTofu version is `v1.13.0-beta1`. The
+repository's checksum-verified cast and proof manifest record that exact
+version. `v1.13.0-rc1` had been published by that date, but the recorded
+interoperability proof remains pinned to beta1; this page does not claim that
+the proof was rerun against rc1.
 
 ```mermaid
 flowchart TB
@@ -158,18 +167,18 @@ flowchart TB
     finding_filter -.-> native_adapter
 ```
 
-Today, TofuSoup exercises the direct lane through all seven
+The recorded TofuSoup proof exercises the direct lane through all seven
 configuration-bearing paths: provider, resource, data source, ephemeral, list,
 action, and state store. The OpenTofu beta validation lane reaches the four
 paths in this fixture: provider, resource, data source, and ephemeral. Neither
-client supplies provider selector hints over tfprotov6 today; Pyvider obtains
-the selection from its provider-side configuration instead.
+client supplied provider selector hints over tfprotov6 in that proof; Pyvider
+obtained the selection from its provider-side configuration instead.
 
-The current tfprotov6 has no provider-lint wire message and cannot carry
-provider selection hints from OpenTofu's `-lint` flag. Pyvider therefore does
-not invent protocol fields. `-lint` selects OpenTofu core rules only, while a
-provider's rules are selected through `[lint].rules` or `PYVIDER_LINT`. To run
-both layers explicitly:
+As implemented here, tfprotov6 has no provider-lint wire message and cannot
+carry provider selection hints from OpenTofu's `-lint` flag. Pyvider therefore
+does not invent protocol fields. `-lint` selects OpenTofu core rules only, while
+a provider's rules are selected through `[lint].rules` or `PYVIDER_LINT`. To
+run both layers explicitly:
 
 ```shell
 PYVIDER_LINT=example/acme:all tofu validate -lint=all
@@ -197,7 +206,8 @@ component, and packaged-provider contracts will exercise the native adapter.
 
 ## OpenTofu sources
 
-- [Built-in linter RFC](https://github.com/opentofu/opentofu/blob/main/rfc/20260406-linting.md)
+- [Built-in linter RFC at the v1.13.0-beta1 commit](https://github.com/opentofu/opentofu/blob/cfe442d449412bcc76e9d36f4a0cef19483c3eb2/rfc/20260406-linting.md)
 - [Linting implementation tracker](https://github.com/opentofu/opentofu/issues/4310)
-- [Initial implementation](https://github.com/opentofu/opentofu/pull/4337)
+- [Initial implementation commit](https://github.com/opentofu/opentofu/commit/a35a77b22e54266c6e72249a3ec54f396dd0356a)
 - [OpenTofu v1.13.0-beta1](https://github.com/opentofu/opentofu/releases/tag/v1.13.0-beta1)
+- [OpenTofu v1.13.0-rc1](https://github.com/opentofu/opentofu/releases/tag/v1.13.0-rc1)
