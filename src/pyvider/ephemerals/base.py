@@ -5,10 +5,12 @@
 
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from datetime import datetime
 from typing import Generic, TypeVar
 
 from pyvider.ephemerals.context import EphemeralResourceContext
+from pyvider.lint import LintContext, LintFinding
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
 
@@ -52,6 +54,10 @@ class BaseEphemeralResource(ABC, Generic[ResultType, PrivateStateType, ConfigTyp
             A list of error messages. An empty list indicates success.
         """
         return []
+
+    async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     @abstractmethod
     async def open(

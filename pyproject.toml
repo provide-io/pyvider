@@ -48,11 +48,14 @@ dependencies = [
     "msgpack>=1.1.1",
     "cryptography>=45.0.7",
     "provide-foundation>=0.4.10",
-    "pyvider-cty>=0.6.0",
+    # 0.6.2 stops RECORD-owning files at the shared pyvider package root.
+    # Pyvider is the sole owner of those files from 0.8.0 onward.
+    "pyvider-cty>=0.6.2",
     # 0.4.2 raises the gRPC server's message limits from the 4 MB default to
     # Terraform's 256 MB. A state store negotiates 8 MB chunks, so on anything
     # older every chunk of a multi-chunk write is refused before it arrives.
-    "pyvider-rpcplugin>=0.5.0",
+    # 0.5.5 likewise contributes only the pyvider.rpcplugin namespace.
+    "pyvider-rpcplugin>=0.5.5",
 ]
 
 [project.urls]
@@ -62,6 +65,11 @@ Repository = "https://github.com/provide-io/pyvider"
 Issues = "https://github.com/provide-io/pyvider/issues"
 
 [dependency-groups]
+packaging-proof = [
+    "pip==26.2.1",
+    "setuptools==84.0.0",
+    "wheel==0.48.0",
+]
 dev = [
     # 0.5.0 is the floor because it stopped declaring `safety`, and through it
     # an unpatched `nltk`, in an extra this project takes. Below it the

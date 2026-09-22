@@ -12,6 +12,7 @@ from pyvider.cty.exceptions import CtyValidationError
 from pyvider.exceptions import PyviderError, ResourceError
 from pyvider.hub import hub
 from pyvider.protocols.tfprotov6.handlers._component_config import decode_config
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import create_diagnostic_from_exception
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -106,6 +107,15 @@ async def _validate_resource_config_impl(
                 "Resource configuration validation passed",
                 operation="validate_resource_config",
                 resource_type=request.type_name,
+            )
+            response.diagnostics.extend(
+                await lint_diagnostics(
+                    resource_handler,
+                    config_instance,
+                    kind="resource",
+                    name=request.type_name,
+                    operation="validate_resource_config",
+                )
             )
 
     except (CtyValidationError, PyviderError) as e:

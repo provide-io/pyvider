@@ -55,7 +55,7 @@ run = "rm -rf build/ dist/ *.egg-info .pytest_cache .mypy_cache .ruff_cache .hyp
 [tasks.docs]
 _default = "python .provide/foundry/scripts/docs_serve.py"
 setup = "python -c \"from provide.foundry.config import extract_base_mkdocs; from pathlib import Path; extract_base_mkdocs(Path('.'))\""
-build = "python .provide/foundry/scripts/docs_preflight.py && mkdocs build"
+build = "python .provide/foundry/scripts/docs_preflight.py && uv run mkdocs build"
 clean = "rm -rf site .provide"
 preflight = "python .provide/foundry/scripts/docs_preflight.py"
 validate = "python .provide/foundry/scripts/docs_validate.py"

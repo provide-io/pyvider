@@ -9,6 +9,7 @@ import pytest
 
 from pyvider.common.context import BaseContext
 from pyvider.data_sources.base import BaseDataSource
+from pyvider.lint import LintContext, LintSelector
 from pyvider.protocols.tfprotov6.protobuf import Diagnostic
 from pyvider.schema import PvsSchema, a_num, a_str, s_data_source
 
@@ -48,6 +49,13 @@ class TestBaseDataSource:
         ds = TestDataSource()
         assert hasattr(ds, "read")
         assert callable(ds.read)
+
+    @pytest.mark.asyncio
+    async def test_base_data_source_default_lint_hook(self) -> None:
+        """Data sources without custom lint rules return no findings."""
+        ctx = LintContext(config={"name": "test"}, selector=LintSelector(include={"all"}))
+
+        assert await TestDataSource().lint(ctx) == ()
 
     @pytest.mark.asyncio
     async def test_data_source_read_returns_data(self) -> None:

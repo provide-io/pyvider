@@ -7,6 +7,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-09-22
+
+### Added
+
+- **Provider-authored configuration linting.** The public `LintFinding`,
+  `LintSelector`, and `LintContext` types support optional asynchronous
+  `lint()` hooks on every configurable framework surface: provider, resource,
+  data source, ephemeral resource, list resource, action, and state store.
+  The framework supplies the mechanism; concrete policy and rule identifiers
+  remain the responsibility of provider packages.
+- **Explicit, default-off lint selection.** Projects may opt in through
+  `[lint].rules`, while `PYVIDER_LINT` provides a process-level override.
+  Exact rules, groups, and `all` selectors are supported alongside exclusions;
+  an explicitly empty `PYVIDER_LINT` overrides the project file and disables
+  linting for that process.
+
+### Behavior
+
+- **Lint execution is fail-open.** A hook failure becomes a compatibility
+  warning instead of blocking validation. Selected findings become
+  attribute-targeted warnings when a top-level attribute is supplied.
+
+### Compatibility
+
+- **tfprotov6 has no provider-lint message.** Selected findings therefore
+  travel as ordinary validation warnings. OpenTofu v1.13.0-beta1 exposes its
+  built-in provider linting through a separate beta path; that is not stable
+  protocol behavior in a current stable OpenTofu release. This release does
+  not claim native provider-lint protocol support.
+
+### Changed
+
+- **The shared `pyvider` package root now has one distribution owner.**
+  `pyvider-cty>=0.6.2` and `pyvider-rpcplugin>=0.5.5` contribute their own
+  subpackages without claiming `pyvider/__init__.py` or `pyvider/py.typed`;
+  Pyvider 0.8.0 is the sole owner of both root files. When upgrading an
+  environment that already contains Pyvider 0.7.0, `pyvider-cty` 0.6.1, or
+  `pyvider-rpcplugin` 0.5.4, upgrade all three packages in the same operation.
+  Package installers remove files recorded by the older dependency wheels
+  before installing their replacements, so a direct dependency-only upgrade
+  needs one-time remediation: reinstall Pyvider afterward. Fresh installs and
+  coordinated upgrades to Pyvider 0.8.0 restore the root automatically.
+- **`provide-foundation>=0.4.10`** (was `>=0.4.0`). The new floor carries the
+  stream fixes exercised by the Windows test run: logging follows the current
+  `sys.stderr`, and UTF-8 output is written through the destination's byte
+  layer rather than its locale-dependent text codec.
+- **`provide-testkit>=0.5.2`** (was `>=0.5.0`) in the `dev` and `docs`
+  dependency groups only. The intermediate 0.5.1 fixed the pytest logger
+  factory's stream on Windows; 0.5.2 preserves Click's active stdout swap
+  across pytest live-log suspension, keeping captured CLI output trustworthy.
+  These are contributor-facing dependencies and do not affect providers that
+  install Pyvider at runtime.
+- **Release supply-chain checks are stricter.** Publishing now verifies the
+  lint API in the built wheel and again in isolated TestPyPI and PyPI installs
+  before promotion. The release workflow uses pinned shared helpers, preserves
+  and signs the wheel, source distributions, source archives, and versioned
+  SBOM, refuses an unexpectedly incomplete asset set, removes orphaned
+  signatures after failed attachment, and repairs releases only from
+  digest-verified bytes fetched from PyPI rather than from a rebuild.
+
+### Documentation
+
+- **Provider-lint author guidance now documents the complete lifecycle.** It
+  covers writing unknown-safe rules, selecting and disabling them, validation
+  warning transport, and the compatibility boundary, with a lifecycle and
+  transport diagram from `LintSelector` through the component hook to
+  `LintFinding` diagnostics.
+
 ## [0.7.0] - 2026-09-05
 
 ### Breaking

@@ -20,6 +20,7 @@ from pyvider.protocols.tfprotov6.handlers._diagnostics import (
     unknown_type_diagnostic,
     warning_diagnostic,
 )
+from pyvider.protocols.tfprotov6.handlers._linting import lint_diagnostics
 from pyvider.protocols.tfprotov6.handlers._metrics import rpc_handler
 from pyvider.protocols.tfprotov6.handlers.utils import get_filtered_components
 import pyvider.protocols.tfprotov6.protobuf as pb
@@ -47,7 +48,8 @@ async def ValidateActionConfigHandler(
 
     try:
         config = decode_config(action_class, request.config)
-        errors = await action_class().validate(config)
+        action = action_class()
+        errors = await action.validate(config)
     except Exception as exc:
         logger.error(
             "Action configuration validation failed",
@@ -60,7 +62,18 @@ async def ValidateActionConfigHandler(
             diagnostics=[error_diagnostic(f"Invalid configuration for action '{request.type_name}'", str(exc))]
         )
 
-    return pb.ValidateActionConfig.Response(diagnostics=[error_diagnostic(message) for message in errors])
+    diagnostics = [error_diagnostic(message) for message in errors]
+    if not errors:
+        diagnostics.extend(
+            await lint_diagnostics(
+                action,
+                config,
+                kind="action",
+                name=request.type_name,
+                operation="validate_action_config",
+            )
+        )
+    return pb.ValidateActionConfig.Response(diagnostics=diagnostics)
 
 
 @rpc_handler("PlanAction")

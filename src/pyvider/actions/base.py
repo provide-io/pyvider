@@ -13,10 +13,11 @@ a stream of progress events.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Sequence
 from typing import Generic, TypeVar
 
 from pyvider.actions.types import ActionContext, ActionPlan, ActionProgress
+from pyvider.lint import LintContext, LintFinding
 from pyvider.schema import PvsSchema
 
 ConfigType = TypeVar("ConfigType")
@@ -41,6 +42,10 @@ class BaseAction(ABC, Generic[ConfigType]):
         action with no cross-field rules.
         """
         return []
+
+    async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     async def plan(self, ctx: ActionContext[ConfigType]) -> ActionPlan:
         """Decide whether the action can run now.

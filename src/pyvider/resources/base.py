@@ -5,6 +5,7 @@
 
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from types import UnionType
 from typing import Any, Generic, TypeVar, Union, cast, get_args, get_origin
 
@@ -22,6 +23,7 @@ from pyvider.cty import (
 from pyvider.cty.conversion import cty_to_native
 from pyvider.cty.values.markers import UnknownValue
 from pyvider.exceptions.resource import StateClassMismatchError
+from pyvider.lint import LintContext, LintFinding
 from pyvider.resources.context import ResourceContext
 from pyvider.resources.private_state import PrivateState
 from pyvider.schema import PvsSchema
@@ -434,6 +436,10 @@ class BaseResource(ABC, Generic[ResourceType, StateType, ConfigType]):
         if config is None:
             return []
         return await self._validate_config(config)
+
+    async def lint(self, ctx: LintContext[ConfigType]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     @abstractmethod
     async def _validate_config(self, config: ConfigType) -> list[str]: ...

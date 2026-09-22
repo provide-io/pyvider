@@ -19,8 +19,10 @@ having to thread identity through a constructor it does not control.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Sequence
 from typing import Any
 
+from pyvider.lint import LintContext, LintFinding
 from pyvider.schema import PvsSchema
 from pyvider.state_stores.defaults import DEFAULT_LOCK_TTL_SECONDS
 from pyvider.state_stores.types import StateLock
@@ -50,6 +52,10 @@ class BaseStateStore(ABC):
         that have no configuration to reject.
         """
         return []
+
+    async def lint(self, ctx: LintContext[Any]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     async def configure(self, config: Any, chunk_size: int) -> None:
         """Apply backend configuration before any state operation runs.

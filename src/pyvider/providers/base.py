@@ -5,6 +5,7 @@
 
 
 import asyncio
+from collections.abc import Sequence
 from typing import Any
 
 import attrs
@@ -12,6 +13,7 @@ from attrs import define, field
 from provide.foundation import logger
 
 from pyvider.exceptions import FrameworkConfigurationError, ProviderAlreadyConfiguredError
+from pyvider.lint import LintContext, LintFinding
 from pyvider.schema import PvsSchema
 
 
@@ -196,6 +198,10 @@ class BaseProvider:
                 operation="configure",
                 provider_name=self.metadata.name,
             )
+
+    async def lint(self, ctx: LintContext[Any]) -> Sequence[LintFinding]:
+        """Return opt-in advisory findings for a semantically valid configuration."""
+        return ()
 
     @property
     def schema(self) -> PvsSchema:
