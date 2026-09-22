@@ -134,7 +134,7 @@ linter remains experimental under OpenTofu's own status designation.
 As of 2026-09-22, the tested OpenTofu version is `v1.13.0-rc1`. The
 checksum-verified casts and proof manifest published with
 [terraform-provider-pyvider 0.6.0](https://github.com/provide-io/terraform-provider-pyvider/releases/tag/v0.6.0)
-record that exact version. Proofs through provider 0.5.0 were pinned to
+record that exact version, run with Pyvider 0.8.1 and pyvider-components 0.8.0. Proofs through provider 0.5.0 were pinned to
 `v1.13.0-beta1`.
 
 ```mermaid

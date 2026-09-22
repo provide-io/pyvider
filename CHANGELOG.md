@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- **Provider linting is re-verified against OpenTofu `v1.13.0-rc1`.** The
+  proof published with terraform-provider-pyvider 0.6.0 ran Pyvider 0.8.1 on
+  rc1. Proofs through provider 0.5.0 were pinned to `v1.13.0-beta1`.
+- **Deferred-change client gaps are documented.** Terraform 1.16.3 and earlier
+  omit client capabilities on `OpenEphemeralResource` and partial-expansion
+  plans, and OpenTofu never sets `deferral_allowed`. A deferral in those cases
+  returns an `Invalid Deferral` error diagnostic.
+
 ## [0.8.1] - 2026-09-22
 
 ### Fixed

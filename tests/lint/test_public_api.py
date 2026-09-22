@@ -106,6 +106,7 @@ def test_provider_linting_transport_status_is_dated_and_matches_recorded_proof()
     assert "As of 2026-09-22" in content
     assert "tested OpenTofu version is `v1.13.0-rc1`" in content
     assert "terraform-provider-pyvider 0.6.0" in content
+    assert "run with Pyvider 0.8.1 and pyvider-components 0.8.0" in content
     assert "Proofs through provider 0.5.0 were pinned to `v1.13.0-beta1`" in content
     assert "beta validation lane" not in content
     assert "Today," not in source
