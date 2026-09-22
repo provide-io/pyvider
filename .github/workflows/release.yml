@@ -61,11 +61,12 @@ jobs:
       - name: ✅ Verify wheel contents and installed lint API
         run: |
           set -euo pipefail
-          wheel="$(find dist -maxdepth 1 -type f -name '*.whl' -print -quit)"
-          if [ -z "$wheel" ]; then
-            echo "release artifact contains no wheel" >&2
+          mapfile -t wheels < <(find dist -maxdepth 1 -type f -name '*.whl' -print)
+          if [ "${#wheels[@]}" -ne 1 ]; then
+            echo "expected exactly one wheel, found ${#wheels[@]}" >&2
             exit 1
           fi
+          wheel="${wheels[0]}"
           VERSION="$(basename "$wheel")"
           VERSION="${VERSION#pyvider-}"
           VERSION="${VERSION%%-*}"
@@ -107,6 +108,8 @@ jobs:
     needs: publish-testpypi
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: 📥 Checkout release verifier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -129,6 +132,7 @@ jobs:
           retry_deadline=$((SECONDS + 300))
           retry_delay=5
           until uv pip install --python .verify-venv/bin/python \
+            --refresh-package pyvider \
             --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
             "pyvider==${VERSION}"; do
@@ -175,6 +179,8 @@ jobs:
     needs: publish-pypi
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
+    permissions:
+      contents: read
     steps:
       - name: 📥 Checkout release verifier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -197,6 +203,7 @@ jobs:
           retry_deadline=$((SECONDS + 300))
           retry_delay=5
           until uv pip install --python .verify-venv/bin/python \
+            --refresh-package pyvider \
             --index-url https://pypi.org/simple/ \
             "pyvider==${VERSION}"; do
             retry_remaining=$((retry_deadline - SECONDS))

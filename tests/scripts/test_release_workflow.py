@@ -82,3 +82,21 @@ def test_registry_verification_uses_explicit_indexes_and_exact_version() -> None
     assert "pyvider==${VERSION}" in pypi
     assert "--index-url https://pypi.org/simple/" in pypi
     assert "test.pypi.org" not in pypi
+
+
+@pytest.mark.parametrize("job_name", ["verify-testpypi", "verify-pypi"])
+def test_registry_retries_refresh_pyvider_index_metadata(job_name: str) -> None:
+    assert "--refresh-package pyvider" in run_commands_for(job_name)
+
+
+def test_wheel_verification_requires_exactly_one_wheel() -> None:
+    commands = run_commands_for("verify-wheel")
+    assert "${#wheels[@]}" in commands
+    assert "exactly one wheel" in commands.lower()
+    assert "-print -quit" not in commands
+
+
+@pytest.mark.parametrize("job_name", ["verify-testpypi", "verify-pypi"])
+def test_registry_verification_has_read_only_permissions(job_name: str) -> None:
+    job = load_workflow()["jobs"][job_name]
+    assert job["permissions"] == {"contents": "read"}
