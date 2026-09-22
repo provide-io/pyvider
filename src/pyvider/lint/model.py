@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 import re
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
@@ -20,6 +21,13 @@ ConfigT = TypeVar("ConfigT")
 
 
 RULE_ADDRESS = re.compile(r"^([a-z0-9]+[a-z0-9_\-/]*:)?[a-z0-9]+[a-z0-9_\-]*$")
+
+
+def _to_groups(values: Iterable[str]) -> tuple[str, ...]:
+    """Normalize rule groups while preserving the public constructor type."""
+    if isinstance(values, str):
+        raise TypeError("groups must be an iterable of lint addresses, not a string")
+    return tuple(values)
 
 
 def _valid_utf8(attribute: Any, value: str) -> None:
@@ -60,7 +68,7 @@ class LintFinding:
     """One advisory issue reported by a provider component."""
 
     rule: str = field(validator=_valid_address)
-    groups: tuple[str, ...] = field(converter=tuple, validator=_valid_addresses)
+    groups: tuple[str, ...] = field(converter=_to_groups, validator=_valid_addresses)
     summary: str = field(validator=_not_blank)
     detail: str = field(validator=_not_blank)
     attribute_path: str | None = field(default=None, validator=_optional_top_level_attribute)

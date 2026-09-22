@@ -162,7 +162,7 @@ async def test_run_lints_raised_hook_becomes_failure_with_safe_context_log() -> 
 
 
 async def test_run_lints_real_failure_log_does_not_leak_secrets_or_traceback(
-    capsys: pytest.CaptureFixture[str],
+    capfd: pytest.CaptureFixture[str],
 ) -> None:
     result = await run_lints(
         SecretRaisingComponent(),
@@ -173,7 +173,7 @@ async def test_run_lints_real_failure_log_does_not_leak_secrets_or_traceback(
         operation="safe-operation",
     )
 
-    captured = capsys.readouterr()
+    captured = capfd.readouterr()
     rendered_log = captured.out + captured.err
     assert result == LintRunResult(failed=True)
     assert "data source" in rendered_log

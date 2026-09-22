@@ -5,6 +5,8 @@
 
 """Tests for the public, protocol-neutral lint model."""
 
+from collections.abc import Iterable
+from typing import get_type_hints
 from unittest.mock import Mock
 
 from attrs.exceptions import FrozenInstanceError
@@ -25,6 +27,24 @@ def test_lint_finding_is_immutable_and_normalizes_groups() -> None:
     assert finding.groups == ("provide-io/pyvider:all", "provide-io/pyvider:security")
     with pytest.raises(FrozenInstanceError):
         finding.summary = "Changed"  # type: ignore[misc]
+
+
+def test_lint_finding_constructor_accepts_any_string_iterable() -> None:
+    from pyvider.lint.model import LintFinding
+
+    assert get_type_hints(LintFinding.__init__)["groups"] == Iterable[str]
+
+
+def test_lint_finding_rejects_a_bare_string_for_groups() -> None:
+    from pyvider.lint.model import LintFinding
+
+    with pytest.raises(TypeError, match="groups must be an iterable of lint addresses, not a string"):
+        LintFinding(
+            rule="provide-io/pyvider:insecure-http",
+            groups="provide-io/pyvider:security",
+            summary="Insecure HTTP endpoint",
+            detail="Use HTTPS.",
+        )
 
 
 @pytest.mark.parametrize(
