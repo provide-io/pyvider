@@ -39,6 +39,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **The shared `pyvider` package root now has one distribution owner.**
+  `pyvider-cty>=0.6.2` and `pyvider-rpcplugin>=0.5.5` contribute their own
+  subpackages without claiming `pyvider/__init__.py` or `pyvider/py.typed`;
+  Pyvider 0.8.0 is the sole owner of both root files. When upgrading an
+  environment that already contains Pyvider 0.7.0, `pyvider-cty` 0.6.1, or
+  `pyvider-rpcplugin` 0.5.4, upgrade all three packages in the same operation.
+  Package installers remove files recorded by the older dependency wheels
+  before installing their replacements, so a direct dependency-only upgrade
+  needs one-time remediation: reinstall Pyvider afterward. Fresh installs and
+  coordinated upgrades to Pyvider 0.8.0 restore the root automatically.
 - **`provide-foundation>=0.4.10`** (was `>=0.4.0`). The new floor carries the
   stream fixes exercised by the Windows test run: logging follows the current
   `sys.stderr`, and UTF-8 output is written through the destination's byte
