@@ -7,22 +7,23 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
-from email.parser import BytesParser
-from email.policy import default as default_email_policy
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
 import sys
 import tomllib
 from typing import cast
 import urllib.error
+import urllib.parse
 import urllib.request
 from zipfile import ZipFile
 
-from packaging.requirements import Requirement
+from packaging.markers import Marker
+from packaging.tags import sys_tags
+from packaging.utils import parse_wheel_filename
 import pytest
 
 REPOSITORY = Path(__file__).resolve().parents[2]
@@ -30,6 +31,12 @@ ROOT_INITIALIZER = "pyvider/__init__.py"
 ROOT_TYPING_MARKER = "pyvider/py.typed"
 PRESEED_ENV = "PYVIDER_NAMESPACE_WHEELHOUSE"
 TARGET_DISTRIBUTIONS = {"pyvider", "pyvider-cty", "pyvider-rpcplugin"}
+TOOLCHAIN_REQUIREMENTS = (
+    "packaging==26.3",
+    "pip==26.2.1",
+    "setuptools==84.0.0",
+    "wheel==0.48.0",
+)
 
 
 @dataclass(frozen=True)
@@ -146,23 +153,112 @@ def _materialize(spec: PublishedWheel, destination: Path) -> Path:
 
 
 @pytest.fixture(scope="module")
-def published_wheels(tmp_path_factory: pytest.TempPathFactory) -> dict[tuple[str, str], Path]:
-    destination = tmp_path_factory.mktemp("published-namespace-wheels")
-    return {(spec.distribution, spec.version): _materialize(spec, destination) for spec in PUBLISHED_WHEELS}
+def locked_wheel_specs() -> dict[str, tuple[PublishedWheel, ...]]:
+    return {
+        "runtime": _exported_wheel_specs("--no-dev"),
+        "toolchain": _exported_wheel_specs("--only-group", "packaging-proof"),
+    }
+
+
+def _exported_wheel_specs(*selection: str) -> tuple[PublishedWheel, ...]:
+    exported = tomllib.loads(
+        _run(
+            [
+                "uv",
+                "export",
+                "--frozen",
+                "--offline",
+                "--no-emit-project",
+                "--format",
+                "pylock.toml",
+                *selection,
+            ],
+            cwd=REPOSITORY,
+        ).stdout
+    )
+    supported_tags = set(sys_tags())
+    specs: list[PublishedWheel] = []
+    for package in exported["packages"]:
+        if marker := package.get("marker"):
+            if not Marker(marker).evaluate():
+                continue
+        compatible: list[tuple[str, dict[str, object]]] = []
+        for wheel in package.get("wheels", []):
+            filename = PurePosixPath(urllib.parse.urlparse(wheel["url"]).path).name
+            _, _, _, wheel_tags = parse_wheel_filename(filename)
+            if wheel_tags & supported_tags:
+                compatible.append((filename, wheel))
+        assert compatible, f"lock has no compatible wheel for {package['name']}=={package['version']}"
+        filename, wheel = min(compatible, key=lambda item: item[0])
+        specs.append(
+            PublishedWheel(
+                distribution=package["name"],
+                version=package["version"],
+                filename=filename,
+                url=cast(str, wheel["url"]),
+                sha256=cast(dict[str, str], wheel["hashes"])["sha256"],
+                size=cast(int, wheel["size"]),
+            )
+        )
+    return tuple(specs)
 
 
 @pytest.fixture(scope="module")
-def local_pyvider_wheel(tmp_path_factory: pytest.TempPathFactory) -> Path:
+def source_wheels(
+    tmp_path_factory: pytest.TempPathFactory,
+    locked_wheel_specs: dict[str, tuple[PublishedWheel, ...]],
+) -> dict[tuple[str, str], Path]:
+    destination = tmp_path_factory.mktemp("exact-namespace-wheelhouse")
+    specs_by_filename: dict[str, PublishedWheel] = {}
+    for spec in (*locked_wheel_specs["runtime"], *locked_wheel_specs["toolchain"], *PUBLISHED_WHEELS):
+        existing = specs_by_filename.setdefault(spec.filename, spec)
+        assert existing == spec, f"conflicting immutable artifact metadata for {spec.filename}"
+    return {
+        (spec.distribution, spec.version): _materialize(spec, destination)
+        for spec in specs_by_filename.values()
+    }
+
+
+@pytest.fixture(scope="module")
+def local_pyvider_wheel(
+    tmp_path_factory: pytest.TempPathFactory,
+    source_wheels: dict[tuple[str, str], Path],
+) -> Path:
     build_root = tmp_path_factory.mktemp("pyvider-080-build")
     source = build_root / "source"
     shutil.copytree(REPOSITORY / "src", source / "src", ignore=shutil.ignore_patterns("*.egg-info"))
     for name in ("LICENSE", "README.md", "VERSION", "pyproject.toml"):
         shutil.copy2(REPOSITORY / name, source / name)
 
+    source_wheelhouse = next(iter(source_wheels.values())).parent
+    python, _ = _environment(build_root, source_wheelhouse)
+    _resolver_install(
+        python,
+        source_wheelhouse,
+        "uv",
+        list(TOOLCHAIN_REQUIREMENTS),
+        upgrade=False,
+    )
     wheelhouse = build_root / "wheelhouse"
     _run(
-        ["uv", "build", "--wheel", "--out-dir", str(wheelhouse), "--no-create-gitignore"],
+        [
+            "uv",
+            "build",
+            "--wheel",
+            "--python",
+            str(python),
+            "--no-build-isolation",
+            "--offline",
+            "--no-cache",
+            "--no-index",
+            "--find-links",
+            str(source_wheelhouse),
+            "--out-dir",
+            str(wheelhouse),
+            "--no-create-gitignore",
+        ],
         cwd=source,
+        env=_offline_environment(build_root),
     )
     return next(wheelhouse.glob("pyvider-0.8.0-*.whl"))
 
@@ -178,24 +274,39 @@ def _installed_record_paths(record: Path) -> set[str]:
         return {row[0] for row in csv.reader(rows)}
 
 
-def _requirements(wheels: list[Path]) -> list[str]:
-    requirements: set[str] = set()
-    for wheel in wheels:
-        with ZipFile(wheel) as archive:
-            metadata_name = next(name for name in archive.namelist() if name.endswith(".dist-info/METADATA"))
-            metadata = BytesParser(policy=default_email_policy).parsebytes(archive.read(metadata_name))
-        for value in metadata.get_all("Requires-Dist", []):
-            requirement = Requirement(value)
-            normalized_name = requirement.name.lower().replace("_", "-")
-            if normalized_name not in TARGET_DISTRIBUTIONS:
-                requirements.add(value)
-    return sorted(requirements)
+def _offline_environment(destination: Path) -> dict[str, str]:
+    environment = os.environ.copy()
+    environment.update(
+        {
+            "PIP_INDEX_URL": "https://offline.invalid/simple",
+            "PIP_NO_INDEX": "1",
+            "UV_CACHE_DIR": str(destination / "empty-uv-cache"),
+            "UV_INDEX_URL": "https://offline.invalid/simple",
+            "UV_NO_INDEX": "1",
+            "UV_OFFLINE": "1",
+        }
+    )
+    return environment
 
 
-def _environment(destination: Path) -> tuple[Path, Path]:
+def _environment(destination: Path, wheelhouse: Path) -> tuple[Path, Path]:
     root = destination / "environment"
-    _run(["uv", "venv", "--seed", "--python", sys.executable, "--no-project", str(root)])
+    _run(
+        [
+            "uv",
+            "venv",
+            "--python",
+            sys.executable,
+            "--no-project",
+            "--no-python-downloads",
+            "--offline",
+            "--no-cache",
+            str(root),
+        ],
+        env=_offline_environment(destination),
+    )
     python = root / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
+    _resolver_install(python, wheelhouse, "uv", ["pip==26.2.1"], upgrade=False)
     purelib = Path(
         _run(
             [str(python), "-I", "-c", "import sysconfig; print(sysconfig.get_path('purelib'))"],
@@ -205,37 +316,76 @@ def _environment(destination: Path) -> tuple[Path, Path]:
     return python, purelib
 
 
-def _seed_dependencies(python: Path, wheels: list[Path]) -> None:
-    environment = os.environ.copy()
-    environment["UV_CACHE_DIR"] = str(python.parent.parent / "dependency-cache")
-    _run(
-        [
-            "uv",
-            "pip",
-            "install",
-            "--refresh",
-            "--python",
-            str(python),
-            *_requirements(wheels),
-        ],
-        env=environment,
-    )
-
-
-def _install_offline(python: Path, wheels: list[Path]) -> None:
-    _run(
-        [
+def _resolver_install(
+    python: Path,
+    wheelhouse: Path,
+    manager: str,
+    requirements: list[str],
+    *,
+    upgrade: bool,
+) -> None:
+    environment = _offline_environment(python.parent.parent)
+    if manager == "uv":
+        command = [
             "uv",
             "pip",
             "install",
             "--offline",
             "--no-cache",
-            "--no-deps",
+            "--no-index",
+            "--find-links",
+            str(wheelhouse),
             "--python",
             str(python),
-            *[str(wheel) for wheel in wheels],
         ]
-    )
+    elif manager == "pip":
+        command = [
+            str(python),
+            "-m",
+            "pip",
+            "install",
+            "--no-index",
+            "--find-links",
+            str(wheelhouse),
+            "--no-cache-dir",
+        ]
+    else:
+        raise AssertionError(f"unknown package manager: {manager}")
+    if upgrade:
+        command.append("--upgrade")
+    _run([*command, *requirements], env=environment)
+
+
+def _dependency_check(python: Path, manager: str) -> None:
+    environment = _offline_environment(python.parent.parent)
+    if manager == "uv":
+        _run(["uv", "pip", "check", "--python", str(python)], env=environment)
+    else:
+        _run([str(python), "-m", "pip", "check"], env=environment)
+
+
+def _stage_wheelhouse(
+    destination: Path,
+    source_wheels: dict[tuple[str, str], Path],
+    runtime_specs: tuple[PublishedWheel, ...],
+    target_versions: dict[str, str],
+    *,
+    local_pyvider_wheel: Path | None = None,
+) -> Path:
+    destination.mkdir()
+    for spec in runtime_specs:
+        if spec.distribution in TARGET_DISTRIBUTIONS:
+            continue
+        shutil.copy2(source_wheels[(spec.distribution, spec.version)], destination)
+    for requirement in TOOLCHAIN_REQUIREMENTS:
+        name, version = requirement.split("==", maxsplit=1)
+        shutil.copy2(source_wheels[(name, version)], destination)
+    for distribution, version in target_versions.items():
+        if distribution == "pyvider" and local_pyvider_wheel is not None:
+            shutil.copy2(local_pyvider_wheel, destination)
+        else:
+            shutil.copy2(source_wheels[(distribution, version)], destination)
+    return destination
 
 
 def _installed_versions(python: Path, cwd: Path) -> dict[str, str | None]:
@@ -327,6 +477,21 @@ def test_lock_resolves_the_single_owner_namespace_releases() -> None:
     assert packages["pyvider-rpcplugin"]["version"] == "0.5.5"
 
 
+def test_packaging_proof_toolchain_is_exactly_locked() -> None:
+    pyproject = tomllib.loads((REPOSITORY / "pyproject.toml").read_text())
+    lock = tomllib.loads((REPOSITORY / "uv.lock").read_text())
+    packages = {package["name"]: package for package in lock["package"]}
+
+    assert set(pyproject["dependency-groups"]["packaging-proof"]) == {
+        "pip==26.2.1",
+        "setuptools==84.0.0",
+        "wheel==0.48.0",
+    }
+    assert packages["pip"]["version"] == "26.2.1"
+    assert packages["setuptools"]["version"] == "84.0.0"
+    assert packages["wheel"]["version"] == "0.48.0"
+
+
 def test_release_notes_explain_the_one_time_coordinated_upgrade() -> None:
     release_notes = (REPOSITORY / "CHANGELOG.md").read_text().split("## [0.7.0]", maxsplit=1)[0]
     normalized = " ".join(release_notes.split())
@@ -342,29 +507,34 @@ def test_release_notes_explain_the_one_time_coordinated_upgrade() -> None:
 
 
 def test_published_wheels_can_be_preseeded_without_network(
-    published_wheels: dict[tuple[str, str], Path],
+    source_wheels: dict[tuple[str, str], Path],
+    locked_wheel_specs: dict[str, tuple[PublishedWheel, ...]],
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    preseed = next(iter(published_wheels.values())).parent
+    preseed = next(iter(source_wheels.values())).parent
     monkeypatch.setenv(PRESEED_ENV, str(preseed))
 
     def unexpected_network_request(*_args: object, **_kwargs: object) -> None:
         raise AssertionError("a preseeded wheel fixture must not access the network")
 
     monkeypatch.setattr(urllib.request, "urlopen", unexpected_network_request)
-    materialized = [_materialize(spec, tmp_path) for spec in PUBLISHED_WHEELS]
+    all_specs = {
+        spec.filename: spec
+        for spec in (*locked_wheel_specs["runtime"], *locked_wheel_specs["toolchain"], *PUBLISHED_WHEELS)
+    }
+    materialized = [_materialize(spec, tmp_path) for spec in all_specs.values()]
 
-    assert {wheel.name for wheel in materialized} == {spec.filename for spec in PUBLISHED_WHEELS}
+    assert {wheel.name for wheel in materialized} == set(all_specs)
 
 
 def test_only_pyvider_080_owns_the_shared_root_files(
     local_pyvider_wheel: Path,
-    published_wheels: dict[tuple[str, str], Path],
+    source_wheels: dict[tuple[str, str], Path],
 ) -> None:
     owner_record = _record_paths(local_pyvider_wheel)
-    cty_record = _record_paths(published_wheels[("pyvider-cty", "0.6.2")])
-    rpcplugin_record = _record_paths(published_wheels[("pyvider-rpcplugin", "0.5.5")])
+    cty_record = _record_paths(source_wheels[("pyvider-cty", "0.6.2")])
+    rpcplugin_record = _record_paths(source_wheels[("pyvider-rpcplugin", "0.5.5")])
 
     assert {ROOT_INITIALIZER, ROOT_TYPING_MARKER} <= owner_record
     assert ROOT_INITIALIZER not in cty_record
@@ -375,43 +545,73 @@ def test_only_pyvider_080_owns_the_shared_root_files(
 
 @pytest.mark.integration
 @pytest.mark.parametrize(
-    "uninstalls",
+    ("upgrade_manager", "uninstalls"),
     [
-        (("pyvider-cty", "uv"), ("pyvider-rpcplugin", "pip")),
-        (("pyvider-rpcplugin", "pip"), ("pyvider-cty", "uv")),
-        (("pyvider-cty", "pip"), ("pyvider-rpcplugin", "uv")),
-        (("pyvider-rpcplugin", "uv"), ("pyvider-cty", "pip")),
+        ("uv", (("pyvider-cty", "uv"), ("pyvider-rpcplugin", "pip"))),
+        ("pip", (("pyvider-rpcplugin", "pip"), ("pyvider-cty", "uv"))),
+        ("uv", (("pyvider-cty", "pip"), ("pyvider-rpcplugin", "uv"))),
+        ("pip", (("pyvider-rpcplugin", "uv"), ("pyvider-cty", "pip"))),
     ],
-    ids=["cty-uv-rpc-pip", "rpc-pip-cty-uv", "cty-pip-rpc-uv", "rpc-uv-cty-pip"],
+    ids=[
+        "upgrade-uv-cty-uv-rpc-pip",
+        "upgrade-pip-rpc-pip-cty-uv",
+        "upgrade-uv-cty-pip-rpc-uv",
+        "upgrade-pip-rpc-uv-cty-pip",
+    ],
 )
 def test_published_stack_coordinated_upgrade_and_dependency_uninstalls(
     local_pyvider_wheel: Path,
-    published_wheels: dict[tuple[str, str], Path],
+    source_wheels: dict[tuple[str, str], Path],
+    locked_wheel_specs: dict[str, tuple[PublishedWheel, ...]],
+    monkeypatch: pytest.MonkeyPatch,
+    upgrade_manager: str,
     uninstalls: tuple[tuple[str, str], tuple[str, str]],
     tmp_path: Path,
 ) -> None:
-    old_wheels = [
-        published_wheels[("pyvider", "0.7.0")],
-        published_wheels[("pyvider-cty", "0.6.1")],
-        published_wheels[("pyvider-rpcplugin", "0.5.4")],
-    ]
-    current_wheels = [
-        local_pyvider_wheel,
-        published_wheels[("pyvider-cty", "0.6.2")],
-        published_wheels[("pyvider-rpcplugin", "0.5.5")],
-    ]
-    python, purelib = _environment(tmp_path)
-    _seed_dependencies(python, old_wheels + current_wheels)
+    preseed = next(iter(source_wheels.values())).parent
+    monkeypatch.setenv(PRESEED_ENV, str(preseed))
 
-    # All target packages are installed from verified local wheel paths while
-    # uv has neither network access nor a cache it could substitute for them.
-    # Dependency installers historically placed the namespace contributors
-    # before their dependent Pyvider wheel. Reproduce that healthy 0.7 state
-    # explicitly: installing all three old co-owners at once lets install order
-    # decide which incompatible initializer wins, which is the defect being
-    # migrated away from rather than a supported starting state.
-    _install_offline(python, old_wheels[1:])
-    _install_offline(python, old_wheels[:1])
+    def unexpected_network_request(*_args: object, **_kwargs: object) -> None:
+        raise AssertionError("the coordinated upgrade proof must not access the network")
+
+    monkeypatch.setattr(urllib.request, "urlopen", unexpected_network_request)
+    all_specs = {
+        spec.filename: spec
+        for spec in (*locked_wheel_specs["runtime"], *locked_wheel_specs["toolchain"], *PUBLISHED_WHEELS)
+    }
+    cold_source = tmp_path / "cold-source"
+    cold_source.mkdir()
+    cold_wheels = {
+        (spec.distribution, spec.version): _materialize(spec, cold_source) for spec in all_specs.values()
+    }
+    old_wheelhouse = _stage_wheelhouse(
+        tmp_path / "old-wheelhouse",
+        cold_wheels,
+        locked_wheel_specs["runtime"],
+        {"pyvider": "0.7.0", "pyvider-cty": "0.6.1", "pyvider-rpcplugin": "0.5.4"},
+    )
+    current_wheelhouse = _stage_wheelhouse(
+        tmp_path / "current-wheelhouse",
+        cold_wheels,
+        locked_wheel_specs["runtime"],
+        {"pyvider": "0.8.0", "pyvider-cty": "0.6.2", "pyvider-rpcplugin": "0.5.5"},
+        local_pyvider_wheel=local_pyvider_wheel,
+    )
+    python, purelib = _environment(tmp_path, old_wheelhouse)
+
+    # Resolve the complete published 0.7 stack from a checksum-verified local
+    # wheelhouse. Its three wheels historically co-owned the root files, so the
+    # healthy starting state intentionally resolves contributors first and the
+    # dependent root owner second. Both phases still use normal dependency
+    # resolution: no dependency is injected with --no-deps or an online seed.
+    _resolver_install(
+        python,
+        old_wheelhouse,
+        upgrade_manager,
+        ["pyvider-cty==0.6.1", "pyvider-rpcplugin==0.5.4"],
+        upgrade=False,
+    )
+    _resolver_install(python, old_wheelhouse, upgrade_manager, ["pyvider==0.7.0"], upgrade=False)
     assert _installed_versions(python, tmp_path) == {
         "pyvider": "0.7.0",
         "cty": "0.6.1",
@@ -420,10 +620,16 @@ def test_published_stack_coordinated_upgrade_and_dependency_uninstalls(
         "lint": False,
     }
 
-    # The supported migration upgrades the former co-owners and the new sole
-    # owner together. The local Pyvider wheel is the exact release candidate;
-    # both namespace contributors are exact public release wheels.
-    _install_offline(python, current_wheels)
+    # Exercise each real resolver's upgrade semantics. The three coordinated
+    # pins are selected by package name, never installed as direct wheel paths.
+    _resolver_install(
+        python,
+        current_wheelhouse,
+        upgrade_manager,
+        ["pyvider==0.8.0", "pyvider-cty==0.6.2", "pyvider-rpcplugin==0.5.5"],
+        upgrade=True,
+    )
+    _dependency_check(python, upgrade_manager)
     assert _installed_versions(python, tmp_path) == {
         "pyvider": "0.8.0",
         "cty": "0.6.2",

@@ -65,6 +65,11 @@ Repository = "https://github.com/provide-io/pyvider"
 Issues = "https://github.com/provide-io/pyvider/issues"
 
 [dependency-groups]
+packaging-proof = [
+    "pip==26.2.1",
+    "setuptools==84.0.0",
+    "wheel==0.48.0",
+]
 dev = [
     # 0.5.0 is the floor because it stopped declaring `safety`, and through it
     # an unpatched `nltk`, in an extra this project takes. Below it the
