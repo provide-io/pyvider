@@ -42,6 +42,7 @@ def test_provider_linting_is_prepared_as_0_8_0() -> None:
     match = re.search(r"(?ms)^## \[0\.8\.0\] - 2026-09-21\n(?P<section>.*?)(?=^## |\Z)", changelog)
     assert match is not None
     section = match.group("section")
+    normalized_section = " ".join(section.split())
 
     required = (
         "`LintFinding`",
@@ -52,7 +53,15 @@ def test_provider_linting_is_prepared_as_0_8_0() -> None:
         "compatibility",
         "OpenTofu",
     )
-    assert all(value in section for value in required)
+    assert all(value in normalized_section for value in required)
+
+    normalized_lower = normalized_section.lower()
+    assert "[lint].rules" in normalized_section
+    assert "default-off" in normalized_lower or "default off" in normalized_lower
+    assert "exclusions" in normalized_lower
+    assert "explicitly empty" in normalized_lower and "disables" in normalized_lower
+    assert "fail-open" in normalized_lower
+    assert "attribute-targeted" in normalized_lower
 
 
 def test_release_dag_verifies_each_published_artifact() -> None:

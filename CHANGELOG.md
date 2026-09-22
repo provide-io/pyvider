@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Provider-authored configuration linting.** The public `LintFinding`,
   `LintSelector`, and `LintContext` types support optional asynchronous
-  `lint()` hooks on every configurable framework surface: provider, resource, data source, ephemeral resource, list resource, action, and state store.
+  `lint()` hooks on every configurable framework surface: provider, resource,
+  data source, ephemeral resource, list resource, action, and state store.
   The framework supplies the mechanism; concrete policy and rule identifiers
   remain the responsibility of provider packages.
 - **Explicit, default-off lint selection.** Projects may opt in through
@@ -24,16 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Behavior
 
-- **Lint execution fails open.** A hook failure becomes a compatibility
-  warning instead of blocking validation, and selected findings are emitted as
-  warnings targeted at the named top-level attribute when one is supplied.
+- **Lint execution is fail-open.** A hook failure becomes a compatibility
+  warning instead of blocking validation. Selected findings become
+  attribute-targeted warnings when a top-level attribute is supplied.
 
 ### Compatibility
 
 - **tfprotov6 has no provider-lint message.** Selected findings therefore
-  travel as ordinary validation warnings. OpenTofu's built-in provider-linting
-  beta remains a separate, unreleased path rather than current stable behavior;
-  this release does not claim native provider-lint protocol support.
+  travel as ordinary validation warnings. OpenTofu v1.13.0-beta1 exposes its
+  built-in provider linting through a separate beta path; that is not stable
+  protocol behavior in a current stable OpenTofu release. This release does
+  not claim native provider-lint protocol support.
 
 ### Changed
 
@@ -41,6 +43,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stream fixes exercised by the Windows test run: logging follows the current
   `sys.stderr`, and UTF-8 output is written through the destination's byte
   layer rather than its locale-dependent text codec.
+- **`provide-testkit>=0.5.2`** (was `>=0.5.0`) in the `dev` and `docs`
+  dependency groups only. The intermediate 0.5.1 fixed the pytest logger
+  factory's stream on Windows; 0.5.2 preserves Click's active stdout swap
+  across pytest live-log suspension, keeping captured CLI output trustworthy.
+  These are contributor-facing dependencies and do not affect providers that
+  install Pyvider at runtime.
 - **Release supply-chain checks are stricter.** Publishing now verifies the
   lint API in the built wheel and again in isolated TestPyPI and PyPI installs
   before promotion. The release workflow uses pinned shared helpers, preserves
