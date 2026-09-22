@@ -136,6 +136,13 @@ def test_wheel_verification_requires_exactly_one_wheel() -> None:
     assert "-print -quit" not in commands
 
 
+def test_release_asset_shape_check_runs_the_python_helper_with_python() -> None:
+    """The shared asset checker is Python source, not an executable shell script."""
+    commands = run_commands_for("sign-and-upload")
+
+    assert 'python3 .ci-tooling/scripts/release/release_assets.py "$TAG"' in commands
+
+
 @pytest.mark.parametrize("job_name", ["verify-testpypi", "verify-pypi"])
 def test_registry_verification_has_read_only_permissions(job_name: str) -> None:
     job = load_workflow()["jobs"][job_name]
