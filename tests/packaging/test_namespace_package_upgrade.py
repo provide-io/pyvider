@@ -166,6 +166,7 @@ def _exported_wheel_specs(*selection: str) -> tuple[PublishedWheel, ...]:
         _run(
             [
                 "uv",
+                "--no-color",
                 "export",
                 "--frozen",
                 "--offline",
@@ -214,6 +215,40 @@ def _exported_wheel_specs(*selection: str) -> tuple[PublishedWheel, ...]:
     return tuple(specs)
 
 
+def test_exported_wheel_specs_disables_color(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Machine-readable export must remain TOML when CI forces ANSI color."""
+    commands: list[list[str]] = []
+
+    def fake_run(
+        command: list[str],
+        *,
+        cwd: Path | None = None,
+        env: dict[str, str] | None = None,
+    ) -> subprocess.CompletedProcess[str]:
+        del cwd, env
+        commands.append(command)
+        return subprocess.CompletedProcess(command, 0, "packages = []\n", "")
+
+    monkeypatch.setattr(sys.modules[__name__], "_run", fake_run)
+
+    assert _exported_wheel_specs("--no-dev") == ()
+    assert commands == [
+        [
+            "uv",
+            "--no-color",
+            "export",
+            "--frozen",
+            "--offline",
+            "--no-emit-project",
+            "--format",
+            "pylock.toml",
+            "--no-dev",
+        ]
+    ]
+
+
 @pytest.fixture(scope="module")
 def source_wheels(
     tmp_path_factory: pytest.TempPathFactory,
@@ -235,7 +270,7 @@ def local_pyvider_wheel(
     tmp_path_factory: pytest.TempPathFactory,
     source_wheels: dict[tuple[str, str], Path],
 ) -> Path:
-    build_root = tmp_path_factory.mktemp("pyvider-080-build")
+    build_root = tmp_path_factory.mktemp("pyvider-081-build")
     source = build_root / "source"
     shutil.copytree(REPOSITORY / "src", source / "src", ignore=shutil.ignore_patterns("*.egg-info"))
     for name in ("LICENSE", "README.md", "VERSION", "pyproject.toml"):
@@ -271,7 +306,7 @@ def local_pyvider_wheel(
         cwd=source,
         env=_offline_environment(build_root),
     )
-    return next(wheelhouse.glob("pyvider-0.8.0-*.whl"))
+    return next(wheelhouse.glob("pyvider-0.8.1-*.whl"))
 
 
 def _record_paths(wheel: Path) -> set[str]:
@@ -438,7 +473,7 @@ def _assert_owner_survives(python: Path, purelib: Path, cwd: Path) -> None:
             str(python),
             "-I",
             "-c",
-            "import pyvider, pyvider.lint; assert pyvider.__version__ == '0.8.0'",
+            "import pyvider, pyvider.lint; assert pyvider.__version__ == '0.8.1'",
         ],
         cwd=cwd,
     )
@@ -541,7 +576,7 @@ def test_published_wheels_can_be_preseeded_without_network(
     assert {wheel.name for wheel in materialized} == set(all_specs)
 
 
-def test_only_pyvider_080_owns_the_shared_root_files(
+def test_only_pyvider_081_owns_the_shared_root_files(
     local_pyvider_wheel: Path,
     source_wheels: dict[tuple[str, str], Path],
 ) -> None:
@@ -607,7 +642,7 @@ def test_published_stack_coordinated_upgrade_and_dependency_uninstalls(
         tmp_path / "current-wheelhouse",
         cold_wheels,
         locked_wheel_specs["runtime"],
-        {"pyvider": "0.8.0", "pyvider-cty": "0.6.2", "pyvider-rpcplugin": "0.5.5"},
+        {"pyvider": "0.8.1", "pyvider-cty": "0.6.2", "pyvider-rpcplugin": "0.5.5"},
         local_pyvider_wheel=local_pyvider_wheel,
     )
     python, purelib = _environment(tmp_path, old_wheelhouse)
@@ -639,12 +674,12 @@ def test_published_stack_coordinated_upgrade_and_dependency_uninstalls(
         python,
         current_wheelhouse,
         upgrade_manager,
-        ["pyvider==0.8.0", "pyvider-cty==0.6.2", "pyvider-rpcplugin==0.5.5"],
+        ["pyvider==0.8.1", "pyvider-cty==0.6.2", "pyvider-rpcplugin==0.5.5"],
         upgrade=True,
     )
     _dependency_check(python, upgrade_manager)
     assert _installed_versions(python, tmp_path) == {
-        "pyvider": "0.8.0",
+        "pyvider": "0.8.1",
         "cty": "0.6.2",
         "rpcplugin": "0.5.5",
         "root": str((purelib / ROOT_INITIALIZER).resolve()),
@@ -652,7 +687,7 @@ def test_published_stack_coordinated_upgrade_and_dependency_uninstalls(
     }
 
     records = {
-        "pyvider": _installed_record_paths(next(purelib.glob("pyvider-0.8.0.dist-info/RECORD"))),
+        "pyvider": _installed_record_paths(next(purelib.glob("pyvider-0.8.1.dist-info/RECORD"))),
         "pyvider-cty": _installed_record_paths(next(purelib.glob("pyvider_cty-0.6.2.dist-info/RECORD"))),
         "pyvider-rpcplugin": _installed_record_paths(
             next(purelib.glob("pyvider_rpcplugin-0.5.5.dist-info/RECORD"))
