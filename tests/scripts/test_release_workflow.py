@@ -7,6 +7,7 @@
 
 import json
 from pathlib import Path
+import re
 
 import pytest
 import yaml
@@ -32,6 +33,26 @@ def sparse_checkout_for(job_name: str) -> str:
 def run_commands_for(job_name: str) -> str:
     job = load_workflow()["jobs"][job_name]
     return "\n".join(str(step.get("run", "")) for step in job["steps"])
+
+
+def test_provider_linting_is_prepared_as_0_8_0() -> None:
+    assert (ROOT / "VERSION").read_text(encoding="utf-8") == "0.8.0\n"
+
+    changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    match = re.search(r"(?ms)^## \[0\.8\.0\] - 2026-09-21\n(?P<section>.*?)(?=^## |\Z)", changelog)
+    assert match is not None
+    section = match.group("section")
+
+    required = (
+        "`LintFinding`",
+        "`LintSelector`",
+        "`LintContext`",
+        "provider, resource, data source, ephemeral resource, list resource, action, and state store",
+        "`PYVIDER_LINT`",
+        "compatibility",
+        "OpenTofu",
+    )
+    assert all(value in section for value in required)
 
 
 def test_release_dag_verifies_each_published_artifact() -> None:
