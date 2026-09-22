@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 from pathlib import Path, PurePosixPath
+import platform
 import shutil
 import subprocess
 import sys
@@ -188,7 +189,17 @@ def _exported_wheel_specs(*selection: str) -> tuple[PublishedWheel, ...]:
             _, _, _, wheel_tags = parse_wheel_filename(filename)
             if wheel_tags & supported_tags:
                 compatible.append((filename, wheel))
-        assert compatible, f"lock has no compatible wheel for {package['name']}=={package['version']}"
+        if not compatible:
+            if (
+                sys.platform == "darwin"
+                and platform.machine() == "x86_64"
+                and package["name"] == "cryptography"
+            ):
+                pytest.skip(
+                    "the locked cryptography release has no macOS Intel wheel; "
+                    "the wheel-only namespace proof runs on the other CI platforms"
+                )
+            raise AssertionError(f"lock has no compatible wheel for {package['name']}=={package['version']}")
         filename, wheel = min(compatible, key=lambda item: item[0])
         specs.append(
             PublishedWheel(
