@@ -1,8 +1,11 @@
 # Provider Linting Release, Tutorial, and Site Design
 
-**Date:** 2026-09-21  
-**Status:** Approved design  
-**Primary repository:** `provide-io/pyvider`  
+**Date:** 2026-09-21
+
+**Status:** Approved design
+
+**Primary repository:** `provide-io/pyvider`
+
 **Related repositories:** `provide-io/pyvider-components`,
 `provide-io/terraform-provider-pyvider`, `provide-io/tofusoup`,
 `provide-io/pyvider-tutorial`, and `provide-io/site-pyvider-com`
