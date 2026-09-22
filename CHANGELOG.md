@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-09-22
+
+### Fixed
+
+- **Release verification now keeps `uv`'s machine-readable lock export free of ANSI escapes.** The release runner intentionally forces colored logs, which caused `uv export --format pylock.toml` to color the TOML consumed by the namespace-upgrade proof. The publication guard stopped 0.8.0 before any registry upload. The proof now invokes `uv --no-color export`, preserving the exact locked-wheel checks under both ordinary CI and the release environment.
+
 ## [0.8.0] - 2026-09-22
 
 ### Added

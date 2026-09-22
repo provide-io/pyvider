@@ -35,8 +35,8 @@ def run_commands_for(job_name: str) -> str:
     return "\n".join(str(step.get("run", "")) for step in job["steps"])
 
 
-def test_provider_linting_is_prepared_as_0_8_0() -> None:
-    assert (ROOT / "VERSION").read_text(encoding="utf-8") == "0.8.0\n"
+def test_provider_linting_is_prepared_as_0_8_1() -> None:
+    assert (ROOT / "VERSION").read_text(encoding="utf-8") == "0.8.1\n"
 
     changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     match = re.search(r"(?ms)^## \[0\.8\.0\] - 2026-09-22\n(?P<section>.*?)(?=^## |\Z)", changelog)
