@@ -16,7 +16,7 @@ ROOT = Path(__file__).parents[2]
 
 
 def load_workflow() -> dict[str, object]:
-    return yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text())
+    return yaml.safe_load((ROOT / ".github/workflows/release.yml").read_text(encoding="utf-8"))
 
 
 def needs(job: dict[str, object]) -> set[str]:

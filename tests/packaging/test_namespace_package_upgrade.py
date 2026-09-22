@@ -452,7 +452,7 @@ def _assert_contributor_survives(python: Path, distribution: str, cwd: Path) -> 
 
 
 def _runtime_dependencies() -> set[str]:
-    pyproject = tomllib.loads((REPOSITORY / "pyproject.toml").read_text())
+    pyproject = tomllib.loads((REPOSITORY / "pyproject.toml").read_text(encoding="utf-8"))
     return set(pyproject["project"]["dependencies"])
 
 
@@ -464,7 +464,7 @@ def test_runtime_dependencies_require_single_owner_namespace_releases() -> None:
 
 
 def test_lock_resolves_the_single_owner_namespace_releases() -> None:
-    lock = tomllib.loads((REPOSITORY / "uv.lock").read_text())
+    lock = tomllib.loads((REPOSITORY / "uv.lock").read_text(encoding="utf-8"))
     packages = {package["name"]: package for package in lock["package"]}
     pyvider_requirements = {
         requirement["name"]: requirement["specifier"]
@@ -478,8 +478,8 @@ def test_lock_resolves_the_single_owner_namespace_releases() -> None:
 
 
 def test_packaging_proof_toolchain_is_exactly_locked() -> None:
-    pyproject = tomllib.loads((REPOSITORY / "pyproject.toml").read_text())
-    lock = tomllib.loads((REPOSITORY / "uv.lock").read_text())
+    pyproject = tomllib.loads((REPOSITORY / "pyproject.toml").read_text(encoding="utf-8"))
+    lock = tomllib.loads((REPOSITORY / "uv.lock").read_text(encoding="utf-8"))
     packages = {package["name"]: package for package in lock["package"]}
 
     assert set(pyproject["dependency-groups"]["packaging-proof"]) == {
@@ -493,7 +493,9 @@ def test_packaging_proof_toolchain_is_exactly_locked() -> None:
 
 
 def test_release_notes_explain_the_one_time_coordinated_upgrade() -> None:
-    release_notes = (REPOSITORY / "CHANGELOG.md").read_text().split("## [0.7.0]", maxsplit=1)[0]
+    release_notes = (
+        (REPOSITORY / "CHANGELOG.md").read_text(encoding="utf-8").split("## [0.7.0]", maxsplit=1)[0]
+    )
     normalized = " ".join(release_notes.split())
 
     assert "`pyvider-cty>=0.6.2`" in release_notes
