@@ -105,6 +105,38 @@ def test_provider_linting_documentation_promises_transport_only_migration() -> N
     assert all(value in content for value in expected)
 
 
+def test_provider_linting_documentation_diagrams_lifecycle_and_transport() -> None:
+    content = " ".join(DOC_PATH.read_text(encoding="utf-8").split())
+    expected = (
+        "```mermaid",
+        "Existing tfprotov6 validation RPC",
+        "Decoded semantically valid configuration",
+        "Provider component lint()",
+        "LintFinding values",
+        "LintSelector",
+        "Fail-open runner",
+        "Defensive finding filter",
+        "tfprotov6 compatibility adapter",
+        "TofuSoup direct lane: 7 paths",
+        "OpenTofu beta validation lane: 4 paths",
+        "Validation RPC response",
+        "Warning diagnostics",
+        "Future native adapter",
+        "tofusoup --> validation_rpc",
+        "opentofu --> validation_rpc",
+        "validation_rpc --> config",
+        "config --> runner",
+        "selector --> runner",
+        "runner --> hook --> findings --> finding_filter",
+        "finding_filter --> compatibility_adapter --> warnings --> response",
+        "finding_filter -.-> native_adapter",
+        "provider, resource, data source, ephemeral, list, action, and state store",
+        "provider, resource, data source, and ephemeral",
+        "Neither client supplies provider selector hints over tfprotov6 today",
+    )
+    assert all(value in content for value in expected)
+
+
 @pytest.mark.parametrize(
     "url",
     [

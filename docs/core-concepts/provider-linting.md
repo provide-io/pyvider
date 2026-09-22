@@ -128,6 +128,39 @@ A namespaced `example/acme:all` is a provider-defined group, not the global
 Pyvider's author-facing API is supported. Separately, OpenTofu's built-in
 linter remains experimental under OpenTofu's own status designation.
 
+```mermaid
+flowchart LR
+    tofusoup["TofuSoup direct lane: 7 paths"]
+    opentofu["OpenTofu beta validation lane: 4 paths"]
+    validation_rpc["Existing tfprotov6 validation RPC"]
+    config["Decoded semantically valid configuration"]
+    selector["LintSelector"]
+    runner["Fail-open runner"]
+    hook["Provider component lint()"]
+    findings["LintFinding values"]
+    finding_filter["Defensive finding filter"]
+    compatibility_adapter["tfprotov6 compatibility adapter"]
+    warnings["Warning diagnostics"]
+    response["Validation RPC response"]
+    native_adapter["Future native adapter"]
+
+    tofusoup --> validation_rpc
+    opentofu --> validation_rpc
+    validation_rpc --> config
+    config --> runner
+    selector --> runner
+    runner --> hook --> findings --> finding_filter
+    finding_filter --> compatibility_adapter --> warnings --> response
+    finding_filter -.-> native_adapter
+```
+
+Today, TofuSoup exercises the direct lane through all seven
+configuration-bearing paths: provider, resource, data source, ephemeral, list,
+action, and state store. The OpenTofu beta validation lane reaches the four
+paths in this fixture: provider, resource, data source, and ephemeral. Neither
+client supplies provider selector hints over tfprotov6 today; Pyvider obtains
+the selection from its provider-side configuration instead.
+
 The current tfprotov6 has no provider-lint wire message and cannot carry
 provider selection hints from OpenTofu's `-lint` flag. Pyvider therefore does
 not invent protocol fields. `-lint` selects OpenTofu core rules only, while a
