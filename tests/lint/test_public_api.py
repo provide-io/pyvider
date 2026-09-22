@@ -107,6 +107,9 @@ def test_provider_linting_documentation_promises_transport_only_migration() -> N
 
 def test_provider_linting_documentation_diagrams_lifecycle_and_transport() -> None:
     content = " ".join(DOC_PATH.read_text(encoding="utf-8").split())
+    assert "flowchart TB" in content, (
+        "expected Mermaid lifecycle diagram token `flowchart TB` for a responsive vertical flow"
+    )
     expected = (
         "```mermaid",
         "Existing tfprotov6 validation RPC",

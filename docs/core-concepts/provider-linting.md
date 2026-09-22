@@ -129,9 +129,13 @@ Pyvider's author-facing API is supported. Separately, OpenTofu's built-in
 linter remains experimental under OpenTofu's own status designation.
 
 ```mermaid
-flowchart LR
-    tofusoup["TofuSoup direct lane: 7 paths"]
-    opentofu["OpenTofu beta validation lane: 4 paths"]
+flowchart TB
+    subgraph clients
+        direction LR
+        tofusoup["TofuSoup direct lane: 7 paths"]
+        opentofu["OpenTofu beta validation lane: 4 paths"]
+    end
+
     validation_rpc["Existing tfprotov6 validation RPC"]
     config["Decoded semantically valid configuration"]
     selector["LintSelector"]
