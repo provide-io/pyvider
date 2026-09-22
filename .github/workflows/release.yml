@@ -32,11 +32,55 @@ jobs:
       create-github-release: false
     secrets: inherit
 
+  # Prove that the artifact itself contains the lint implementation, then
+  # install it away from the checkout and exercise the public API. This also
+  # runs during a dispatch dry run, before any registry publication is allowed.
+  verify-wheel:
+    needs: release
+    if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.release_tag == '')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: 📥 Checkout release verifier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/verify_lint_release.py
+          sparse-checkout-cone-mode: false
+      - name: 🐍 Setup uv
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
+        with:
+          python-version: "3.11"
+          enable-cache: false
+      - name: 📦 Download artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c  # v8.0.1
+        with:
+          name: release-artifacts
+          path: dist
+      - name: ✅ Verify wheel contents and installed lint API
+        run: |
+          set -euo pipefail
+          wheel="$(find dist -maxdepth 1 -type f -name '*.whl' -print -quit)"
+          if [ -z "$wheel" ]; then
+            echo "release artifact contains no wheel" >&2
+            exit 1
+          fi
+          VERSION="$(basename "$wheel")"
+          VERSION="${VERSION#pyvider-}"
+          VERSION="${VERSION%%-*}"
+          mkdir -p .verify-wheel
+          cp scripts/verify_lint_release.py .verify-wheel/verify_lint_release.py
+          uv venv .verify-wheel/venv
+          uv pip install --python .verify-wheel/venv/bin/python "$wheel"
+          .verify-wheel/venv/bin/python -I .verify-wheel/verify_lint_release.py --wheel "$wheel"
+          .verify-wheel/venv/bin/python -I .verify-wheel/verify_lint_release.py --expected-version "$VERSION"
+
   # TestPyPI publish runs in the caller so PyPI Trusted Publishing matches the
   # OIDC job_workflow_ref against this repo's release.yml (reusable workflows
   # are not matched by PyPI's publisher config).
   publish-testpypi:
-    needs: release
+    needs: verify-wheel
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
     permissions:
@@ -57,39 +101,52 @@ jobs:
           repository-url: https://test.pypi.org/legacy/
           skip-existing: true
 
-  # Install from TestPyPI and assert the installed version matches the release tag.
-  # Uses the helper scripts from ci-tooling/scripts/release/.
+  # Install the exact release from TestPyPI in a clean environment and exercise
+  # the same lint API contract proven against the wheel above.
   verify-testpypi:
     needs: publish-testpypi
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
     steps:
-      - name: 📥 Checkout ci-tooling helpers
+      - name: 📥 Checkout release verifier
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
         with:
-          repository: provide-io/ci-tooling
-          ref: 16199c4ef00147a31b556298d90ee88b41e8ebae  # v0.8.8
-          path: .ci-tooling
-          # This job installs from TestPyPI and imports the result, so it runs
-          # third-party code. Nothing it runs needs a token, and the rest of
-          # the file already drops it.
           persist-credentials: false
-          sparse-checkout: /scripts/release
+          sparse-checkout: scripts/verify_lint_release.py
           sparse-checkout-cone-mode: false
       - name: 🐍 Setup Python
         uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
         with:
           python-version: "3.11"
           enable-cache: false
-      - name: 🔖 Resolve version
-        id: ver
-        env:
-          REF_NAME: ${{ github.ref_name }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: .ci-tooling/scripts/release/resolve-tag-version.sh >> "$GITHUB_OUTPUT"
       - name: ✅ Install from TestPyPI and verify
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          .ci-tooling/scripts/release/verify-testpypi.sh pyvider "${{ steps.ver.outputs.version }}" "import pyvider; v = pyvider.__version__"
+          set -euo pipefail
+          VERSION="${RELEASE_TAG#v}"
+          uv venv --clear .verify-venv
+          retry_deadline=$((SECONDS + 300))
+          retry_delay=5
+          until uv pip install --python .verify-venv/bin/python \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "pyvider==${VERSION}"; do
+            retry_remaining=$((retry_deadline - SECONDS))
+            if (( retry_remaining <= 0 )); then
+              echo "TestPyPI package did not propagate within five minutes" >&2
+              exit 1
+            fi
+            retry_sleep=$retry_delay
+            if (( retry_sleep > retry_remaining )); then
+              retry_sleep=$retry_remaining
+            fi
+            sleep "$retry_sleep"
+            if (( retry_delay < 30 )); then
+              retry_delay=$((retry_delay * 2))
+            fi
+          done
+          .verify-venv/bin/python -I scripts/verify_lint_release.py --expected-version "$VERSION"
 
   # PyPI publish via trusted publisher bound to this repo's release.yml + env `pypi`.
   publish-pypi:
@@ -112,6 +169,51 @@ jobs:
         uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e  # release/v1
         with:
           skip-existing: true
+
+  # Repeat the isolated API proof against the final public registry artifact.
+  verify-pypi:
+    needs: publish-pypi
+    if: github.event_name == 'release'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 📥 Checkout release verifier
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/verify_lint_release.py
+          sparse-checkout-cone-mode: false
+      - name: 🐍 Setup Python
+        uses: astral-sh/setup-uv@cec208311dfd045dd5311c1add060b2062131d57  # v8.0.0
+        with:
+          python-version: "3.11"
+          enable-cache: false
+      - name: ✅ Install from PyPI and verify
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          VERSION="${RELEASE_TAG#v}"
+          uv venv --clear .verify-venv
+          retry_deadline=$((SECONDS + 300))
+          retry_delay=5
+          until uv pip install --python .verify-venv/bin/python \
+            --index-url https://pypi.org/simple/ \
+            "pyvider==${VERSION}"; do
+            retry_remaining=$((retry_deadline - SECONDS))
+            if (( retry_remaining <= 0 )); then
+              echo "PyPI package did not propagate within five minutes" >&2
+              exit 1
+            fi
+            retry_sleep=$retry_delay
+            if (( retry_sleep > retry_remaining )); then
+              retry_sleep=$retry_remaining
+            fi
+            sleep "$retry_sleep"
+            if (( retry_delay < 30 )); then
+              retry_delay=$((retry_delay * 2))
+            fi
+          done
+          .verify-venv/bin/python -I scripts/verify_lint_release.py --expected-version "$VERSION"
 
   # SBOM for the built wheel and its dependencies. Its own job, with a
   # read-only token and no OIDC, because it installs the wheel's dependency
@@ -162,7 +264,7 @@ jobs:
   # `gh`, and the shared attach script sparse-checked-out below, so nothing
   # fetched from a registry executes next to the signing identity.
   sign-and-upload:
-    needs: [publish-pypi, sbom]
+    needs: [verify-pypi, sbom]
     if: github.event_name == 'release'
     runs-on: ubuntu-24.04
     permissions:
