@@ -86,7 +86,9 @@ def test_wheel_verification_runs_for_release_and_dry_run_in_isolation() -> None:
     assert "pip install" in commands
     assert '--wheel "$wheel"' in commands
     assert "python -I" in commands
-    assert '--expected-version "$VERSION"' in commands
+    assert "github.event.release.tag_name" in json.dumps(job)
+    assert 'EXPECTED_VERSION="${RELEASE_TAG#v}"' in commands
+    assert '--expected-version "$EXPECTED_VERSION"' in commands
 
 
 @pytest.mark.parametrize("job_name", ["verify-testpypi", "verify-pypi"])
@@ -98,25 +100,33 @@ def test_registry_verification_is_isolated(job_name: str) -> None:
     assert sparse_checkout_for(job_name).strip() == "scripts/verify_lint_release.py"
     assert "src" not in sparse_checkout_for(job_name)
     assert ".verify-venv" in rendered
+    assert "release-artifacts" in rendered
     assert "retry" in rendered.lower()
     assert "300" in rendered
 
 
-def test_registry_verification_uses_explicit_indexes_and_exact_version() -> None:
+def test_registry_verification_installs_verified_wheel_with_pypi_dependencies_only() -> None:
     testpypi = run_commands_for("verify-testpypi")
     pypi = run_commands_for("verify-pypi")
 
-    assert "pyvider==${VERSION}" in testpypi
-    assert "--index-url https://test.pypi.org/simple/" in testpypi
-    assert "--extra-index-url https://pypi.org/simple/" in testpypi
-    assert "pyvider==${VERSION}" in pypi
-    assert "--index-url https://pypi.org/simple/" in pypi
-    assert "test.pypi.org" not in pypi
+    assert "--registry-base-url https://test.pypi.org" in testpypi
+    assert "--registry-base-url https://pypi.org" in pypi
+    for commands in (testpypi, pypi):
+        assert "--dist-dir dist" in commands
+        assert "--download-dir .verify-download" in commands
+        assert "--index-url https://pypi.org/simple/" in commands
+        assert '"$verified_wheel"' in commands
+        assert "pyvider==${VERSION}" not in commands
+        assert "unsafe-best-match" not in commands
+    assert "test.pypi.org/simple" not in testpypi
 
 
 @pytest.mark.parametrize("job_name", ["verify-testpypi", "verify-pypi"])
 def test_registry_retries_refresh_pyvider_index_metadata(job_name: str) -> None:
-    assert "--refresh-package pyvider" in run_commands_for(job_name)
+    commands = run_commands_for(job_name)
+    assert "--metadata-nonce" in commands
+    assert "GITHUB_RUN_ATTEMPT" in commands
+    assert "--refresh-package" not in commands
 
 
 def test_wheel_verification_requires_exactly_one_wheel() -> None:
