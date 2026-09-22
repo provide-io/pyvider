@@ -406,7 +406,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name }}
         run: >
-          .ci-tooling/scripts/release/release_assets.py "$TAG"
+          python3 .ci-tooling/scripts/release/release_assets.py "$TAG"
           --repo "$GITHUB_REPOSITORY"
           --allow-missing "sbom-python.cdx.json@$TAG"
           --allow-missing "sbom-python.cdx.json.sigstore.json@$TAG"
