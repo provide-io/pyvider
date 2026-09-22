@@ -78,6 +78,10 @@ bf-*.txt
 # Extracted provide.io tooling artifacts
 .provide/
 
+# Working plans and specs live in .provide/, not in the repository
+docs/superpowers/
+.superpowers/
+
 # Terraform state (sensitive)
 *.tfstate
 *.tfstate.*
