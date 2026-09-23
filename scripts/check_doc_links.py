@@ -16,6 +16,7 @@ Usage:
 from pathlib import Path
 import re
 import sys
+import unicodedata
 
 # Base documentation directory
 DOCS_DIR = Path(__file__).parent.parent / "docs"
@@ -42,12 +43,16 @@ def slugify(text: str) -> str:
     disappear when the heading renders. An underscore is only a delimiter when
     it surrounds a word, which no heading in docs/ does, and Python-Markdown
     does not treat an intra-word underscore as emphasis at all.
+
+    The rest follows toc's own order: fold to ASCII, drop what is not a word
+    character, and only then strip. Stripping first left the space after a
+    leading emoji in place, so `## 📈 Project Status` became `-project-status`
+    while toc rendered `project-status`.
     """
     # Remove markdown formatting delimiters. Not underscores: see above.
     text = re.sub(r"[`*]", "", text)
-    # Convert to lowercase and replace spaces with hyphens
-    slug = text.lower().strip()
-    slug = re.sub(r"[^\w\s-]", "", slug)
+    text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    slug = re.sub(r"[^\w\s-]", "", text).strip().lower()
     return re.sub(r"[-\s]+", "-", slug)
 
 

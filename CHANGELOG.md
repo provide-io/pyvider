@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   omit client capabilities on `OpenEphemeralResource` and partial-expansion
   plans, and OpenTofu never sets `deferral_allowed`. A deferral in those cases
   returns an `Invalid Deferral` error diagnostic.
+- **Docs links that left the docs tree now point at GitHub.** The license and
+  examples links, and one dead heading anchor, resolve on the published site;
+  `mkdocs build --strict` passes.
 
 ## [0.8.1] - 2026-09-22
 
