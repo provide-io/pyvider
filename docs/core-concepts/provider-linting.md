@@ -126,23 +126,23 @@ For a finding's primary rule and groups, matching uses OpenTofu's precedence:
 A namespaced `example/acme:all` is a provider-defined group, not the global
 `all` selector.
 
-## OpenTofu transport status (2026-09-21)
+## OpenTofu transport status (2026-09-22)
 
 Pyvider's author-facing API is supported. Separately, OpenTofu's built-in
 linter remains experimental under OpenTofu's own status designation.
 
-As of 2026-09-21, the tested OpenTofu version is `v1.13.0-beta1`. The
-repository's checksum-verified cast and proof manifest record that exact
-version. `v1.13.0-rc1` had been published by that date, but the recorded
-interoperability proof remains pinned to beta1; this page does not claim that
-the proof was rerun against rc1.
+As of 2026-09-22, the tested OpenTofu version is `v1.13.0-rc1`. The
+checksum-verified casts and proof manifest published with
+[terraform-provider-pyvider 0.6.0](https://github.com/provide-io/terraform-provider-pyvider/releases/tag/v0.6.0)
+record that exact version, run with Pyvider 0.8.1 and pyvider-components 0.8.0. Proofs through provider 0.5.0 were pinned to
+`v1.13.0-beta1`.
 
 ```mermaid
 flowchart TB
     subgraph clients
         direction LR
         tofusoup["TofuSoup direct lane: 7 paths"]
-        opentofu["OpenTofu beta validation lane: 4 paths"]
+        opentofu["OpenTofu experimental validation lane: 4 paths"]
     end
 
     validation_rpc["Existing tfprotov6 validation RPC"]
@@ -169,7 +169,7 @@ flowchart TB
 
 The recorded TofuSoup proof exercises the direct lane through all seven
 configuration-bearing paths: provider, resource, data source, ephemeral, list,
-action, and state store. The OpenTofu beta validation lane reaches the four
+action, and state store. The OpenTofu experimental validation lane reaches the four
 paths in this fixture: provider, resource, data source, and ephemeral. Neither
 client supplied provider selector hints over tfprotov6 in that proof; Pyvider
 obtained the selection from its provider-side configuration instead.

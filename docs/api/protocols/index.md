@@ -43,4 +43,20 @@ Most protocol interaction is handled automatically by Pyvider. You typically don
 - Debugging protocol issues
 - Adding protocol extensions
 
+### Known Limitations: Deferred Changes
+
+A component that raises `Deferral` is honored only when the client sets
+`client_capabilities.deferral_allowed` on that request. When it does not,
+Pyvider returns an `Invalid Deferral` error diagnostic, as the protocol
+requires. Two client gaps make this reachable today:
+
+- **Terraform 1.16.3 and earlier** do not send client capabilities on
+  `OpenEphemeralResource` or on the `PlanResourceChange` call for a
+  partially-expanded resource, so a deferral from either is an error even
+  with deferrals enabled. Terraform fixed this in
+  [hashicorp/terraform#39237](https://github.com/hashicorp/terraform/pull/39237),
+  backported to the v1.16 branch but not yet in a tagged release.
+- **OpenTofu (through v1.13.0-rc1)** never sets `deferral_allowed`, so any
+  deferral is returned as an error.
+
 ## Module Reference
