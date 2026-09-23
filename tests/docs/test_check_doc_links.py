@@ -48,6 +48,10 @@ slugify = _load_slugify()
         # Ordinary prose is unaffected.
         ("Required Methods", "required-methods"),
         ("Type Signatures", "type-signatures"),
+        # A leading emoji is dropped and toc strips the space it leaves behind,
+        # so the anchor is `project-status`, not `-project-status`.
+        ("📈 Project Status", "project-status"),
+        ("Café Setup", "cafe-setup"),
     ],
 )
 def test_slugify_matches_the_rendered_anchor(heading: str, expected: str) -> None:

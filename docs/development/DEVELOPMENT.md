@@ -479,7 +479,7 @@ Follow conventional commits:
 
 ## 📄 License
 
-Apache 2.0 - See [LICENSE](../../LICENSE) for details.
+Apache 2.0 - See [LICENSE](https://github.com/provide-io/pyvider/blob/main/LICENSE) for details.
 
 ---
 
