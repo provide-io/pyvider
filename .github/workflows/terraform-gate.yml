@@ -36,7 +36,7 @@ jobs:
           - engine: tofu
             version: '1.12.6'
           - engine: terraform
-            version: '1.16.1'
+            version: '1.16.4'
     steps:
       # The pyvider under review.
       - name: Check out pyvider
