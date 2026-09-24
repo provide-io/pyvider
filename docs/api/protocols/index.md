@@ -50,12 +50,13 @@ A component that raises `Deferral` is honored only when the client sets
 Pyvider returns an `Invalid Deferral` error diagnostic, as the protocol
 requires. Two client gaps make this reachable today:
 
-- **Terraform 1.16.3 and earlier** do not send client capabilities on
-  `OpenEphemeralResource` or on the `PlanResourceChange` call for a
-  partially-expanded resource, so a deferral from either is an error even
-  with deferrals enabled. Terraform fixed this in
-  [hashicorp/terraform#39237](https://github.com/hashicorp/terraform/pull/39237),
-  backported to the v1.16 branch but not yet in a tagged release.
+- **Terraform 1.16.3 and earlier** send an empty client-capabilities
+  message on `OpenEphemeralResource` and on the `PlanResourceChange` call
+  for a partially-expanded resource, so a deferral from either is an error
+  even with deferrals enabled. Fixed in Terraform 1.16.4
+  ([hashicorp/terraform#39237](https://github.com/hashicorp/terraform/pull/39237)).
+  Deferrals themselves are enabled only in experimental Terraform builds and
+  in Stacks; stable builds reject `-allow-deferral`.
 - **OpenTofu (through v1.13.0-rc1)** never sets `deferral_allowed`, so any
   deferral is returned as an error.
 
